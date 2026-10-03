@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
+| Versi | 0.2 (draft) |
 | Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition) |
-| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md) |
+| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3. |
+| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md) |
 
 Dokumen ini adalah titik masuk dokumentasi proyek. Baca dokumen ini sebelum dokumen lain.
 
@@ -25,7 +25,7 @@ Setiap fakta, keputusan, dan usulan di dokumentasi ini diberi label:
 
 ## 1. Ringkasan proyek
 
-Spensada (nama kerja) adalah aplikasi web akademik untuk sekolah dengan fokus utama presensi kehadiran siswa. Siswa memindai QR code di kartu OSIS, yang hanya berisi NISN, ke webcam laptop yang berfungsi sebagai stasiun scan.
+Spensada adalah aplikasi web akademik untuk sekolah jenjang SMP dengan fokus utama presensi kehadiran siswa. "Spensada" adalah nama produk. Nama resmi sekolah, alamat, dan logo diatur admin di pengaturan aplikasi (DECISION, OQ-01). Siswa memindai QR code di kartu OSIS, yang hanya berisi NISN, ke webcam laptop yang berfungsi sebagai stasiun scan.
 
 Stasiun scan bekerja *local-first*. Data siswa dimuat lebih dulu ke laptop, sehingga setiap scan langsung mendapat umpan balik. Setelah itu data dikirim (sinkron) ke server secara otomatis.
 
@@ -39,7 +39,7 @@ Dari data scan, sistem menentukan status kehadiran harian, menyajikan dashboard 
 - Semua siswa sudah memiliki kartu OSIS tercetak dengan QR berisi NISN.
 - Foto digital siswa sudah ada, tetapi belum rapi.
 
-**Masalah inti** (ASSUMPTION — disimpulkan dari kondisi saat ini; konfirmasi saat review dokumen ini):
+**Masalah inti** (CONFIRMED di Session 3, A-02):
 
 1. Absen manual lambat, rawan salah, dan mudah dititipkan.
 2. Data tersebar di tiga tempat, sehingga tidak ada satu sumber data kehadiran yang dapat dipercaya.
@@ -52,7 +52,7 @@ Dari data scan, sistem menentukan status kehadiran harian, menyajikan dashboard 
 | No | Tujuan | Status |
 |---|---|---|
 | T-1 | Mencatat presensi masuk dan pulang setiap siswa lewat scan kartu, dengan umpan balik instan di stasiun scan. | DECISION |
-| T-2 | Menjadi satu sumber data kehadiran siswa, menggantikan kertas, Excel, dan WhatsApp. | ASSUMPTION (A-05) |
+| T-2 | Menjadi satu sumber data kehadiran siswa, menggantikan kertas, Excel, dan WhatsApp. | CONFIRMED (A-05, Session 3) |
 | T-3 | Menyajikan pantauan hari ini dan rekap kehadiran tanpa kerja manual. | DECISION |
 | T-4 | Mencatat izin dan sakit beserta verifikasinya. | DECISION |
 | T-5 | Memberi tahu orang tua/wali lewat WhatsApp secara otomatis. | DECISION |
@@ -61,11 +61,11 @@ Dari data scan, sistem menentukan status kehadiran harian, menyajikan dashboard 
 
 | Aktor | Peran | Status |
 |---|---|---|
-| Admin | Mengelola akun, master data, aturan jam, kalender sekolah, dan pengaturan notifikasi. | CONFIRMED |
-| Staf internal | Memantau dan mengoreksi presensi, memverifikasi izin/sakit, membuat rekap, export, dan flyer. | CONFIRMED; pembagian sub-peran OPEN (OQ-02) |
+| Admin | Operator/TU. Mengelola akun, master data, aturan jam, kalender sekolah, identitas sekolah, dan pengaturan notifikasi. | CONFIRMED |
+| Staf internal | Semua guru dan staf memiliki akun staf. Hak aksesnya mengikuti role: staf (dasar), wali kelas, guru piket, guru BK, dan pimpinan. Lihat [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md). | CONFIRMED (aktor); DECISION (sub-peran dan hak akses, Session 3) |
 | Siswa | Melihat riwayat kehadiran sendiri, mengajukan izin/sakit, melihat jadwal dan pengumuman. | CONFIRMED |
 | Publik | Tanpa login. Melihat pengumuman, info sekolah, dan rekap agregat hari ini tanpa nama siswa. | DECISION |
-| Akun stasiun | Akun khusus laptop stasiun scan dengan hak minimal: memuat data kiosk, mencatat scan, dan sinkron. Aman bila laptop ditinggal terbuka. | RECOMMENDATION |
+| Akun stasiun | Akun khusus laptop stasiun scan dengan hak minimal: memuat data kiosk, mencatat scan, dan sinkron. Satu akun per laptop. Aman bila laptop ditinggal terbuka. | DECISION (Session 3) |
 | Orang tua/wali | Bukan pengguna sistem, karena pengguna eksternal hanya siswa. Menjadi penerima notifikasi WhatsApp; nomor WA disimpan per siswa. | CONFIRMED (bukan pengguna); DECISION (penerima notifikasi) |
 
 ## 5. Konsep solusi
@@ -163,7 +163,7 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 |---|---|---|---|---|
 | R-01 | Browser hanya mengizinkan webcam di HTTPS atau `localhost`. | Lokal memakai `https://spensada.test`; production memakai HTTPS. | CONFIRMED | Session 6 |
 | R-02 | QR berisi NISN polos dapat dipalsukan, misalnya dengan QR buatan sendiri atau foto kartu teman. Kartu hilang juga tidak dapat diblokir, karena kartu pengganti memakai QR yang sama. | Kiosk diawasi petugas, dan layar menampilkan foto, nama, dan rombel di setiap scan. | Risiko CONFIRMED; penerimaan OPEN (OQ-06) | Session 4 |
-| R-03 | Antrean pagi 500–1.000 siswa. Kecepatan baca webcam tetap menjadi batas walaupun tanpa jeda jaringan. | Beberapa stasiun scan. Kiosk juga menerima scanner QR USB (mode keyboard). | RECOMMENDATION; jumlah stasiun OPEN (OQ-08) | Session 3 |
+| R-03 | Antrean pagi 500–1.000 siswa. Kecepatan baca webcam tetap menjadi batas walaupun tanpa jeda jaringan. | Beberapa stasiun scan di gerbang utama. Kiosk juga menerima scanner QR USB (mode keyboard). | RECOMMENDATION; lokasi DECISION (gerbang utama, Session 3); jumlah stasiun OPEN (OQ-08) | Session 3 (lokasi); OQ-08 (jumlah) |
 | R-04 | Chrome dan Edge di Windows tidak memiliki `BarcodeDetector`. Menurut MDN browser-compat-data, fitur ini hanya ada di macOS/ChromeOS. | Satu library JavaScript pembaca QR. | CONFIRMED | Session 6 |
 | R-05 | Jam scan berasal dari laptop, sehingga bisa salah atau diubah. | Selisih jam laptop terhadap server disimpan saat data dimuat. Server memvalidasi jam saat sinkron. Laptop kiosk memakai akun Windows non-admin. | RECOMMENDATION | Session 4 dan 6 |
 | R-06 | Scan yang belum tersinkron bisa hilang bila laptop rusak atau data browser terhapus. | Persistent storage, penghitung "belum tersinkron", dan sinkron otomatis. | RECOMMENDATION | Session 6 |
@@ -186,32 +186,34 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 
 ### 8.1 Asumsi
 
-| ID | Asumsi |
-|---|---|
-| A-01 | Sekolah berjenjang SMP, berdasarkan nama "spensada" dan penggunaan kartu OSIS. |
-| A-02 | Daftar masalah inti di §2 sudah tepat. |
-| A-03 | Setiap siswa aktif memiliki NISN 10 digit yang valid, dan satu siswa memiliki satu kartu. |
-| A-04 | Stasiun scan memakai laptop Windows dengan Chrome atau Edge versi terbaru. |
-| A-05 | Sistem menggantikan sepenuhnya pencatatan kehadiran di kertas, Excel, dan WhatsApp (tujuan T-2). |
+| ID | Asumsi | Status |
+|---|---|---|
+| A-01 | Sekolah berjenjang SMP, berdasarkan nama "spensada" dan penggunaan kartu OSIS. | CONFIRMED (Session 3) |
+| A-02 | Daftar masalah inti di §2 sudah tepat. | CONFIRMED (Session 3) |
+| A-03 | Setiap siswa aktif memiliki NISN 10 digit yang valid, dan satu siswa memiliki satu kartu. | ASSUMPTION |
+| A-04 | Stasiun scan memakai laptop Windows dengan Chrome atau Edge versi terbaru. | ASSUMPTION |
+| A-05 | Sistem menggantikan sepenuhnya pencatatan kehadiran di kertas, Excel, dan WhatsApp (tujuan T-2). | CONFIRMED (Session 3) |
 
 ### 8.2 Pertanyaan terbuka
 
-| ID | Pertanyaan | Dibahas di |
-|---|---|---|
-| OQ-01 | Nama resmi sekolah, jenjang, dan nama produk. | Review dokumen ini |
-| OQ-02 | Sub-peran staf (wali kelas, guru piket, BK, kepala sekolah, TU) dan hak akses masing-masing. | Session 3 |
-| OQ-03 | Aturan jam: jam masuk, batas terlambat, jam pulang, pulang lebih awal, scan ganda, dan hari sekolah dalam seminggu. | Session 4 |
-| OQ-04 | Aturan penggabungan scan dari beberapa stasiun, dan prioritas antara scan, presensi manual, dan izin/sakit. | Session 4 |
-| OQ-05 | Zona waktu sekolah (WIB, WITA, atau WIT). | Session 4 |
-| OQ-06 | Penerimaan risiko QR palsu dan kartu hilang (R-02). | Session 4 |
-| OQ-07 | Cara menutup sesi masuk/pulang: manual oleh petugas atau otomatis pada jam tertentu. | Session 4 |
-| OQ-08 | Jumlah stasiun scan (laptop) dan lokasinya. | Session 3 |
-| OQ-09 | Jenis hosting (shared atau VPS) dan cara instalasi framework (Composer). | Session 6 |
-| OQ-10 | Provider gateway WhatsApp. | Sebelum R2 |
-| OQ-11 | Laporan apa saja dan format masing-masing (matriks laporan × format); isi flyer (angka saja atau dengan nama siswa). | Session 5 (ditulis di `13-reporting-import-export.md`) |
-| OQ-12 | Format nama file foto siswa yang ada saat ini. | Session 5 (ditulis di `13-reporting-import-export.md`) |
-| OQ-13 | Desain kartu siswa baru: mengikuti kartu lama atau desain baru. | Session 7 |
-| OQ-14 | Cara pembuatan akun siswa dan password awal. | Session 3 |
+| ID | Pertanyaan | Dibahas di | Status |
+|---|---|---|---|
+| OQ-01 | Nama resmi sekolah, jenjang, dan nama produk. | Session 3 | Terjawab: jenjang SMP; nama produk "Spensada"; nama resmi sekolah, alamat, dan logo diisi admin di pengaturan (FR-MD-08). |
+| OQ-02 | Sub-peran staf (wali kelas, guru piket, BK, kepala sekolah, TU) dan hak akses masing-masing. | Session 3 | Terjawab: lihat `02`. |
+| OQ-03 | Aturan jam: jam masuk, batas terlambat, jam pulang, pulang lebih awal, scan ganda, dan hari sekolah dalam seminggu. | Session 4 | Terbuka |
+| OQ-04 | Aturan penggabungan scan dari beberapa stasiun, dan prioritas antara scan, presensi manual, dan izin/sakit. | Session 4 | Terbuka |
+| OQ-05 | Zona waktu sekolah (WIB, WITA, atau WIT). | Session 4 | Terbuka |
+| OQ-06 | Penerimaan risiko QR palsu dan kartu hilang (R-02). | Session 4 | Terbuka |
+| OQ-07 | Cara menutup sesi masuk/pulang: manual oleh petugas atau otomatis pada jam tertentu. | Session 4 | Terbuka |
+| OQ-08 | Jumlah stasiun scan (laptop) dan lokasinya. | Session 3 (lokasi); sebelum uji coba R1 (jumlah) | Sebagian: semua stasiun di gerbang utama, untuk scan masuk dan pulang. Jumlah laptop belum diketahui. |
+| OQ-09 | Jenis hosting (shared atau VPS) dan cara instalasi framework (Composer). | Session 6 | Terbuka |
+| OQ-10 | Provider gateway WhatsApp. | Sebelum R2 | Terbuka |
+| OQ-11 | Laporan apa saja dan format masing-masing (matriks laporan × format); isi flyer (angka saja atau dengan nama siswa). | Session 5 (ditulis di `13-reporting-import-export.md`) | Terbuka |
+| OQ-12 | Format nama file foto siswa yang ada saat ini. | Session 5 (ditulis di `13-reporting-import-export.md`) | Terbuka |
+| OQ-13 | Desain kartu siswa baru: mengikuti kartu lama atau desain baru. | Session 7 | Terbuka |
+| OQ-14 | Cara pembuatan akun siswa dan password awal. | Session 3 | Terjawab: lihat `02` §2 dan §7.2. |
+| OQ-15 | Batas mundur (berapa hari ke belakang) untuk koreksi presensi dan input izin/sakit oleh staf; apakah siswa boleh mengajukan izin/sakit untuk tanggal yang sudah lewat. | Session 4 | Terbuka |
+| OQ-16 | Prosedur darurat bila semua stasiun scan tidak dapat dipakai, termasuk kemungkinan presensi manual per rombel sekaligus. | Session 4 | Terbuka |
 
 ## 9. Glosarium
 
@@ -225,8 +227,20 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Scan | Satu kali pembacaan QR di kiosk. Satu scan menghasilkan satu catatan scan. |
 | Stasiun scan | Perangkat di titik scan (laptop dengan webcam, opsional scanner QR USB) yang login memakai akun stasiun. |
 | Kiosk | Halaman aplikasi yang berjalan di stasiun scan untuk membaca QR dan menampilkan hasil scan. |
-| Akun stasiun | Akun khusus untuk stasiun scan dengan hak minimal: memuat data kiosk, mencatat scan, dan sinkron. |
-| Petugas | Staf yang mengawasi stasiun scan. Sub-peran yang bertugas mengikuti OQ-02. |
+| Akun stasiun | Akun khusus untuk stasiun scan dengan hak minimal: memuat data kiosk, mencatat scan, dan sinkron. Satu akun per laptop. |
+| Petugas | Orang yang mengawasi stasiun scan: guru piket, atau satpam/staf TU. Petugas tidak login di kiosk; kiosk berjalan dengan akun stasiun. |
+| Akun staf | Akun untuk guru dan staf sekolah, login dengan username. Semua guru dan staf memilikinya. Hak aksesnya mengikuti role. |
+| Akun siswa | Akun untuk siswa, login dengan NISN. Dibuat otomatis dari data siswa. Statusnya belum aktif, aktif, atau nonaktif. |
+| Role | Kelompok hak akses tetap yang diberikan ke akun: Admin, Staf, Wali kelas, Guru piket, Guru BK, Pimpinan, Siswa, dan Stasiun. Satu akun staf boleh memiliki beberapa role. Rinciannya ada di `02`. |
+| Staf (role) | Role dasar yang otomatis dimiliki setiap akun staf. Hanya melihat angka kehadiran di dashboard hari ini. Berbeda dengan "staf internal" sebagai aktor. |
+| Hak akses | Izin untuk melakukan satu tindakan, beserta cakupan datanya. Memakai ID `HA-*` di `02`. |
+| Cakupan | Batas data yang boleh diakses oleh satu hak akses: semua, rombel, hari ini, sendiri, atau angka. |
+| Wali kelas | Staf yang ditetapkan admin sebagai penanggung jawab satu rombel pada satu tahun ajaran. |
+| Guru piket | Staf yang menangani presensi harian dan mengawasi stasiun scan. Role tetap, tidak mengikuti jadwal piket harian. |
+| Guru BK | Guru bimbingan dan konseling. Memantau dan menindaklanjuti kehadiran semua siswa. |
+| Pimpinan | Kepala sekolah dan wakil kepala sekolah. Melihat seluruh data kehadiran tanpa mengubahnya. |
+| Password awal | Password acak dari sistem untuk akun baru atau akun yang direset. Wajib diganti saat login pertama. |
+| Slip akun | Lembar cetak berisi NISN dan password awal siswa, dibuat per rombel oleh wali kelas atau admin. Hanya dapat dicetak saat password dibuat. |
 | Local-first | Pola kerja kiosk: data siswa dimuat ke laptop lebih dulu, scan divalidasi dan dicatat di laptop, lalu dikirim ke server. |
 | Sinkron | Pengiriman catatan scan dari stasiun scan ke server. Berjalan otomatis saat online dan bisa dipicu manual. |
 | Sesi masuk / sesi pulang | Rentang waktu penerimaan scan masuk dan scan pulang dalam satu hari sekolah. Aturannya mengikuti OQ-03 dan OQ-07. |
@@ -264,10 +278,10 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 
 | Dokumen | Isi | Sesi | Status |
 |---|---|---|---|
-| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–2 | Draft 0.1 |
-| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2 | Draft 0.1 |
-| `02-user-roles-and-permissions.md` | Role dan permission | Session 3 | Belum dibuat |
-| `03-user-flow.md` | Alur pengguna | Session 3 | Belum dibuat |
+| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–3 | Draft 0.2 |
+| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–3 | Draft 0.2 |
+| `02-user-roles-and-permissions.md` | Role dan permission | Session 3 | Draft 0.1 |
+| `03-user-flow.md` | Alur pengguna | Session 3 | Draft 0.1 |
 | `04-feature-specification.md` | Spesifikasi fitur rinci | Session 3–4 | Belum dibuat |
 | `05-business-rules.md` | Aturan bisnis | Session 4 | Belum dibuat |
 | `06-database-design.md` | Desain database | Session 5 | Belum dibuat |
@@ -286,9 +300,9 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Sesi | Topik | Status |
 |---|---|---|
 | 1 | Project Discovery | Selesai |
-| 2 | Product & Feature Definition | Selesai, menunggu review dokumen |
-| 3 | User Roles & User Flow | Berikutnya |
-| 4 | Business Rules | Belum |
+| 2 | Product & Feature Definition | Selesai; dokumen direview di Session 3 |
+| 3 | User Roles & User Flow | Selesai, menunggu review dokumen |
+| 4 | Business Rules | Berikutnya |
 | 5 | Database Architecture | Belum |
 | 6 | System Architecture | Belum |
 | 7 | UI/UX & Design System | Belum |
@@ -318,3 +332,4 @@ Aturan ini berlaku untuk AI atau developer yang mengerjakan kode di repository i
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 1–2. |
+| 0.2 | 2026-10-03 | Hasil review dan keputusan Session 3. A-01, A-02, dan A-05 dikonfirmasi. OQ-01, OQ-02, dan OQ-14 terjawab; OQ-08 terjawab sebagian. OQ-15 dan OQ-16 ditambahkan. Aktor, glosarium (akun dan role), serta peta dokumen diperbarui. |
