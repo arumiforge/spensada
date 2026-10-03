@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.3 (draft) |
+| Versi | 0.4 (draft) |
 | Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan) dan Session 4 (aturan bisnis, `05`). |
+| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan) Session 4 (aturan bisnis, `05`), dan Session 4b (spesifikasi fitur, `04`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), asumsi (`A-xx`), dan pertanyaan terbuka (`OQ-xx`) |
 
 ## 1. Cara membaca dokumen ini
@@ -22,7 +22,7 @@
 - **Rilis:** R1, R2, atau R3 (lihat `00` §6.1).
 - **Status:** memakai label dari `00`. Bila satu baris memuat keputusan dan usulan sekaligus, keduanya disebut.
 
-Dokumen ini menjawab *apa* yang dibutuhkan. Aturan rinci, struktur data, route, dan tampilan ditulis di dokumen `02`–`10`.
+Dokumen ini menjawab *apa* yang dibutuhkan. Rincian setiap fitur dan acceptance criteria-nya ada di `04`. Aturan rinci, struktur data, route, dan tampilan ditulis di dokumen `02`–`10`.
 
 ## 2. Modul
 
@@ -46,9 +46,9 @@ Dokumen ini menjawab *apa* yang dibutuhkan. Aturan rinci, struktur data, route, 
 |---|---|---|---|---|---|
 | FR-MD-01 | Admin mengelola tahun ajaran beserta semesternya, dan menandai satu tahun ajaran sebagai aktif. | Admin | Core | R1 | DECISION (master data); RECOMMENDATION (struktur tahun ajaran dan semester) |
 | FR-MD-02 | Admin mengelola rombel per tahun ajaran (nama rombel dan tingkat), dan menetapkan satu wali kelas untuk setiap rombel. | Admin | Core | R1 | DECISION |
-| FR-MD-03 | Admin mengelola data siswa. Atribut minimal: NISN (unik, 10 digit), nama lengkap, status aktif, nomor WhatsApp orang tua/wali, dan foto. Atribut lain ditetapkan di Session 5. | Admin | Core | R1 | CONFIRMED (NISN unik); DECISION (nomor WA, foto) |
+| FR-MD-03 | Admin mengelola data siswa. Atribut minimal: NISN (unik, 10 digit), nama lengkap, status aktif, nomor WhatsApp orang tua/wali, dan foto. Nomor WA bersifat opsional; bila diisi, formatnya divalidasi dan disimpan dalam format baku 62…. Atribut lain ditetapkan di Session 5. | Admin | Core | R1 | CONFIRMED (NISN unik); DECISION (nomor WA, foto; nomor WA opsional, Session 4b) |
 | FR-MD-04 | Admin menempatkan siswa ke rombel per tahun ajaran, termasuk saat kenaikan kelas, sehingga riwayat tahun sebelumnya tetap utuh. | Admin | Core | R1 | RECOMMENDATION |
-| FR-MD-05 | Admin mengimpor data siswa dari file Excel (.xlsx) atau CSV. Setiap baris divalidasi (NISN 10 digit, NISN ganda, kolom wajib). Baris yang gagal dilaporkan beserta alasannya. | Admin | Supporting | R1 | DECISION (import Excel/CSV); RECOMMENDATION (validasi per baris) |
+| FR-MD-05 | Admin mengimpor data siswa dari file Excel (.xlsx) atau CSV. Setiap baris divalidasi (NISN 10 digit, NISN ganda, kolom wajib, dan format nomor WA bila diisi). Baris yang gagal dilaporkan beserta alasannya. | Admin | Supporting | R1 | DECISION (import Excel/CSV; nomor WA opsional, Session 4b); RECOMMENDATION (validasi per baris) |
 | FR-MD-06 | Admin, dan wali kelas untuk rombelnya, mengunggah foto siswa satu per satu dari halaman data siswa. | Admin, wali kelas | Supporting | R1 | DECISION (Session 3) |
 | FR-MD-07 | Admin mengunggah banyak foto sekaligus. Sistem mencocokkan nama file dengan NISN, melaporkan file yang tidak cocok, dan memperkecil ukuran foto secara otomatis. | Admin | Supporting | R1 | RECOMMENDATION (format nama file: OQ-12) |
 | FR-MD-08 | Admin mengatur identitas sekolah: nama resmi, alamat, dan logo. Nama produk tetap "Spensada". | Admin | Supporting | R1 | DECISION (OQ-01) |
@@ -95,8 +95,8 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 | FR-PRS-03 | Admin mengelola kalender sekolah: pola hari sekolah mingguan (default Senin–Sabtu), hari libur untuk semua siswa atau untuk tingkat/rombel tertentu, dan jadwal khusus (`05` §3). | Admin | Core | R1 | DECISION (Session 4) |
 | FR-PRS-04 | Sistem menentukan status harian setiap siswa: Hadir, Terlambat, Izin, Sakit, Dispensasi, atau Alpa. Urutan prioritasnya: izin/sakit/dispensasi yang disetujui, koreksi status, presensi masuk, lalu Alpa (`05` BR-STS-02). | Sistem | Core | R1 | DECISION (Dispensasi dan urutan prioritas ditambahkan di Session 4) |
 | FR-PRS-05 | Status Alpa ditentukan otomatis: hari sekolah bagi siswa, tanpa izin/sakit/dispensasi yang disetujui, dan tanpa presensi masuk (atau dikoreksi Tidak hadir), setelah sesi masuk ditutup dan di luar mode darurat. Data yang datang belakangan, seperti scan yang terlambat sinkron atau izin yang disetujui, langsung mengoreksi status. | Sistem | Core | R1 | DECISION (Alpa otomatis dan syaratnya); RECOMMENDATION (status dapat dihitung ulang, `05` BR-STS-06) |
-| FR-PRS-06 | Staf menginput presensi manual, misalnya untuk siswa yang lupa kartu, kartu rusak, saat kiosk terganggu, atau siswa yang tiba setelah sesi masuk ditutup. Alasan wajib diisi, dan status dihitung dari jam yang diisi. Pelakunya: admin, guru piket (hari berjalan), wali kelas (rombelnya), dan guru BK, dalam batas mundur (FR-PRS-11). Presensi manual per rombel sekaligus hanya tersedia saat mode darurat (FR-PRS-10). | Admin, guru piket, wali kelas, guru BK | Core | R1 | DECISION (presensi manual dan pelaku: Session 3; alasan wajib dan per rombel: Session 4) |
-| FR-PRS-07 | Admin, guru piket (hari berjalan), wali kelas (rombelnya), dan guru BK dapat mengoreksi status presensi menjadi Hadir, Terlambat, atau Tidak hadir, dengan alasan, dalam batas mundur (FR-PRS-11). Koreksi tidak tertimpa scan atau presensi manual yang datang belakangan. Perubahan ke Izin, Sakit, atau Dispensasi dilakukan lewat FR-IZN-02. Setiap perubahan tercatat di log perubahan presensi: siapa, kapan, nilai lama, nilai baru, dan alasan. | Admin, guru piket, wali kelas, guru BK | Core | R1 | DECISION (Session 3; aturan koreksi Session 4) |
+| FR-PRS-06 | Staf menginput presensi manual, misalnya untuk siswa yang lupa kartu, kartu rusak, saat kiosk terganggu, atau siswa yang tiba setelah sesi masuk ditutup. Alasan wajib diisi, dan status dihitung dari jam yang diisi. Pelakunya: admin, guru piket (hari berjalan), wali kelas (rombelnya), dan guru BK, dalam batas mundur (FR-PRS-11). Presensi manual per rombel sekaligus hanya tersedia saat mode darurat (FR-PRS-10). Presensi manual yang salah input dibatalkan dengan alasan: datanya tetap tersimpan, tetapi tidak dipakai (`05` BR-KOR-11). | Admin, guru piket, wali kelas, guru BK | Core | R1 | DECISION (presensi manual dan pelaku: Session 3; alasan wajib dan per rombel: Session 4; pembatalan: Session 4b) |
+| FR-PRS-07 | Admin, guru piket (hari berjalan), wali kelas (rombelnya), dan guru BK dapat mengoreksi status presensi menjadi Hadir, Terlambat, atau Tidak hadir, dengan alasan, dalam batas mundur (FR-PRS-11). Koreksi tidak tertimpa scan atau presensi manual yang datang belakangan. Koreksi dapat dihapus dengan alasan, dan tetap dapat disimpan saat ada izin yang disetujui, dengan peringatan (`05` BR-KOR-08, BR-KOR-09). Perubahan ke Izin, Sakit, atau Dispensasi dilakukan lewat FR-IZN-02. Setiap perubahan tercatat di log perubahan presensi: siapa, kapan, nilai lama, nilai baru, dan alasan. | Admin, guru piket, wali kelas, guru BK | Core | R1 | DECISION (Session 3; aturan koreksi Session 4; hapus koreksi dan koreksi saat ada izin, Session 4b) |
 | FR-PRS-08 | Sesi masuk dan sesi pulang ditutup otomatis pada jam tutup sesi masing-masing. Setelah sesi masuk ditutup, kiosk menolak scan masuk. Sebelum sesi masuk ditutup, siswa tanpa presensi tampil sebagai "belum hadir"; setelah ditutup menjadi Alpa, kecuali saat mode darurat. | Sistem | Core | R1 | DECISION (OQ-07, Session 4) |
 | FR-PRS-09 | Admin dan guru piket dapat mengubah jadwal hari ini, misalnya mengundur batas terlambat karena hujan deras atau memajukan jam pulang karena rapat guru. Alasan wajib diisi, perubahan dicatat, dan status hari itu dihitung ulang. Guru piket hanya dapat mengubah jadwal hari ini (`05` BR-JAM-10). | Admin, guru piket | Supporting | R1 | DECISION (Session 4) |
 | FR-PRS-10 | Guru piket atau admin dapat mengaktifkan mode darurat untuk hari ini bila semua stasiun scan tidak dapat dipakai. Selama aktif, Alpa tidak terbentuk, pesan "tidak hadir" ditahan, dan staf mencatat kehadiran per rombel sekaligus. Mode darurat berakhir saat diakhiri petugas, atau otomatis di akhir hari (`05` §10). | Admin, guru piket, wali kelas, guru BK | Supporting | R1 | DECISION (OQ-16, Session 4) |
@@ -111,16 +111,16 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 | FR-IZN-03 | Admin, wali kelas (rombelnya), guru piket, dan guru BK memverifikasi pengajuan siswa (setujui atau tolak) dengan catatan. Hanya izin/sakit/dispensasi yang disetujui yang memengaruhi status presensi, dan yang disetujui menang atas presensi masuk (`05` BR-STS-03). | Admin, wali kelas, guru piket, guru BK | Core | R1 | CONFIRMED (verifikasi); DECISION (pelaku, Session 3; hanya yang disetujui berlaku dan menang atas presensi, Session 4) |
 | FR-IZN-04 | Siswa melihat status pengajuannya (menunggu, disetujui, ditolak, atau dibatalkan), termasuk keputusan terbaru bila staf mengubahnya. | Siswa | Core | R1 | RECOMMENDATION |
 | FR-IZN-05 | Lampiran surat disimpan di luar folder publik dan hanya dapat dibuka oleh siswa pemiliknya, staf yang berhak memverifikasi, dan pimpinan (`02`, `HA-IZN-05`). Pencatatan pembukaan lampiran mengikuti OQ-17. | Sistem | Core | R1 | DECISION (akses pimpinan, Session 4); RECOMMENDATION (penyimpanan di luar folder publik) |
-| FR-IZN-06 | Staf yang berhak memverifikasi dapat mengubah keputusan: membatalkan data yang disetujui, memendekkan rentangnya, atau mengubah penolakan menjadi persetujuan. Alasan wajib diisi, perubahan dicatat, dan status presensi dihitung ulang (`05` BR-IZN-09). | Admin, wali kelas, guru piket, guru BK | Core | R1 | DECISION (Session 4) |
-| FR-IZN-07 | Dispensasi adalah jenis ketiga di samping izin dan sakit, untuk tugas atau kegiatan resmi sekolah. Dispensasi hanya diinput staf, dan dapat diinput untuk banyak siswa sekaligus (siswa terpilih, satu rombel, atau satu tingkat). Dispensasi bukan ketidakhadiran (`05` BR-IZN-05, BR-REK-02). | Admin, wali kelas, guru piket, guru BK | Core | R1 | DECISION (Session 4); RECOMMENDATION (cara memilih siswa) |
+| FR-IZN-06 | Staf yang berhak memverifikasi dapat mengubah keputusan: membatalkan data yang disetujui, memendekkan rentangnya, atau mengubah penolakan menjadi persetujuan. Alasan wajib diisi, perubahan dicatat, dan status presensi dihitung ulang (`05` BR-IZN-09). Untuk dispensasi massal, perubahan dapat diterapkan ke satu siswa atau sekaligus ke satu kelompok. | Admin, wali kelas, guru piket, guru BK | Core | R1 | DECISION (Session 4; per kelompok, Session 4b) |
+| FR-IZN-07 | Dispensasi adalah jenis ketiga di samping izin dan sakit, untuk tugas atau kegiatan resmi sekolah. Dispensasi hanya diinput staf, dan dapat diinput untuk banyak siswa sekaligus (siswa terpilih, satu rombel, atau satu tingkat). Pada input massal, siswa yang sudah memiliki data izin/sakit/dispensasi pada tanggal yang sama dilewati dan dilaporkan (`05` BR-IZN-07). Dispensasi bukan ketidakhadiran (`05` BR-IZN-05, BR-REK-02). | Admin, wali kelas, guru piket, guru BK | Core | R1 | DECISION (Session 4; siswa bentrok dilewati, Session 4b); RECOMMENDATION (cara memilih siswa) |
 
 ### 3.6 LAP — Dashboard, rekap, export, flyer
 
 | ID | Kebutuhan | Aktor | Kategori | Rilis | Status |
 |---|---|---|---|---|---|
-| FR-LAP-01 | Dashboard hari ini menampilkan jumlah hadir, terlambat, izin, sakit, dispensasi, dan belum hadir/Alpa per rombel, beserta daftar siswa yang belum hadir. Data diperbarui seiring sinkron. Staf tanpa role khusus hanya melihat angka; wali kelas melihat daftar nama hanya untuk rombelnya (`02`, `HA-LAP-01`, `HA-LAP-02`). | Semua akun staf | Supporting | R1 | DECISION |
+| FR-LAP-01 | Dashboard hari ini menampilkan jumlah hadir, terlambat, izin, sakit, dispensasi, dan belum hadir/Alpa per rombel, beserta daftar siswa yang belum hadir. Data diperbarui seiring sinkron. Staf tanpa role khusus hanya melihat angka; wali kelas melihat daftar nama hanya untuk rombelnya (`02`, `HA-LAP-01`, `HA-LAP-02`). Daftar nama memuat penanda untuk keadaan yang perlu diperiksa (`05` BR-STS-07). | Semua akun staf | Supporting | R1 | DECISION (penanda, Session 4b) |
 | FR-LAP-02 | Rekap kehadiran per rombel untuk rentang tanggal tertentu (misalnya harian, bulanan, semester) ditampilkan di layar. Ketidakhadiran adalah Sakit, Izin, dan Alpa. Persentase kehadiran = (Hadir + Terlambat + Dispensasi) ÷ hari sekolah (`05` §12). | Admin, wali kelas, guru BK, pimpinan (cakupan: `02`) | Core | R1 | DECISION |
-| FR-LAP-03 | Staf dapat melihat riwayat kehadiran per siswa, dan siswa dapat melihat riwayatnya sendiri. | Admin, wali kelas, guru BK, pimpinan (cakupan: `02`), siswa | Core | R1 | DECISION |
+| FR-LAP-03 | Staf dapat melihat riwayat kehadiran per siswa, dan siswa dapat melihat riwayatnya sendiri. Riwayat di portal siswa memuat status, jam masuk dan pulang, kejadian pulang, izin/sakit/dispensasi beserta catatan verifikasi, dan alasan koreksi, tanpa nama staf (`04` FS-LAP-04). | Admin, wali kelas, guru BK, pimpinan (cakupan: `02`), siswa | Core | R1 | DECISION (isi riwayat di portal, Session 4b) |
 | FR-LAP-04 | Rekap dapat diekspor ke Excel (.xlsx), CSV, dan PDF. Pembagian format per laporan mengikuti OQ-11. | Admin, wali kelas, guru BK, pimpinan (cakupan: `02`) | Supporting | R2 | DECISION |
 | FR-LAP-05 | Staf membuat flyer kehadiran berupa gambar PNG (per rombel atau total) dari template di browser, lalu mengunduhnya untuk dibagikan manual. Isi flyer mengikuti OQ-11. | Admin, wali kelas, pimpinan (cakupan: `02`) | Supporting | R2 | DECISION |
 
@@ -210,7 +210,7 @@ Status: DECISION (dikonfirmasi di Session 3). Butir 5 disesuaikan dengan status 
 
 ## 7. Acceptance criteria tingkat tinggi
 
-Status: DECISION (dikonfirmasi di Session 3). AC-03 disesuaikan dengan keputusan Session 4. Acceptance criteria rinci per fitur ditulis di `04-feature-specification.md` dan di dokumen fase implementasi.
+Status: DECISION (dikonfirmasi di Session 3). AC-03 disesuaikan dengan keputusan Session 4. Acceptance criteria rinci per fitur ditulis di `04-feature-specification.md` (ID `AC-<MODUL>-<NN>-<NN>`, Session 4b) dan dirujuk dokumen fase implementasi.
 
 ### AC-01 — Scan saat offline
 
@@ -303,7 +303,7 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | Route dan API | `09`, `10` |
 | Halaman | `08`, `09` |
 | Fase implementasi | `15` |
-| Acceptance criteria rinci | `04` |
+| Spesifikasi fitur dan acceptance criteria rinci | `04` (§12.1 memetakan setiap FR ke fitur) |
 
 ## Riwayat perubahan
 
@@ -312,3 +312,4 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | 0.1 | 2026-10-03 | Draft awal dari Session 2. |
 | 0.2 | 2026-10-03 | Keputusan Session 3. FR-MD-08, FR-MD-09, FR-AKN-05 s.d. FR-AKN-08, dan FR-KIO-12 ditambahkan. Aktor dan status FR-MD, FR-AKN, FR-PRS, FR-IZN, FR-LAP, dan FR-INF diperbarui sesuai `02`. NFR-02 memuat lokasi stasiun. Kriteria keberhasilan dan acceptance criteria dikonfirmasi. OQ-15 dan OQ-16 ditambahkan. |
 | 0.3 | 2026-10-03 | Keputusan Session 4 (`05`). Modul IZN mencakup dispensasi. FR-AKN-06 (mekanisme slip disetujui), FR-KIO-04, FR-KIO-05, FR-KIO-10 s.d. FR-KIO-12, FR-PRS-02 s.d. FR-PRS-08, FR-IZN-01 s.d. FR-IZN-05, FR-LAP-01, FR-LAP-02, FR-WA-02, FR-WA-07, dan NFR-09 diperbarui. FR-PRS-09 s.d. FR-PRS-11, FR-IZN-06, FR-IZN-07, dan FR-WA-08 ditambahkan. Kriteria keberhasilan 5 dan AC-03 disesuaikan dengan dispensasi dan mode darurat. OQ-17 ditambahkan. |
+| 0.4 | 2026-10-03 | Keputusan Session 4b (`04` §2). FR-MD-03 dan FR-MD-05 (nomor WA opsional), FR-PRS-06 (pembatalan presensi manual), FR-PRS-07 (hapus koreksi, koreksi saat ada izin), FR-IZN-06 dan FR-IZN-07 (dispensasi per kelompok, siswa bentrok dilewati), FR-LAP-01 (penanda), dan FR-LAP-03 (isi riwayat di portal siswa) diperbarui. §1, §7, dan §9 merujuk `04`. |

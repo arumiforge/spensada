@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.3 (draft) |
+| Versi | 0.4 (draft) |
 | Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3 dan Session 4. |
-| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [05-business-rules.md](05-business-rules.md) |
+| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, dan Session 4b. |
+| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md) |
 
 Dokumen ini adalah titik masuk dokumentasi proyek. Baca dokumen ini sebelum dokumen lain.
 
@@ -182,7 +182,7 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | R-19 | Flyer dibuat di browser dari template HTML menjadi PNG. | Kemungkinan butuh satu library JavaScript kecil. | RECOMMENDATION | Session 6 dan 7 |
 | R-20 | Volume data ±400 ribu catatan scan per tahun (±1.000 siswa × 2 scan × ±200 hari). | Index yang tepat. Volume ini ringan untuk MySQL. | RECOMMENDATION | Session 5 |
 | R-21 | Pesan "tidak hadir" bisa terkirim massal secara keliru bila server belum menerima scan, misalnya internet sekolah mati sepanjang pagi atau semua stasiun mati. | Waktu tunda, syarat semua stasiun tersinkron, ambang pengaman yang menahan pesan, dan mode darurat (`05` §10 dan §11). | DECISION | Session 4 |
-| R-22 | Izin/sakit/dispensasi yang disetujui menang atas kehadiran fisik. Siswa berizin yang ternyata datang tetap tercatat Izin bila data izinnya tidak dibatalkan. | Penanda di dashboard bagi wali kelas dan guru piket, dan pembatalan izin oleh staf yang berhak (`05` BR-STS-07, BR-IZN-09). | DECISION (aturan prioritas); RECOMMENDATION (penanda) | Session 4 |
+| R-22 | Izin/sakit/dispensasi yang disetujui menang atas kehadiran fisik. Siswa berizin yang ternyata datang tetap tercatat Izin bila data izinnya tidak dibatalkan. | Penanda di dashboard, daftar presensi rombel, dan riwayat siswa bagi staf yang melihat daftar nama, serta pembatalan izin oleh staf yang berhak (`05` BR-STS-07, BR-IZN-09). | DECISION (aturan prioritas: Session 4; penanda: Session 4b) | Session 4, 4b |
 
 ## 8. Asumsi dan pertanyaan terbuka
 
@@ -263,11 +263,16 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Belum hadir | Keadaan sementara pada hari berjalan, sebelum sesi masuk ditutup atau selama mode darurat aktif. Bukan status final. |
 | Pulang lebih awal | Kejadian: presensi pulang sebelum jam pulang. Tidak mengubah status harian. |
 | Tidak scan pulang | Kejadian: siswa berstatus Hadir atau Terlambat tanpa presensi pulang setelah sesi pulang ditutup. |
-| Presensi manual | Presensi yang diinput staf, misalnya karena siswa lupa kartu, kartu rusak, kiosk terganggu, atau tiba setelah sesi masuk ditutup. Alasan wajib diisi. |
-| Koreksi status | Penetapan kehadiran siswa pada satu tanggal oleh staf menjadi Hadir, Terlambat, atau Tidak hadir, dengan alasan. Mengalahkan scan dan presensi manual, tetapi kalah dari izin/sakit/dispensasi yang disetujui. |
+| Presensi manual | Presensi yang diinput staf, misalnya karena siswa lupa kartu, kartu rusak, kiosk terganggu, atau tiba setelah sesi masuk ditutup. Alasan wajib diisi. Presensi manual yang salah input tidak dihapus, tetapi dibatalkan dengan alasan (`05` BR-KOR-11). |
+| Koreksi status | Penetapan kehadiran siswa pada satu tanggal oleh staf menjadi Hadir, Terlambat, atau Tidak hadir, dengan alasan. Mengalahkan scan dan presensi manual, tetapi kalah dari izin/sakit/dispensasi yang disetujui. Dapat dihapus dengan alasan, sehingga status kembali dihitung dari presensi. |
 | Mode darurat | Keadaan pada satu hari sekolah ketika semua stasiun scan tidak dapat dipakai. Diaktifkan guru piket atau admin. Selama aktif, Alpa tidak terbentuk, pesan "tidak hadir" ditahan, dan presensi manual per rombel dapat dipakai. |
 | Batas mundur | Rentang tanggal lampau yang masih boleh diubah staf: hari ini dan 7 hari kalender sebelumnya (diatur admin). Admin tidak dibatasi. |
 | Log perubahan presensi | Catatan setiap perubahan data presensi oleh staf: siapa, kapan, nilai lama, nilai baru, dan alasan. |
+| Penanda | Tanda di daftar nama staf untuk keadaan yang perlu diperiksa: siswa Izin/Sakit/Dispensasi yang memiliki presensi masuk, dan siswa yang memiliki presensi pulang tanpa presensi masuk. Bersifat informasi, tidak mengubah status, dan tidak tampil bagi siswa (`05` BR-STS-07). |
+| Daftar presensi rombel | Tampilan status setiap siswa satu rombel pada satu tanggal, beserta sumber datanya dan tindakan sesuai hak (`04` FS-LAP-02). |
+| Kelompok dispensasi | Sekumpulan data dispensasi yang dibuat dari satu input massal. Keputusannya dapat diubah per siswa atau sekaligus satu kelompok (`05` BR-IZN-05, BR-IZN-09). |
+| Scan bertanda | Scan yang ditandai server saat sinkron untuk ditinjau, misalnya karena jam laptop tidak wajar (`05` BR-SCN-08). |
+| Status stasiun | Keadaan setiap stasiun scan yang tampil di panel: waktu kontak dan sinkron terakhir, serta jumlah scan belum tersinkron (`04` FS-KIO-05). |
 | Pengajuan izin/sakit | Permohonan izin atau sakit dari siswa lewat portal, yang menunggu verifikasi staf. Siswa tidak dapat mengajukan dispensasi. |
 | Tahun ajaran | Periode akademik sekolah, umumnya Juli–Juni, terdiri dari dua semester. |
 | Rombel | Rombongan belajar: kelompok kelas tempat siswa terdaftar pada satu tahun ajaran, misalnya 7A. Label di antarmuka ditetapkan di Session 7. |
@@ -285,6 +290,7 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Ambang pengaman | Persentase minimal siswa wajib hadir yang tercatat masuk agar pesan "tidak hadir" dibuat otomatis. Di bawah ambang, pesan ditahan sampai dilepas atau dibatalkan guru piket atau admin. Default 50%. |
 | Template pesan | Teks pesan per jenis kejadian notifikasi, dengan isian otomatis seperti nama siswa dan jam. |
 | R1 / R2 / R3 | Tahap rilis versi pertama (lihat §6.1). |
+| Spesifikasi fitur | Rincian satu kemampuan utuh di `04`, ber-ID `FS-<MODUL>-<NN>`, beserta acceptance criteria rinci ber-ID `AC-<MODUL>-<NN>-<NN>`. |
 | Session 1–11 | Tahap diskusi discovery untuk menyusun dokumentasi (lihat §10.2). Tidak sama dengan sesi masuk/pulang. |
 
 ## 10. Peta dokumen dan progres
@@ -293,12 +299,12 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 
 | Dokumen | Isi | Sesi | Status |
 |---|---|---|---|
-| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–4 | Draft 0.3 |
-| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–4 | Draft 0.3 |
-| `02-user-roles-and-permissions.md` | Role dan permission | Session 3–4 | Draft 0.2 |
-| `03-user-flow.md` | Alur pengguna | Session 3–4 | Draft 0.2 |
-| `04-feature-specification.md` | Spesifikasi fitur rinci | Session 4b | Belum dibuat |
-| `05-business-rules.md` | Aturan bisnis | Session 4 | Draft 0.1 |
+| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–4b | Draft 0.4 |
+| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–4b | Draft 0.4 |
+| `02-user-roles-and-permissions.md` | Role dan permission | Session 3–4b | Draft 0.3 |
+| `03-user-flow.md` | Alur pengguna | Session 3–4b | Draft 0.3 |
+| `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b | Draft 0.1 |
+| `05-business-rules.md` | Aturan bisnis | Session 4–4b | Draft 0.2 |
 | `06-database-design.md` | Desain database | Session 5 | Belum dibuat |
 | `07-system-architecture.md` | Arsitektur sistem | Session 6 | Belum dibuat |
 | `08-ui-ux-design-system.md` | Sistem desain UI/UX | Session 7 | Belum dibuat |
@@ -317,9 +323,9 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | 1 | Project Discovery | Selesai |
 | 2 | Product & Feature Definition | Selesai; dokumen direview di Session 3 |
 | 3 | User Roles & User Flow | Selesai; usulan di `02` dan `03` ditinjau di Session 4 |
-| 4 | Business Rules | Selesai, menunggu review dokumen |
-| 4b | Feature Specification (`04`), lanjutan Session 4 sebelum Session 5 | Berikutnya |
-| 5 | Database Architecture | Belum |
+| 4 | Business Rules | Selesai; usulan yang berdampak ke R1 ditinjau di Session 4b |
+| 4b | Feature Specification (`04`), lanjutan Session 4 sebelum Session 5 | Selesai, menunggu review dokumen |
+| 5 | Database Architecture | Berikutnya |
 | 6 | System Architecture | Belum |
 | 7 | UI/UX & Design System | Belum |
 | 8 | Routes / Pages / API | Belum |
@@ -350,3 +356,4 @@ Aturan ini berlaku untuk AI atau developer yang mengerjakan kode di repository i
 | 0.1 | 2026-10-03 | Draft awal dari Session 1–2. |
 | 0.2 | 2026-10-03 | Hasil review dan keputusan Session 3. A-01, A-02, dan A-05 dikonfirmasi. OQ-01, OQ-02, dan OQ-14 terjawab; OQ-08 terjawab sebagian. OQ-15 dan OQ-16 ditambahkan. Aktor, glosarium (akun dan role), serta peta dokumen diperbarui. |
 | 0.3 | 2026-10-03 | Keputusan Session 4 (`05`). OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab; OQ-17 ditambahkan. Status Dispensasi ditambahkan, sehingga status harian menjadi enam. R-02, R-05, R-09, R-11, dan R-13 diperbarui; R-21 dan R-22 ditambahkan. Isi R1 dan glosarium (aturan jam, status, koreksi, mode darurat, batas mundur) diperbarui. `04` dijadwalkan di Session 4b. |
+| 0.4 | 2026-10-03 | Keputusan Session 4b (`04` §2). `04` dibuat. R-22 diperbarui (penanda menjadi DECISION). Glosarium ditambah: penanda, daftar presensi rombel, kelompok dispensasi, scan bertanda, status stasiun, dan spesifikasi fitur. Definisi presensi manual dan koreksi status diperbarui. Peta dokumen dan progres sesi diperbarui. Tidak ada OQ yang terjawab atau ditambahkan. |

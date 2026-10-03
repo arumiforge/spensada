@@ -2,11 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.2 (draft) |
+| Versi | 0.3 (draft) |
 | Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules). |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules) dan Session 4b (Feature Specification). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): ID requirement (`FR-*`, `NFR-*`). |
-| Dokumen terkait | [03-user-flow.md](03-user-flow.md), [05-business-rules.md](05-business-rules.md) |
+| Dokumen terkait | [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md) |
 
 Dokumen ini menetapkan jenis akun, role, cakupan data, dan hak akses setiap role. Dokumen ini menjawab OQ-02 dan OQ-14, serta sebagian OQ-08. Batas mundur (OQ-15) ditetapkan di `05` dan diterapkan pada cakupan di §5.
 
@@ -42,6 +42,17 @@ Keputusan Session 4 yang mengubah dokumen ini (rinciannya di `05`):
 | Dispensasi | Jenis ketiga izin/sakit, diinput oleh pemegang `HA-IZN-02`, dan langsung disetujui. | DECISION |
 | Ubah keputusan izin | Oleh staf yang berhak memverifikasi (`HA-IZN-06`). | DECISION |
 | Pesan WA yang ditahan | Admin dan guru piket melepas atau membatalkan pesan "tidak hadir" yang ditahan (`HA-WA-03`, R2). | DECISION |
+
+Keputusan Session 4b yang mengubah dokumen ini (rinciannya di `04` §2):
+
+| Topik | Perubahan | Status |
+|---|---|---|
+| Pembatalan presensi manual | Pemegang `HA-PRS-03` dapat membatalkan presensi manual dengan alasan, dalam cakupannya (`05` BR-KOR-11). | DECISION |
+| Hapus koreksi | Pemegang `HA-PRS-04` dapat menghapus koreksi dengan alasan, dalam cakupannya (`05` BR-KOR-08). | DECISION |
+| Ubah keputusan per kelompok | Pemegang `HA-IZN-06` dapat mengubah keputusan satu kelompok dispensasi massal sekaligus, bila semua siswanya berada dalam cakupannya. | DECISION |
+| Penanda | Pemegang `HA-LAP-02` dan `HA-LAP-03` melihat penanda di daftar nama, termasuk untuk tanggal lampau (`05` BR-STS-07). Siswa tidak melihat penanda. | DECISION |
+| Riwayat di portal siswa | Siswa melihat alasan koreksi dan catatan verifikasi, tanpa nama staf (`HA-LAP-04`). | DECISION |
+| Daftar presensi rombel per tanggal | Untuk hari ini memakai `HA-LAP-02`, dan untuk tanggal lain memakai `HA-LAP-03` (`04` FS-LAP-02). Tidak ada hak akses baru. | RECOMMENDATION |
 
 ## 2. Jenis akun
 
@@ -158,8 +169,8 @@ Cara membaca:
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | HA-PRS-01 | Atur aturan jam: pola mingguan dan jadwal khusus untuk tanggal mana pun | Ya | — | — | — | — | — | — | — | FR-PRS-02 | DECISION |
 | HA-PRS-02 | Kelola kalender sekolah, termasuk libur per tingkat atau rombel | Ya | — | — | — | — | — | — | — | FR-PRS-03 | DECISION |
-| HA-PRS-03 | Input presensi manual (per rombel hanya saat mode darurat) | Semua | — | Rombel | Hari ini | Semua | — | — | — | FR-PRS-06, FR-PRS-10 | DECISION |
-| HA-PRS-04 | Koreksi status presensi | Semua | — | Rombel | Hari ini | Semua | — | — | — | FR-PRS-07 | DECISION |
+| HA-PRS-03 | Input presensi manual (per rombel hanya saat mode darurat) dan pembatalannya | Semua | — | Rombel | Hari ini | Semua | — | — | — | FR-PRS-06, FR-PRS-10 | DECISION (pembatalan, Session 4b) |
+| HA-PRS-04 | Koreksi status presensi dan penghapusannya | Semua | — | Rombel | Hari ini | Semua | — | — | — | FR-PRS-07 | DECISION (penghapusan, Session 4b) |
 | HA-PRS-05 | Tutup sesi masuk dan sesi pulang, bila penutupan manual (OQ-07) | — | — | — | — | — | — | — | — | FR-PRS-08 | DEPRECATED (Session 4: sesi ditutup otomatis, `05` BR-JAM-07). Semula: admin dan guru piket. |
 | HA-PRS-06 | Lihat log perubahan presensi | Semua | — | Rombel | Hari ini | Semua | Semua | — | — | FR-PRS-07 | RECOMMENDATION |
 | HA-PRS-07 | Ubah jadwal hari ini, dengan alasan | Hari ini | — | — | Hari ini | — | — | — | — | FR-PRS-09 | DECISION (Session 4) |
@@ -175,7 +186,7 @@ Cara membaca:
 | HA-IZN-03 | Verifikasi pengajuan siswa (setujui atau tolak) | Semua | — | Rombel | Semua | Semua | — | — | — | FR-IZN-03 | DECISION |
 | HA-IZN-04 | Lihat daftar izin/sakit/dispensasi beserta keterangannya | Semua | — | Rombel | Semua | Semua | Semua | Sendiri | — | FR-IZN-04 | RECOMMENDATION |
 | HA-IZN-05 | Buka lampiran surat | Semua | — | Rombel | Semua | Semua | Semua | Sendiri | — | FR-IZN-05 | DECISION (pimpinan, Session 4); RECOMMENDATION (pembagian lainnya) |
-| HA-IZN-06 | Ubah keputusan: batalkan yang disetujui, perpendek rentang, atau ubah penolakan menjadi persetujuan, dengan alasan | Semua | — | Rombel | Semua | Semua | — | — | — | FR-IZN-06 | DECISION (Session 4) |
+| HA-IZN-06 | Ubah keputusan: batalkan yang disetujui, perpendek rentang, atau ubah penolakan menjadi persetujuan, dengan alasan. Untuk dispensasi massal, dapat diterapkan ke satu kelompok bila semua siswanya dalam cakupan. | Semua | — | Rombel | Semua | Semua | — | — | — | FR-IZN-06 | DECISION (Session 4; per kelompok, Session 4b) |
 
 Pimpinan dapat membuka lampiran (keputusan Session 4, mengganti usulan Session 3). Surat sakit termasuk data kesehatan (R-17). Perlu tidaknya mencatat setiap pembukaan lampiran ditinjau di Session 9 (OQ-17).
 
@@ -184,9 +195,9 @@ Pimpinan dapat membuka lampiran (keputusan Session 4, mengganti usulan Session 3
 | ID | Hak akses | Admin | Staf | Wali kelas | Guru piket | Guru BK | Pimpinan | Siswa | Stasiun | Rilis | Rujukan | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | HA-LAP-01 | Dashboard hari ini: angka per rombel | Ya | Ya | Ya | Ya | Ya | Ya | — | — | R1 | FR-LAP-01 | DECISION |
-| HA-LAP-02 | Dashboard hari ini: daftar nama siswa per status | Semua | — | Rombel | Semua | Semua | Semua | — | — | R1 | FR-LAP-01 | DECISION (staf dan wali kelas); RECOMMENDATION (guru piket, BK, pimpinan) |
-| HA-LAP-03 | Rekap per rombel untuk rentang tanggal | Semua | — | Rombel | — | Semua | Semua | — | — | R1 | FR-LAP-02 | RECOMMENDATION |
-| HA-LAP-04 | Riwayat kehadiran per siswa | Semua | — | Rombel | — | Semua | Semua | Sendiri | — | R1 | FR-LAP-03 | DECISION (siswa); RECOMMENDATION (staf) |
+| HA-LAP-02 | Dashboard hari ini: daftar nama siswa per status, beserta penanda | Semua | — | Rombel | Semua | Semua | Semua | — | — | R1 | FR-LAP-01 | DECISION (staf dan wali kelas); RECOMMENDATION (guru piket, BK, pimpinan) |
+| HA-LAP-03 | Rekap per rombel untuk rentang tanggal, dan daftar presensi rombel untuk tanggal selain hari ini | Semua | — | Rombel | — | Semua | Semua | — | — | R1 | FR-LAP-02 | RECOMMENDATION |
+| HA-LAP-04 | Riwayat kehadiran per siswa. Siswa melihat alasan koreksi dan catatan verifikasi tanpa nama staf. | Semua | — | Rombel | — | Semua | Semua | Sendiri | — | R1 | FR-LAP-03 | DECISION (siswa; isi riwayat di portal, Session 4b); RECOMMENDATION (staf) |
 | HA-LAP-05 | Export rekap ke XLSX, CSV, dan PDF | Semua | — | Rombel | — | Semua | Semua | — | — | R2 | FR-LAP-04 | RECOMMENDATION |
 | HA-LAP-06 | Buat flyer kehadiran | Ya | — | Rombel | — | — | Ya | — | — | R2 | FR-LAP-05 | RECOMMENDATION (ditinjau ulang bersama OQ-11) |
 
@@ -320,3 +331,4 @@ OQ-07 dan OQ-15 terjawab di Session 4: `HA-PRS-05` menjadi DEPRECATED, dan batas
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 3. |
 | 0.2 | 2026-10-03 | Keputusan Session 4 (`05`). Usulan slip akun, admin tidak membuka kiosk, dan status stasiun disetujui. Pimpinan dapat membuka lampiran. `HA-PRS-05` DEPRECATED. `HA-PRS-07` s.d. `HA-PRS-09`, `HA-IZN-06`, dan `HA-WA-03` ditambahkan. Dispensasi masuk ke hak IZN. Batas mundur diterapkan pada cakupan. Tugas petugas diperbarui. |
+| 0.3 | 2026-10-03 | Keputusan Session 4b (`04` §2). Tabel keputusan Session 4b ditambahkan di §1. `HA-PRS-03` (pembatalan presensi manual), `HA-PRS-04` (hapus koreksi), `HA-IZN-06` (per kelompok), `HA-LAP-02` (penanda), `HA-LAP-03` (daftar presensi rombel per tanggal), dan `HA-LAP-04` (isi riwayat di portal) diperjelas. |
