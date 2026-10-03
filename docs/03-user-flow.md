@@ -2,17 +2,17 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
+| Versi | 0.2 (draft) |
 | Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 3 (User Roles & User Flow) |
-| Bergantung pada | [00-project-overview.md](00-project-overview.md), [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md) |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules). |
+| Bergantung pada | [00-project-overview.md](00-project-overview.md), [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [05-business-rules.md](05-business-rules.md) |
 
 ## 1. Cara membaca dokumen ini
 
 - **ID.** Setiap alur memakai ID `UF-<NN>`. Pengecualian di dalam satu alur memakai `E<n>`. ID tidak pernah dinomori ulang.
 - **Isi alur.** Setiap alur berisi aktor, prasyarat, rujukan, alur utama, pengecualian, dan hasil.
 - **Rujukan.** Requirement dirujuk dengan ID `FR-*`/`NFR-*` dari `01`. Hak akses dirujuk dengan ID `HA-*` dari `02`. Pengguna hanya dapat menjalankan langkah yang sesuai hak dan cakupannya.
-- **Status.** Label status mengikuti `00`. Bila sebuah langkah bergantung pada aturan yang belum diputuskan, langkah itu menyebut OQ-nya. Contohnya jam masuk (OQ-03) dan cara menutup sesi (OQ-07). Aturan tersebut ditetapkan di Session 4 (`05-business-rules.md`).
+- **Status.** Label status mengikuti `00`. Aturan bisnis yang dipakai alur, seperti aturan jam, status harian, batas mundur, dan mode darurat, ditetapkan di `05` dan dirujuk dengan ID `BR-*`. Bila sebuah langkah masih bergantung pada pertanyaan terbuka, langkah itu menyebut OQ-nya.
 - **Tingkat rincian.** Dokumen ini menjelaskan urutan kerja dan keputusan pengguna. Tampilan layar ditetapkan di Session 7, dan route di Session 8.
 
 ## 2. Daftar alur
@@ -31,13 +31,13 @@
 | UF-10 | Scan masuk | Siswa, petugas | R1 |
 | UF-11 | Sinkron dan gangguan koneksi | Akun stasiun, petugas | R1 |
 | UF-12 | Presensi manual | Guru piket, wali kelas, guru BK, admin | R1 |
-| UF-13 | Menutup sesi masuk | Guru piket, admin, sistem | R1 |
+| UF-13 | Menutup sesi masuk | Sistem | R1 |
 | UF-14 | Scan pulang dan menutup sesi pulang | Siswa, petugas, guru piket | R1 |
 | UF-15 | Pantau dashboard hari ini | Semua akun staf | R1 |
 | UF-16 | Koreksi status presensi | Guru piket, wali kelas, guru BK, admin | R1 |
 | UF-17 | Pengajuan izin/sakit oleh siswa | Siswa | R1 |
 | UF-18 | Verifikasi pengajuan izin/sakit | Wali kelas, guru piket, guru BK, admin | R1 |
-| UF-19 | Input izin/sakit oleh staf | Wali kelas, guru piket, guru BK, admin | R1 |
+| UF-19 | Input izin/sakit/dispensasi oleh staf | Wali kelas, guru piket, guru BK, admin | R1 |
 | UF-20 | Login pertama dan ganti password | Staf, siswa | R1 |
 | UF-21 | Lupa password | Staf, siswa, wali kelas, admin | R1 |
 | UF-22 | Rekap rombel dan riwayat siswa | Staf sesuai cakupan, siswa | R1 (export R2) |
@@ -45,22 +45,28 @@
 | UF-24 | Flyer kehadiran | Staf sesuai hak | R2 |
 | UF-25 | Pengumuman dan halaman publik | Admin, siswa, publik | R3 |
 | UF-26 | Cetak kartu | Admin | R3 |
+| UF-27 | Mode darurat | Guru piket, admin, wali kelas, guru BK | R1 |
+| UF-28 | Ubah jadwal hari ini | Guru piket, admin | R1 |
+| UF-29 | Ubah keputusan izin/sakit/dispensasi | Wali kelas, guru piket, guru BK, admin | R1 |
 
 ## 3. Garis waktu satu hari sekolah
 
-Jam setiap tahap mengikuti aturan jam (OQ-03), dan cara menutup sesi mengikuti OQ-07.
+Jam di bawah adalah contoh hari Selasa di `05` §4.1. Semua jam memakai WIB, dan sesi ditutup otomatis (`05` BR-JAM-07).
 
 | Tahap | Yang terjadi | Pelaku | Alur |
 |---|---|---|---|
-| Sebelum sesi masuk | Laptop dinyalakan; kiosk memuat data terbaru dan menyesuaikan jam | Petugas | UF-09 |
-| Sesi masuk | Siswa scan masuk; kiosk menampilkan hasil dan menyinkronkan data | Siswa, petugas | UF-10, UF-11 |
-| Sesi masuk | Siswa yang lupa kartu atau kartunya rusak dicatat manual | Guru piket | UF-12 |
-| Lewat batas terlambat | Scan masuk berstatus Terlambat | Sistem | UF-10 |
-| Tutup sesi masuk | Siswa yang belum hadir menjadi Alpa | Guru piket atau sistem | UF-13 |
-| Jam pelajaran | Pengajuan, input, dan verifikasi izin/sakit; koreksi; pantauan | Siswa, staf | UF-15 s.d. UF-19 |
-| Sesi pulang | Siswa scan pulang | Siswa, petugas | UF-14 |
-| Tutup sesi pulang | Siswa tanpa scan pulang tercatat "tidak scan pulang" | Guru piket atau sistem | UF-14 |
+| Sebelum 06.00 (buka scan masuk) | Laptop dinyalakan; kiosk memuat data terbaru dan menyesuaikan jam | Petugas | UF-09 |
+| 06.00–07.59 (jendela masuk) | Siswa scan masuk; kiosk menampilkan hasil dan menyinkronkan data | Siswa, petugas | UF-10, UF-11 |
+| 06.00–07.59 (jendela masuk) | Siswa yang lupa kartu atau kartunya rusak dicatat manual | Guru piket | UF-12 |
+| Mulai 07.01 (lewat batas terlambat) | Scan masuk berstatus Terlambat | Sistem | UF-10 |
+| 08.00 (tutup sesi masuk) | Kiosk menolak scan masuk. Siswa yang belum hadir menjadi Alpa. Siswa yang tiba setelahnya dicatat manual oleh guru piket. | Sistem, guru piket | UF-13, UF-12 |
+| 09.00 (tutup sesi masuk + waktu tunda) | Di R2, pesan "tidak hadir" dibuat bila syaratnya terpenuhi | Sistem | UF-23 |
+| Jam pelajaran | Pengajuan, input, dan verifikasi izin/sakit/dispensasi; koreksi; pantauan; perubahan jadwal hari ini bila perlu | Siswa, staf | UF-15 s.d. UF-19, UF-28 |
+| 12.00–16.59 (jendela pulang) | Siswa scan pulang. Scan sebelum 13.00 tercatat pulang lebih awal. | Siswa, petugas | UF-14 |
+| 17.00 (tutup sesi pulang) | Siswa Hadir/Terlambat tanpa presensi pulang mendapat kejadian "tidak scan pulang" | Sistem | UF-14 |
 | Akhir hari | Petugas memastikan semua stasiun tersinkron, lalu laptop dimatikan | Petugas | UF-11 |
+
+Bila semua stasiun tidak dapat dipakai, guru piket mengaktifkan mode darurat (UF-27).
 
 ## 4. Penyiapan dan administrasi
 
@@ -68,13 +74,13 @@ Jam setiap tahap mengikuti aturan jam (OQ-03), dan cara menutup sesi mengikuti O
 
 - **Aktor:** admin.
 - **Prasyarat:** aplikasi terpasang dan akun admin pertama tersedia (Session 6).
-- **Rujukan:** FR-MD-01 s.d. FR-MD-08, FR-PRS-02, FR-PRS-03, FR-AKN-02, FR-AKN-03.
+- **Rujukan:** FR-MD-01 s.d. FR-MD-08, FR-PRS-02, FR-PRS-03, FR-PRS-11, FR-AKN-02, FR-AKN-03.
 
 Alur utama:
 
 1. Admin mengisi identitas sekolah: nama resmi, alamat, dan logo (`HA-MD-09`).
 2. Admin membuat tahun ajaran beserta semesternya, lalu menandainya sebagai aktif (`HA-MD-01`).
-3. Admin mengatur aturan jam (OQ-03) dan kalender sekolah (`HA-PRS-01`, `HA-PRS-02`).
+3. Admin mengatur pola mingguan, jadwal khusus yang sudah diketahui, kalender sekolah, dan batas mundur (`HA-PRS-01`, `HA-PRS-02`, `HA-PRS-09`, `05` §3, §4, dan §9).
 4. Admin membuat rombel untuk tahun ajaran aktif (`HA-MD-02`).
 5. Admin membuat akun staf untuk semua guru dan staf, lalu memberi role (UF-04).
 6. Admin menetapkan wali kelas setiap rombel (`HA-MD-02`).
@@ -161,7 +167,7 @@ Pengecualian:
 - **Aktor:** wali kelas untuk rombelnya; admin untuk semua rombel.
 - **Prasyarat:** siswa sudah ada di rombel.
 - **Rujukan:** FR-AKN-05, FR-AKN-06, `HA-AKN-05`, `HA-AKN-06`, `02` §7.2.
-- **Status:** DECISION (slip per rombel); RECOMMENDATION (mekanisme).
+- **Status:** DECISION (slip per rombel; mekanisme, Session 4).
 
 Alur utama:
 
@@ -260,8 +266,8 @@ Alur utama:
 
 1. Petugas menyalakan laptop dan membuka kiosk.
 2. Bila online, kiosk:
-   - memuat ulang data siswa aktif, foto yang berubah, aturan jam, dan kalender;
-   - mengukur selisih jam laptop terhadap jam server.
+   - memuat ulang data siswa aktif, foto yang berubah, aturan jam, dan kalender, termasuk libur per tingkat atau rombel;
+   - mengukur selisih jam laptop terhadap jam server (`05` BR-SCN-07).
 3. Kiosk menampilkan status siap: koneksi, waktu data terakhir dimuat, jumlah siswa, jumlah scan belum tersinkron, dan jam.
 4. Petugas memastikan pratinjau kamera tampil, dan scanner USB terpasang bila dipakai.
 
@@ -270,23 +276,25 @@ Pengecualian:
 - **E1** — Tidak ada internet: kiosk tetap dapat dipakai dengan data terakhir dimuat (FR-KIO-09), dan menampilkan kapan data itu dimuat. Batas umur data yang masih dianggap aman ditetapkan di Session 6.
 - **E2** — Kiosk belum pernah memuat data: scan belum dapat dilakukan. Laptop harus online sekali.
 - **E3** — Akun stasiun dinonaktifkan atau sesinya berakhir: kiosk meminta login ulang, dan petugas menghubungi admin.
-- **E4** — Hari ini bukan hari sekolah menurut kalender: kiosk menampilkan keterangannya. Perlakuan scan pada hari tersebut mengikuti OQ-03.
+- **E4** — Hari ini bukan hari sekolah menurut kalender: kiosk menampilkan keterangannya dan menolak semua scan (`05` BR-JAM-06).
 
 ### UF-10 — Scan masuk
 
 - **Aktor:** siswa; petugas mengawasi.
 - **Prasyarat:** kiosk siap (UF-09).
-- **Rujukan:** FR-KIO-02 s.d. FR-KIO-06, NFR-01, AC-01, R-02.
+- **Rujukan:** FR-KIO-02 s.d. FR-KIO-06, NFR-01, AC-01, R-02, `05` BR-JAM-03 s.d. BR-JAM-06, BR-SCN-01 s.d. BR-SCN-03.
 
 ```mermaid
 flowchart TD
-    A["QR terbaca dari webcam atau scanner USB"] --> B{"Hari sekolah dan dalam jam scan?"}
-    B -- Tidak --> B1["Tampilkan pesan sesuai aturan OQ-03"]
+    A["QR terbaca dari webcam atau scanner USB"] --> B{"Jam scan di jendela masuk<br/>atau jendela pulang hari ini?"}
+    B -- Tidak --> B1["Tolak: di luar jam scan atau bukan hari sekolah.<br/>Siswa diarahkan ke guru piket"]
     B -- Ya --> C{"NISN ada di data lokal?"}
     C -- Tidak --> C1["Tampilkan: tidak terdaftar.<br/>Siswa diarahkan ke guru piket"]
-    C -- Ya --> D{"Sudah tercatat untuk jenis presensi ini?"}
-    D -- Ya --> D1["Perlakuan scan ganda sesuai OQ-03"]
-    D -- Tidak --> E["Tentukan jenis presensi dan status<br/>dari jam laptop terkoreksi"]
+    C -- Ya --> L{"Hari sekolah bagi siswa ini?<br/>(tidak libur tingkat atau rombel)"}
+    L -- Tidak --> L1["Tolak: siswa sedang libur"]
+    L -- Ya --> D{"Sudah tercatat untuk jenis presensi ini?"}
+    D -- Ya --> D1["Tampilkan: sudah tercatat beserta jamnya.<br/>Scan tidak dicatat ulang"]
+    D -- Tidak --> E["Jenis presensi dari jendela scan;<br/>status dari batas terlambat atau jam pulang"]
     E --> F["Tampilkan foto, nama, rombel,<br/>jenis, status, dan jam, disertai bunyi"]
     F --> G["Simpan scan di laptop dengan ID unik<br/>sebagai belum tersinkron"]
     G --> H["Sinkron otomatis saat online (UF-11)"]
@@ -296,7 +304,7 @@ Alur utama:
 
 1. Siswa mendekatkan QR kartu OSIS ke webcam, atau ke scanner USB.
 2. Kiosk membaca NISN, lalu mencarinya di data lokal.
-3. Kiosk menentukan jenis presensi (masuk) dan status (Hadir atau Terlambat). Dasarnya adalah jam laptop yang sudah dikoreksi dan aturan jam (OQ-03).
+3. Kiosk menentukan jenis presensi (masuk) dari jendela scan, dan status (Hadir atau Terlambat) dari batas terlambat. Dasarnya adalah jam laptop yang sudah dikoreksi dan aturan jam hari itu (`05` BR-JAM-03, BR-JAM-04).
 4. Dalam paling lama 1 detik, layar menampilkan foto, nama, rombel, jenis presensi, status, dan jam, disertai bunyi (NFR-01). Siswa tidak perlu menekan apa pun.
 5. Kiosk menyimpan scan di laptop dengan ID unik, dan penghitung scan belum tersinkron bertambah satu.
 6. Petugas mencocokkan foto di layar dengan wajah siswa (R-02).
@@ -305,15 +313,18 @@ Alur utama:
 Pengecualian:
 
 - **E1** — NISN tidak ada di data lokal: kiosk menampilkan pesan yang jelas dengan bunyi berbeda, dan scan tidak dicatat sebagai presensi (RECOMMENDATION). Siswa diarahkan ke guru piket. Bila siswa ternyata baru ditambahkan, petugas memuat ulang data di kiosk.
-- **E2** — Siswa sudah tercatat (scan ganda): perlakuannya mengikuti OQ-03. Kiosk menampilkan bahwa siswa sudah tercatat beserta jamnya (RECOMMENDATION).
+- **E2** — Siswa sudah tercatat (scan ganda): scan pertama yang berlaku. Kiosk menampilkan bahwa siswa sudah tercatat beserta jamnya dengan bunyi berbeda, dan scan tidak dicatat ulang (DECISION, `05` BR-SCN-03).
 - **E3** — QR tidak terbaca, kartu rusak, atau siswa lupa kartu: siswa menemui guru piket untuk presensi manual (UF-12).
 - **E4** — Foto di layar tidak cocok dengan wajah siswa (dugaan kartu titipan atau palsu):
   1. Petugas menahan siswa dan melapor ke guru piket.
-  2. Guru piket mengoreksi presensi pemilik kartu (UF-16) dengan alasan yang jelas.
+  2. Guru piket mengoreksi status pemilik kartu menjadi Tidak hadir (UF-16) dengan alasan yang jelas.
   3. Tindak lanjut disiplin berada di luar sistem.
 
-  Penerimaan risiko ini mengikuti OQ-06.
+  Risiko ini diterima. Pengamannya adalah pengawasan petugas, tanpa pemblokiran kartu (DECISION, OQ-06, `05` BR-SCN-09).
 - **E5** — Siswa nonaktif: data lokal hanya berisi siswa aktif, sehingga perlakuannya sama dengan E1.
+- **E6** — Scan setelah jam tutup sesi masuk ("gerbang ditutup"): kiosk menolak dengan pesan "sesi masuk sudah ditutup, temui guru piket". Siswa sudah berstatus Alpa, dan guru piket menggantinya lewat presensi manual (UF-12). (DECISION, `05` BR-JAM-08)
+- **E7** — Scan di luar jendela lain, misalnya sebelum jam buka scan masuk atau di antara jendela masuk dan jendela pulang: kiosk menolak dan mengarahkan siswa ke guru piket (DECISION, `05` BR-JAM-06).
+- **E8** — Siswa sedang libur (libur tingkat atau rombel): kiosk menolak scan (DECISION, `05` BR-JAM-06).
 
 Hasil: scan tersimpan di laptop dan siap disinkronkan.
 
@@ -337,74 +348,82 @@ Pengecualian:
   - sinkron berjalan otomatis saat koneksi kembali.
 - **E2** — Petugas ingin memastikan data terkirim: petugas menekan tombol sinkron manual.
 - **E3** — Laptop atau browser dibuka ulang tanpa internet: kiosk tetap terbuka dari cache. Scan yang belum tersinkron tetap ada (NFR-03).
-- **E4** — Server menandai scan karena jam tidak wajar, misalnya tanggal tidak sesuai atau jam di masa depan (FR-KIO-11): scan tersebut masuk daftar tinjauan (`HA-KIO-03`). Aturan penerimaannya ditetapkan di Session 4.
+- **E4** — Server menandai scan karena jam tidak wajar, misalnya jam di masa depan atau jam laptop berubah (FR-KIO-11): scan tersebut masuk daftar tinjauan (`HA-KIO-03`), dan peninjau menerima atau menolaknya. Keadaan yang ditandai, dan apakah scan dipakai selama belum ditinjau, ada di `05` BR-SCN-08.
 - **E5** — Akhir hari dengan penghitung lebih dari nol dan tanpa internet:
   - laptop boleh dimatikan, karena data tetap tersimpan;
   - petugas melapor ke guru piket;
   - sinkron berjalan saat laptop online kembali.
 
-  Selama itu, status siswa yang terdampak dapat keliru sementara, dan notifikasi "tidak hadir" (R2) tertunda (FR-WA-07).
+  Selama itu, status siswa yang terdampak dapat keliru sementara. Notifikasi "tidak hadir" (R2) tertunda selama stasiun melaporkan scan belum tersinkron, dan ditahan bila jumlah siswa tercatat masuk di bawah ambang pengaman (FR-WA-07, FR-WA-08).
+- **E6** — Scan tersinkron setelah tanggal berganti: status tanggal itu tetap dikoreksi, tetapi tidak menghasilkan notifikasi (`05` BR-WA-01).
 
 Hasil: semua scan tersimpan di server tepat satu kali.
 
 ### UF-12 — Presensi manual
 
 - **Aktor:** guru piket untuk hari berjalan; wali kelas untuk rombelnya; guru BK; admin.
-- **Rujukan:** FR-PRS-06, `HA-PRS-03`, `HA-MD-05`.
+- **Rujukan:** FR-PRS-06, `HA-PRS-03`, `HA-MD-05`, `05` §7.
 
 Alur utama:
 
-1. Siswa menemui guru piket, misalnya karena lupa kartu, kartunya rusak, QR tidak terbaca, atau kiosk terganggu.
+1. Siswa menemui guru piket, misalnya karena lupa kartu, kartunya rusak, QR tidak terbaca, kiosk terganggu, atau tiba setelah sesi masuk ditutup.
 2. Guru piket membuka presensi manual di panel, lalu mencari siswa berdasarkan nama, NISN, atau rombel.
 3. Panel menampilkan foto siswa untuk dicocokkan.
-4. Guru piket memilih jenis presensi (masuk atau pulang). Jamnya default jam sekarang dan dapat diubah dalam hari yang sama, misalnya bila kiosk sempat mati.
-5. Guru piket memilih alasan dan dapat menambah catatan. Alasan wajib diisi.
-6. Sistem menghitung status dari jam yang diisi (OQ-03), lalu menyimpan presensi dengan penanda "manual" dan nama penginput.
+4. Guru piket memilih jenis presensi (masuk atau pulang). Jamnya default jam sekarang dan dapat diubah dalam hari yang sama, misalnya bila kiosk sempat mati. Jam boleh berada di luar jendela scan (`05` BR-KOR-02).
+5. Guru piket memilih alasan dan dapat menambah catatan. Alasan wajib diisi (`05` BR-KOR-04).
+6. Sistem menghitung status dari jam yang diisi, lalu menyimpan presensi dengan penanda "manual" dan nama penginput. Contohnya siswa yang tiba pukul 08.10 setelah sesi masuk ditutup berstatus Terlambat, dan Alpa-nya terganti.
 7. Sistem mencatat perubahan ini di log perubahan presensi.
 
 Pengecualian:
 
 - **E1** — Siswa sudah memiliki presensi masuk hari itu: sistem menampilkan presensi yang ada. Perubahannya dilakukan lewat koreksi (UF-16).
-- **E2** — Tanggal lampau: hanya wali kelas (rombelnya), guru BK, dan admin yang dapat menginput, dalam batas mundur OQ-15.
-- **E3** — Semua stasiun tidak dapat dipakai: presensi manual satu per satu tidak cukup untuk ratusan siswa. Prosedur daruratnya ditetapkan di Session 4 (OQ-16).
+- **E2** — Tanggal lampau: hanya wali kelas (rombelnya), guru BK, dan admin yang dapat menginput, dalam batas mundur (hari ini dan 7 hari kalender sebelumnya). Admin tidak dibatasi (`05` §9).
+- **E3** — Semua stasiun tidak dapat dipakai: guru piket mengaktifkan mode darurat, dan presensi dicatat per rombel (UF-27). Di luar mode darurat, presensi manual dicatat satu per satu (`05` BR-KOR-05).
+- **E4** — Siswa sudah memiliki koreksi status pada tanggal itu: presensi manual tidak mengubah status, karena koreksi menang (`05` BR-STS-04). Perubahannya dilakukan lewat koreksi (UF-16).
+- **E5** — Siswa memiliki izin/sakit/dispensasi yang disetujui pada tanggal itu: presensi tetap tersimpan, tetapi status mengikuti izin (`05` BR-STS-03). Bila siswa memang hadir, staf membatalkan izinnya (UF-29).
 
 ### UF-13 — Menutup sesi masuk
 
-- **Aktor:** guru piket atau admin bila penutupan manual; sistem bila otomatis (OQ-07).
-- **Rujukan:** FR-PRS-05, FR-PRS-08, FR-KIO-12, FR-WA-07, `HA-PRS-05`, `HA-KIO-02`, AC-03, R-13.
+- **Aktor:** sistem.
+- **Rujukan:** FR-PRS-05, FR-PRS-08, FR-KIO-12, FR-WA-07, FR-WA-08, `HA-KIO-02`, AC-03, R-13, R-21, `05` BR-JAM-07, BR-JAM-08.
+- **Status:** DECISION (penutupan otomatis, OQ-07).
 
-Alur utama, bila penutupan manual:
+Alur utama:
 
-1. Setelah sesi masuk berakhir (OQ-03), guru piket membuka status stasiun.
-2. Guru piket memastikan semua stasiun sudah tersinkron: penghitung nol dan sinkron terakhir baru saja terjadi.
-3. Guru piket menekan "tutup sesi masuk".
-4. Siswa tanpa scan masuk dan tanpa izin/sakit yang disetujui berubah dari "belum hadir" menjadi Alpa. Dashboard ikut diperbarui.
-5. Di R2, notifikasi "tidak hadir" dibuat bila jenis notifikasi itu aktif (FR-WA-07).
-
-Bila penutupan otomatis, sistem menutup sesi pada jam yang diatur admin. Hasilnya sama dengan langkah 4–5.
+1. Pada jam tutup sesi masuk, sesi masuk tertutup otomatis. Tidak ada tombol tutup sesi.
+2. Kiosk menolak scan masuk dengan pesan "sesi masuk sudah ditutup, temui guru piket", termasuk saat offline.
+3. Siswa tanpa presensi masuk dan tanpa izin/sakit/dispensasi yang disetujui berubah dari "belum hadir" menjadi Alpa. Dashboard ikut diperbarui.
+4. Siswa yang tiba setelahnya menemui guru piket, yang mencatat presensi manual beserta alasan (UF-12). Statusnya menjadi Terlambat.
+5. Di R2, pesan "tidak hadir" dibuat setelah waktu tunda (default 60 menit) bila semua syaratnya terpenuhi (`05` BR-WA-02).
 
 Pengecualian:
 
 - **E1** — Ada stasiun yang belum tersinkron:
-  - guru piket menunda penutupan, atau meminta petugas menekan sinkron manual;
-  - status Alpa dihitung saat data ditampilkan (FR-PRS-05), sehingga scan yang tersinkron setelah sesi ditutup tetap mengoreksi status;
-  - dampaknya ke notifikasi yang sudah terkirim dibahas di Session 4.
+  - petugas menekan sinkron manual bila stasiun online;
+  - status selalu dapat dihitung ulang (`05` BR-STS-06), sehingga scan yang tersinkron setelah sesi ditutup tetap mengoreksi Alpa;
+  - pesan "tidak hadir" menunggu sampai tidak ada stasiun yang melaporkan scan belum tersinkron (FR-WA-07);
+  - pesan yang sudah terkirim tidak dikoreksi (`05` BR-WA-04).
+- **E2** — Mode darurat aktif: Alpa tidak terbentuk sampai mode darurat diakhiri (UF-27).
+- **E3** — Jumlah siswa yang tercatat masuk di bawah ambang pengaman, misalnya karena internet sekolah mati sepanjang pagi: pesan "tidak hadir" ditahan, dan panel admin serta guru piket menampilkan peringatan. Guru piket atau admin melepas atau membatalkan pesan setelah memeriksa (FR-WA-08).
+- **E4** — Jam tutup hari ini perlu diundur, misalnya karena hujan deras: guru piket mengubah jadwal hari ini (UF-28).
 
 ### UF-14 — Scan pulang dan menutup sesi pulang
 
-- **Aktor:** siswa dan petugas; guru piket atau sistem untuk penutupan sesi.
-- **Rujukan:** FR-PRS-01, FR-PRS-08, `HA-PRS-05`.
+- **Aktor:** siswa dan petugas; sistem untuk penutupan sesi.
+- **Rujukan:** FR-PRS-01, FR-PRS-08, `05` BR-JAM-05, BR-JAM-09, BR-STS-05.
 
 Alur utama:
 
-1. Pada sesi pulang, siswa scan di stasiun yang sama di gerbang utama. Alurnya sama dengan UF-10, dengan jenis presensi "pulang".
-2. Kiosk menentukan jenis presensi dari jam scan dan aturan jam (OQ-03).
-3. Sesi pulang ditutup dengan cara yang sama seperti UF-13. Siswa yang hadir tetapi tidak scan pulang tercatat dengan kejadian "tidak scan pulang".
+1. Pada jendela pulang, siswa scan di stasiun yang sama di gerbang utama. Alurnya sama dengan UF-10, dengan jenis presensi "pulang".
+2. Kiosk menentukan jenis presensi dari jendela scan. Scan sebelum jam pulang tercatat dengan kejadian "pulang lebih awal".
+3. Pada jam tutup sesi pulang, sesi pulang tertutup otomatis. Siswa berstatus Hadir atau Terlambat yang tidak memiliki presensi pulang mendapat kejadian "tidak scan pulang".
 
 Pengecualian:
 
-- **E1** — Scan sebelum jam pulang tercatat dengan kejadian "pulang lebih awal". Apakah kejadian ini memerlukan izin, dan bagaimana dampaknya ke status harian, mengikuti OQ-03.
-- **E2** — Siswa pulang lebih awal karena sakit atau izin yang diketahui sekolah: dicatat lewat UF-19 atau UF-12. Aturannya ditetapkan di Session 4.
+- **E1** — Pulang lebih awal tidak memerlukan izin di kiosk, dan tidak mengubah status harian (DECISION, `05` BR-JAM-05). Kejadian ini tampil di riwayat dan rekap.
+- **E2** — Siswa pulang lebih awal di luar jendela pulang, misalnya pukul 10.00 karena sakit: guru piket mencatat presensi manual pulang dengan alasan (UF-12). Bila sekolah menetapkan hari itu sebagai Sakit atau Izin, staf menginput izin/sakit (UF-19). Karena izin/sakit yang disetujui menang, status hari itu menjadi Sakit atau Izin (`05` BR-STS-03).
+- **E3** — Scan pulang tanpa presensi masuk: scan tetap dicatat, tetapi siswa tidak menjadi Hadir. Dashboard menandai keadaan ini untuk ditindaklanjuti (`05` BR-SCN-10, BR-STS-07).
+- **E4** — Hari yang memakai mode darurat: kejadian "tidak scan pulang" tidak dibuat (`05` BR-DRT-07).
 
 ### UF-15 — Pantau dashboard hari ini
 
@@ -414,58 +433,108 @@ Pengecualian:
 Alur utama:
 
 1. Staf login. Halaman awalnya adalah dashboard hari ini.
-2. Dashboard menampilkan jumlah hadir, terlambat, izin, sakit, dan belum hadir/Alpa per rombel.
+2. Dashboard menampilkan jumlah hadir, terlambat, izin, sakit, dispensasi, dan belum hadir/Alpa per rombel. Bila mode darurat aktif, dashboard menampilkan tandanya.
 3. Bila hak dan cakupannya mengizinkan, staf membuka satu rombel untuk melihat daftar nama siswa per status:
    - guru piket, guru BK, pimpinan, dan admin: semua rombel;
    - wali kelas: rombelnya sendiri;
    - staf tanpa tugas khusus: hanya angka.
-4. Data diperbarui seiring sinkron dari stasiun. Cara penyegarannya ditetapkan di Session 6 dan 7.
+4. Daftar nama menandai siswa berstatus Izin, Sakit, atau Dispensasi yang ternyata memiliki presensi masuk, dan siswa yang memiliki presensi pulang tanpa presensi masuk (RECOMMENDATION, `05` BR-STS-07).
+5. Data diperbarui seiring sinkron dari stasiun. Cara penyegarannya ditetapkan di Session 6 dan 7.
 
 ### UF-16 — Koreksi status presensi
 
 - **Aktor:** guru piket untuk hari berjalan; wali kelas untuk rombelnya; guru BK; admin.
-- **Rujukan:** FR-PRS-07, `HA-PRS-04`, `HA-PRS-06`.
+- **Rujukan:** FR-PRS-07, `HA-PRS-04`, `HA-PRS-06`, `05` §6 dan §7.
 
 Alur utama:
 
 1. Staf membuka daftar presensi rombel pada satu tanggal, atau riwayat satu siswa.
-2. Staf memilih tanggal dan status baru, lalu mengisi alasan. Alasan wajib diisi.
-3. Sistem menyimpan perubahan dan mencatatnya di log perubahan presensi: siapa, kapan, nilai lama, nilai baru, dan alasan.
-4. Dashboard dan rekap langsung mengikuti status baru.
+2. Staf memilih tanggal dan kehadiran baru (Hadir, Terlambat, atau Tidak hadir), lalu mengisi alasan. Alasan wajib diisi. Contohnya Tidak hadir karena kartu dititipkan, atau Hadir karena terlambat dengan surat dokter.
+3. Sistem menyimpan koreksi dan mencatatnya di log perubahan presensi: siapa, kapan, nilai lama, nilai baru, dan alasan.
+4. Dashboard dan rekap langsung mengikuti status baru. Koreksi Tidak hadir menghasilkan Alpa, kecuali ada izin/sakit/dispensasi yang disetujui.
+5. Koreksi tidak berubah oleh scan atau presensi manual yang datang belakangan, termasuk scan dari stasiun yang terlambat sinkron (DECISION, `05` BR-STS-04).
 
 Pengecualian:
 
-- **E1** — Tanggal di luar cakupan staf, misalnya guru piket mengoreksi tanggal kemarin, atau tanggal melewati batas mundur (OQ-15): sistem menolak.
-- **E2** — Koreksi menjadi Izin atau Sakit: dilakukan lewat input izin/sakit (UF-19), bukan lewat koreksi status. Dengan begitu data izin/sakit tetap satu sumber. (RECOMMENDATION; prioritas data mengikuti OQ-04)
+- **E1** — Tanggal di luar cakupan staf, misalnya guru piket mengoreksi tanggal kemarin, atau tanggal melewati batas mundur (hari ini dan 7 hari kalender sebelumnya): sistem menolak. Admin tidak dibatasi batas mundur.
+- **E2** — Koreksi menjadi Izin, Sakit, atau Dispensasi: dilakukan lewat input izin/sakit/dispensasi (UF-19), bukan lewat koreksi status. Dengan begitu datanya tetap satu sumber. (DECISION, `05` BR-KOR-07)
+- **E3** — Siswa memiliki izin/sakit/dispensasi yang disetujui pada tanggal itu: koreksi tetap dapat disimpan, tetapi status mengikuti izin. Sistem memberi peringatan sebelum menyimpan. (RECOMMENDATION, `05` BR-KOR-09)
+- **E4** — Koreksi perlu dibatalkan: staf menghapus koreksi dengan alasan, dan status dihitung lagi dari presensi (RECOMMENDATION, `05` BR-KOR-08).
 
-## 6. Izin dan sakit
+### UF-27 — Mode darurat
 
-Status pengajuan izin/sakit:
+- **Aktor:** guru piket atau admin untuk mengaktifkan dan mengakhiri; wali kelas, guru piket, guru BK, dan admin untuk presensi per rombel.
+- **Prasyarat:** hari ini hari sekolah, dan semua stasiun scan tidak dapat dipakai.
+- **Rujukan:** FR-PRS-06, FR-PRS-10, `HA-PRS-03`, `HA-PRS-08`, R-21, `05` §10.
+- **Status:** DECISION (OQ-16).
+
+Alur utama:
+
+1. Guru piket memastikan semua stasiun memang tidak dapat dipakai, misalnya listrik padam lama atau laptop rusak. Internet putus bukan alasan, karena kiosk tetap bekerja offline.
+2. Guru piket mengaktifkan mode darurat untuk hari ini dan mengisi alasan.
+3. Dashboard menampilkan tanda mode darurat. Siswa tanpa presensi tetap "belum hadir" walaupun sesi masuk sudah ditutup, dan pesan "tidak hadir" (R2) ditahan.
+4. Wali kelas atau guru piket membuka presensi per rombel, yang berisi siswa rombel itu yang belum memiliki presensi masuk.
+5. Staf mencentang siswa yang hadir dan menandai siswa yang terlambat, lalu menyimpan. Sistem mencatat presensi manual masuk dengan alasan "darurat", berstatus Hadir atau Terlambat sesuai pilihan staf.
+6. Setelah semua rombel tercatat, guru piket mengakhiri mode darurat. Siswa tanpa presensi dan tanpa izin/sakit/dispensasi menjadi Alpa.
+7. Di R2, waktu tunda pesan "tidak hadir" dihitung sejak mode darurat diakhiri (`05` BR-DRT-06).
+
+Pengecualian:
+
+- **E1** — Stasiun kembali berfungsi: scan berjalan normal sesuai jendela scan. Presensi per rombel tetap tersedia sampai mode darurat diakhiri.
+- **E2** — Mode darurat tidak diakhiri: mode berakhir otomatis pukul 23.59 WIB, dan pesan "tidak hadir" hari itu tidak dikirim.
+- **E3** — Ada rombel yang belum tercatat sampai hari berganti: wali kelas mencatat presensi manual satu per satu dalam batas mundur (UF-12).
+- **E4** — Pada hari yang memakai mode darurat, kejadian "tidak scan pulang" tidak dibuat (`05` BR-DRT-07).
+
+Hasil: kehadiran hari itu tetap tercatat, tanpa Alpa dan pesan "tidak hadir" yang keliru secara massal.
+
+### UF-28 — Ubah jadwal hari ini
+
+- **Aktor:** guru piket, admin.
+- **Rujukan:** FR-PRS-09, `HA-PRS-07`, `05` BR-JAM-02, BR-JAM-10, BR-JAM-11.
+- **Status:** DECISION.
+
+Alur utama:
+
+1. Terjadi keadaan yang mengubah jam hari ini, misalnya hujan deras di pagi hari atau rapat guru di siang hari.
+2. Guru piket membuka jadwal hari ini, lalu mengubah jamnya. Contohnya batas terlambat menjadi 07.30, atau jam pulang menjadi 11.00. Alasan wajib diisi.
+3. Sistem menyimpan perubahan sebagai jadwal khusus hari ini, mencatatnya di log, dan menghitung ulang status hari ini.
+4. Stasiun yang online memuat aturan baru. Stasiun yang offline memakai aturan lama sampai online kembali, tetapi server tetap menghitung status dengan aturan baru.
+
+Pengecualian:
+
+- **E1** — Guru piket ingin mengubah tanggal lain, mengubah pola mingguan, atau menjadikan hari ini libur: tidak bisa. Hal tersebut dilakukan admin (`HA-PRS-01`, `HA-PRS-02`).
+- **E2** — Perubahan membuat urutan jam tidak valid, misalnya batas terlambat melewati jam tutup sesi masuk: sistem menolak (`05` BR-JAM-02).
+
+## 6. Izin, sakit, dan dispensasi
+
+Status data izin/sakit/dispensasi:
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Menunggu: siswa mengajukan
+    [*] --> Menunggu: siswa mengajukan izin atau sakit
     [*] --> Disetujui: staf menginput langsung
     Menunggu --> Disetujui: staf menyetujui
     Menunggu --> Ditolak: staf menolak
     Menunggu --> Dibatalkan: siswa membatalkan
+    Disetujui --> Dibatalkan: staf membatalkan (UF-29)
+    Ditolak --> Disetujui: staf mengubah keputusan (UF-29)
     Disetujui --> [*]
     Ditolak --> [*]
     Dibatalkan --> [*]
 ```
 
-Hanya izin/sakit yang disetujui yang memengaruhi status presensi (FR-IZN-03). Perubahan keputusan setelah verifikasi dibahas di Session 4.
+Hanya data yang disetujui yang memengaruhi status presensi, dan data yang disetujui menang atas presensi masuk (FR-IZN-03, `05` BR-STS-03). Dispensasi hanya diinput staf, sehingga selalu dimulai dari status disetujui. Perubahan keputusan setelah verifikasi mengikuti UF-29.
 
 ### UF-17 — Pengajuan izin/sakit oleh siswa
 
 - **Aktor:** siswa.
-- **Rujukan:** FR-IZN-01, FR-IZN-04, `HA-IZN-01`.
+- **Rujukan:** FR-IZN-01, FR-IZN-04, `HA-IZN-01`, `05` BR-IZN-03.
 
 Alur utama:
 
 1. Siswa login ke portal, lalu memilih "ajukan izin/sakit".
 2. Siswa mengisi pengajuan:
-   - jenis: Izin atau Sakit;
+   - jenis: Izin atau Sakit (siswa tidak dapat mengajukan Dispensasi);
    - tanggal, atau rentang tanggal;
    - keterangan;
    - lampiran surat, bila ada (opsional).
@@ -478,9 +547,9 @@ Alur utama:
 Pengecualian:
 
 - **E1** — Rentang tanggal mencakup hari libur: hanya hari sekolah yang terdampak.
-- **E2** — Tanggal yang diajukan sudah lewat: apakah boleh, dan sampai berapa hari ke belakang, mengikuti OQ-15.
-- **E3** — Tanggal yang diajukan tumpang tindih dengan pengajuan lain yang masih menunggu atau sudah disetujui: sistem menolak (RECOMMENDATION; detail di Session 9).
-- **E4** — Siswa sudah scan masuk pada tanggal tersebut: prioritasnya mengikuti OQ-04.
+- **E2** — Tanggal yang diajukan sudah lewat: boleh, selama masih dalam batas mundur (hari ini dan 7 hari kalender sebelumnya). Lebih dari itu, sistem menolak, dan tanggal tersebut hanya dapat diubah admin. (DECISION, OQ-15)
+- **E3** — Tanggal yang diajukan tumpang tindih dengan data izin/sakit/dispensasi lain yang masih menunggu atau sudah disetujui: sistem menolak (RECOMMENDATION; detail di Session 9).
+- **E4** — Siswa sudah memiliki presensi masuk pada tanggal tersebut: bila pengajuan disetujui, status menjadi Izin atau Sakit, karena izin/sakit yang disetujui menang (DECISION, `05` BR-STS-03).
 
 Catatan: bila siswa tidak dapat mengakses portal, orang tua menghubungi sekolah, lalu staf mencatatnya lewat UF-19.
 
@@ -494,33 +563,59 @@ Alur utama:
 1. Staf membuka daftar pengajuan yang menunggu, sesuai cakupannya.
 2. Staf membuka detail pengajuan dan lampirannya.
 3. Staf menyetujui atau menolak dengan catatan. Catatan wajib diisi saat menolak (RECOMMENDATION).
-4. Bila disetujui, status presensi siswa pada tanggal tersebut otomatis menjadi Izin atau Sakit, tanpa langkah tambahan. Ini juga berlaku bila status sebelumnya sudah Alpa.
-5. Bila ditolak, status presensi tetap mengikuti scan. Tanpa scan, statusnya Alpa.
+4. Bila disetujui, status presensi siswa pada tanggal tersebut otomatis menjadi Izin atau Sakit, tanpa langkah tambahan. Ini juga berlaku bila status sebelumnya Alpa, Hadir, atau Terlambat (`05` BR-STS-03).
+5. Bila ditolak, status presensi tetap mengikuti koreksi atau presensi masuk. Tanpa keduanya, statusnya Alpa.
 6. Siswa melihat hasil verifikasi beserta catatannya.
 
 Pengecualian:
 
 - **E1** — Dua staf memverifikasi pengajuan yang sama pada waktu bersamaan: keputusan yang tersimpan lebih dulu berlaku. Staf kedua mendapat pesan bahwa pengajuan sudah diverifikasi, beserta nama verifikatornya. (RECOMMENDATION)
+- **E2** — Tanggal pengajuan sudah melewati batas mundur saat diverifikasi: pengajuan tetap dapat diverifikasi, karena diajukan saat masih dalam batas (RECOMMENDATION, `05` BR-IZN-10).
+- **E3** — Keputusan perlu diubah setelah diverifikasi: lihat UF-29.
 
-### UF-19 — Input izin/sakit oleh staf
+### UF-19 — Input izin/sakit/dispensasi oleh staf
 
 - **Aktor:** wali kelas untuk rombelnya; guru piket; guru BK; admin.
-- **Rujukan:** FR-IZN-02, `HA-IZN-02`.
+- **Rujukan:** FR-IZN-02, FR-IZN-07, `HA-IZN-02`, `05` BR-IZN-04, BR-IZN-05.
 
 Alur utama:
 
-1. Sekolah menerima kabar izin atau sakit dari orang tua, misalnya lewat telepon, surat, atau pesan ke wali kelas. Kabar itu juga bisa datang dari surat yang dibawa siswa.
+1. Sekolah menerima kabar izin atau sakit dari orang tua, misalnya lewat telepon, surat, atau pesan ke wali kelas. Kabar itu juga bisa datang dari surat yang dibawa siswa. Untuk dispensasi, sumbernya adalah tugas atau kegiatan resmi sekolah, misalnya lomba atau study tour.
 2. Staf mencari siswa, lalu mengisi:
-   - jenis;
+   - jenis: Izin, Sakit, atau Dispensasi;
    - tanggal atau rentang tanggal;
    - keterangan, termasuk sumber kabar;
-   - foto surat, bila ada (opsional).
-3. Sistem menyimpan izin/sakit dengan status "disetujui" dan nama penginput (RECOMMENDATION).
-4. Status presensi mengikuti secara otomatis.
+   - foto surat atau surat tugas, bila ada (opsional).
+3. Sistem menyimpan data dengan status "disetujui" dan nama penginput sebagai verifikator (DECISION).
+4. Status presensi mengikuti secara otomatis, walaupun siswa sudah memiliki presensi masuk (`05` BR-STS-03).
 
 Pengecualian:
 
-- **E1** — Tanggal lampau: diperbolehkan untuk staf yang berhak, sesuai cakupannya, dalam batas mundur OQ-15. Contohnya siswa yang membawa surat sakit untuk hari kemarin.
+- **E1** — Tanggal lampau: diperbolehkan untuk staf yang berhak, sesuai cakupannya, dalam batas mundur (hari ini dan 7 hari kalender sebelumnya). Contohnya siswa yang membawa surat sakit untuk hari kemarin. Admin tidak dibatasi.
+- **E2** — Dispensasi untuk banyak siswa: staf memilih beberapa siswa, satu rombel, atau satu tingkat, sesuai cakupannya. Sistem membuat satu data dispensasi per siswa (`05` BR-IZN-05).
+- **E3** — Siswa sudah memiliki data izin/sakit/dispensasi yang menunggu atau disetujui pada tanggal yang sama: sistem menolak dan menunjukkan data yang ada. Pengajuan siswa yang menunggu cukup diverifikasi (UF-18). (RECOMMENDATION, `05` BR-IZN-07)
+
+### UF-29 — Ubah keputusan izin/sakit/dispensasi
+
+- **Aktor:** wali kelas untuk rombelnya; guru piket; guru BK; admin.
+- **Rujukan:** FR-IZN-06, `HA-IZN-06`, `05` BR-IZN-09, BR-IZN-10.
+- **Status:** DECISION.
+
+Alur utama:
+
+1. Staf membuka data izin/sakit/dispensasi seorang siswa.
+2. Staf memilih salah satu tindakan:
+   - membatalkan data yang disetujui, misalnya karena surat ternyata palsu atau siswa berizin ternyata datang;
+   - memendekkan rentang, misalnya karena siswa yang sakit kembali lebih cepat;
+   - mengubah penolakan menjadi persetujuan.
+3. Staf mengisi alasan. Alasan wajib diisi.
+4. Sistem menyimpan keputusan baru, mencatatnya di log perubahan presensi, dan menghitung ulang status tanggal yang terdampak.
+5. Siswa melihat keputusan terbaru di portal.
+
+Pengecualian:
+
+- **E1** — Tanggal yang terdampak melewati batas mundur: hanya admin yang dapat mengubahnya.
+- **E2** — Rentang perlu diperpanjang atau jenisnya perlu diganti: staf membatalkan data lama, lalu membuat data baru (UF-19). (RECOMMENDATION)
 
 ## 7. Akun
 
@@ -595,7 +690,7 @@ Rujukan: FR-WA-01 s.d. FR-WA-07, NFR-05, NFR-13.
 3. Proses terjadwal (cron) mengirim pesan secara bertahap lewat gateway. Status pesan menjadi terkirim atau gagal.
 4. Admin memantau outbox dan mengirim ulang pesan yang gagal (`HA-WA-02`).
 
-Notifikasi "tidak hadir" dan "tidak scan pulang" dibuat setelah sesi terkait ditutup dan semua stasiun tersinkron (UF-13, UF-14).
+Notifikasi "tidak hadir" dan "tidak scan pulang" dibuat setelah sesi terkait ditutup ditambah waktu tunda, bila mode darurat tidak aktif, semua stasiun tersinkron, dan jumlah siswa tercatat masuk mencapai ambang pengaman. Bila di bawah ambang, pesan ditahan sampai guru piket atau admin melepas atau membatalkannya. Tidak ada pesan koreksi bila status berubah setelah pesan terkirim. (UF-13, UF-14, `05` §11)
 
 ### UF-24 — Flyer kehadiran (R2)
 
@@ -627,19 +722,17 @@ Kartu pengganti memakai QR yang sama, sehingga kartu lama tidak dapat diblokir.
 
 ## 10. Pertanyaan terbuka yang memengaruhi alur
 
+OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4. Alur yang terdampak sudah diperbarui dengan rujukan ke `05`.
+
 | OQ | Pertanyaan singkat | Alur terdampak |
 |---|---|---|
-| OQ-03 | Aturan jam, scan ganda, scan di luar jam, pulang lebih awal | UF-09, UF-10, UF-12, UF-14 |
-| OQ-04 | Prioritas antara scan, presensi manual, dan izin/sakit | UF-16, UF-17 |
-| OQ-06 | Penerimaan risiko QR palsu dan kartu hilang | UF-10, UF-26 |
-| OQ-07 | Cara menutup sesi masuk/pulang | UF-13, UF-14 |
 | OQ-11 | Format laporan dan isi flyer | UF-22, UF-24 |
 | OQ-12 | Format nama file foto | UF-03 |
-| OQ-15 | Batas mundur koreksi presensi dan input izin/sakit | UF-12, UF-16, UF-17, UF-19 |
-| OQ-16 | Prosedur darurat bila semua stasiun tidak dapat dipakai | UF-12 |
+| OQ-17 | Pencatatan pembukaan lampiran surat | UF-18 |
 
 ## Riwayat perubahan
 
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 3. |
+| 0.2 | 2026-10-03 | Keputusan Session 4 (`05`). Status mekanisme slip di UF-05 menjadi DECISION. Garis waktu, UF-01, UF-09 s.d. UF-19, dan UF-23 disesuaikan: jendela scan, penutupan sesi otomatis, scan ganda, prioritas status, koreksi, batas mundur, dan dispensasi. UF-27 (mode darurat), UF-28 (ubah jadwal hari ini), dan UF-29 (ubah keputusan izin/sakit/dispensasi) ditambahkan. |

@@ -2,13 +2,13 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
+| Versi | 0.2 (draft) |
 | Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 3 (User Roles & User Flow) |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): ID requirement (`FR-*`, `NFR-*`). |
-| Dokumen terkait | [03-user-flow.md](03-user-flow.md) |
+| Dokumen terkait | [03-user-flow.md](03-user-flow.md), [05-business-rules.md](05-business-rules.md) |
 
-Dokumen ini menetapkan jenis akun, role, cakupan data, dan hak akses setiap role. Dokumen ini menjawab OQ-02 dan OQ-14, serta sebagian OQ-08.
+Dokumen ini menetapkan jenis akun, role, cakupan data, dan hak akses setiap role. Dokumen ini menjawab OQ-02 dan OQ-14, serta sebagian OQ-08. Batas mundur (OQ-15) ditetapkan di `05` dan diterapkan pada cakupan di §5.
 
 Nama teknis seperti tabel, kolom, kunci permission, dan route ditetapkan di Session 5–8. Hak akses di sini memakai ID `HA-<MODUL>-<NN>` dengan kode modul dari `01` §2. ID tidak pernah dinomori ulang.
 
@@ -28,6 +28,20 @@ Nama teknis seperti tabel, kolom, kunci permission, dan route ditetapkan di Sess
 | Akun stasiun | Satu akun stasiun per laptop. | DECISION |
 | Stasiun scan (OQ-08) | Semua stasiun berada di gerbang utama dan dipakai untuk scan masuk dan pulang. Jumlah laptop belum diketahui. | DECISION (lokasi); OPEN (jumlah) |
 | Petugas | Guru piket dan satpam/staf TU. | DECISION |
+
+Keputusan Session 4 yang mengubah dokumen ini (rinciannya di `05`):
+
+| Topik | Perubahan | Status |
+|---|---|---|
+| Usulan Session 3 | Mekanisme slip akun (§7.2), admin tidak membuka kiosk (§4 butir 3), dan status stasiun di panel (`HA-KIO-02`) disetujui. | DECISION |
+| Lampiran surat | Pimpinan boleh membuka semua lampiran (`HA-IZN-05`). | DECISION |
+| Penutupan sesi | Sesi ditutup otomatis, sehingga `HA-PRS-05` tidak dipakai (DEPRECATED). | DECISION |
+| Jadwal hari ini | Admin dan guru piket dapat mengubah jadwal hari ini (`HA-PRS-07`). | DECISION |
+| Mode darurat | Admin dan guru piket mengaktifkan dan mengakhiri mode darurat (`HA-PRS-08`). | DECISION |
+| Batas mundur | Hari ini dan 7 hari kalender sebelumnya, diatur admin (`HA-PRS-09`). Admin tidak dibatasi (§5). | DECISION |
+| Dispensasi | Jenis ketiga izin/sakit, diinput oleh pemegang `HA-IZN-02`, dan langsung disetujui. | DECISION |
+| Ubah keputusan izin | Oleh staf yang berhak memverifikasi (`HA-IZN-06`). | DECISION |
+| Pesan WA yang ditahan | Admin dan guru piket melepas atau membatalkan pesan "tidak hadir" yang ditahan (`HA-WA-03`, R2). | DECISION |
 
 ## 2. Jenis akun
 
@@ -54,10 +68,10 @@ Aturan jenis akun:
 |---|---|---|---|---|
 | Admin | Staf | Diberikan oleh admin. Admin pertama dibuat saat instalasi (Session 6). | Semua hak di panel staf/admin: akun, master data, aturan jam, kalender, pengaturan, dan semua data siswa. | CONFIRMED |
 | Staf | Staf | Otomatis untuk setiap akun staf | Role dasar: dashboard hari ini berupa angka per rombel, dan ganti password. Di R3 juga jadwal dan pengumuman. | DECISION |
-| Wali kelas | Staf | Otomatis selama staf ditetapkan sebagai wali kelas sebuah rombel pada tahun ajaran aktif | Presensi, izin/sakit, nomor WA orang tua, foto, dan reset password untuk siswa di rombelnya. | DECISION (hak); RECOMMENDATION (didapat dari penugasan rombel) |
-| Guru piket | Staf | Diberikan oleh admin | Presensi manual dan koreksi pada hari berjalan untuk semua siswa. Input dan verifikasi izin/sakit untuk semua siswa. | DECISION |
-| Guru BK | Staf | Diberikan oleh admin | Melihat semua siswa. Presensi manual, koreksi, serta input dan verifikasi izin/sakit untuk semua siswa dan semua tanggal. | DECISION |
-| Pimpinan | Staf | Diberikan oleh admin | Kepala sekolah dan wakasek. Melihat dashboard, rekap, dan riwayat semua rombel tanpa mengubah data. | DECISION |
+| Wali kelas | Staf | Otomatis selama staf ditetapkan sebagai wali kelas sebuah rombel pada tahun ajaran aktif | Presensi, izin/sakit/dispensasi, nomor WA orang tua, foto, dan reset password untuk siswa di rombelnya. | DECISION (hak); RECOMMENDATION (didapat dari penugasan rombel) |
+| Guru piket | Staf | Diberikan oleh admin | Presensi manual dan koreksi pada hari berjalan untuk semua siswa. Input dan verifikasi izin/sakit/dispensasi untuk semua siswa dalam batas mundur. Mengubah jadwal hari ini dan mengaktifkan mode darurat. | DECISION |
+| Guru BK | Staf | Diberikan oleh admin | Melihat semua siswa. Presensi manual, koreksi, serta input dan verifikasi izin/sakit/dispensasi untuk semua siswa dalam batas mundur. | DECISION |
+| Pimpinan | Staf | Diberikan oleh admin | Kepala sekolah dan wakasek. Melihat dashboard, rekap, riwayat, dan lampiran surat semua rombel tanpa mengubah data. | DECISION |
 | Siswa | Siswa | Otomatis | Riwayat kehadiran sendiri dan pengajuan izin/sakit. Di R3 juga jadwal dan pengumuman. | CONFIRMED |
 | Stasiun | Stasiun | Otomatis saat admin membuat akun stasiun | Memuat data kiosk, mencatat scan, dan sinkron. Tidak dapat membuka panel staf atau portal siswa. | DECISION |
 
@@ -65,17 +79,17 @@ Aturan jenis akun:
 
 1. **Hak gabungan.** Hak efektif sebuah akun adalah gabungan hak semua role-nya, termasuk cakupannya (§5). (DECISION)
    - Contoh: wali kelas 7A yang juga guru piket boleh menginput presensi manual untuk semua siswa pada hari berjalan (dari role guru piket).
-   - Ia juga boleh menginputnya untuk siswa 7A pada tanggal lampau (dari role wali kelas).
+   - Ia juga boleh menginputnya untuk siswa 7A pada tanggal lampau dalam batas mundur (dari role wali kelas).
 2. **Wali kelas berasal dari penugasan.** Role wali kelas tidak dicentang di halaman akun. Staf memegang role ini selama admin menetapkannya sebagai wali kelas sebuah rombel pada tahun ajaran aktif (`HA-MD-02`). (RECOMMENDATION)
    - Satu rombel memiliki satu wali kelas.
    - Bila wali kelas diganti di tengah tahun, hak langsung berpindah ke wali kelas baru.
-3. **Admin tidak membuka kiosk.** Admin memegang semua hak di panel, tetapi kiosk hanya berjalan dengan akun stasiun. Dengan begitu, laptop di gerbang tidak pernah menyimpan sesi admin. (RECOMMENDATION)
+3. **Admin tidak membuka kiosk.** Admin memegang semua hak di panel, tetapi kiosk hanya berjalan dengan akun stasiun. Dengan begitu, laptop di gerbang tidak pernah menyimpan sesi admin. (DECISION, Session 4)
 4. **Pemisahan area.**
    - Akun stasiun hanya dapat membuka kiosk.
    - Akun siswa hanya dapat membuka portal siswa.
    - Akun staf tidak dapat membuka kiosk.
 
-   (DECISION untuk akun stasiun; RECOMMENDATION untuk lainnya)
+   (DECISION untuk akun stasiun dan akun staf, Session 4; RECOMMENDATION untuk akun siswa)
 5. **Hak dicek di server.** Server memeriksa role dan cakupan data pada setiap permintaan. Menyembunyikan menu saja tidak cukup (NFR-07). (RECOMMENDATION)
 6. **Selalu ada admin aktif.** Sistem menolak tindakan yang membuat tidak ada lagi akun admin aktif, misalnya admin terakhir mencabut role admin dirinya sendiri. (RECOMMENDATION)
 
@@ -87,14 +101,14 @@ Setiap hak akses yang menyentuh data siswa memiliki cakupan:
 |---|---|
 | Semua | Semua siswa, semua tanggal. |
 | Rombel | Siswa di rombel yang diampu sebagai wali kelas pada tahun ajaran aktif, untuk semua tanggal. Riwayat siswa tersebut dari tahun ajaran sebelumnya ikut terlihat (RECOMMENDATION). |
-| Hari ini | Semua siswa, tetapi hanya untuk tanggal hari berjalan menurut zona waktu sekolah (OQ-05). |
+| Hari ini | Semua siswa, tetapi hanya untuk tanggal hari berjalan menurut WIB. Untuk `HA-PRS-07` dan `HA-PRS-08`, cakupan ini berarti jadwal atau mode darurat tanggal hari berjalan. |
 | Sendiri | Hanya data siswa pemilik akun. |
 | Rombelnya | Untuk siswa: data milik rombel tempat siswa terdaftar, misalnya jadwal. |
 | Angka | Jumlah per rombel, tanpa nama, NISN, foto, atau data individu lain. |
 | Ya | Hak tanpa cakupan data siswa, misalnya mengatur aturan jam. |
 | — | Tidak berhak. |
 
-Untuk koreksi presensi dan input izin/sakit, cakupan "Semua" dan "Rombel" berarti semua tanggal yang belum melewati batas mundur. Batas mundur ditetapkan di Session 4 (OQ-15).
+Untuk presensi manual, koreksi, serta input, verifikasi, dan perubahan keputusan izin/sakit/dispensasi, cakupan "Semua" dan "Rombel" dibatasi batas mundur: hari ini dan 7 hari kalender sebelumnya. Angka 7 diatur admin (`05` BR-MUN-01, BR-MUN-02). Admin tidak dibatasi batas mundur (BR-MUN-03). (DECISION, OQ-15)
 
 ## 6. Matriks hak akses
 
@@ -112,7 +126,7 @@ Cara membaca:
 | HA-AKN-02 | Kelola akun staf: buat, ubah, nonaktifkan, reset password, beri role | Ya | — | — | — | — | — | — | — | FR-AKN-02, FR-AKN-08 | DECISION |
 | HA-AKN-03 | Kelola akun stasiun: buat, ganti kredensial, nonaktifkan | Ya | — | — | — | — | — | — | — | FR-AKN-03 | DECISION |
 | HA-AKN-04 | Reset password siswa | Semua | — | Rombel | — | — | — | — | — | FR-AKN-07 | DECISION |
-| HA-AKN-05 | Cetak slip akun siswa | Semua | — | Rombel | — | — | — | — | — | FR-AKN-06 | DECISION (slip); RECOMMENDATION (mekanisme, §7.2) |
+| HA-AKN-05 | Cetak slip akun siswa | Semua | — | Rombel | — | — | — | — | — | FR-AKN-06 | DECISION (slip; mekanisme §7.2, Session 4) |
 | HA-AKN-06 | Lihat status akun siswa (belum aktif, aktif, nonaktif) | Semua | — | Rombel | — | — | — | — | — | FR-AKN-05 | RECOMMENDATION |
 
 ### 6.2 Master data (MD) — R1
@@ -134,32 +148,36 @@ Cara membaca:
 
 | ID | Hak akses | Admin | Staf | Wali kelas | Guru piket | Guru BK | Pimpinan | Siswa | Stasiun | Rujukan | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| HA-KIO-01 | Buka kiosk, muat data siswa aktif, catat scan, sinkron otomatis dan manual | — | — | — | — | — | — | — | Ya | FR-KIO-01 s.d. FR-KIO-10 | DECISION (akun stasiun); RECOMMENDATION (admin tidak membuka kiosk) |
-| HA-KIO-02 | Lihat status stasiun: waktu sinkron terakhir dan jumlah scan belum tersinkron | Ya | — | — | Ya | — | — | — | — | FR-KIO-12 | RECOMMENDATION |
-| HA-KIO-03 | Tinjau scan yang ditandai saat sinkron, misalnya karena jam tidak wajar | Semua | — | — | Hari ini | — | — | — | — | FR-KIO-11 | RECOMMENDATION |
+| HA-KIO-01 | Buka kiosk, muat data siswa aktif, catat scan, sinkron otomatis dan manual | — | — | — | — | — | — | — | Ya | FR-KIO-01 s.d. FR-KIO-10 | DECISION (akun stasiun; admin tidak membuka kiosk, Session 4) |
+| HA-KIO-02 | Lihat status stasiun: waktu sinkron terakhir dan jumlah scan belum tersinkron | Ya | — | — | Ya | — | — | — | — | FR-KIO-12 | DECISION (Session 4) |
+| HA-KIO-03 | Tinjau scan yang ditandai saat sinkron, misalnya karena jam tidak wajar: terima atau tolak | Semua | — | — | Hari ini | — | — | — | — | FR-KIO-11, `05` BR-SCN-08 | RECOMMENDATION |
 
 ### 6.4 Presensi (PRS) — R1
 
 | ID | Hak akses | Admin | Staf | Wali kelas | Guru piket | Guru BK | Pimpinan | Siswa | Stasiun | Rujukan | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| HA-PRS-01 | Atur aturan jam | Ya | — | — | — | — | — | — | — | FR-PRS-02 | DECISION |
-| HA-PRS-02 | Kelola kalender sekolah | Ya | — | — | — | — | — | — | — | FR-PRS-03 | DECISION |
-| HA-PRS-03 | Input presensi manual | Semua | — | Rombel | Hari ini | Semua | — | — | — | FR-PRS-06 | DECISION |
+| HA-PRS-01 | Atur aturan jam: pola mingguan dan jadwal khusus untuk tanggal mana pun | Ya | — | — | — | — | — | — | — | FR-PRS-02 | DECISION |
+| HA-PRS-02 | Kelola kalender sekolah, termasuk libur per tingkat atau rombel | Ya | — | — | — | — | — | — | — | FR-PRS-03 | DECISION |
+| HA-PRS-03 | Input presensi manual (per rombel hanya saat mode darurat) | Semua | — | Rombel | Hari ini | Semua | — | — | — | FR-PRS-06, FR-PRS-10 | DECISION |
 | HA-PRS-04 | Koreksi status presensi | Semua | — | Rombel | Hari ini | Semua | — | — | — | FR-PRS-07 | DECISION |
-| HA-PRS-05 | Tutup sesi masuk dan sesi pulang, bila penutupan manual (OQ-07) | Ya | — | — | Ya | — | — | — | — | FR-PRS-08 | RECOMMENDATION |
+| HA-PRS-05 | Tutup sesi masuk dan sesi pulang, bila penutupan manual (OQ-07) | — | — | — | — | — | — | — | — | FR-PRS-08 | DEPRECATED (Session 4: sesi ditutup otomatis, `05` BR-JAM-07). Semula: admin dan guru piket. |
 | HA-PRS-06 | Lihat log perubahan presensi | Semua | — | Rombel | Hari ini | Semua | Semua | — | — | FR-PRS-07 | RECOMMENDATION |
+| HA-PRS-07 | Ubah jadwal hari ini, dengan alasan | Hari ini | — | — | Hari ini | — | — | — | — | FR-PRS-09 | DECISION (Session 4) |
+| HA-PRS-08 | Aktifkan dan akhiri mode darurat, dengan alasan | Hari ini | — | — | Hari ini | — | — | — | — | FR-PRS-10 | DECISION (Session 4) |
+| HA-PRS-09 | Atur batas mundur | Ya | — | — | — | — | — | — | — | FR-PRS-11 | DECISION (Session 4) |
 
-### 6.5 Izin dan sakit (IZN) — R1
+### 6.5 Izin, sakit, dan dispensasi (IZN) — R1
 
 | ID | Hak akses | Admin | Staf | Wali kelas | Guru piket | Guru BK | Pimpinan | Siswa | Stasiun | Rujukan | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| HA-IZN-01 | Ajukan izin/sakit, lihat statusnya, dan batalkan selama masih menunggu | — | — | — | — | — | — | Sendiri | — | FR-IZN-01, FR-IZN-04 | CONFIRMED (ajukan); RECOMMENDATION (batalkan) |
-| HA-IZN-02 | Input izin/sakit atas nama siswa | Semua | — | Rombel | Semua | Semua | — | — | — | FR-IZN-02 | DECISION |
+| HA-IZN-01 | Ajukan izin/sakit (bukan dispensasi), lihat statusnya, dan batalkan selama masih menunggu | — | — | — | — | — | — | Sendiri | — | FR-IZN-01, FR-IZN-04 | CONFIRMED (ajukan); RECOMMENDATION (batalkan) |
+| HA-IZN-02 | Input izin/sakit/dispensasi atas nama siswa, langsung disetujui. Dispensasi dapat diinput untuk banyak siswa sekaligus. | Semua | — | Rombel | Semua | Semua | — | — | — | FR-IZN-02, FR-IZN-07 | DECISION (pelaku: Session 3; langsung disetujui dan dispensasi: Session 4) |
 | HA-IZN-03 | Verifikasi pengajuan siswa (setujui atau tolak) | Semua | — | Rombel | Semua | Semua | — | — | — | FR-IZN-03 | DECISION |
-| HA-IZN-04 | Lihat daftar izin/sakit beserta keterangannya | Semua | — | Rombel | Semua | Semua | Semua | Sendiri | — | FR-IZN-04 | RECOMMENDATION |
-| HA-IZN-05 | Buka lampiran surat | Semua | — | Rombel | Semua | Semua | — | Sendiri | — | FR-IZN-05 | RECOMMENDATION |
+| HA-IZN-04 | Lihat daftar izin/sakit/dispensasi beserta keterangannya | Semua | — | Rombel | Semua | Semua | Semua | Sendiri | — | FR-IZN-04 | RECOMMENDATION |
+| HA-IZN-05 | Buka lampiran surat | Semua | — | Rombel | Semua | Semua | Semua | Sendiri | — | FR-IZN-05 | DECISION (pimpinan, Session 4); RECOMMENDATION (pembagian lainnya) |
+| HA-IZN-06 | Ubah keputusan: batalkan yang disetujui, perpendek rentang, atau ubah penolakan menjadi persetujuan, dengan alasan | Semua | — | Rombel | Semua | Semua | — | — | — | FR-IZN-06 | DECISION (Session 4) |
 
-Pimpinan sengaja tidak dapat membuka lampiran. Surat sakit termasuk data kesehatan (R-17), jadi hanya pihak yang memverifikasi yang perlu melihatnya.
+Pimpinan dapat membuka lampiran (keputusan Session 4, mengganti usulan Session 3). Surat sakit termasuk data kesehatan (R-17). Perlu tidaknya mencatat setiap pembukaan lampiran ditinjau di Session 9 (OQ-17).
 
 ### 6.6 Dashboard dan laporan (LAP)
 
@@ -176,8 +194,9 @@ Pimpinan sengaja tidak dapat membuka lampiran. Surat sakit termasuk data kesehat
 
 | ID | Hak akses | Admin | Staf | Wali kelas | Guru piket | Guru BK | Pimpinan | Siswa | Stasiun | Rujukan | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| HA-WA-01 | Atur jenis notifikasi, template pesan, dan koneksi gateway | Ya | — | — | — | — | — | — | — | FR-WA-02, FR-WA-05 | DECISION |
+| HA-WA-01 | Atur jenis notifikasi, template pesan, koneksi gateway, waktu tunda, dan ambang pengaman | Ya | — | — | — | — | — | — | — | FR-WA-02, FR-WA-05, FR-WA-07 | DECISION |
 | HA-WA-02 | Lihat outbox WA dan kirim ulang pesan yang gagal | Ya | — | — | — | — | — | — | — | FR-WA-06 | RECOMMENDATION |
+| HA-WA-03 | Lepas atau batalkan pesan "tidak hadir" yang ditahan | Ya | — | — | Hari ini | — | — | — | — | FR-WA-08 | DECISION (Session 4) |
 
 ### 6.8 Jadwal, pengumuman, halaman publik (INF) — R3
 
@@ -216,7 +235,7 @@ Status akun siswa:
 | Aktif | Siswa sudah login dan mengganti password. |
 | Nonaktif | Siswa berstatus nonaktif. Akun tidak dapat login. |
 
-Mekanisme slip akun (RECOMMENDATION):
+Mekanisme slip akun (DECISION, Session 4):
 
 1. **Akun dibuat tanpa password yang dapat dipakai.** Akun siswa dibuat otomatis saat siswa ditambah atau diimpor, dengan status belum aktif.
 2. **Password dibuat saat slip dicetak.** Admin atau wali kelas memilih "cetak slip akun" untuk satu rombel. Sistem lalu:
@@ -265,16 +284,18 @@ Pembagian tugas (RECOMMENDATION):
 | Menyalakan laptop dan memastikan kiosk siap | Ya | Ya |
 | Mengawasi antrean, dan mencocokkan foto di layar dengan wajah siswa (R-02) | Ya | Ya |
 | Menekan sinkron manual atau memuat ulang data di kiosk | Ya | Ya |
-| Menginput presensi manual (lupa kartu, kartu rusak, QR tidak terbaca) di panel | Ya | Arahkan siswa ke guru piket |
+| Menginput presensi manual (lupa kartu, kartu rusak, QR tidak terbaca, tiba setelah sesi masuk ditutup) di panel | Ya | Arahkan siswa ke guru piket |
 | Menangani dugaan kartu palsu atau scan titipan | Ya | Laporkan ke guru piket |
-| Memeriksa status stasiun dan menutup sesi, bila penutupan manual (OQ-07) | Ya | — |
+| Memeriksa status stasiun | Ya | — |
+| Mengubah jadwal hari ini, misalnya karena hujan deras (`HA-PRS-07`) | Ya | Laporkan ke guru piket |
+| Mengaktifkan mode darurat bila semua stasiun tidak dapat dipakai (`HA-PRS-08`) | Ya | Laporkan ke guru piket |
 
 ## 10. Catatan keamanan dan privasi
 
 Rincian teknis ditulis di Session 9 (`12-security.md`).
 
 - **Data seperlunya.** Staf tanpa tugas khusus, dan wali kelas untuk rombel lain, hanya melihat angka (DECISION). Data siswa adalah data anak (R-17, UU 27/2022).
-- **Lampiran surat terbatas.** Lampiran surat hanya dapat dibuka siswa pemiliknya dan staf yang berhak memverifikasi (`HA-IZN-05`).
+- **Lampiran surat terbatas.** Lampiran surat hanya dapat dibuka siswa pemiliknya, staf yang berhak memverifikasi, dan pimpinan (`HA-IZN-05`). Pencatatan pembukaan lampiran mengikuti OQ-17.
 - **Nomor WA orang tua dilindungi.** Siswa tidak dapat mengubah nomor WA orang tua/wali (DECISION). Ini mencegah siswa mengalihkan notifikasi ketidakhadiran (R2) ke nomornya sendiri.
 - **Perubahan tercatat.**
   - Setiap perubahan presensi tercatat di log perubahan presensi (DECISION).
@@ -285,15 +306,17 @@ Rincian teknis ditulis di Session 9 (`12-security.md`).
 
 ## 11. Pertanyaan terbuka terkait
 
+OQ-07 dan OQ-15 terjawab di Session 4: `HA-PRS-05` menjadi DEPRECATED, dan batas mundur diterapkan di §5.
+
 | OQ | Pertanyaan | Dampak ke dokumen ini |
 |---|---|---|
-| OQ-07 | Mekanisme menutup sesi | Bila penutupan otomatis, `HA-PRS-05` tidak dipakai. |
 | OQ-08 | Jumlah stasiun scan | Jumlah akun stasiun. Desain mendukung jumlah stasiun berapa pun. |
 | OQ-11 | Isi flyer | Dapat mengubah `HA-LAP-06`. |
-| OQ-15 | Batas mundur koreksi presensi dan input izin/sakit | Batas cakupan "Semua" dan "Rombel" pada `HA-PRS-03`, `HA-PRS-04`, `HA-IZN-02`, dan `HA-IZN-03`. |
+| OQ-17 | Pencatatan pembukaan lampiran surat | Dapat menambah pencatatan pada `HA-IZN-05`. |
 
 ## Riwayat perubahan
 
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 3. |
+| 0.2 | 2026-10-03 | Keputusan Session 4 (`05`). Usulan slip akun, admin tidak membuka kiosk, dan status stasiun disetujui. Pimpinan dapat membuka lampiran. `HA-PRS-05` DEPRECATED. `HA-PRS-07` s.d. `HA-PRS-09`, `HA-IZN-06`, dan `HA-WA-03` ditambahkan. Dispensasi masuk ke hak IZN. Batas mundur diterapkan pada cakupan. Tugas petugas diperbarui. |

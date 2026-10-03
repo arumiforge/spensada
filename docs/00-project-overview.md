@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.2 (draft) |
+| Versi | 0.3 (draft) |
 | Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3. |
-| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md) |
+| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3 dan Session 4. |
+| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [05-business-rules.md](05-business-rules.md) |
 
 Dokumen ini adalah titik masuk dokumentasi proyek. Baca dokumen ini sebelum dokumen lain.
 
@@ -107,8 +107,8 @@ Isi R1:
 - Login per role.
 - Kiosk local-first dan sinkron.
 - Aturan jam dan kalender sekolah.
-- Presensi manual.
-- Izin/sakit.
+- Presensi manual, koreksi status, dan mode darurat.
+- Izin, sakit, dan dispensasi.
 - Status Alpa otomatis.
 - Rekap per rombel di layar dan riwayat per siswa.
 - Dashboard hari ini.
@@ -162,18 +162,18 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | ID | Risiko | Arah penanganan | Status | Dibahas di |
 |---|---|---|---|---|
 | R-01 | Browser hanya mengizinkan webcam di HTTPS atau `localhost`. | Lokal memakai `https://spensada.test`; production memakai HTTPS. | CONFIRMED | Session 6 |
-| R-02 | QR berisi NISN polos dapat dipalsukan, misalnya dengan QR buatan sendiri atau foto kartu teman. Kartu hilang juga tidak dapat diblokir, karena kartu pengganti memakai QR yang sama. | Kiosk diawasi petugas, dan layar menampilkan foto, nama, dan rombel di setiap scan. | Risiko CONFIRMED; penerimaan OPEN (OQ-06) | Session 4 |
+| R-02 | QR berisi NISN polos dapat dipalsukan, misalnya dengan QR buatan sendiri atau foto kartu teman. Kartu hilang juga tidak dapat diblokir, karena kartu pengganti memakai QR yang sama. | Risiko diterima. Kiosk diawasi petugas, dan layar menampilkan foto, nama, dan rombel di setiap scan. Tidak ada pemblokiran kartu atau tanda khusus di kiosk. Dugaan kartu titipan ditangani lewat koreksi status (`05` BR-SCN-09). | Risiko CONFIRMED; penerimaan DECISION (OQ-06, Session 4) | Session 4 |
 | R-03 | Antrean pagi 500–1.000 siswa. Kecepatan baca webcam tetap menjadi batas walaupun tanpa jeda jaringan. | Beberapa stasiun scan di gerbang utama. Kiosk juga menerima scanner QR USB (mode keyboard). | RECOMMENDATION; lokasi DECISION (gerbang utama, Session 3); jumlah stasiun OPEN (OQ-08) | Session 3 (lokasi); OQ-08 (jumlah) |
 | R-04 | Chrome dan Edge di Windows tidak memiliki `BarcodeDetector`. Menurut MDN browser-compat-data, fitur ini hanya ada di macOS/ChromeOS. | Satu library JavaScript pembaca QR. | CONFIRMED | Session 6 |
-| R-05 | Jam scan berasal dari laptop, sehingga bisa salah atau diubah. | Selisih jam laptop terhadap server disimpan saat data dimuat. Server memvalidasi jam saat sinkron. Laptop kiosk memakai akun Windows non-admin. | RECOMMENDATION | Session 4 dan 6 |
+| R-05 | Jam scan berasal dari laptop, sehingga bisa salah atau diubah. | Selisih jam laptop terhadap server diukur saat data dimuat dan setiap kali sinkron. Server menandai scan dengan jam tidak wajar untuk ditinjau (`05` BR-SCN-07, BR-SCN-08). Laptop kiosk memakai akun Windows non-admin. | RECOMMENDATION | Session 4 (aturan), Session 6 (teknis) |
 | R-06 | Scan yang belum tersinkron bisa hilang bila laptop rusak atau data browser terhapus. | Persistent storage, penghitung "belum tersinkron", dan sinkron otomatis. | RECOMMENDATION | Session 6 |
 | R-07 | Data dan foto siswa (data anak) tersimpan di laptop stasiun scan. | Laptop dan profil browser khusus kiosk. Data dihapus saat perangkat tidak lagi dipakai. | RECOMMENDATION | Session 9 |
 | R-08 | Halaman kiosk harus bisa dibuka ulang tanpa internet, misalnya setelah laptop restart. | Service Worker untuk aset halaman kiosk. | RECOMMENDATION | Session 6 |
-| R-09 | Kiriman sinkron bisa terulang, dan satu siswa bisa scan di beberapa stasiun. | ID unik per scan dari laptop, ditambah aturan penggabungan scan. | RECOMMENDATION; aturan OPEN (OQ-04) | Session 4 |
+| R-09 | Kiriman sinkron bisa terulang, dan satu siswa bisa scan di beberapa stasiun. | ID unik per scan dari laptop. Scan pertama yang berlaku: server memakai scan paling awal dari semua stasiun (`05` BR-SCN-03). | RECOMMENDATION (ID unik); DECISION (aturan penggabungan, Session 4) | Session 4 |
 | R-10 | Endpoint sinkron bisa disalahgunakan untuk mengirim presensi palsu. | Hanya untuk akun stasiun yang login, dilindungi CSRF, dan divalidasi server. | RECOMMENDATION | Session 9 |
-| R-11 | Zona waktu default CodeIgniter adalah `UTC`, dan zona waktu server hosting bisa berbeda dari sekolah. | Zona waktu aplikasi dan database diset eksplisit. | CONFIRMED (default CI4); zona sekolah OPEN (OQ-05) | Session 4 dan 6 |
+| R-11 | Zona waktu default CodeIgniter adalah `UTC`, dan zona waktu server hosting bisa berbeda dari sekolah. | Zona waktu aplikasi dan database diset eksplisit ke WIB (`Asia/Jakarta`, +07:00). Lihat `05` BR-JAM-12 dan §14. | CONFIRMED (default CI4); DECISION (WIB, OQ-05) | Session 4 (zona), Session 6 (teknis) |
 | R-12 | NISN bisa diawali nol, dan Excel sering membuang nol di depan. | NISN disimpan sebagai teks 10 digit, `id` internal menjadi primary key, dan import divalidasi per baris. | RECOMMENDATION | Session 5 |
-| R-13 | Status Alpa salah bila dihitung sebelum semua data masuk. | Alpa dihitung saat data ditampilkan, dan menjadi final setelah sesi masuk ditutup. | RECOMMENDATION; mekanisme tutup sesi OPEN (OQ-07) | Session 4 |
+| R-13 | Status Alpa salah bila dihitung sebelum semua data masuk. | Status dapat dihitung ulang setiap kali data berubah, sehingga scan yang tersinkron belakangan mengoreksi Alpa. Sesi masuk ditutup otomatis. Pesan "tidak hadir" ditunda, menunggu semua stasiun tersinkron, dan ditahan bila jumlah siswa tercatat masuk di bawah ambang (`05` BR-STS-06, BR-WA-02, BR-WA-03). | DECISION (tutup otomatis, tunda, ambang); RECOMMENDATION (hitung ulang) | Session 4 |
 | R-14 | Riwayat rekap rusak saat kenaikan kelas bila siswa hanya punya satu kolom kelas. | Penempatan siswa ke rombel dicatat per tahun ajaran. | RECOMMENDATION | Session 5 |
 | R-15 | Keterbatasan hosting terkait document root dan cron. | Pastikan document root bisa diarahkan ke `public/` dan cron tersedia sebelum memilih hosting. | RECOMMENDATION | Session 6 (OQ-09) |
 | R-16 | Volume WhatsApp tinggi. Default scan masuk berarti ±500–1.000 pesan setiap pagi. Jeda dan kuota provider membatasi kecepatan kirim, dan nomor bisa diblokir. | Pesan dikirim lewat antrean (outbox) dan proses terjadwal, lalu diuji di R2. Risiko nomor diblokir diterima pengguna. | DECISION (risiko blokir diterima); RECOMMENDATION (antrean) | Sebelum R2 (OQ-10) |
@@ -181,6 +181,8 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | R-18 | XLSX, PDF, dan QR membutuhkan library PHP via Composer, padahal framework saat ini dipasang tanpa Composer. Repository juga belum punya `.gitignore`, sehingga `.env` (password database) dan isi `writable/` bisa ikut ter-push. | Pindah ke Composer appstarter. `.gitignore` dibuat sebelum commit kode pertama. | RECOMMENDATION (keputusan final OQ-09) | Session 6 |
 | R-19 | Flyer dibuat di browser dari template HTML menjadi PNG. | Kemungkinan butuh satu library JavaScript kecil. | RECOMMENDATION | Session 6 dan 7 |
 | R-20 | Volume data ±400 ribu catatan scan per tahun (±1.000 siswa × 2 scan × ±200 hari). | Index yang tepat. Volume ini ringan untuk MySQL. | RECOMMENDATION | Session 5 |
+| R-21 | Pesan "tidak hadir" bisa terkirim massal secara keliru bila server belum menerima scan, misalnya internet sekolah mati sepanjang pagi atau semua stasiun mati. | Waktu tunda, syarat semua stasiun tersinkron, ambang pengaman yang menahan pesan, dan mode darurat (`05` §10 dan §11). | DECISION | Session 4 |
+| R-22 | Izin/sakit/dispensasi yang disetujui menang atas kehadiran fisik. Siswa berizin yang ternyata datang tetap tercatat Izin bila data izinnya tidak dibatalkan. | Penanda di dashboard bagi wali kelas dan guru piket, dan pembatalan izin oleh staf yang berhak (`05` BR-STS-07, BR-IZN-09). | DECISION (aturan prioritas); RECOMMENDATION (penanda) | Session 4 |
 
 ## 8. Asumsi dan pertanyaan terbuka
 
@@ -200,11 +202,11 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 |---|---|---|---|
 | OQ-01 | Nama resmi sekolah, jenjang, dan nama produk. | Session 3 | Terjawab: jenjang SMP; nama produk "Spensada"; nama resmi sekolah, alamat, dan logo diisi admin di pengaturan (FR-MD-08). |
 | OQ-02 | Sub-peran staf (wali kelas, guru piket, BK, kepala sekolah, TU) dan hak akses masing-masing. | Session 3 | Terjawab: lihat `02`. |
-| OQ-03 | Aturan jam: jam masuk, batas terlambat, jam pulang, pulang lebih awal, scan ganda, dan hari sekolah dalam seminggu. | Session 4 | Terbuka |
-| OQ-04 | Aturan penggabungan scan dari beberapa stasiun, dan prioritas antara scan, presensi manual, dan izin/sakit. | Session 4 | Terbuka |
-| OQ-05 | Zona waktu sekolah (WIB, WITA, atau WIT). | Session 4 | Terbuka |
-| OQ-06 | Penerimaan risiko QR palsu dan kartu hilang (R-02). | Session 4 | Terbuka |
-| OQ-07 | Cara menutup sesi masuk/pulang: manual oleh petugas atau otomatis pada jam tertentu. | Session 4 | Terbuka |
+| OQ-03 | Aturan jam: jam masuk, batas terlambat, jam pulang, pulang lebih awal, scan ganda, dan hari sekolah dalam seminggu. | Session 4 | Terjawab: Senin–Sabtu; aturan jam per hari ditambah jadwal khusus; libur per tingkat/rombel; jenis presensi ditentukan jendela masuk dan jendela pulang; scan setelah sesi masuk ditutup ditolak; pulang lebih awal tidak mengubah status; scan pertama berlaku. Lihat `05` §3 dan §4. |
+| OQ-04 | Aturan penggabungan scan dari beberapa stasiun, dan prioritas antara scan, presensi manual, dan izin/sakit. | Session 4 | Terjawab: scan paling awal berlaku; prioritas izin/sakit/dispensasi yang disetujui, lalu koreksi, lalu presensi masuk. Lihat `05` §5 dan §6. |
+| OQ-05 | Zona waktu sekolah (WIB, WITA, atau WIT). | Session 4 | Terjawab: WIB (`Asia/Jakarta`, UTC+7). |
+| OQ-06 | Penerimaan risiko QR palsu dan kartu hilang (R-02). | Session 4 | Terjawab: risiko diterima; pengamannya pengawasan petugas (`05` BR-SCN-09). |
+| OQ-07 | Cara menutup sesi masuk/pulang: manual oleh petugas atau otomatis pada jam tertentu. | Session 4 | Terjawab: otomatis pada jam tutup sesi (`05` BR-JAM-07). |
 | OQ-08 | Jumlah stasiun scan (laptop) dan lokasinya. | Session 3 (lokasi); sebelum uji coba R1 (jumlah) | Sebagian: semua stasiun di gerbang utama, untuk scan masuk dan pulang. Jumlah laptop belum diketahui. |
 | OQ-09 | Jenis hosting (shared atau VPS) dan cara instalasi framework (Composer). | Session 6 | Terbuka |
 | OQ-10 | Provider gateway WhatsApp. | Sebelum R2 | Terbuka |
@@ -212,8 +214,9 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | OQ-12 | Format nama file foto siswa yang ada saat ini. | Session 5 (ditulis di `13-reporting-import-export.md`) | Terbuka |
 | OQ-13 | Desain kartu siswa baru: mengikuti kartu lama atau desain baru. | Session 7 | Terbuka |
 | OQ-14 | Cara pembuatan akun siswa dan password awal. | Session 3 | Terjawab: lihat `02` §2 dan §7.2. |
-| OQ-15 | Batas mundur (berapa hari ke belakang) untuk koreksi presensi dan input izin/sakit oleh staf; apakah siswa boleh mengajukan izin/sakit untuk tanggal yang sudah lewat. | Session 4 | Terbuka |
-| OQ-16 | Prosedur darurat bila semua stasiun scan tidak dapat dipakai, termasuk kemungkinan presensi manual per rombel sekaligus. | Session 4 | Terbuka |
+| OQ-15 | Batas mundur (berapa hari ke belakang) untuk koreksi presensi dan input izin/sakit oleh staf; apakah siswa boleh mengajukan izin/sakit untuk tanggal yang sudah lewat. | Session 4 | Terjawab: hari ini dan 7 hari kalender sebelumnya, diatur admin; admin tidak dibatasi; siswa boleh mengajukan untuk tanggal lampau dalam batas ini (`05` §9). |
+| OQ-16 | Prosedur darurat bila semua stasiun scan tidak dapat dipakai, termasuk kemungkinan presensi manual per rombel sekaligus. | Session 4 | Terjawab: mode darurat dan presensi manual per rombel (`05` §10). |
+| OQ-17 | Apakah setiap pembukaan lampiran surat oleh staf perlu dicatat (siapa dan kapan). | Session 9 | Terbuka |
 
 ## 9. Glosarium
 
@@ -243,23 +246,34 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Slip akun | Lembar cetak berisi NISN dan password awal siswa, dibuat per rombel oleh wali kelas atau admin. Hanya dapat dicetak saat password dibuat. |
 | Local-first | Pola kerja kiosk: data siswa dimuat ke laptop lebih dulu, scan divalidasi dan dicatat di laptop, lalu dikirim ke server. |
 | Sinkron | Pengiriman catatan scan dari stasiun scan ke server. Berjalan otomatis saat online dan bisa dipicu manual. |
-| Sesi masuk / sesi pulang | Rentang waktu penerimaan scan masuk dan scan pulang dalam satu hari sekolah. Aturannya mengikuti OQ-03 dan OQ-07. |
-| Hadir | Status harian: siswa scan masuk, atau dicatat lewat presensi manual, sebelum batas terlambat. |
-| Terlambat | Status harian: scan masuk setelah batas terlambat. |
-| Izin | Status harian: tidak hadir dengan izin yang sudah disetujui. |
-| Sakit | Status harian: tidak hadir karena sakit, dengan keterangan yang sudah disetujui. |
-| Alpa | Status harian: tidak hadir tanpa keterangan. Syaratnya: hari sekolah, siswa aktif, tanpa scan masuk, dan tanpa izin/sakit yang disetujui. |
-| Belum hadir | Keadaan sementara pada hari berjalan, sebelum sesi masuk ditutup. Bukan status final. |
-| Pulang lebih awal | Kejadian: scan pulang sebelum jam pulang. |
-| Tidak scan pulang | Kejadian: tidak ada scan pulang setelah sesi pulang ditutup. |
-| Presensi manual | Presensi yang diinput staf, misalnya karena siswa lupa kartu, kartu rusak, atau kiosk terganggu. |
+| Sesi masuk / sesi pulang | Rentang waktu penerimaan scan masuk dan scan pulang dalam satu hari sekolah, sama dengan jendela masuk dan jendela pulang. Sesi ditutup otomatis pada jam tutup sesi (`05` §4). |
+| Aturan jam | Tujuh isian jam untuk satu hari sekolah: jam buka scan masuk, jam masuk, toleransi terlambat, jam tutup sesi masuk, jam buka scan pulang, jam pulang, dan jam tutup sesi pulang. Berasal dari pola mingguan atau jadwal khusus. |
+| Pola mingguan | Aturan jam untuk setiap hari dalam seminggu, termasuk hari mana yang merupakan hari sekolah. Default Senin–Sabtu. |
+| Jadwal khusus | Aturan jam untuk satu tanggal atau rentang tanggal yang mengalahkan pola mingguan, misalnya Ramadan atau rapat guru. Jadwal hari ini adalah jadwal khusus untuk tanggal hari berjalan, yang dapat diubah admin atau guru piket. |
+| Jendela masuk / jendela pulang | Rentang jam ketika kiosk menerima scan masuk atau scan pulang. Di luar kedua jendela, kiosk menolak scan. |
+| Batas terlambat | Jam masuk ditambah toleransi terlambat. Presensi masuk sampai menit batas terlambat berstatus Hadir; setelahnya Terlambat. |
+| Presensi masuk / presensi pulang | Catatan masuk atau pulang seorang siswa pada satu tanggal, berasal dari scan atau presensi manual. Bila ada lebih dari satu, yang paling awal yang berlaku. |
+| Scan ganda | Scan kedua dan seterusnya untuk jenis presensi yang sama pada tanggal yang sama. Tidak mengubah presensi. |
+| Hadir | Status harian: presensi masuk sampai menit batas terlambat, atau dikoreksi staf menjadi Hadir. |
+| Terlambat | Status harian: presensi masuk setelah batas terlambat, atau dikoreksi staf menjadi Terlambat. |
+| Izin | Status harian: izin yang sudah disetujui. Berlaku walaupun siswa memiliki presensi masuk (`05` BR-STS-03). |
+| Sakit | Status harian: sakit dengan keterangan yang sudah disetujui. Berlaku walaupun siswa memiliki presensi masuk. |
+| Dispensasi | Status harian: siswa menjalankan tugas atau kegiatan resmi sekolah, misalnya lomba atau study tour. Diinput staf sebagai jenis ketiga izin/sakit. Bukan ketidakhadiran. |
+| Alpa | Status harian: tidak hadir tanpa keterangan. Syaratnya: hari sekolah bagi siswa, tanpa izin/sakit/dispensasi yang disetujui, dan tanpa presensi masuk (atau dikoreksi Tidak hadir), setelah sesi masuk ditutup dan di luar mode darurat. |
+| Belum hadir | Keadaan sementara pada hari berjalan, sebelum sesi masuk ditutup atau selama mode darurat aktif. Bukan status final. |
+| Pulang lebih awal | Kejadian: presensi pulang sebelum jam pulang. Tidak mengubah status harian. |
+| Tidak scan pulang | Kejadian: siswa berstatus Hadir atau Terlambat tanpa presensi pulang setelah sesi pulang ditutup. |
+| Presensi manual | Presensi yang diinput staf, misalnya karena siswa lupa kartu, kartu rusak, kiosk terganggu, atau tiba setelah sesi masuk ditutup. Alasan wajib diisi. |
+| Koreksi status | Penetapan kehadiran siswa pada satu tanggal oleh staf menjadi Hadir, Terlambat, atau Tidak hadir, dengan alasan. Mengalahkan scan dan presensi manual, tetapi kalah dari izin/sakit/dispensasi yang disetujui. |
+| Mode darurat | Keadaan pada satu hari sekolah ketika semua stasiun scan tidak dapat dipakai. Diaktifkan guru piket atau admin. Selama aktif, Alpa tidak terbentuk, pesan "tidak hadir" ditahan, dan presensi manual per rombel dapat dipakai. |
+| Batas mundur | Rentang tanggal lampau yang masih boleh diubah staf: hari ini dan 7 hari kalender sebelumnya (diatur admin). Admin tidak dibatasi. |
 | Log perubahan presensi | Catatan setiap perubahan data presensi oleh staf: siapa, kapan, nilai lama, nilai baru, dan alasan. |
-| Pengajuan izin/sakit | Permohonan izin atau sakit dari siswa lewat portal, yang menunggu verifikasi staf. |
+| Pengajuan izin/sakit | Permohonan izin atau sakit dari siswa lewat portal, yang menunggu verifikasi staf. Siswa tidak dapat mengajukan dispensasi. |
 | Tahun ajaran | Periode akademik sekolah, umumnya Juli–Juni, terdiri dari dua semester. |
 | Rombel | Rombongan belajar: kelompok kelas tempat siswa terdaftar pada satu tahun ajaran, misalnya 7A. Label di antarmuka ditetapkan di Session 7. |
 | Tingkat | Jenjang kelas dalam satu sekolah, misalnya 7, 8, dan 9. |
-| Hari sekolah | Tanggal kegiatan belajar. Tidak termasuk hari libur di kalender sekolah. |
-| Kalender sekolah | Daftar hari libur dan hari non-sekolah yang diatur admin. |
+| Hari sekolah | Tanggal kegiatan belajar menurut pola mingguan, jadwal khusus, dan kalender sekolah. Karena libur dapat berlaku per tingkat atau rombel, hari sekolah ditentukan per siswa (`05` BR-KAL-05). |
+| Kalender sekolah | Daftar hari libur (untuk semua siswa, tingkat tertentu, atau rombel tertentu) dan jadwal khusus yang diatur admin. |
 | Dashboard hari ini | Halaman pantauan kehadiran pada hari berjalan, per rombel. |
 | Rekap | Ringkasan kehadiran per rombel atau per siswa untuk rentang tanggal tertentu. |
 | Rekap agregat | Jumlah kehadiran per rombel tanpa nama atau data individu siswa. Satu-satunya data kehadiran yang tampil di halaman publik. |
@@ -268,6 +282,7 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Jenis kejadian notifikasi | Tujuh pemicu notifikasi: scan masuk, scan pulang, terlambat, tidak hadir, tidak scan pulang, izin, dan pulang lebih awal. |
 | Gateway WA | Layanan pihak ketiga tidak resmi yang menyediakan API untuk mengirim pesan WhatsApp. |
 | Outbox WA | Antrean pesan WhatsApp yang menunggu dikirim oleh proses terjadwal. |
+| Ambang pengaman | Persentase minimal siswa wajib hadir yang tercatat masuk agar pesan "tidak hadir" dibuat otomatis. Di bawah ambang, pesan ditahan sampai dilepas atau dibatalkan guru piket atau admin. Default 50%. |
 | Template pesan | Teks pesan per jenis kejadian notifikasi, dengan isian otomatis seperti nama siswa dan jam. |
 | R1 / R2 / R3 | Tahap rilis versi pertama (lihat §6.1). |
 | Session 1–11 | Tahap diskusi discovery untuk menyusun dokumentasi (lihat §10.2). Tidak sama dengan sesi masuk/pulang. |
@@ -278,12 +293,12 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 
 | Dokumen | Isi | Sesi | Status |
 |---|---|---|---|
-| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–3 | Draft 0.2 |
-| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–3 | Draft 0.2 |
-| `02-user-roles-and-permissions.md` | Role dan permission | Session 3 | Draft 0.1 |
-| `03-user-flow.md` | Alur pengguna | Session 3 | Draft 0.1 |
-| `04-feature-specification.md` | Spesifikasi fitur rinci | Session 3–4 | Belum dibuat |
-| `05-business-rules.md` | Aturan bisnis | Session 4 | Belum dibuat |
+| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–4 | Draft 0.3 |
+| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–4 | Draft 0.3 |
+| `02-user-roles-and-permissions.md` | Role dan permission | Session 3–4 | Draft 0.2 |
+| `03-user-flow.md` | Alur pengguna | Session 3–4 | Draft 0.2 |
+| `04-feature-specification.md` | Spesifikasi fitur rinci | Session 4b | Belum dibuat |
+| `05-business-rules.md` | Aturan bisnis | Session 4 | Draft 0.1 |
 | `06-database-design.md` | Desain database | Session 5 | Belum dibuat |
 | `07-system-architecture.md` | Arsitektur sistem | Session 6 | Belum dibuat |
 | `08-ui-ux-design-system.md` | Sistem desain UI/UX | Session 7 | Belum dibuat |
@@ -301,8 +316,9 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 |---|---|---|
 | 1 | Project Discovery | Selesai |
 | 2 | Product & Feature Definition | Selesai; dokumen direview di Session 3 |
-| 3 | User Roles & User Flow | Selesai, menunggu review dokumen |
-| 4 | Business Rules | Berikutnya |
+| 3 | User Roles & User Flow | Selesai; usulan di `02` dan `03` ditinjau di Session 4 |
+| 4 | Business Rules | Selesai, menunggu review dokumen |
+| 4b | Feature Specification (`04`), lanjutan Session 4 sebelum Session 5 | Berikutnya |
 | 5 | Database Architecture | Belum |
 | 6 | System Architecture | Belum |
 | 7 | UI/UX & Design System | Belum |
@@ -333,3 +349,4 @@ Aturan ini berlaku untuk AI atau developer yang mengerjakan kode di repository i
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 1–2. |
 | 0.2 | 2026-10-03 | Hasil review dan keputusan Session 3. A-01, A-02, dan A-05 dikonfirmasi. OQ-01, OQ-02, dan OQ-14 terjawab; OQ-08 terjawab sebagian. OQ-15 dan OQ-16 ditambahkan. Aktor, glosarium (akun dan role), serta peta dokumen diperbarui. |
+| 0.3 | 2026-10-03 | Keputusan Session 4 (`05`). OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab; OQ-17 ditambahkan. Status Dispensasi ditambahkan, sehingga status harian menjadi enam. R-02, R-05, R-09, R-11, dan R-13 diperbarui; R-21 dan R-22 ditambahkan. Isi R1 dan glosarium (aturan jam, status, koreksi, mode darurat, batas mundur) diperbarui. `04` dijadwalkan di Session 4b. |
