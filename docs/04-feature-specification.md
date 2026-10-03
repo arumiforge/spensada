@@ -1425,9 +1425,9 @@ Rujukan: FR-MD-05, `HA-MD-04`, UF-02.
 
 ```text
 Given file import berisi 30 baris
-  And 2 baris memakai rombel yang tidak dikenal, dan 1 baris memiliki NISN yang sama dengan baris lain
+  And 2 baris memakai rombel yang tidak dikenal, dan baris ke-20 memiliki NISN yang sama dengan baris ke-5
 When admin mengunggah file
-Then pratinjau menampilkan 27 baris valid dan 3 baris gagal beserta alasannya
+Then pratinjau menampilkan 27 baris valid dan 3 baris gagal beserta alasannya, termasuk baris ke-20 sebagai NISN ganda di dalam file
   And belum ada data yang tersimpan
 When admin mengonfirmasi
 Then 27 siswa dan akun belum aktifnya tersimpan
@@ -2127,7 +2127,7 @@ Then kiosk terbuka dari cache dan penghitung tetap menunjukkan 12
    |---|---|
    | Jam scan lebih dari toleransi di depan jam server saat diterima | Dipakai |
    | Selisih jam laptop berubah lebih dari toleransi dari pengukuran sebelumnya | Dipakai |
-   | Menurut aturan server, scan berada di luar jendela, jenisnya berbeda dari jenis menurut kiosk, atau tanggalnya bukan hari sekolah bagi siswa | Tidak dipakai |
+   | Menurut aturan server, scan berada di luar jendela, atau tanggalnya bukan hari sekolah bagi siswa | Tidak dipakai |
    | Scan diterima lebih lambat dari batas mundur setelah tanggal scan | Dipakai |
 
 5. **Penggabungan** (BR-SCN-03, BR-SCN-04). Untuk setiap siswa, tanggal, dan jenis, scan paling awal yang dipakai menjadi kandidat presensi. Scan lainnya diberi hasil "ganda". Presensi masuk adalah yang paling awal di antara scan masuk yang dipakai dan presensi manual masuk yang tidak dibatalkan. Aturan yang sama berlaku untuk presensi pulang.
@@ -2378,10 +2378,11 @@ Tidak ada.
 Rujukan: FR-KIO-11, `HA-KIO-03`, BR-SCN-08.
 
 ```text
-Given scan masuk siswa E pukul 07.20 ditandai karena menurut aturan server berada di luar jendela, sehingga tidak dipakai
+Given admin memajukan jam tutup sesi masuk hari ini menjadi 07.15 lewat jadwal hari ini, saat Gerbang 1 sedang offline dengan aturan lama
+  And scan masuk siswa E pukul 07.20 dari Gerbang 1 ditandai karena menurut aturan server berada di luar jendela, sehingga tidak dipakai
   And siswa E berstatus Alpa
 When admin menerima scan itu
-Then status siswa E dihitung ulang memakai scan pukul 07.20
+Then status siswa E menjadi Terlambat, karena pukul 07.20 setelah batas terlambat 07.00
   And log perubahan presensi mencatat keputusan admin
 ```
 
@@ -3057,7 +3058,7 @@ Then siswa L tidak memiliki status pada 12 dan 13 Oktober
 | Tanggal | Ya | Default hari ini. Harus hari sekolah bagi siswa itu. Tidak boleh tanggal ke depan (BR-MUN-04). Guru piket hanya hari ini; wali kelas dan guru BK dalam batas mundur; admin tanpa batas (§4.2). |
 | Jenis | Ya | Masuk atau pulang. |
 | Jam | Ya | Default jam sekarang bila tanggalnya hari ini. Untuk hari ini, jam tidak boleh setelah jam sekarang. Boleh di luar jendela scan (BR-KOR-02). |
-| Alasan | Ya | Dari daftar BR-KOR-04: lupa kartu, kartu rusak, QR tidak terbaca, kiosk terganggu, tiba setelah sesi masuk ditutup, pulang karena sakit, pulang dengan izin, darurat, atau lainnya. Alasan "darurat" hanya dipakai oleh FS-PRS-09. |
+| Alasan | Ya | Dari daftar BR-KOR-04: lupa kartu, kartu rusak, QR tidak terbaca, kiosk terganggu, tiba setelah sesi masuk ditutup, pulang karena sakit, pulang dengan izin, darurat, atau lainnya. Pada presensi satu per satu, alasan "darurat" juga boleh dipakai, misalnya untuk rombel yang belum tercatat setelah mode darurat berakhir (UF-27 E3); statusnya tetap dihitung dari jam. |
 | Catatan | Ya, bila alasan "lainnya" | Teks. |
 
 Validasi tambahan:
@@ -3570,10 +3571,10 @@ Then fitur itu tidak tersedia
 Rujukan: BR-DRT-03, BR-SCN-04.
 
 ```text
-Given wali kelas 7A membuka daftar presensi per rombel pukul 09.00
-  And pukul 09.05 siswa A scan masuk di stasiun yang kembali berfungsi
-When wali kelas menyimpan daftar yang mencentang siswa A pukul 09.10
-Then siswa A dilewati dan dilaporkan, dan presensi masuknya tetap scan pukul 09.05
+Given wali kelas 7A membuka daftar presensi per rombel pukul 07.40
+  And pukul 07.45 siswa A scan masuk di stasiun yang kembali berfungsi, masih di jendela masuk
+When wali kelas menyimpan daftar yang mencentang siswa A pukul 07.50
+Then siswa A dilewati dan dilaporkan, dan presensi masuknya tetap scan pukul 07.45
 ```
 
 **AC-PRS-09-04 — Cakupan rombel**
@@ -4247,7 +4248,7 @@ Then pengajuan siswa 7A dan 7B tampil
 **Perilaku**
 
 1. Staf membuka data izin/sakit/dispensasi, memilih tindakan, lalu mengisi alasan (UF-29).
-2. **Batas mundur** berlaku pada tanggal yang statusnya berubah karena tindakan itu, kecuali untuk admin (BR-IZN-10):
+2. **Batas mundur** berlaku pada tanggal yang statusnya berubah karena tindakan itu (BR-IZN-10), kecuali untuk admin (BR-MUN-03):
    - batalkan: semua tanggal lampau dalam rentang data;
    - perpendek: tanggal lampau yang dikeluarkan dari rentang;
    - ubah penolakan menjadi persetujuan: semua tanggal lampau dalam rentang data.
@@ -4589,7 +4590,7 @@ Then jumlah 2 pengajuan menunggu tampil, tetapi peringatan stasiun tidak tampil
 | Rilis | R1 |
 | Requirement | FR-LAP-01, FR-LAP-02, FR-PRS-06, FR-PRS-07 |
 | Alur | UF-15 langkah 3–4, UF-16 langkah 1 |
-| Aktor dan hak | Hari ini: pemegang `HA-LAP-02`. Tanggal lain: pemegang `HA-LAP-03`. Tindakan di daftar mengikuti `HA-PRS-03`, `HA-PRS-04`, `HA-IZN-02`, dan `HA-PRS-06`. |
+| Aktor dan hak | Hari ini: pemegang `HA-LAP-02`. Tanggal lain: pemegang `HA-LAP-03`. Tindakan di daftar mengikuti `HA-PRS-03`, `HA-PRS-04`, `HA-IZN-02`, `HA-IZN-06`, dan `HA-PRS-06`. |
 | Aturan terkait | BR-STS-07, BR-REK-04, BR-REK-05 |
 | Status | DECISION (penanda di daftar presensi rombel, termasuk tanggal lampau, Session 4b); RECOMMENDATION (fitur ini sebagai rincian dari FR-LAP-01 dan FR-LAP-02) |
 
@@ -4619,7 +4620,8 @@ Then jumlah 2 pengajuan menunggu tampil, tetapi peringatan stasiun tidak tampil
 3. Tombol tindakan per baris hanya tampil bila pengguna berhak untuk siswa dan tanggal itu:
    - presensi manual dan pembatalannya (FS-PRS-06);
    - koreksi dan penghapusannya (FS-PRS-07);
-   - input izin/sakit/dispensasi (FS-IZN-02).
+   - input izin/sakit/dispensasi (FS-IZN-02);
+   - ubah keputusan izin/sakit/dispensasi (FS-IZN-05).
 4. Saat mode darurat aktif, daftar hari ini menyediakan tautan ke presensi per rombel (FS-PRS-09).
 5. Daftar untuk hari ini diberi tanda "belum final" sampai sesi masuk ditutup dan mode darurat berakhir (BR-REK-04).
 6. Penanda tampil untuk tanggal mana pun yang dibuka, termasuk tanggal lampau (BR-STS-07, DECISION Session 4b).
@@ -4725,9 +4727,9 @@ Then baris siswa B menunjukkan Terlambat, jam 08.10, sumber "manual", dan alasan
    - jumlah kejadian pulang lebih awal dan tidak scan pulang.
 2. Hari sekolah dihitung per siswa, sehingga libur tingkat atau rombel dan tanggal di luar masa aktif tidak dihitung (BR-KAL-05).
 3. Siswa yang pindah rombel hanya dihitung untuk tanggal saat ia berada di rombel ini, dan diberi tanda "pindah" (BR-REK-05).
-4. Bila rentang mencakup hari ini dan status hari ini belum final, siswa yang masih "belum hadir" tidak dihitung Alpa dan tidak dihitung sebagai hari sekolah. Rekap memuat kolom "belum hadir" dan tanda bahwa data hari ini belum final (BR-REK-04).
+4. Bila rentang mencakup hari ini dan status hari ini belum final, siswa yang masih "belum hadir" tidak dihitung Alpa dan hari itu belum dihitung sebagai hari sekolahnya, sehingga persentasenya tidak turun sementara. Rekap memuat kolom "belum hadir" dan tanda bahwa data hari ini belum final (BR-REK-04).
 5. Baris total rombel menjumlahkan semua kolom. Persentase total adalah total (Hadir + Terlambat + Dispensasi) ÷ total hari sekolah.
-6. Nama siswa dapat dibuka untuk melihat riwayatnya (FS-LAP-04).
+6. Nama siswa dapat dibuka untuk melihat riwayatnya (FS-LAP-04), bila siswa itu berada dalam cakupan pengguna untuk data per siswa (§4.1 butir 4). Untuk siswa yang sudah pindah ke rombel lain, wali kelas rombel lama hanya melihat baris rekapnya, tanpa tautan riwayat.
 7. Rekap satu hari menampilkan ringkasan yang sama. Status per siswa untuk satu tanggal dilihat di FS-LAP-02.
 8. Export rekap tersedia di R2 (FS-LAP-05).
 
@@ -4798,6 +4800,7 @@ Given pukul 07.30 hari ini 2 siswa 7A masih "belum hadir"
 When wali kelas membuka rekap 7A untuk minggu ini
 Then rekap memuat kolom "belum hadir" bernilai 2 dan tanda bahwa data hari ini belum final
   And kedua siswa itu tidak dihitung Alpa
+  And hari ini belum dihitung sebagai hari sekolah kedua siswa itu
 ```
 
 **AC-LAP-03-05 — Cakupan wali kelas**
@@ -5105,8 +5108,8 @@ Fitur R1 yang perlu diperhatikan agar R2 tidak memerlukan perubahan besar:
 | `00-project-overview.md` | 0.4 | Header dan dokumen terkait memuat `04`. R-22 diperbarui (penanda menjadi DECISION). Glosarium ditambah: spesifikasi fitur, penanda, daftar presensi rombel, kelompok dispensasi, scan bertanda, dan status stasiun. Definisi presensi manual dan koreksi status diperbarui. Peta dokumen dan progres sesi diperbarui. |
 | `01-product-requirements.md` | 0.4 | FR-MD-03, FR-MD-05, FR-PRS-06, FR-PRS-07, FR-IZN-06, FR-IZN-07, FR-LAP-01, dan FR-LAP-03 diperbarui sesuai keputusan Session 4b. Catatan acceptance criteria rinci (§7) dan traceability (§9) merujuk `04`. |
 | `02-user-roles-and-permissions.md` | 0.3 | Keputusan Session 4b ditambahkan di §1. `HA-PRS-03`, `HA-PRS-04`, `HA-IZN-06`, `HA-LAP-02`, `HA-LAP-03`, dan `HA-LAP-04` diperjelas: pembatalan presensi manual, hapus koreksi, perubahan per kelompok, daftar presensi rombel, dan isi riwayat di portal. |
-| `03-user-flow.md` | 0.3 | UF-02, UF-12, UF-14, UF-15, UF-16, UF-17, UF-18, UF-19, UF-22, UF-27, dan UF-29 diperbarui sesuai keputusan Session 4b. Rujukan ke `04` ditambahkan. |
-| `05-business-rules.md` | 0.2 | BR-STS-07, BR-SCN-10, BR-KOR-08, BR-KOR-09, BR-IZN-07, BR-IZN-10, BR-IZN-11, BR-DRT-06, BR-DRT-07, dan BR-KAL-03 menjadi DECISION. BR-KOR-11 diganti dengan pembatalan presensi manual. BR-KOR-10, BR-IZN-05, dan BR-IZN-09 diperbarui. Kebutuhan data di §14 dilengkapi. |
+| `03-user-flow.md` | 0.3 | UF-02, UF-28, UF-12, UF-14, UF-15, UF-16, UF-17, UF-18, UF-19, UF-22, UF-27, dan UF-29 diperbarui sesuai keputusan Session 4b. Rujukan ke `04` ditambahkan. |
+| `05-business-rules.md` | 0.2 | BR-STS-07, BR-SCN-10, BR-KOR-08, BR-KOR-09, BR-IZN-07, BR-IZN-10, BR-IZN-11, BR-DRT-06, BR-DRT-07, dan BR-KAL-03 menjadi DECISION. BR-KOR-11 diganti dengan pembatalan presensi manual. BR-KOR-10, BR-IZN-05, BR-IZN-09, BR-JAM-10 (jadwal hari ini sebagai lapisan tersendiri), dan BR-REK-04 (hari yang belum final tidak dihitung) diperbarui. Kebutuhan data di §14 dilengkapi. |
 
 ## 14. Pertanyaan terbuka dan nilai yang dipastikan nanti
 

@@ -143,7 +143,7 @@ Contoh jadwal khusus:
 | BR-JAM-07 | **Sesi ditutup otomatis.** Sesi masuk tertutup sendiri pada jam tutup sesi masuk, dan sesi pulang pada jam tutup sesi pulang. Tidak ada tombol tutup sesi. Kiosk menegakkan jendela scan dengan jamnya sendiri, termasuk saat offline. | DECISION (OQ-07) |
 | BR-JAM-08 | **Setelah sesi masuk ditutup.** Siswa yang masih "belum hadir" menjadi Alpa, kecuali saat mode darurat (BR-DRT-03). Siswa yang tiba setelahnya menemui guru piket, yang mencatat presensi manual beserta alasan untuk mengganti Alpa (BR-KOR-02). | DECISION |
 | BR-JAM-09 | **Setelah sesi pulang ditutup.** Siswa berstatus Hadir atau Terlambat yang tidak memiliki presensi pulang mendapat kejadian "tidak scan pulang". | DECISION |
-| BR-JAM-10 | **Jadwal hari ini.** Admin dan guru piket dapat mengubah jam hari ini (`HA-PRS-07`), misalnya batas terlambat diundur karena hujan deras, atau jam pulang dimajukan karena rapat guru. Alasan wajib diisi. Perubahan disimpan sebagai jadwal khusus hari ini dan dicatat, lalu status hari ini dihitung ulang. Guru piket tidak dapat mengubah tanggal lain atau pola mingguan, dan tidak dapat menjadikan hari ini libur. | DECISION (pelaku); RECOMMENDATION (batasan guru piket) |
+| BR-JAM-10 | **Jadwal hari ini.** Admin dan guru piket dapat mengubah jam hari ini (`HA-PRS-07`), misalnya batas terlambat diundur karena hujan deras, atau jam pulang dimajukan karena rapat guru. Alasan wajib diisi. Perubahan disimpan sebagai jadwal hari ini, yang mengalahkan jadwal khusus dan pola mingguan untuk tanggal itu, sehingga tetap dapat dipakai di dalam rentang jadwal khusus seperti Ramadan (`04` FS-PRS-04). Perubahan dicatat, lalu status hari ini dihitung ulang. Guru piket tidak dapat mengubah tanggal lain atau pola mingguan, dan tidak dapat menjadikan hari ini libur. | DECISION (pelaku); RECOMMENDATION (batasan guru piket) |
 | BR-JAM-11 | **Server yang menentukan.** Kiosk menentukan jenis dan status scan untuk umpan balik di layar. Server menghitung ulang dari jam scan dan aturan jam tanggal itu yang tersimpan di server. Bila hasilnya berbeda, misalnya karena kiosk offline masih memakai aturan lama, hasil server yang berlaku. | RECOMMENDATION |
 | BR-JAM-12 | **Zona waktu.** Semua jam memakai WIB (`Asia/Jakarta`, UTC+7). Tanggal presensi adalah tanggal menurut WIB. | DECISION (OQ-05) |
 
@@ -310,7 +310,7 @@ Definisi untuk ambang:
 | BR-REK-01 | **Isi rekap.** Rekap per siswa memuat jumlah hari sekolah, Hadir, Terlambat, Izin, Sakit, Dispensasi, dan Alpa, serta jumlah kejadian pulang lebih awal dan tidak scan pulang. Bentuk dan format laporan ditetapkan di `13` (OQ-11). | RECOMMENDATION |
 | BR-REK-02 | **Ketidakhadiran.** Ketidakhadiran adalah Sakit, Izin, dan Alpa, sama dengan kolom ketidakhadiran di rapor. Dispensasi bukan ketidakhadiran. | DECISION |
 | BR-REK-03 | **Persentase kehadiran.** (Hadir + Terlambat + Dispensasi) ÷ jumlah hari sekolah bagi siswa × 100%. Hari libur, termasuk libur tingkat atau rombel, tidak dihitung. | DECISION |
-| BR-REK-04 | **Hari berjalan.** Pada hari ini, siswa "belum hadir" tidak dihitung Alpa sampai sesi masuk ditutup dan mode darurat berakhir. Rekap yang mencakup hari ini diberi tanda bahwa data hari ini belum final. | RECOMMENDATION |
+| BR-REK-04 | **Hari berjalan.** Pada hari ini, siswa "belum hadir" tidak dihitung Alpa sampai sesi masuk ditutup dan mode darurat berakhir. Hari itu juga belum dihitung sebagai hari sekolah siswa tersebut, sehingga persentasenya tidak turun sementara. Rekap yang mencakup hari ini diberi tanda bahwa data hari ini belum final. | RECOMMENDATION |
 | BR-REK-05 | **Rombel per tanggal.** Rekap per rombel memakai rombel tempat siswa ditempatkan pada setiap tanggal. Siswa yang pindah rombel tercatat di rombel lama untuk tanggal sebelum pindah. | RECOMMENDATION (R-14) |
 
 ## 13. Contoh penerapan
@@ -392,4 +392,4 @@ Nilai usulan yang perlu dipastikan saat implementasi:
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 4. |
-| 0.2 | 2026-10-03 | Keputusan Session 4b (`04` §2). BR-KAL-03, BR-SCN-10, BR-STS-07, BR-KOR-08, BR-KOR-09, BR-IZN-07, BR-IZN-10, BR-IZN-11, BR-DRT-06, dan BR-DRT-07 menjadi DECISION; BR-STS-07 diperluas. BR-KOR-11 diganti dengan pembatalan presensi manual. BR-KOR-10, BR-IZN-05, dan BR-IZN-09 diperbarui. §2.3 ditambahkan, dan kebutuhan data di §14 dilengkapi. |
+| 0.2 | 2026-10-03 | Keputusan Session 4b (`04` §2). BR-KAL-03, BR-SCN-10, BR-STS-07, BR-KOR-08, BR-KOR-09, BR-IZN-07, BR-IZN-10, BR-IZN-11, BR-DRT-06, dan BR-DRT-07 menjadi DECISION; BR-STS-07 diperluas. BR-KOR-11 diganti dengan pembatalan presensi manual. BR-KOR-10, BR-IZN-05, BR-IZN-09, BR-JAM-10, dan BR-REK-04 diperbarui. §2.3 ditambahkan, dan kebutuhan data di §14 dilengkapi. |

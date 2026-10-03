@@ -499,7 +499,7 @@ Alur utama:
 
 1. Terjadi keadaan yang mengubah jam hari ini, misalnya hujan deras di pagi hari atau rapat guru di siang hari.
 2. Guru piket membuka jadwal hari ini, lalu mengubah jamnya. Contohnya batas terlambat menjadi 07.30, atau jam pulang menjadi 11.00. Alasan wajib diisi.
-3. Sistem menyimpan perubahan sebagai jadwal khusus hari ini, mencatatnya di log, dan menghitung ulang status hari ini.
+3. Sistem menyimpan perubahan sebagai jadwal hari ini, yang mengalahkan jadwal khusus dan pola mingguan untuk hari ini (`04` FS-PRS-04), mencatatnya di log, dan menghitung ulang status hari ini.
 4. Stasiun yang online memuat aturan baru. Stasiun yang offline memakai aturan lama sampai online kembali, tetapi server tetap menghitung status dengan aturan baru.
 
 Pengecualian:
@@ -739,4 +739,4 @@ OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4. Alur yang terdampak su
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 3. |
 | 0.2 | 2026-10-03 | Keputusan Session 4 (`05`). Status mekanisme slip di UF-05 menjadi DECISION. Garis waktu, UF-01, UF-09 s.d. UF-19, dan UF-23 disesuaikan: jendela scan, penutupan sesi otomatis, scan ganda, prioritas status, koreksi, batas mundur, dan dispensasi. UF-27 (mode darurat), UF-28 (ubah jadwal hari ini), dan UF-29 (ubah keputusan izin/sakit/dispensasi) ditambahkan. |
-| 0.3 | 2026-10-03 | Keputusan Session 4b (`04` §2). UF-02 (nomor WA opsional), UF-12 E6 (pembatalan presensi manual), UF-14 E3–E4, UF-15 (penanda), UF-16 E3–E4, UF-17 E3, UF-18 E2, UF-19 E2–E3, UF-22 (isi riwayat di portal siswa), UF-27 (langkah 7, E4, E5), dan UF-29 E3 (perubahan per kelompok) diperbarui. §1 merujuk `04`. |
+| 0.3 | 2026-10-03 | Keputusan Session 4b (`04` §2). UF-02 (nomor WA opsional), UF-12 E6 (pembatalan presensi manual), UF-14 E3–E4, UF-15 (penanda), UF-16 E3–E4, UF-17 E3, UF-18 E2, UF-19 E2–E3, UF-22 (isi riwayat di portal siswa), UF-27 (langkah 7, E4, E5), UF-28 langkah 3 (jadwal hari ini), dan UF-29 E3 (perubahan per kelompok) diperbarui. §1 merujuk `04`. |
