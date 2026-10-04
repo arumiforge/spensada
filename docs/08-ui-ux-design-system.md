@@ -566,7 +566,7 @@ Perubahan karena keputusan Session 7:
 | `01-product-requirements.md` | 0.7 | FR-KRT-01 dan NFR-11 diperbarui. Daftar library memuat flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide. OQ-13 di §8 terjawab sebagian. §9 merujuk `08`. |
 | `03-user-flow.md` | 0.6 | UF-06 langkah 4 (izin suara dan tes bunyi), UF-10 langkah 7 (lama tampil), UF-24, dan UF-26 diperbarui. §1 merujuk `08`. |
 | `04-feature-specification.md` | 0.4 | §2.6 (keputusan Session 7) ditambahkan. §1 dan pengantar catatan antarmuka awal merujuk `08`. §4.8, FS-AKN-05, FS-MD-03, FS-MD-07, FS-KIO-01, FS-KIO-02, FS-PRS-05, FS-LAP-03, FS-LAP-04, §11, §13, §14.1, dan §14.2 diperbarui. |
-| `05-business-rules.md` | 0.5 | Contoh pesan kiosk di §4.2 merujuk teks final di §7.3 dokumen ini. Kepala dokumen dan §15 diperbarui. |
+| `05-business-rules.md` | 0.5 | Contoh pesan kiosk di `05` §4.2 merujuk teks final di `08` §7.3. Kepala dokumen dan §15 diperbarui. |
 | `06-database-design.md` | 0.3 | §2.5 (keputusan Session 7) ditambahkan. Kolom `akun.nip` (R2) dan kunci `pengaturan.sekolah_kota` (R2) ditambahkan. Keterangan `siswa.foto_file` memuat foto kecil. §1, §14.1, dan §18 merujuk `08`. |
 | `07-system-architecture.md` | 0.2 | §2.4 (keputusan Session 7) ditambahkan. ARS-10 (flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide), ARS-19, ARS-22 (font dan ikon di cache kiosk), ARS-51, ARS-53 (foto kecil), §2.1, §2.3, §17.1, dan §19 diperbarui. |
 | `13-reporting-import-export.md` | 0.3 | Judul kolom yang memuat "Rombel" diganti "Kelas", termasuk nama file contoh di IE-07. IE-06, IE-10, IE-12, LP-08, §1, §8, dan §9 merujuk `08`. |
