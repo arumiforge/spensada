@@ -69,7 +69,7 @@ Keputusan Session 6 yang mengubah dokumen ini (rinciannya di `07` §2):
 |---|---|---|
 | Login akun stasiun | Akun stasiun login dengan username dan password di halaman login yang sama. Login bertahan 90 hari sejak kontak terakhir, dan berakhir lebih awal bila kredensial diganti, akun dinonaktifkan, atau petugas logout (`07` ARS-30). | DECISION (90 hari); RECOMMENDATION (mekanisme) |
 | Admin pertama | Dibuat lewat perintah CLI saat instalasi. Perintah serupa memulihkan akses bila satu-satunya admin lupa password (`07` ARS-49). | DECISION |
-| Sesi | Status akun dan waktu ganti password diperiksa di setiap permintaan. Penonaktifan akun mengakhiri semua sesinya, dan penggantian password mengakhiri sesi lain (`07` ARS-47). | DECISION |
+| Sesi | Status akun dan penggantian password diperiksa di setiap permintaan. Penonaktifan akun mengakhiri semua sesinya, dan penggantian password mengakhiri sesi lain (`07` ARS-47). | DECISION |
 | Peta hak akses di kode | Matriks di §6 ditulis sebagai konfigurasi kode dengan kunci berupa ID `HA-*` (`07` ARS-15). | RECOMMENDATION |
 
 ## 2. Jenis akun

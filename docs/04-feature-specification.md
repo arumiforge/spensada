@@ -1656,8 +1656,8 @@ Then unggahan ditolak dan foto lama tetap dipakai
    - file yang cocok, termasuk yang akan mengganti foto lama;
    - file yang tidak cocok, karena NISN tidak ditemukan atau nama file tidak sesuai format;
    - file ganda untuk NISN yang sama;
-   - file yang bukan gambar valid.
-3. Admin mengonfirmasi. Sistem memperkecil dan menyimpan foto yang cocok. File ganda dan file tidak cocok dilewati.
+   - file yang bukan gambar valid, atau melebihi batas piksel (`07` ARS-53).
+3. Admin mengonfirmasi. Sistem memperkecil dan menyimpan foto yang cocok secara bertahap, dengan tampilan progres (`07` ARS-54). File ganda dan file tidak cocok dilewati.
 4. Setiap penggantian dicatat di log data siswa, satu entri per siswa.
 5. Sistem menampilkan ringkasan hasil, yang dapat diunduh.
 
@@ -5360,4 +5360,4 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 4b: 40 fitur R1 dirinci beserta acceptance criteria, 9 fitur R2/R3 sebagai kerangka, ketentuan umum, traceability, dan keputusan Session 4b. |
 | 0.2 | 2026-10-04 | Keputusan Session 5 (§2.4). FS-MD-09 (atribut tambahan siswa) ditambahkan beserta AC-MD-09-01 s.d. AC-MD-09-03. FS-MD-03 (tingkat tidak dapat diubah setelah ada penempatan), FS-MD-04, FS-MD-05, FS-MD-06, dan FS-MD-08 diperbarui, dengan AC-MD-04-07, AC-MD-05-04, AC-MD-06-05, dan AC-MD-08-03 ditambahkan. FS-KIO-04 (tanda di luar aturan dinilai ulang), FS-PRS-05 (definisi koreksi), FS-PRS-11, FS-IZN-01 s.d. FS-IZN-03 (paling banyak 3 lampiran), FS-IZN-06, FS-LAP-01, FS-LAP-03 (pembulatan bilangan bulat, AC-LAP-03-01), §4.4, §4.5, §11, §12, dan §14 diperbarui. |
-| 0.3 | 2026-10-04 | Keputusan Session 6 (§2.5, `07`). §4.5 dan §4.6 merujuk mekanisme di `07`. Nilai parameter FS-AKN-01, FS-AKN-04, FS-MD-07, FS-KIO-01 s.d. FS-KIO-05, dan FS-LAP-01 ditetapkan, dan usulan batas unggah FS-MD-08 ditambahkan. Masa berlaku akun stasiun disebut masa login, bukan sesi (FS-AKN-01, FS-AKN-04, FS-KIO-01, FS-KIO-03, FS-KIO-04). Selisih jam diukur server dari jam laptop di setiap kiriman (FS-KIO-03, FS-KIO-04). FS-AKN-03, FS-MD-03, FS-MD-04, FS-IZN-03, pengantar §7, §11, §13, §14.1, dan §14.2 diperbarui. OQ-09 terjawab. |
+| 0.3 | 2026-10-04 | Keputusan Session 6 (§2.5, `07`). §4.5 dan §4.6 merujuk mekanisme di `07`. Nilai parameter FS-AKN-01, FS-AKN-04, FS-MD-07, FS-KIO-01 s.d. FS-KIO-05, dan FS-LAP-01 ditetapkan, dan FS-MD-08 memuat usulan batas unggah serta pemrosesan foto bertahap. Masa berlaku akun stasiun disebut masa login, bukan sesi (FS-AKN-01, FS-AKN-04, FS-KIO-01, FS-KIO-03, FS-KIO-04). Selisih jam diukur server dari jam laptop di setiap kiriman (FS-KIO-03, FS-KIO-04). FS-AKN-03, FS-MD-03, FS-MD-04, FS-IZN-03, pengantar §7, §11, §13, §14.1, dan §14.2 diperbarui. OQ-09 terjawab. |

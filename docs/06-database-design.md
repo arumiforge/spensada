@@ -269,6 +269,7 @@ Daftar kunci:
 | `wa_tunda_menit` | 60 | Admin | R2 | BR-WA-02 |
 | `wa_ambang_persen` | 50 | Admin | R2 | BR-WA-03 |
 | `status_dibangun_sampai` | Kosong | Sistem | R1 | §11.4 |
+| `cron_terakhir_at` | Kosong | Sistem | R1 | `07` ARS-56 |
 
 Kredensial gateway WhatsApp tidak disimpan di tabel ini. Tempatnya ditetapkan di Session 9, sebelum R2 (OQ-10).
 
@@ -845,7 +846,7 @@ Antrean hitung ulang status (DECISION, Session 6). Satu baris ditulis untuk seti
 | `tanggal_mulai` | DATE | | Awal rentang. |
 | `tanggal_selesai` | DATE | | Akhir rentang. Sama dengan `tanggal_mulai` untuk satu tanggal. Tanggal setelah hari ini tidak diproses (BR-STS-08). |
 | `sumber` | VARCHAR(40) | | Asal perubahan untuk penelusuran, berupa nama tabel dan ID, misalnya `koreksi_status:12`. |
-| `percobaan` | TINYINT | | Jumlah pemrosesan yang gagal. |
+| `percobaan` | TINYINT | | Jumlah pemrosesan yang gagal. Galat sementara, seperti deadlock, tidak dihitung (`07` ARS-36). |
 | `galat` | VARCHAR(255) | Ya | Galat terakhir. |
 | `gagal_at` | DATETIME | Ya | Diisi setelah 5 kali gagal. Antrean ini tidak diproses lagi sampai dicoba ulang lewat perintah CLI. |
 | `selesai_at` | DATETIME | Ya | Kosong berarti belum selesai. |
@@ -1047,7 +1048,7 @@ Volume ini ringan untuk MySQL 8. Partisi tabel tidak diperlukan di R1. (RECOMMEN
 |---|---|
 | NISN unik, username unik, satu tahun ajaran aktif, satu tinjauan per scan | Kunci unik. |
 | Satu presensi manual aktif per jenis, satu koreksi aktif, satu periode aktif terbuka, satu mode darurat aktif | Kunci unik dengan kolom turunan (DB-10). |
-| Scan tidak tercatat dua kali | Kunci unik `uuid`; penyimpanan memakai `INSERT IGNORE` atau pemeriksaan sebelumnya (DB-16). |
+| Scan tidak tercatat dua kali | Kunci unik `uuid`; penyimpanan memakai `INSERT ... ON DUPLICATE KEY UPDATE` tanpa perubahan, bukan `INSERT IGNORE` yang juga menyembunyikan galat lain (DB-16, `07` ARS-29). |
 | Masa aktif, penempatan, dan izin seorang siswa tidak tumpang tindih | Diperiksa server di dalam transaksi, setelah mengunci baris `siswa` dengan `SELECT ... FOR UPDATE`, sehingga dua permintaan bersamaan tidak lolos bersama. |
 | Jadwal khusus tidak tumpang tindih, dan rentang tahun ajaran tidak tumpang tindih | Diperiksa server di dalam transaksi, dengan kunci bernama MySQL (`GET_LOCK`, `07` ARS-42). |
 | Selalu ada admin aktif (`02` §4 butir 6) | Diperiksa server di dalam transaksi, dengan kunci bernama (`07` ARS-42). |
@@ -1144,4 +1145,4 @@ Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ. Session 6 
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 5: konvensi, 31 tabel R1 dan 3 tabel R2, aturan baca status harian, pemicu hitung ulang, index, integritas, dan keputusan Session 5. |
-| 0.2 | 2026-10-04 | Keputusan Session 6 (§2.4, `07`). Tabel `antrean_hitung_ulang` (§11.5) ditambahkan, sehingga tabel R1 menjadi 32. DB-11 menjadi DECISION. Kepala dokumen, §1, DB-03, §4.1, §4.2, §5.4, §6.1, §8.1, §8.2, §9.3, §11.4, §13, §16, §17.2, §18, dan §19 diperbarui. Di antaranya, `tanda_selisih_berubah` membandingkan selisih scan dengan selisih yang diukur server saat kiriman diterima, dan pembuatan baris status dimulai dari hari ini bila `status_dibangun_sampai` kosong. Usulan di §4.1, §6.4, §6.6, dan §10.4 menjadi DECISION. |
+| 0.2 | 2026-10-04 | Keputusan Session 6 (§2.4, `07`). Tabel `antrean_hitung_ulang` (§11.5) ditambahkan, sehingga tabel R1 menjadi 32. DB-11 menjadi DECISION. Kepala dokumen, §1, DB-03, §4.1, §4.2, §5.4, §6.1, §8.1, §8.2, §9.3, §11.4, §13, §16, §17.2, §18, dan §19 diperbarui. Di antaranya, `tanda_selisih_berubah` membandingkan selisih scan dengan selisih yang diukur server saat kiriman diterima, dan pembuatan baris status dimulai dari hari ini bila `status_dibangun_sampai` kosong. Kunci `cron_terakhir_at` ditambahkan di §6.1. Usulan di §4.1, §6.4, §6.6, dan §10.4 menjadi DECISION. |
