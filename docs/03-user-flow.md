@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.2 (draft) |
+| Versi | 0.3 (draft) |
 | Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules). |
-| Bergantung pada | [00-project-overview.md](00-project-overview.md), [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [05-business-rules.md](05-business-rules.md) |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules) dan Session 4b (Feature Specification). |
+| Bergantung pada | [00-project-overview.md](00-project-overview.md), [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md) |
 
 ## 1. Cara membaca dokumen ini
 
@@ -13,7 +13,7 @@
 - **Isi alur.** Setiap alur berisi aktor, prasyarat, rujukan, alur utama, pengecualian, dan hasil.
 - **Rujukan.** Requirement dirujuk dengan ID `FR-*`/`NFR-*` dari `01`. Hak akses dirujuk dengan ID `HA-*` dari `02`. Pengguna hanya dapat menjalankan langkah yang sesuai hak dan cakupannya.
 - **Status.** Label status mengikuti `00`. Aturan bisnis yang dipakai alur, seperti aturan jam, status harian, batas mundur, dan mode darurat, ditetapkan di `05` dan dirujuk dengan ID `BR-*`. Bila sebuah langkah masih bergantung pada pertanyaan terbuka, langkah itu menyebut OQ-nya.
-- **Tingkat rincian.** Dokumen ini menjelaskan urutan kerja dan keputusan pengguna. Tampilan layar ditetapkan di Session 7, dan route di Session 8.
+- **Tingkat rincian.** Dokumen ini menjelaskan urutan kerja dan keputusan pengguna. Rincian setiap fitur, termasuk validasi dan acceptance criteria, ada di `04`; `04` §12.2 memetakan setiap alur ke fiturnya. Tampilan layar ditetapkan di Session 7, dan route di Session 8.
 
 ## 2. Daftar alur
 
@@ -109,7 +109,7 @@ Alur utama:
    - NISN tidak ganda, baik di dalam file maupun dengan data yang sudah ada;
    - kolom wajib terisi;
    - rombel dikenal;
-   - format nomor WA benar.
+   - format nomor WA benar, bila diisi. Nomor WA bersifat opsional (DECISION, Session 4b).
 4. Sistem menampilkan pratinjau: jumlah baris valid, dan baris gagal beserta alasannya. Daftar baris gagal dapat diunduh.
 5. Admin mengonfirmasi. Sistem menyimpan baris valid dan membuat akun siswa dengan status belum aktif.
 6. Sistem menampilkan ringkasan hasil.
@@ -381,6 +381,7 @@ Pengecualian:
 - **E3** — Semua stasiun tidak dapat dipakai: guru piket mengaktifkan mode darurat, dan presensi dicatat per rombel (UF-27). Di luar mode darurat, presensi manual dicatat satu per satu (`05` BR-KOR-05).
 - **E4** — Siswa sudah memiliki koreksi status pada tanggal itu: presensi manual tidak mengubah status, karena koreksi menang (`05` BR-STS-04). Perubahannya dilakukan lewat koreksi (UF-16).
 - **E5** — Siswa memiliki izin/sakit/dispensasi yang disetujui pada tanggal itu: presensi tetap tersimpan, tetapi status mengikuti izin (`05` BR-STS-03). Bila siswa memang hadir, staf membatalkan izinnya (UF-29).
+- **E6** — Presensi manual salah input, misalnya tercatat untuk siswa yang salah: staf yang berhak membatalkannya dengan alasan. Datanya tetap tersimpan dengan tanda dibatalkan, tetapi tidak dipakai, lalu presensi yang benar dapat dicatat ulang (DECISION, Session 4b, `05` BR-KOR-11).
 
 ### UF-13 — Menutup sesi masuk
 
@@ -422,8 +423,8 @@ Pengecualian:
 
 - **E1** — Pulang lebih awal tidak memerlukan izin di kiosk, dan tidak mengubah status harian (DECISION, `05` BR-JAM-05). Kejadian ini tampil di riwayat dan rekap.
 - **E2** — Siswa pulang lebih awal di luar jendela pulang, misalnya pukul 10.00 karena sakit: guru piket mencatat presensi manual pulang dengan alasan (UF-12). Bila sekolah menetapkan hari itu sebagai Sakit atau Izin, staf menginput izin/sakit (UF-19). Karena izin/sakit yang disetujui menang, status hari itu menjadi Sakit atau Izin (`05` BR-STS-03).
-- **E3** — Scan pulang tanpa presensi masuk: scan tetap dicatat, tetapi siswa tidak menjadi Hadir. Dashboard menandai keadaan ini untuk ditindaklanjuti (`05` BR-SCN-10, BR-STS-07).
-- **E4** — Hari yang memakai mode darurat: kejadian "tidak scan pulang" tidak dibuat (`05` BR-DRT-07).
+- **E3** — Scan pulang tanpa presensi masuk: kiosk menampilkan umpan balik pulang seperti biasa, dan scan tetap dicatat, tetapi siswa tidak menjadi Hadir. Daftar nama staf menandai keadaan ini untuk ditindaklanjuti (DECISION, Session 4b, `05` BR-SCN-10, BR-STS-07).
+- **E4** — Hari yang memakai mode darurat: kejadian "tidak scan pulang" tidak dibuat (DECISION, Session 4b, `05` BR-DRT-07).
 
 ### UF-15 — Pantau dashboard hari ini
 
@@ -438,7 +439,7 @@ Alur utama:
    - guru piket, guru BK, pimpinan, dan admin: semua rombel;
    - wali kelas: rombelnya sendiri;
    - staf tanpa tugas khusus: hanya angka.
-4. Daftar nama menandai siswa berstatus Izin, Sakit, atau Dispensasi yang ternyata memiliki presensi masuk, dan siswa yang memiliki presensi pulang tanpa presensi masuk (RECOMMENDATION, `05` BR-STS-07).
+4. Daftar nama menandai siswa berstatus Izin, Sakit, atau Dispensasi yang ternyata memiliki presensi masuk, dan siswa yang memiliki presensi pulang tanpa presensi masuk. Penanda yang sama tampil di daftar presensi rombel per tanggal dan di riwayat siswa, termasuk untuk tanggal lampau (DECISION, Session 4b, `05` BR-STS-07).
 5. Data diperbarui seiring sinkron dari stasiun. Cara penyegarannya ditetapkan di Session 6 dan 7.
 
 ### UF-16 — Koreksi status presensi
@@ -458,8 +459,8 @@ Pengecualian:
 
 - **E1** — Tanggal di luar cakupan staf, misalnya guru piket mengoreksi tanggal kemarin, atau tanggal melewati batas mundur (hari ini dan 7 hari kalender sebelumnya): sistem menolak. Admin tidak dibatasi batas mundur.
 - **E2** — Koreksi menjadi Izin, Sakit, atau Dispensasi: dilakukan lewat input izin/sakit/dispensasi (UF-19), bukan lewat koreksi status. Dengan begitu datanya tetap satu sumber. (DECISION, `05` BR-KOR-07)
-- **E3** — Siswa memiliki izin/sakit/dispensasi yang disetujui pada tanggal itu: koreksi tetap dapat disimpan, tetapi status mengikuti izin. Sistem memberi peringatan sebelum menyimpan. (RECOMMENDATION, `05` BR-KOR-09)
-- **E4** — Koreksi perlu dibatalkan: staf menghapus koreksi dengan alasan, dan status dihitung lagi dari presensi (RECOMMENDATION, `05` BR-KOR-08).
+- **E3** — Siswa memiliki izin/sakit/dispensasi yang disetujui pada tanggal itu: koreksi tetap dapat disimpan, tetapi status mengikuti izin. Sistem memberi peringatan sebelum menyimpan. (DECISION, Session 4b, `05` BR-KOR-09)
+- **E4** — Koreksi perlu dibatalkan: staf menghapus koreksi dengan alasan, dan status dihitung lagi dari presensi (DECISION, Session 4b, `05` BR-KOR-08).
 
 ### UF-27 — Mode darurat
 
@@ -476,14 +477,15 @@ Alur utama:
 4. Wali kelas atau guru piket membuka presensi per rombel, yang berisi siswa rombel itu yang belum memiliki presensi masuk.
 5. Staf mencentang siswa yang hadir dan menandai siswa yang terlambat, lalu menyimpan. Sistem mencatat presensi manual masuk dengan alasan "darurat", berstatus Hadir atau Terlambat sesuai pilihan staf.
 6. Setelah semua rombel tercatat, guru piket mengakhiri mode darurat. Siswa tanpa presensi dan tanpa izin/sakit/dispensasi menjadi Alpa.
-7. Di R2, waktu tunda pesan "tidak hadir" dihitung sejak mode darurat diakhiri (`05` BR-DRT-06).
+7. Di R2, waktu tunda pesan "tidak hadir" dihitung sejak mode darurat diakhiri (DECISION, Session 4b, `05` BR-DRT-06).
 
 Pengecualian:
 
 - **E1** — Stasiun kembali berfungsi: scan berjalan normal sesuai jendela scan. Presensi per rombel tetap tersedia sampai mode darurat diakhiri.
 - **E2** — Mode darurat tidak diakhiri: mode berakhir otomatis pukul 23.59 WIB, dan pesan "tidak hadir" hari itu tidak dikirim.
 - **E3** — Ada rombel yang belum tercatat sampai hari berganti: wali kelas mencatat presensi manual satu per satu dalam batas mundur (UF-12).
-- **E4** — Pada hari yang memakai mode darurat, kejadian "tidak scan pulang" tidak dibuat (`05` BR-DRT-07).
+- **E4** — Pada hari yang memakai mode darurat, kejadian "tidak scan pulang" tidak dibuat (DECISION, Session 4b, `05` BR-DRT-07).
+- **E5** — Presensi per rombel salah centang: staf membatalkan presensi manual siswa itu (UF-12 E6).
 
 Hasil: kehadiran hari itu tetap tercatat, tanpa Alpa dan pesan "tidak hadir" yang keliru secara massal.
 
@@ -497,7 +499,7 @@ Alur utama:
 
 1. Terjadi keadaan yang mengubah jam hari ini, misalnya hujan deras di pagi hari atau rapat guru di siang hari.
 2. Guru piket membuka jadwal hari ini, lalu mengubah jamnya. Contohnya batas terlambat menjadi 07.30, atau jam pulang menjadi 11.00. Alasan wajib diisi.
-3. Sistem menyimpan perubahan sebagai jadwal khusus hari ini, mencatatnya di log, dan menghitung ulang status hari ini.
+3. Sistem menyimpan perubahan sebagai jadwal hari ini, yang mengalahkan jadwal khusus dan pola mingguan untuk hari ini (`04` FS-PRS-04), mencatatnya di log, dan menghitung ulang status hari ini.
 4. Stasiun yang online memuat aturan baru. Stasiun yang offline memakai aturan lama sampai online kembali, tetapi server tetap menghitung status dengan aturan baru.
 
 Pengecualian:
@@ -548,7 +550,7 @@ Pengecualian:
 
 - **E1** — Rentang tanggal mencakup hari libur: hanya hari sekolah yang terdampak.
 - **E2** — Tanggal yang diajukan sudah lewat: boleh, selama masih dalam batas mundur (hari ini dan 7 hari kalender sebelumnya). Lebih dari itu, sistem menolak, dan tanggal tersebut hanya dapat diubah admin. (DECISION, OQ-15)
-- **E3** — Tanggal yang diajukan tumpang tindih dengan data izin/sakit/dispensasi lain yang masih menunggu atau sudah disetujui: sistem menolak (RECOMMENDATION; detail di Session 9).
+- **E3** — Tanggal yang diajukan tumpang tindih dengan data izin/sakit/dispensasi lain yang masih menunggu atau sudah disetujui: sistem menolak dan menunjukkan data yang sudah ada (DECISION, Session 4b, `05` BR-IZN-07).
 - **E4** — Siswa sudah memiliki presensi masuk pada tanggal tersebut: bila pengajuan disetujui, status menjadi Izin atau Sakit, karena izin/sakit yang disetujui menang (DECISION, `05` BR-STS-03).
 
 Catatan: bila siswa tidak dapat mengakses portal, orang tua menghubungi sekolah, lalu staf mencatatnya lewat UF-19.
@@ -570,7 +572,7 @@ Alur utama:
 Pengecualian:
 
 - **E1** — Dua staf memverifikasi pengajuan yang sama pada waktu bersamaan: keputusan yang tersimpan lebih dulu berlaku. Staf kedua mendapat pesan bahwa pengajuan sudah diverifikasi, beserta nama verifikatornya. (RECOMMENDATION)
-- **E2** — Tanggal pengajuan sudah melewati batas mundur saat diverifikasi: pengajuan tetap dapat diverifikasi, karena diajukan saat masih dalam batas (RECOMMENDATION, `05` BR-IZN-10).
+- **E2** — Tanggal pengajuan sudah melewati batas mundur saat diverifikasi: pengajuan tetap dapat diverifikasi, karena diajukan saat masih dalam batas (DECISION, Session 4b, `05` BR-IZN-10).
 - **E3** — Keputusan perlu diubah setelah diverifikasi: lihat UF-29.
 
 ### UF-19 — Input izin/sakit/dispensasi oleh staf
@@ -592,8 +594,8 @@ Alur utama:
 Pengecualian:
 
 - **E1** — Tanggal lampau: diperbolehkan untuk staf yang berhak, sesuai cakupannya, dalam batas mundur (hari ini dan 7 hari kalender sebelumnya). Contohnya siswa yang membawa surat sakit untuk hari kemarin. Admin tidak dibatasi.
-- **E2** — Dispensasi untuk banyak siswa: staf memilih beberapa siswa, satu rombel, atau satu tingkat, sesuai cakupannya. Sistem membuat satu data dispensasi per siswa (`05` BR-IZN-05).
-- **E3** — Siswa sudah memiliki data izin/sakit/dispensasi yang menunggu atau disetujui pada tanggal yang sama: sistem menolak dan menunjukkan data yang ada. Pengajuan siswa yang menunggu cukup diverifikasi (UF-18). (RECOMMENDATION, `05` BR-IZN-07)
+- **E2** — Dispensasi untuk banyak siswa: staf memilih beberapa siswa, satu rombel, atau satu tingkat, sesuai cakupannya. Sistem membuat satu data dispensasi per siswa (`05` BR-IZN-05). Siswa yang sudah memiliki data izin/sakit/dispensasi pada tanggal yang sama dilewati dan dilaporkan, sedangkan siswa lain tetap tersimpan (DECISION, Session 4b).
+- **E3** — Siswa sudah memiliki data izin/sakit/dispensasi yang menunggu atau disetujui pada tanggal yang sama: sistem menolak dan menunjukkan data yang ada. Pengajuan siswa yang menunggu cukup diverifikasi (UF-18). (DECISION, Session 4b, `05` BR-IZN-07)
 
 ### UF-29 — Ubah keputusan izin/sakit/dispensasi
 
@@ -616,6 +618,7 @@ Pengecualian:
 
 - **E1** — Tanggal yang terdampak melewati batas mundur: hanya admin yang dapat mengubahnya.
 - **E2** — Rentang perlu diperpanjang atau jenisnya perlu diganti: staf membatalkan data lama, lalu membuat data baru (UF-19). (RECOMMENDATION)
+- **E3** — Dispensasi massal dibatalkan atau dipersingkat, misalnya study tour ditunda: staf menerapkan perubahan ke seluruh kelompok dengan satu alasan, bila semua siswanya berada dalam cakupan staf. Setiap data tetap tercatat di log (DECISION, Session 4b).
 
 ## 7. Akun
 
@@ -675,7 +678,7 @@ Alur staf:
 Alur siswa:
 
 1. Siswa membuka portal.
-2. Siswa melihat riwayat kehadirannya per bulan atau semester, beserta status pengajuan izin/sakitnya.
+2. Siswa melihat riwayat kehadirannya per bulan atau semester: status, jam masuk dan pulang, kejadian pulang, izin/sakit/dispensasi beserta catatan verifikasi, dan tanda "dikoreksi" beserta alasannya. Nama staf tidak ditampilkan (DECISION, Session 4b).
 
 ## 9. Alur R2 dan R3 (ringkas)
 
@@ -736,3 +739,4 @@ OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4. Alur yang terdampak su
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 3. |
 | 0.2 | 2026-10-03 | Keputusan Session 4 (`05`). Status mekanisme slip di UF-05 menjadi DECISION. Garis waktu, UF-01, UF-09 s.d. UF-19, dan UF-23 disesuaikan: jendela scan, penutupan sesi otomatis, scan ganda, prioritas status, koreksi, batas mundur, dan dispensasi. UF-27 (mode darurat), UF-28 (ubah jadwal hari ini), dan UF-29 (ubah keputusan izin/sakit/dispensasi) ditambahkan. |
+| 0.3 | 2026-10-03 | Keputusan Session 4b (`04` §2). UF-02 (nomor WA opsional), UF-12 E6 (pembatalan presensi manual), UF-14 E3–E4, UF-15 (penanda), UF-16 E3–E4, UF-17 E3, UF-18 E2, UF-19 E2–E3, UF-22 (isi riwayat di portal siswa), UF-27 (langkah 7, E4, E5), UF-28 langkah 3 (jadwal hari ini), dan UF-29 E3 (perubahan per kelompok) diperbarui. §1 merujuk `04`. |

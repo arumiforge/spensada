@@ -2,10 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
+| Versi | 0.2 (draft) |
 | Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 4 (Business Rules) |
+| Sumber | Discovery Session 4 (Business Rules). Diperbarui dengan keputusan Session 4b (Feature Specification, `04` §2). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): ID requirement (`FR-*`, `NFR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). |
+| Dokumen terkait | [04-feature-specification.md](04-feature-specification.md): spesifikasi fitur (`FS-*`) yang menerapkan aturan ini. |
 
 Dokumen ini menetapkan aturan bisnis presensi: kalender, aturan jam dan sesi, scan, status harian, presensi manual dan koreksi, izin/sakit/dispensasi, batas mundur, mode darurat, notifikasi WhatsApp, dan rekap. Dokumen ini menjawab OQ-03, OQ-04, OQ-05, OQ-06, OQ-07, OQ-15, dan OQ-16, serta meninjau usulan Session 3 di `02` dan `03`.
 
@@ -65,13 +66,26 @@ Dokumen ini menetapkan aturan bisnis presensi: kalender, aturan jam dan sesi, sc
 | Pimpinan tidak membuka lampiran surat | `HA-IZN-05` | Diganti: pimpinan boleh membuka semua lampiran (DECISION, BR-IZN-12) |
 | Status stasiun di panel | FR-KIO-12, `HA-KIO-02` | Disetujui (DECISION) |
 
+### 2.3 Keputusan Session 4b
+
+Usulan di dokumen ini yang berdampak ke fitur R1 ditinjau di Session 4b. Rinciannya ada di `04` §2.2.
+
+| Aturan | Hasil |
+|---|---|
+| BR-KAL-03 | Disetujui: jadwal khusus berlaku untuk semua siswa. |
+| BR-SCN-10, BR-KOR-08, BR-KOR-09, BR-IZN-10, BR-IZN-11, BR-DRT-06, BR-DRT-07 | Disetujui. |
+| BR-STS-07 | Disetujui dan diperluas ke daftar presensi rombel dan riwayat siswa, termasuk tanggal lampau. |
+| BR-IZN-07 | Disetujui. Pada dispensasi massal, siswa yang bentrok dilewati dan dilaporkan. |
+| BR-KOR-11 | Diganti: presensi manual dapat dibatalkan dengan alasan. |
+| BR-IZN-09 | Ditambah: perubahan keputusan dapat diterapkan ke satu kelompok dispensasi massal. |
+
 ## 3. Kalender dan hari sekolah (KAL)
 
 | ID | Aturan | Status |
 |---|---|---|
 | BR-KAL-01 | **Pola mingguan.** Hari sekolah adalah Senin–Sabtu. Minggu bukan hari sekolah. Admin dapat mengubah pola ini. | DECISION |
 | BR-KAL-02 | **Libur.** Admin menandai satu tanggal atau rentang tanggal sebagai libur, beserta keterangan. Libur berlaku untuk semua siswa, untuk tingkat tertentu, atau untuk rombel tertentu. Contohnya kelas 9 setelah ujian akhir, atau kelas 7 dan 9 saat kelas 8 mengikuti ANBK. | DECISION |
-| BR-KAL-03 | **Jadwal khusus.** Admin membuat jadwal khusus untuk satu tanggal atau rentang tanggal, berisi aturan jam lengkap (§4.1). Contohnya Ramadan, pekan ujian, atau rapat guru. Jadwal khusus mengalahkan pola mingguan hanya pada tanggal yang dicakupnya, dan berlaku untuk semua siswa. | DECISION (jadwal khusus); RECOMMENDATION (berlaku untuk semua siswa, bukan per tingkat) |
+| BR-KAL-03 | **Jadwal khusus.** Admin membuat jadwal khusus untuk satu tanggal atau rentang tanggal, berisi aturan jam lengkap (§4.1). Contohnya Ramadan, pekan ujian, atau rapat guru. Jadwal khusus mengalahkan pola mingguan hanya pada tanggal yang dicakupnya, dan berlaku untuk semua siswa. Bila jam berbeda per tingkat, admin memakai jam masuk yang paling lambat dan jam pulang yang paling awal. | DECISION (jadwal khusus: Session 4; berlaku untuk semua siswa: Session 4b) |
 | BR-KAL-04 | **Hari sekolah pengganti.** Jadwal khusus yang dipasang pada hari yang menurut pola mingguan bukan hari sekolah menjadikan tanggal itu hari sekolah, misalnya hari Minggu sebagai pengganti. | RECOMMENDATION |
 | BR-KAL-05 | **Hari sekolah bagi siswa.** Status harian hanya dihitung pada hari sekolah bagi siswa (syaratnya di bawah tabel). Di luar hari tersebut siswa tidak memiliki status, sehingga juga tidak Alpa. | DECISION (libur tidak dihitung Alpa); RECOMMENDATION (syarat 1 dan 4) |
 | BR-KAL-06 | **Masa aktif siswa.** Sistem mengetahui sejak dan sampai tanggal berapa siswa aktif, dan rombel siswa pada setiap tanggal. Siswa baru tidak menjadi Alpa sebelum tanggal mulai aktifnya. Siswa yang dinonaktifkan tetap memiliki riwayat sampai tanggal nonaktifnya. | RECOMMENDATION (rincian di Session 5) |
@@ -129,7 +143,7 @@ Contoh jadwal khusus:
 | BR-JAM-07 | **Sesi ditutup otomatis.** Sesi masuk tertutup sendiri pada jam tutup sesi masuk, dan sesi pulang pada jam tutup sesi pulang. Tidak ada tombol tutup sesi. Kiosk menegakkan jendela scan dengan jamnya sendiri, termasuk saat offline. | DECISION (OQ-07) |
 | BR-JAM-08 | **Setelah sesi masuk ditutup.** Siswa yang masih "belum hadir" menjadi Alpa, kecuali saat mode darurat (BR-DRT-03). Siswa yang tiba setelahnya menemui guru piket, yang mencatat presensi manual beserta alasan untuk mengganti Alpa (BR-KOR-02). | DECISION |
 | BR-JAM-09 | **Setelah sesi pulang ditutup.** Siswa berstatus Hadir atau Terlambat yang tidak memiliki presensi pulang mendapat kejadian "tidak scan pulang". | DECISION |
-| BR-JAM-10 | **Jadwal hari ini.** Admin dan guru piket dapat mengubah jam hari ini (`HA-PRS-07`), misalnya batas terlambat diundur karena hujan deras, atau jam pulang dimajukan karena rapat guru. Alasan wajib diisi. Perubahan disimpan sebagai jadwal khusus hari ini dan dicatat, lalu status hari ini dihitung ulang. Guru piket tidak dapat mengubah tanggal lain atau pola mingguan, dan tidak dapat menjadikan hari ini libur. | DECISION (pelaku); RECOMMENDATION (batasan guru piket) |
+| BR-JAM-10 | **Jadwal hari ini.** Admin dan guru piket dapat mengubah jam hari ini (`HA-PRS-07`), misalnya batas terlambat diundur karena hujan deras, atau jam pulang dimajukan karena rapat guru. Alasan wajib diisi. Perubahan disimpan sebagai jadwal hari ini, yang mengalahkan jadwal khusus dan pola mingguan untuk tanggal itu, sehingga tetap dapat dipakai di dalam rentang jadwal khusus seperti Ramadan (`04` FS-PRS-04). Perubahan dicatat, lalu status hari ini dihitung ulang. Guru piket tidak dapat mengubah tanggal lain atau pola mingguan, dan tidak dapat menjadikan hari ini libur. | DECISION (pelaku); RECOMMENDATION (batasan guru piket) |
 | BR-JAM-11 | **Server yang menentukan.** Kiosk menentukan jenis dan status scan untuk umpan balik di layar. Server menghitung ulang dari jam scan dan aturan jam tanggal itu yang tersimpan di server. Bila hasilnya berbeda, misalnya karena kiosk offline masih memakai aturan lama, hasil server yang berlaku. | RECOMMENDATION |
 | BR-JAM-12 | **Zona waktu.** Semua jam memakai WIB (`Asia/Jakarta`, UTC+7). Tanggal presensi adalah tanggal menurut WIB. | DECISION (OQ-05) |
 
@@ -158,7 +172,7 @@ Contoh pesan kiosk untuk BR-JAM-06 dan BR-SCN-03 (teks final ditetapkan di Sessi
 | BR-SCN-07 | **Jam scan.** Jam scan adalah jam laptop ditambah selisihnya terhadap jam server. Selisih diukur setiap kali kiosk memuat data dan setiap kali sinkron. Kiosk mengubah jam ke WIB dengan selisih tetap +07.00, tanpa bergantung pada pengaturan zona waktu Windows. Cara kiosk tetap memakai jam yang benar bila jam Windows berubah saat kiosk berjalan ditetapkan di Session 6. | RECOMMENDATION (R-05) |
 | BR-SCN-08 | **Scan ditandai.** Server menandai scan untuk ditinjau (`HA-KIO-03`) dalam empat keadaan (tabel di bawah). Peninjau menerima atau menolak scan bertanda. Scan yang ditolak tidak dipakai, dan status dihitung ulang. | RECOMMENDATION |
 | BR-SCN-09 | **Risiko kartu (OQ-06).** Risiko QR palsu, foto kartu, kartu titipan, dan kartu hilang yang tidak dapat diblokir diterima. Pengamannya adalah petugas yang mencocokkan foto di layar dengan wajah siswa. Tidak ada pemblokiran kartu atau tanda khusus di kiosk. Dugaan kartu titipan ditangani lewat koreksi status (BR-KOR-06). | DECISION |
-| BR-SCN-10 | **Pulang tanpa masuk.** Scan pulang dari siswa yang tidak memiliki presensi masuk tetap dicatat, tetapi tidak membuat siswa Hadir. Keadaan ini ditandai di dashboard (BR-STS-07). | RECOMMENDATION |
+| BR-SCN-10 | **Pulang tanpa masuk.** Scan pulang dari siswa yang tidak memiliki presensi masuk tetap dicatat, tetapi tidak membuat siswa Hadir. Keadaan ini ditandai (BR-STS-07). Kiosk menampilkan umpan balik pulang seperti biasa, karena kiosk tidak tahu presensi masuk dari stasiun lain atau presensi manual. | DECISION (Session 4b) |
 
 Keadaan untuk BR-SCN-08:
 
@@ -181,7 +195,7 @@ Angka 2 menit adalah usulan, dan ditetapkan di Session 6.
 | BR-STS-04 | **Koreksi menang atas presensi.** Koreksi status tidak berubah oleh scan atau presensi manual yang datang belakangan, termasuk scan dari stasiun yang terlambat sinkron. Hanya koreksi berikutnya, atau penghapusan koreksi, yang dapat mengubahnya. | DECISION |
 | BR-STS-05 | **Kejadian pulang.** Kejadian "pulang lebih awal" dan "tidak scan pulang" tidak mengubah status harian. Kejadian ini hanya dihitung pada hari berstatus Hadir atau Terlambat. | DECISION (tidak mengubah status); RECOMMENDATION (hanya dihitung pada Hadir/Terlambat) |
 | BR-STS-06 | **Dapat dihitung ulang.** Status harus selalu dapat dihitung ulang dari data sumbernya: scan, presensi manual, koreksi, izin/sakit/dispensasi, aturan jam, kalender, masa aktif siswa, dan mode darurat. Bila hasil hitungan disimpan, hasil itu diperbarui setiap kali salah satu sumbernya berubah. | RECOMMENDATION (R-13) |
-| BR-STS-07 | **Penanda di dashboard.** Bagi staf yang melihat daftar nama (`HA-LAP-02`), dashboard menandai dua keadaan: siswa berstatus Izin, Sakit, atau Dispensasi yang ternyata memiliki presensi masuk; dan siswa yang memiliki presensi pulang tanpa presensi masuk. Staf lalu memutuskan apakah data izin dibatalkan atau presensi diperbaiki. | RECOMMENDATION |
+| BR-STS-07 | **Penanda.** Bagi staf yang melihat daftar nama, sistem menandai dua keadaan: siswa berstatus Izin, Sakit, atau Dispensasi yang ternyata memiliki presensi masuk; dan siswa yang memiliki presensi pulang tanpa presensi masuk dan belum dikoreksi. Penanda tampil di dashboard hari ini, daftar presensi rombel per tanggal, dan riwayat siswa, termasuk untuk tanggal lampau. Penanda bersifat informasi, tidak tampil bagi siswa, dan hilang sendiri setelah datanya diperbaiki. Staf lalu memutuskan apakah data izin dibatalkan atau presensi diperbaiki. Rinciannya di `04` FS-PRS-05. | DECISION (Session 4b) |
 | BR-STS-08 | **Sampai hari ini.** Status dihitung untuk hari ini dan tanggal lampau. Izin/sakit/dispensasi untuk tanggal ke depan sudah tersimpan, tetapi baru menjadi status pada tanggalnya. | RECOMMENDATION |
 
 Urutan prioritas (BR-STS-02) untuk siswa S pada hari sekolah T (BR-KAL-05):
@@ -218,10 +232,10 @@ Contoh, dengan batas terlambat 07.00 dan jam tutup sesi masuk 08.00:
 | BR-KOR-05 | **Per rombel hanya saat darurat.** Presensi manual untuk banyak siswa sekaligus hanya tersedia saat mode darurat (BR-DRT-04). Di luar itu, presensi manual dicatat satu per satu. | DECISION |
 | BR-KOR-06 | **Koreksi status.** Staf yang berhak (`HA-PRS-04`) menetapkan kehadiran siswa pada satu tanggal menjadi Hadir, Terlambat, atau Tidak hadir, dengan alasan wajib. Contohnya Tidak hadir karena kartu dititipkan, atau Hadir karena terlambat dengan surat dokter. | DECISION |
 | BR-KOR-07 | **Izin, Sakit, dan Dispensasi bukan lewat koreksi.** Perubahan ke Izin, Sakit, atau Dispensasi dilakukan lewat input izin/sakit/dispensasi (UF-19), sehingga datanya tetap satu sumber. Koreksi Tidak hadir yang disusul izin yang disetujui menghasilkan status Izin. | DECISION |
-| BR-KOR-08 | **Hapus koreksi.** Staf yang berhak dapat menghapus koreksi dengan alasan. Status lalu dihitung lagi dari presensi. | RECOMMENDATION |
-| BR-KOR-09 | **Koreksi saat ada izin.** Koreksi tetap dapat disimpan walaupun siswa memiliki izin/sakit/dispensasi yang disetujui, tetapi status mengikuti izin (BR-STS-03). Sistem memberi peringatan sebelum menyimpan. | RECOMMENDATION |
-| BR-KOR-10 | **Log perubahan presensi.** Log mencatat setiap presensi manual, koreksi, penghapusan koreksi, perubahan jadwal hari ini, aktivasi dan pengakhiran mode darurat, serta input dan perubahan keputusan izin/sakit/dispensasi: siapa, kapan, data lama, data baru, dan alasan. | DECISION (log presensi); RECOMMENDATION (cakupan log diperluas) |
-| BR-KOR-11 | **Salah input.** Presensi manual tidak dihapus. Bila keliru, misalnya tercatat untuk siswa yang salah, staf memperbaikinya lewat koreksi status. | RECOMMENDATION |
+| BR-KOR-08 | **Hapus koreksi.** Staf yang berhak dapat menghapus koreksi dengan alasan. Status lalu dihitung lagi dari presensi. | DECISION (Session 4b) |
+| BR-KOR-09 | **Koreksi saat ada izin.** Koreksi tetap dapat disimpan walaupun siswa memiliki izin/sakit/dispensasi yang disetujui, tetapi status mengikuti izin (BR-STS-03). Sistem memberi peringatan sebelum menyimpan. Koreksi itu berlaku bila izin kemudian dibatalkan. | DECISION (Session 4b) |
+| BR-KOR-10 | **Log perubahan presensi.** Log mencatat setiap presensi manual dan pembatalannya, koreksi dan penghapusannya, perubahan jadwal hari ini, aktivasi dan pengakhiran mode darurat, input, verifikasi, dan perubahan keputusan izin/sakit/dispensasi, tinjauan scan bertanda, perubahan pola mingguan, jadwal khusus, libur, dan tanggal semester (BR-KAL-07), serta perubahan batas mundur (BR-MUN-05): siapa, kapan, data lama, data baru, dan alasan. Daftar lengkapnya di `04` §4.4. | DECISION (log presensi; pembatalan presensi manual dan penghapusan koreksi, Session 4b); RECOMMENDATION (cakupan log lainnya) |
+| BR-KOR-11 | **Salah input.** Presensi manual tidak dihapus, tetapi dapat dibatalkan dengan alasan oleh staf yang berhak (`HA-PRS-03`) dalam cakupannya, termasuk presensi per rombel saat darurat. Presensi yang dibatalkan tetap tersimpan dengan tanda dibatalkan dan tercatat di log, tetapi tidak dipakai untuk status maupun kejadian. Setelah itu, presensi yang benar dapat dicatat ulang. Kesalahan karena scan tetap diperbaiki lewat koreksi status. | DECISION (Session 4b; mengganti usulan Session 4: salah input diperbaiki lewat koreksi) |
 
 ## 8. Izin, sakit, dan dispensasi (IZN)
 
@@ -231,13 +245,13 @@ Contoh, dengan batas terlambat 07.00 dan jam tutup sesi masuk 08.00:
 | BR-IZN-02 | **Tanggal.** Satu data mencakup satu tanggal atau rentang tanggal. Hanya hari sekolah bagi siswa di dalam rentang itu yang terdampak (BR-KAL-05). | RECOMMENDATION (rentang, FR-IZN-01) |
 | BR-IZN-03 | **Pengajuan siswa.** Siswa hanya dapat mengajukan Izin atau Sakit, bukan Dispensasi. Tanggalnya boleh hari ini, tanggal ke depan, atau tanggal lampau dalam batas mundur (BR-MUN-01). Pengajuan berstatus "menunggu" sampai diverifikasi, dan siswa dapat membatalkannya selama masih menunggu. | DECISION (tanggal lampau, dispensasi tidak diajukan siswa); RECOMMENDATION (pembatalan oleh siswa) |
 | BR-IZN-04 | **Input staf langsung disetujui.** Admin, wali kelas (rombelnya), guru piket, dan guru BK menginput izin, sakit, atau dispensasi atas nama siswa. Data langsung berstatus disetujui, dan penginput tercatat sebagai verifikator. | DECISION |
-| BR-IZN-05 | **Dispensasi untuk banyak siswa.** Dispensasi dapat diinput sekaligus untuk siswa yang dipilih, satu rombel, atau satu tingkat, sesuai cakupan penginput. Sistem membuat satu data dispensasi per siswa. | DECISION (input massal); RECOMMENDATION (cara memilih siswa) |
+| BR-IZN-05 | **Dispensasi untuk banyak siswa.** Dispensasi dapat diinput sekaligus untuk siswa yang dipilih, satu rombel, atau satu tingkat, sesuai cakupan penginput. Sistem membuat satu data dispensasi per siswa, dengan penanda kelompok yang sama. Siswa yang bentrok (BR-IZN-07) dilewati dan dilaporkan. | DECISION (input massal; siswa bentrok dilewati, Session 4b); RECOMMENDATION (cara memilih siswa) |
 | BR-IZN-06 | **Hanya yang disetujui berlaku.** Data yang menunggu, ditolak, atau dibatalkan tidak memengaruhi status presensi. | DECISION |
-| BR-IZN-07 | **Tidak tumpang tindih.** Seorang siswa tidak boleh memiliki dua data izin/sakit/dispensasi berstatus menunggu atau disetujui yang mencakup tanggal yang sama. Sistem menolak dan menunjukkan data yang sudah ada. | RECOMMENDATION (UF-17 E3) |
+| BR-IZN-07 | **Tidak tumpang tindih.** Seorang siswa tidak boleh memiliki dua data izin/sakit/dispensasi berstatus menunggu atau disetujui yang mencakup tanggal yang sama. Sistem menolak dan menunjukkan data yang sudah ada. | DECISION (Session 4b) |
 | BR-IZN-08 | **Verifikasi.** Staf yang berhak (`HA-IZN-03`) menyetujui atau menolak pengajuan. Catatan wajib diisi saat menolak. Bila dua staf memverifikasi bersamaan, keputusan yang tersimpan lebih dulu yang berlaku. | RECOMMENDATION (UF-18) |
-| BR-IZN-09 | **Ubah keputusan.** Staf yang berhak memverifikasi (`HA-IZN-06`) dapat membatalkan data yang sudah disetujui, memendekkan rentangnya, atau mengubah penolakan menjadi persetujuan. Alasan wajib diisi. Perubahan dicatat, status dihitung ulang, dan siswa melihat keputusan terbaru. Untuk memperpanjang rentang atau mengganti jenis, staf membatalkan data lalu membuat data baru. | DECISION (ubah keputusan); RECOMMENDATION (perpanjang dan ganti jenis lewat data baru) |
-| BR-IZN-10 | **Batas mundur saat verifikasi.** Pengajuan yang dibuat dalam batas mundur tetap dapat diverifikasi walaupun tanggalnya sudah melewati batas mundur saat diverifikasi. Untuk perubahan keputusan (BR-IZN-09), batas mundur berlaku pada tanggal yang terdampak perubahan. | RECOMMENDATION |
-| BR-IZN-11 | **Tanggal ke depan.** Izin, sakit, dan dispensasi boleh dicatat untuk tanggal ke depan selama masih di tahun ajaran aktif. | RECOMMENDATION |
+| BR-IZN-09 | **Ubah keputusan.** Staf yang berhak memverifikasi (`HA-IZN-06`) dapat membatalkan data yang sudah disetujui, memendekkan rentangnya, atau mengubah penolakan menjadi persetujuan. Alasan wajib diisi. Perubahan dicatat, status dihitung ulang, dan siswa melihat keputusan terbaru. Untuk data dari dispensasi massal, pembatalan dan pemendekan dapat diterapkan sekaligus ke semua data dalam kelompok dengan satu alasan, dan setiap data tetap tercatat di log. Untuk memperpanjang rentang atau mengganti jenis, staf membatalkan data lalu membuat data baru. | DECISION (ubah keputusan; perubahan per kelompok, Session 4b); RECOMMENDATION (perpanjang dan ganti jenis lewat data baru) |
+| BR-IZN-10 | **Batas mundur saat verifikasi.** Pengajuan yang dibuat dalam batas mundur tetap dapat diverifikasi walaupun tanggalnya sudah melewati batas mundur saat diverifikasi. Untuk perubahan keputusan (BR-IZN-09), batas mundur berlaku pada tanggal yang terdampak perubahan. | DECISION (Session 4b) |
+| BR-IZN-11 | **Tanggal ke depan.** Izin, sakit, dan dispensasi boleh dicatat untuk tanggal ke depan selama masih di tahun ajaran aktif. | DECISION (Session 4b) |
 | BR-IZN-12 | **Lampiran.** Lampiran surat bersifat opsional. Lampiran dapat dibuka oleh siswa pemiliknya, staf yang berhak memverifikasi sesuai cakupannya, dan pimpinan untuk semua siswa (`HA-IZN-05`). Perlu tidaknya mencatat setiap pembukaan lampiran ditinjau di Session 9 (OQ-17). | DECISION (akses pimpinan); RECOMMENDATION (lampiran opsional) |
 
 ## 9. Batas mundur (MUN)
@@ -259,8 +273,8 @@ Contoh, dengan batas terlambat 07.00 dan jam tutup sesi masuk 08.00:
 | BR-DRT-03 | **Akibat.** Selama mode darurat aktif: siswa tanpa presensi tetap "belum hadir" walaupun sesi masuk sudah ditutup; pesan "tidak hadir" (R2) ditahan; dan presensi per rombel tersedia. Stasiun yang kembali berfungsi tetap dapat dipakai sesuai jendela scan. | DECISION; RECOMMENDATION (stasiun tetap dapat dipakai) |
 | BR-DRT-04 | **Presensi per rombel.** Staf membuka satu rombel dan melihat siswa yang belum memiliki presensi masuk. Staf mencentang siswa yang hadir dan menandai siswa yang terlambat. Sistem mencatat presensi manual masuk dengan alasan "darurat". Statusnya Hadir atau Terlambat sesuai pilihan staf, bukan dihitung dari jam input. Siswa yang tidak dicentang tidak berubah. Pelaku dan cakupannya mengikuti `HA-PRS-03`. | DECISION |
 | BR-DRT-05 | **Mengakhiri.** Setelah semua rombel tercatat, guru piket atau admin mengakhiri mode darurat. Siswa tanpa presensi dan tanpa izin/sakit/dispensasi lalu menjadi Alpa. Bila tidak diakhiri, mode darurat berakhir otomatis pukul 23.59 WIB. | DECISION |
-| BR-DRT-06 | **Pesan setelah darurat.** Waktu tunda pesan "tidak hadir" dihitung sejak mode darurat diakhiri (BR-WA-02). Bila mode darurat berakhir otomatis di akhir hari, pesan "tidak hadir" hari itu tidak dikirim. | RECOMMENDATION |
-| BR-DRT-07 | **Kejadian pulang pada hari darurat.** Pada tanggal yang pernah memakai mode darurat, kejadian "tidak scan pulang" tidak dibuat, karena stasiun tidak dapat diandalkan hari itu. | RECOMMENDATION |
+| BR-DRT-06 | **Pesan setelah darurat.** Waktu tunda pesan "tidak hadir" dihitung sejak mode darurat diakhiri (BR-WA-02). Bila mode darurat berakhir otomatis di akhir hari, pesan "tidak hadir" hari itu tidak dikirim. | DECISION (Session 4b) |
+| BR-DRT-07 | **Kejadian pulang pada hari darurat.** Pada tanggal yang pernah memakai mode darurat, kejadian "tidak scan pulang" tidak dibuat, karena stasiun tidak dapat diandalkan hari itu. | DECISION (Session 4b) |
 
 ## 11. Notifikasi WhatsApp (WA) — R2
 
@@ -296,7 +310,7 @@ Definisi untuk ambang:
 | BR-REK-01 | **Isi rekap.** Rekap per siswa memuat jumlah hari sekolah, Hadir, Terlambat, Izin, Sakit, Dispensasi, dan Alpa, serta jumlah kejadian pulang lebih awal dan tidak scan pulang. Bentuk dan format laporan ditetapkan di `13` (OQ-11). | RECOMMENDATION |
 | BR-REK-02 | **Ketidakhadiran.** Ketidakhadiran adalah Sakit, Izin, dan Alpa, sama dengan kolom ketidakhadiran di rapor. Dispensasi bukan ketidakhadiran. | DECISION |
 | BR-REK-03 | **Persentase kehadiran.** (Hadir + Terlambat + Dispensasi) ÷ jumlah hari sekolah bagi siswa × 100%. Hari libur, termasuk libur tingkat atau rombel, tidak dihitung. | DECISION |
-| BR-REK-04 | **Hari berjalan.** Pada hari ini, siswa "belum hadir" tidak dihitung Alpa sampai sesi masuk ditutup dan mode darurat berakhir. Rekap yang mencakup hari ini diberi tanda bahwa data hari ini belum final. | RECOMMENDATION |
+| BR-REK-04 | **Hari berjalan.** Pada hari ini, siswa "belum hadir" tidak dihitung Alpa sampai sesi masuk ditutup dan mode darurat berakhir. Hari itu juga belum dihitung sebagai hari sekolah siswa tersebut, sehingga persentasenya tidak turun sementara. Rekap yang mencakup hari ini diberi tanda bahwa data hari ini belum final. | RECOMMENDATION |
 | BR-REK-05 | **Rombel per tanggal.** Rekap per rombel memakai rombel tempat siswa ditempatkan pada setiap tanggal. Siswa yang pindah rombel tercatat di rombel lama untuk tanggal sebelum pindah. | RECOMMENDATION (R-14) |
 
 ## 13. Contoh penerapan
@@ -333,13 +347,15 @@ Status: RECOMMENDATION. Nama tabel dan kolom ditetapkan di Session 5 (`06-databa
 | Semester | Tanggal mulai dan selesai. | BR-KAL-05 |
 | Masa aktif dan penempatan siswa | Tanggal mulai dan selesai aktif, serta penempatan rombel dengan tanggal mulai dan selesai. | BR-KAL-05, BR-KAL-06, BR-REK-05 |
 | Catatan scan | ID unik dari kiosk (unik di database), stasiun, siswa, jam scan (WIB), jam laptop asli, selisih jam, waktu diterima server, jenis menurut kiosk, hasil di server (dipakai, ganda, atau ditolak), tanda tinjauan beserta alasannya, dan hasil tinjauan. Tidak pernah diubah isinya atau dihapus. | BR-SCN-03 s.d. BR-SCN-08 |
-| Presensi harian | Satu baris per siswa per tanggal (siswa + tanggal unik): presensi masuk dan pulang beserta jam dan sumbernya (scan atau manual), serta koreksi status (nilai, alasan, pelaku, waktu). Status hasil hitungan boleh disimpan sebagai salinan (BR-STS-06). | BR-SCN-04, BR-STS-02, BR-KOR-06 |
-| Presensi manual | Jenis, jam, alasan, catatan, penginput, serta penanda presensi per rombel darurat beserta status yang dipilih staf. | BR-KOR-01, BR-DRT-04 |
-| Izin/sakit/dispensasi | Siswa, jenis, tanggal mulai dan selesai, keterangan, lampiran, sumber (siswa atau staf), status (menunggu, disetujui, ditolak, dibatalkan), pengaju, verifikator, waktu, catatan, riwayat perubahan keputusan, dan penanda kelompok untuk input massal. | BR-IZN-01 s.d. BR-IZN-12 |
-| Mode darurat | Tanggal, waktu aktif, pelaku dan alasan, serta waktu berakhir dengan pelakunya atau penanda berakhir otomatis. | BR-DRT-02, BR-DRT-05 |
-| Status stasiun | Waktu sinkron terakhir, jumlah scan belum tersinkron yang dilaporkan, dan selisih jam terakhir. | FR-KIO-12, BR-SCN-08, BR-WA-02 |
+| Presensi harian | Satu baris per siswa per tanggal (siswa + tanggal unik): presensi masuk dan pulang beserta jam dan sumbernya (scan atau manual), serta koreksi status (nilai, alasan, pelaku, waktu, dan data penghapusan). Status hasil hitungan boleh disimpan sebagai salinan (BR-STS-06). | BR-SCN-04, BR-STS-02, BR-KOR-06 |
+| Presensi manual | Jenis, jam, alasan, catatan, penginput, serta penanda presensi per rombel darurat beserta status yang dipilih staf. Data pembatalan: tanda dibatalkan, alasan, pelaku, dan waktu. | BR-KOR-01, BR-DRT-04, BR-KOR-11 |
+| Izin/sakit/dispensasi | Siswa, jenis, tanggal mulai dan selesai, keterangan, lampiran, sumber (siswa atau staf), status (menunggu, disetujui, ditolak, dibatalkan), pengaju, verifikator, waktu, catatan, riwayat perubahan keputusan, dan penanda kelompok untuk input massal beserta lampiran bersamanya. | BR-IZN-01 s.d. BR-IZN-12 |
+| Mode darurat | Satu baris per periode (mode darurat dapat diaktifkan lagi pada hari yang sama): tanggal, waktu aktif, pelaku dan alasan, serta waktu berakhir dengan pelakunya atau penanda berakhir otomatis. | BR-DRT-02, BR-DRT-05 |
+| Status stasiun | Waktu kontak dan sinkron terakhir, jumlah scan belum tersinkron yang dilaporkan, selisih jam terakhir, dan waktu data terakhir dimuat. | FR-KIO-12, BR-SCN-08, BR-WA-02 |
 | Pengaturan | Batas mundur (hari), waktu tunda pesan (menit), dan ambang pengaman (persen). | BR-MUN-01, BR-WA-02, BR-WA-03 |
-| Log perubahan presensi | Jenis data, siswa, tanggal, data lama, data baru, alasan, pelaku, dan waktu. | BR-KOR-10 |
+| Log perubahan presensi | Jenis data, siswa, tanggal, data lama, data baru, alasan, pelaku, waktu, dan penanda kelompok untuk tindakan massal. | BR-KOR-10 |
+| Data siswa | NISN (teks), nama, dan nomor WA orang tua/wali yang opsional dan disimpan dalam format baku 62… (`04` FS-MD-04). | FR-MD-03 |
+| Tinjauan scan bertanda | Keputusan, catatan, peninjau, dan waktu, terpisah dari isi catatan scan. | BR-SCN-08 |
 | Outbox WA (R2) | Jenis kejadian, siswa, tanggal, status kirim, status tahan, serta pelaku yang melepas atau membatalkan. | BR-WA-01 s.d. BR-WA-07 |
 
 Catatan waktu (R-11):
@@ -355,6 +371,8 @@ Catatan waktu (R-11):
 | `01-product-requirements.md` | 0.3 | FR-AKN-06, FR-KIO-04, FR-KIO-05, FR-KIO-10 s.d. FR-KIO-12, FR-PRS-02 s.d. FR-PRS-08, FR-IZN-01 s.d. FR-IZN-05, FR-LAP-01, FR-LAP-02, FR-WA-02, FR-WA-07, NFR-09, kriteria keberhasilan 5, dan AC-03 diperbarui. FR-PRS-09 s.d. FR-PRS-11, FR-IZN-06, FR-IZN-07, dan FR-WA-08 ditambahkan. |
 | `02-user-roles-and-permissions.md` | 0.2 | `HA-PRS-05` menjadi DEPRECATED. `HA-PRS-07` s.d. `HA-PRS-09`, `HA-IZN-06`, dan `HA-WA-03` ditambahkan. Pimpinan dapat membuka lampiran (`HA-IZN-05`). Batas mundur ditetapkan. Usulan yang disetujui menjadi DECISION. |
 | `03-user-flow.md` | 0.2 | Status UF-05 menjadi DECISION. Alur hari sekolah dan izin disesuaikan dengan aturan ini. UF-27 (mode darurat), UF-28 (ubah jadwal hari ini), dan UF-29 (ubah keputusan izin/sakit/dispensasi) ditambahkan. |
+
+Perubahan dokumen karena keputusan Session 4b dicatat di `04` §13.
 
 ## 16. Pertanyaan terbuka
 
@@ -374,3 +392,4 @@ Nilai usulan yang perlu dipastikan saat implementasi:
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 4. |
+| 0.2 | 2026-10-03 | Keputusan Session 4b (`04` §2). BR-KAL-03, BR-SCN-10, BR-STS-07, BR-KOR-08, BR-KOR-09, BR-IZN-07, BR-IZN-10, BR-IZN-11, BR-DRT-06, dan BR-DRT-07 menjadi DECISION; BR-STS-07 diperluas. BR-KOR-11 diganti dengan pembatalan presensi manual. BR-KOR-10, BR-IZN-05, BR-IZN-09, BR-JAM-10, dan BR-REK-04 diperbarui. §2.3 ditambahkan, dan kebutuhan data di §14 dilengkapi. |
