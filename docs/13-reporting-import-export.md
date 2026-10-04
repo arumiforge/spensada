@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.2 (draft, menunggu review) |
+| Versi | 0.3 (draft, menunggu review) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, `07`). |
-| Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): FR-MD-05, FR-MD-07, FR-LAP-02 s.d. FR-LAP-05. [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [04-feature-specification.md](04-feature-specification.md): FS-MD-05, FS-MD-06, FS-MD-08, FS-LAP-01 s.d. FS-LAP-06. [05-business-rules.md](05-business-rules.md): aturan rekap (§12). [06-database-design.md](06-database-design.md): tabel dan aturan baca status harian (§11). [07-system-architecture.md](07-system-architecture.md): library, penyimpanan file, dan foto. |
+| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, `07`) dan Session 7 (UI/UX & Design System, `08`). |
+| Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): FR-MD-05, FR-MD-07, FR-LAP-02 s.d. FR-LAP-05. [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [04-feature-specification.md](04-feature-specification.md): FS-MD-05, FS-MD-06, FS-MD-08, FS-LAP-01 s.d. FS-LAP-06. [05-business-rules.md](05-business-rules.md): aturan rekap (§12). [06-database-design.md](06-database-design.md): tabel dan aturan baca status harian (§11). [07-system-architecture.md](07-system-architecture.md): library, penyimpanan file, dan foto. [08-ui-ux-design-system.md](08-ui-ux-design-system.md): label, format, PDF, dan flyer. |
 
 Dokumen ini menetapkan laporan dan formatnya, isi flyer kehadiran, template import siswa, import penempatan, dan format nama file foto untuk upload massal. Dokumen ini menjawab OQ-11 dan OQ-12.
 
@@ -19,7 +19,7 @@ Laporan di layar termasuk R1 dan dirinci di `04`, kecuali tampilan rekap semua r
   - Ketentuan umum laporan dan export memakai `IE-<NN>`.
   - ID tidak pernah dinomori ulang. Butir yang batal ditandai `DEPRECATED`.
 - **Status.** Label status mengikuti `00`. Rincian yang tidak dibahas di ronde diskusi Session 5 berstatus RECOMMENDATION.
-- **Nama kolom.** Judul kolom file ditulis persis seperti di dokumen ini. Teks layar ditetapkan di Session 7.
+- **Nama kolom.** Judul kolom file ditulis persis seperti di dokumen ini. Rombel ditulis "Kelas" di judul kolom, sesuai label layar (`08` UI-51). Teks layar dan format tanggal mengikuti `08` §9.
 - **Contoh.** Contoh tanggal mengikuti `04` §1: "hari ini" adalah Selasa, 13 Oktober 2026.
 
 ## 2. Keputusan Session 5 dan 6
@@ -46,13 +46,13 @@ Keputusan Session 6 yang berdampak ke dokumen ini: pengecualian rekap rapor seme
 | IE-03 | **Hari ini belum final.** Laporan yang mencakup hari ini mengikuti BR-REK-04. File dan flyer memuat tanda "Data hari ini belum final, dibuat pukul JJ.MM". | DECISION (BR-REK-04); RECOMMENDATION (tanda di file dan flyer) |
 | IE-04 | **Pembulatan.** Persentase kehadiran dihitung dari jumlah hari, lalu dibulatkan ke bilangan bulat terdekat. Nilai tepat setengah dibulatkan ke atas, misalnya 87,5% menjadi 88% dan 87,4% menjadi 87%. Persentase baris total dihitung dari jumlah total, bukan dari rata-rata persentase baris. Pembulatan hanya dilakukan saat ditampilkan atau ditulis ke file. | DECISION (bilangan bulat); RECOMMENDATION (setengah ke atas) |
 | IE-05 | **Hak dan cakupan.** Export mengikuti hak dan cakupan laporan yang sama di layar, ditambah `HA-LAP-05` (§4). Isi file sama dengan yang boleh dilihat pengguna di layar. | RECOMMENDATION |
-| IE-06 | **Identitas file.** XLSX dan PDF memuat nama sekolah (FS-MD-01), judul laporan, cakupan (rombel atau sekolah), rentang tanggal, waktu dibuat, dan nama pembuat. PDF juga memuat logo sekolah dan nomor halaman. CSV hanya berisi satu baris judul kolom dan baris data. | RECOMMENDATION |
-| IE-07 | **Nama file.** Pola: `spensada_<laporan>_<cakupan>_<mulai>_<selesai>.<ext>`, dengan tanggal `YYYYMMDD` dan huruf ASCII. Contoh: `spensada_rekap-rombel_7A_20261001_20261013.xlsx`. Nama file tidak memuat nama siswa. Riwayat siswa memakai NISN sebagai cakupan. | RECOMMENDATION |
+| IE-06 | **Identitas file.** XLSX dan PDF memuat nama sekolah (FS-MD-01), judul laporan, cakupan (rombel atau sekolah), rentang tanggal, waktu dibuat, dan nama pembuat. PDF juga memuat logo sekolah dan nomor halaman. CSV hanya berisi satu baris judul kolom dan baris data. Kop, kaki halaman, dan blok tanda tangan PDF mengikuti `08` UI-60 dan UI-61. | RECOMMENDATION; DECISION (kop dan tanda tangan, Session 7) |
+| IE-07 | **Nama file.** Pola: `spensada_<laporan>_<cakupan>_<mulai>_<selesai>.<ext>`, dengan tanggal `YYYYMMDD` dan huruf ASCII. Contoh: `spensada_rekap-kelas_7A_20261001_20261013.xlsx`. Nama file tidak memuat nama siswa. Riwayat siswa memakai NISN sebagai cakupan. | RECOMMENDATION |
 | IE-08 | **XLSX.** NISN dan NIS ditulis sebagai sel teks, sehingga nol di depan tetap utuh (R-12). Tanggal ditulis sebagai sel tanggal, dan jumlah sebagai sel angka. Persentase ditulis sebagai angka bulat. Setiap file memiliki lembar "Keterangan" berisi arti kode dan filter yang dipakai. | RECOMMENDATION |
 | IE-09 | **CSV.** UTF-8 dengan BOM, pemisah koma, dan tanda kutip ganda untuk teks. Judul kolom memakai `snake_case`. Tanggal `YYYY-MM-DD`, jam `HH:MM:SS`, dan status memakai kode di `06`. CSV ditujukan untuk diolah aplikasi lain. Untuk dibuka di Excel, pengguna memakai XLSX. | RECOMMENDATION |
-| IE-10 | **PDF.** Ukuran A4. Rekap dan daftar memakai orientasi lanskap bila kolomnya banyak. Rekap per rombel (LP-01) dan rekap rapor (LP-03) memuat tempat tanda tangan wali kelas. | RECOMMENDATION |
+| IE-10 | **PDF.** Ukuran A4. Rekap dan daftar memakai orientasi lanskap bila kolomnya banyak. Rekap per rombel (LP-01) dan rekap rapor (LP-03) memuat blok tanda tangan wali kelas beserta NIP (`08` UI-61). | RECOMMENDATION; DECISION (tanda tangan dan NIP, Session 7) |
 | IE-11 | **Rentang.** Rentang laporan mengikuti layar asalnya. Rentang rekap (LP-01 s.d. LP-03) berada di dalam satu tahun ajaran dan tidak melewati hari ini, sama dengan FS-LAP-03. | RECOMMENDATION |
-| IE-12 | **Library.** XLSX dibuat dan dibaca dengan PhpSpreadsheet, dan PDF dibuat dengan mPDF. Keduanya dipasang lewat Composer (OQ-09, C-06, `07` ARS-07 dan ARS-10). CSV dibaca dan ditulis dengan fungsi bawaan PHP. Flyer dibuat di browser, dengan cara yang dipilih di Session 7 (R-19). | DECISION (mPDF dan Composer, Session 6); RECOMMENDATION (PhpSpreadsheet dan CSV) |
+| IE-12 | **Library.** XLSX dibuat dan dibaca dengan PhpSpreadsheet, dan PDF dibuat dengan mPDF. Keduanya dipasang lewat Composer (OQ-09, C-06, `07` ARS-07 dan ARS-10). CSV dibaca dan ditulis dengan fungsi bawaan PHP. Flyer dibuat di browser dengan Canvas API tanpa library (R-19, `08` UI-65). | DECISION (mPDF dan Composer, Session 6; Canvas API, Session 7); RECOMMENDATION (PhpSpreadsheet dan CSV) |
 | IE-13 | **Catatan export.** Export laporan berisi nama siswa (LP-01, LP-03 s.d. LP-07) dicatat di `log_aktivitas`. Rinciannya ditetapkan bersama kebijakan data pribadi di Session 9 (R-17). | RECOMMENDATION |
 
 Contoh query rekap per rombel (LP-01) dengan aturan baca `06` §11.3. Daftar siswa diambil dari penempatan, sehingga siswa yang ditempatkan tetapi tidak memiliki hari sekolah dalam rentang tetap tampil dengan angka 0. Nilai `:final_hari_ini` dan `:pulang_ditutup` dihitung sekali di PHP dari aturan jam dan mode darurat hari ini. `:ta_selesai` adalah tanggal selesai tahun ajaran rombel itu.
@@ -120,7 +120,7 @@ Catatan:
 | Baris | Satu baris per siswa yang ditempatkan di rombel itu pada salah satu tanggal dalam rentang (IE-02). Urut nama. |
 | Kolom | No, NISN, NIS, Nama, L/P, Hari sekolah, Hadir, Terlambat, Izin, Sakit, Dispensasi, Alpa, Belum hadir (hanya bila hari ini belum final), Ketidakhadiran (Sakit + Izin + Alpa), Kehadiran (%), Pulang lebih awal, Tidak scan pulang, dan Keterangan (misalnya "pindah"). |
 | Total | Baris total menjumlahkan semua kolom. Persentase total mengikuti IE-04. Siswa tanpa hari sekolah dalam rentang, misalnya siswa yang periode aktifnya dibatalkan (`06` §6.6), tampil dengan angka 0 dan persentase "—". |
-| Kepala | Rombel, wali kelas, tahun ajaran, rentang, dan jumlah siswa. |
+| Kepala | Kelas, wali kelas, tahun ajaran, rentang, dan jumlah siswa. |
 | Status | RECOMMENDATION (kolom); DECISION (format) |
 
 ### LP-02 — Rekap semua rombel
@@ -130,7 +130,7 @@ Catatan:
 | Tujuan | Ringkasan kehadiran semua rombel dalam satu tabel untuk pimpinan dan guru BK. Menjawab catatan "rekap seluruh sekolah" di FS-LAP-03. |
 | Filter | Tahun ajaran dan rentang tanggal. |
 | Baris | Satu baris per rombel di tahun ajaran itu, dikelompokkan per tingkat, dengan subtotal per tingkat dan total sekolah. |
-| Kolom | Rombel, Tingkat, Wali kelas, Jumlah siswa, Hari-siswa (jumlah hari sekolah semua siswa), Hadir, Terlambat, Izin, Sakit, Dispensasi, Alpa, Ketidakhadiran, dan Kehadiran (%). |
+| Kolom | Kelas, Tingkat, Wali kelas, Jumlah siswa, Hari-siswa (jumlah hari sekolah semua siswa), Hadir, Terlambat, Izin, Sakit, Dispensasi, Alpa, Ketidakhadiran, dan Kehadiran (%). |
 | Hitungan | Setiap hari-siswa dihitung di rombel tempat siswa berada pada tanggal itu (IE-02). Persentase = Σ(Hadir + Terlambat + Dispensasi) ÷ Σ hari-siswa. |
 | Status | DECISION (laporan dan format); RECOMMENDATION (kolom) |
 
@@ -150,7 +150,7 @@ Catatan:
 | Item | Isi |
 |---|---|
 | Tujuan | Status setiap siswa satu rombel pada satu tanggal, untuk dicetak atau diarsipkan. Sama dengan FS-LAP-02. |
-| Filter | Rombel dan tanggal. |
+| Filter | Kelas dan tanggal. |
 | Kolom | No, NISN, Nama, Status, Jam masuk, Sumber masuk, Jam pulang, Sumber pulang, Kejadian pulang, Keterangan (izin/sakit/dispensasi atau koreksi beserta alasannya), dan Perlu diperiksa (penanda BR-STS-07). |
 | Ringkasan | Jumlah per status di bawah tabel. |
 | Status | DECISION (format); RECOMMENDATION (kolom) |
@@ -162,7 +162,7 @@ Catatan:
 | Tujuan | Riwayat harian seorang siswa untuk staf, misalnya untuk pemanggilan orang tua oleh guru BK. Sama dengan tampilan staf di FS-LAP-04. |
 | Filter | Siswa dan periode. |
 | Kepala | Identitas siswa dan ringkasan periode dengan kolom yang sama seperti LP-01. |
-| Kolom harian | Tanggal, Hari, Rombel, Status, Jam masuk dan sumbernya, Jam pulang dan sumbernya, Kejadian pulang, Izin/sakit/dispensasi (jenis, status, catatan, verifikator), Koreksi (kehadiran, alasan, pelaku), dan Perlu diperiksa. |
+| Kolom harian | Tanggal, Hari, Kelas, Status, Jam masuk dan sumbernya, Jam pulang dan sumbernya, Kejadian pulang, Izin/sakit/dispensasi (jenis, status, catatan, verifikator), Koreksi (kehadiran, alasan, pelaku), dan Perlu diperiksa. |
 | Status | DECISION (format); RECOMMENDATION (kolom) |
 
 ### LP-06 — Data siswa
@@ -193,7 +193,7 @@ Catatan:
 | Isi | Nama dan logo sekolah, judul, tanggal, cakupan, jumlah siswa yang hari itu memiliki hari sekolah, jumlah Hadir, Terlambat, Izin, Sakit, Dispensasi, Alpa, dan Belum hadir (selama data belum final), serta persentase kehadiran (IE-04). Flyer total sekolah juga memuat angka per tingkat. |
 | Tidak dimuat | Nama, foto, NISN, atau data individu siswa lain (DECISION, OQ-11). |
 | Hari ini | Bila status hari ini belum final, flyer memuat tanda IE-03: "Data hari ini belum final, dibuat pukul JJ.MM". |
-| Status | DECISION (angka saja); RECOMMENDATION (rincian isi). Desain template ditetapkan di Session 7. |
+| Status | DECISION (angka saja); RECOMMENDATION (rincian isi). Desain flyer, Canvas API, dan format potret 1080×1350 px ditetapkan di `08` §11 (DECISION, Session 7). |
 
 ## 6. Import siswa (IM-01)
 
@@ -205,7 +205,7 @@ Rincian template untuk FS-MD-06. Alur pratinjau dan penyimpanan tetap mengikuti 
 |---|---|---|---|
 | NISN | Ya | Teks 10 digit | Tepat 10 digit angka. NISN 9 digit dari sel angka yang kehilangan nol di depan dinyatakan gagal dengan petunjuk (FS-MD-06). Tidak boleh ganda di dalam file. NISN yang sudah ada di database, aktif maupun nonaktif, dinyatakan gagal dengan alasan "NISN sudah terdaftar atas nama <nama>" (DECISION, Session 5). |
 | Nama Lengkap | Ya | Teks | Paling banyak 100 karakter. |
-| Rombel | Ya | Teks | Sama dengan nama rombel di tahun ajaran tujuan, tanpa membedakan huruf besar dan kecil. |
+| Kelas | Ya | Teks | Sama dengan nama rombel di tahun ajaran tujuan, tanpa membedakan huruf besar dan kecil. Judul kolom "Rombel" juga diterima. |
 | NIS | Tidak | Teks | Paling banyak 20 karakter. Tidak boleh ganda di dalam file maupun dengan data yang sudah ada. |
 | Jenis Kelamin | Tidak | `L` atau `P` | Juga menerima "Laki-laki" dan "Perempuan". |
 | Tanggal Lahir | Tidak | Tanggal | Sel tanggal Excel, atau teks `DD-MM-YYYY` atau `DD/MM/YYYY`. |
@@ -237,10 +237,10 @@ Penempatan massal memakai dua cara (DECISION, Session 5):
 
 | ID | Aturan | Status |
 |---|---|---|
-| IM-02 | **Import penempatan.** Admin mengunduh daftar siswa aktif dari satu tahun ajaran, mengisi kolom "Rombel Tujuan", lalu mengunggahnya dengan memilih tahun ajaran tujuan dan tanggal mulai. Tanggal mulai default adalah tanggal mulai tahun ajaran tujuan. | DECISION (cara); RECOMMENDATION (rincian) |
-| IM-08 | **Kolom file.** NISN (wajib), Nama, Rombel Asal, dan Rombel Tujuan. Nama dan Rombel Asal hanya sebagai bantuan membaca, dan tidak divalidasi. Format file dan pencocokan kolom mengikuti IM-04 s.d. IM-06. | RECOMMENDATION |
-| IM-09 | **Validasi baris.** NISN harus milik siswa yang aktif pada tanggal mulai. Rombel Tujuan harus ada di tahun ajaran tujuan. NISN tidak boleh ganda di dalam file. Penempatan baru tidak boleh tumpang tindih dengan penempatan lain siswa itu, kecuali penempatan yang sedang berjalan di tahun ajaran yang sama, yang diakhiri sehari sebelum tanggal mulai seperti pindah rombel (FS-MD-05 butir 2). | RECOMMENDATION |
-| IM-10 | **Rombel Tujuan kosong.** Baris dengan Rombel Tujuan kosong dilewati tanpa dianggap gagal, misalnya untuk siswa yang lulus atau tidak naik. Pratinjau menyebut jumlahnya. | RECOMMENDATION |
+| IM-02 | **Import penempatan.** Admin mengunduh daftar siswa aktif dari satu tahun ajaran, mengisi kolom "Kelas Tujuan", lalu mengunggahnya dengan memilih tahun ajaran tujuan dan tanggal mulai. Tanggal mulai default adalah tanggal mulai tahun ajaran tujuan. | DECISION (cara); RECOMMENDATION (rincian) |
+| IM-08 | **Kolom file.** NISN (wajib), Nama, Kelas Asal, dan Kelas Tujuan. Nama dan Kelas Asal hanya sebagai bantuan membaca, dan tidak divalidasi. Format file dan pencocokan kolom mengikuti IM-04 s.d. IM-06. | RECOMMENDATION |
+| IM-09 | **Validasi baris.** NISN harus milik siswa yang aktif pada tanggal mulai. Kelas Tujuan harus ada di tahun ajaran tujuan. NISN tidak boleh ganda di dalam file. Penempatan baru tidak boleh tumpang tindih dengan penempatan lain siswa itu, kecuali penempatan yang sedang berjalan di tahun ajaran yang sama, yang diakhiri sehari sebelum tanggal mulai seperti pindah rombel (FS-MD-05 butir 2). | RECOMMENDATION |
+| IM-10 | **Kelas Tujuan kosong.** Baris dengan Kelas Tujuan kosong dilewati tanpa dianggap gagal, misalnya untuk siswa yang lulus atau tidak naik. Pratinjau menyebut jumlahnya. | RECOMMENDATION |
 | IM-11 | **Pratinjau dan simpan.** Pratinjau menampilkan jumlah siswa per rombel tujuan, baris yang dilewati, dan baris gagal beserta alasannya. Setelah dikonfirmasi, semua baris valid disimpan dalam satu transaksi, dicatat di log data siswa dengan penanda kelompok yang sama, dan status tanggal yang terdampak dihitung ulang. | RECOMMENDATION |
 
 ## 8. Foto massal (IM-03)
@@ -255,7 +255,7 @@ Rincian format nama file untuk FS-MD-08 (OQ-12).
 | IM-14 | **Siswa yang dicocokkan.** Foto dicocokkan dengan semua siswa, aktif maupun nonaktif. Pratinjau menampilkan status siswa, dan foto siswa nonaktif tetap dapat disimpan. | RECOMMENDATION |
 | IM-15 | **Foto lama sekolah.** Karena nama file foto yang ada belum seragam (CONFIRMED, OQ-12), admin perlu menambahkan NISN di depan nama file sebelum upload massal. Foto yang tidak cocok dilaporkan di pratinjau, dan dapat diunggah satu per satu (FS-MD-07). | DECISION |
 
-Format gambar yang diterima dan ukuran maksimal ditetapkan di Session 9. Foto diperkecil menjadi paling besar 600×800 px untuk foto standar dan 300×400 px untuk foto kiosk (DECISION, Session 6, `07` ARS-53). Ukuran tampil ditetapkan di Session 7.
+Format gambar yang diterima dan ukuran maksimal ditetapkan di Session 9. Foto diperkecil menjadi paling besar 600×800 px untuk foto standar dan 300×400 px untuk foto kiosk (DECISION, Session 6, `07` ARS-53). Foto kecil 120×160 px dan ukuran tampil ditetapkan di Session 7 (`08` UI-22, UI-23).
 
 ## 9. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
@@ -264,7 +264,7 @@ Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
 | Library XLSX dan PDF, serta instalasi lewat Composer | IE-12, OQ-09 | Session 6: mPDF dan instalasi lewat Composer berstatus DECISION, dan PhpSpreadsheet berstatus RECOMMENDATION (`07` ARS-10) |
-| Desain template PDF dan flyer, serta cara pembuatan flyer PNG | IE-10, IE-12, LP-08 | Session 7 |
+| Desain template PDF dan flyer, serta cara pembuatan flyer PNG | IE-10, IE-12, LP-08 | Ditetapkan di Session 7 (`08` §10.3, §11) |
 | Ukuran file dan jumlah baris maksimal import | IM-01, IM-02 | Session 9 |
 | Format gambar dan ukuran maksimal foto | IM-03 | Session 9 |
 | Pencatatan export berisi nama siswa | IE-13 | Session 9 |
@@ -275,3 +275,4 @@ Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 5: matriks laporan × format, rincian tujuh laporan dan flyer, template import siswa, import penempatan, format nama file foto, dan ketentuan umum. OQ-11 dan OQ-12 terjawab. |
 | 0.2 | 2026-10-04 | Keputusan Session 6 (`07`). IE-02 dan LP-03 (pengecualian rekap rapor) menjadi DECISION. IE-12 memuat mPDF dan Composer. IM-13 dan §8 memuat dukungan ZIP dan ukuran foto. §2, termasuk judulnya, dan §9 diperbarui. |
+| 0.3 | 2026-10-04 | Keputusan Session 7 (`08`). Judul kolom yang memuat "Rombel" diganti "Kelas", termasuk nama file contoh di IE-07. IE-06, IE-10, IE-12, LP-08, §1, §8, dan §9 merujuk `08`. |

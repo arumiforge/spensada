@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.4 (draft) |
+| Versi | 0.5 (draft) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 4 (Business Rules). Diperbarui dengan keputusan Session 4b (Feature Specification, `04` §2), Session 5 (Database Architecture, §2.4), dan Session 6 (System Architecture, §2.5). |
+| Sumber | Discovery Session 4 (Business Rules). Diperbarui dengan keputusan Session 4b (Feature Specification, `04` §2), Session 5 (Database Architecture, §2.4), Session 6 (System Architecture, §2.5), dan Session 7 (UI/UX & Design System, `08`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): ID requirement (`FR-*`, `NFR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). |
 | Dokumen terkait | [04-feature-specification.md](04-feature-specification.md): spesifikasi fitur (`FS-*`) yang menerapkan aturan ini. [06-database-design.md](06-database-design.md): desain data yang menyimpan aturan ini. [07-system-architecture.md](07-system-architecture.md): mekanisme teknis yang menjalankan aturan ini. [13-reporting-import-export.md](13-reporting-import-export.md): laporan dan rekap. |
 
@@ -172,7 +172,7 @@ Contoh jadwal khusus:
 | BR-JAM-11 | **Server yang menentukan.** Kiosk menentukan jenis dan status scan untuk umpan balik di layar. Server menghitung ulang dari jam scan dan aturan jam tanggal itu yang tersimpan di server. Bila hasilnya berbeda, misalnya karena kiosk offline masih memakai aturan lama, hasil server yang berlaku. | RECOMMENDATION |
 | BR-JAM-12 | **Zona waktu.** Semua jam memakai WIB (`Asia/Jakarta`, UTC+7). Tanggal presensi adalah tanggal menurut WIB. | DECISION (OQ-05) |
 
-Contoh pesan kiosk untuk BR-JAM-06 dan BR-SCN-03 (teks final ditetapkan di Session 7):
+Contoh pesan kiosk untuk BR-JAM-06 dan BR-SCN-03. Teks final ada di `08` §7.3:
 
 | Keadaan | Pesan |
 |---|---|
@@ -397,7 +397,7 @@ Catatan waktu (R-11):
 | `02-user-roles-and-permissions.md` | 0.2 | `HA-PRS-05` menjadi DEPRECATED. `HA-PRS-07` s.d. `HA-PRS-09`, `HA-IZN-06`, dan `HA-WA-03` ditambahkan. Pimpinan dapat membuka lampiran (`HA-IZN-05`). Batas mundur ditetapkan. Usulan yang disetujui menjadi DECISION. |
 | `03-user-flow.md` | 0.2 | Status UF-05 menjadi DECISION. Alur hari sekolah dan izin disesuaikan dengan aturan ini. UF-27 (mode darurat), UF-28 (ubah jadwal hari ini), dan UF-29 (ubah keputusan izin/sakit/dispensasi) ditambahkan. |
 
-Perubahan dokumen karena keputusan Session 4b dicatat di `04` §13, karena keputusan Session 5 di `06` §18, dan karena keputusan Session 6 di `07` §18.
+Perubahan dokumen karena keputusan Session 4b dicatat di `04` §13, karena keputusan Session 5 di `06` §18, karena keputusan Session 6 di `07` §18, dan karena keputusan Session 7 di `08` §14.
 
 ## 16. Pertanyaan terbuka
 
@@ -420,3 +420,4 @@ Nilai usulan yang perlu dipastikan saat implementasi:
 | 0.2 | 2026-10-03 | Keputusan Session 4b (`04` §2). BR-KAL-03, BR-SCN-10, BR-STS-07, BR-KOR-08, BR-KOR-09, BR-IZN-07, BR-IZN-10, BR-IZN-11, BR-DRT-06, dan BR-DRT-07 menjadi DECISION; BR-STS-07 diperluas. BR-KOR-11 diganti dengan pembatalan presensi manual. BR-KOR-10, BR-IZN-05, BR-IZN-09, BR-JAM-10, dan BR-REK-04 diperbarui. §2.3 ditambahkan, dan kebutuhan data di §14 dilengkapi. |
 | 0.3 | 2026-10-04 | Keputusan Session 5 (§2.4). BR-KAL-06, BR-SCN-03, BR-STS-06, BR-KOR-10, BR-REK-04, dan BR-REK-05 menjadi DECISION, begitu juga syarat 4 BR-KAL-05. BR-IZN-12 memuat batas 3 lampiran. BR-REK-03 memuat pembulatan bilangan bulat. BR-REK-05 memuat pengecualian rekap rapor. BR-REK-01 dan §14 merujuk `06` dan `13`. |
 | 0.4 | 2026-10-04 | Keputusan Session 6 (§2.5, `07`). BR-KAL-06 dan BR-REK-05 menjadi DECISION sepenuhnya. BR-SCN-07 merujuk mekanisme jam kiosk di `07`, dan toleransi 2 menit di BR-SCN-08 ditetapkan. Keadaan kedua BR-SCN-08 memakai selisih yang diukur server saat scan diterima. §1, §14, §15, dan §16 diperbarui. |
+| 0.5 | 2026-10-04 | Keputusan Session 7 (`08`). Contoh pesan kiosk di §4.2 merujuk teks final di `08` §7.3. Kepala dokumen dan §15 diperbarui. |

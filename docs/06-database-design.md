@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.2 (draft, menunggu review) |
+| Versi | 0.3 (draft, menunggu review) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, §2.4). |
+| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, §2.4) dan Session 7 (UI/UX & Design System, §2.5). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`), bagian "Data dan log", dan ketentuan umum (§4). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`) dan kebutuhan data (§14). |
 | Dokumen terkait | [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export yang membaca dan menulis tabel di dokumen ini. [07-system-architecture.md](07-system-architecture.md): mekanisme hitung ulang, penguncian, sesi, dan kiosk yang memakai tabel di dokumen ini. |
 
@@ -19,7 +19,7 @@ Tabel R1 dirinci penuh. Tabel R2 (notifikasi WhatsApp) juga dirinci, agar R2 tid
 - **Nama tabel dan kolom.** Nama di dokumen ini adalah nama final untuk migration (DB-01). Nama yang diawali tanda pagar, misalnya `#AJ`, adalah singkatan kelompok kolom di dokumen ini, bukan nama kolom.
 - **Tipe.** Tipe ditulis dalam tipe MySQL 8.4. `INT` berarti `INT UNSIGNED`, dan `BIGINT` berarti `BIGINT UNSIGNED`, kecuali disebut lain.
 - **Kolom tabel.** Kolom "Null" berisi "Ya" bila kolom boleh kosong. Kolom "Keterangan" memuat isi, kode nilai, dan aturan.
-- **Kode nilai.** Kolom berkode memakai kata huruf kecil dengan garis bawah, misalnya `tidak_hadir`. Daftar kodenya ada di keterangan kolom. Label di antarmuka ditetapkan di Session 7.
+- **Kode nilai.** Kolom berkode memakai kata huruf kecil dengan garis bawah, misalnya `tidak_hadir`. Daftar kodenya ada di keterangan kolom. Label di antarmuka ada di `08` §9.2.
 - **Mekanisme.** Cara teknis seperti antrean hitung ulang, cron, dan penguncian ditetapkan di `07` (Session 6). Dokumen ini hanya menetapkan data yang dibutuhkan dan aturan integritasnya.
 
 ## 2. Keputusan Session 5
@@ -62,6 +62,16 @@ Keputusan Session 6 yang berdampak ke desain data. Rinciannya ada di `07` §2.
 | Sesi login | Sesi disimpan sebagai file, sehingga tidak ada tabel sesi. | §5.4, `07` ARS-47 | DECISION |
 | Usulan Session 5 | Periode aktif yang dibatalkan tidak dihitung (§6.6 aturan 4), tingkat rombel dikunci setelah ada penempatan (§6.4), lampiran bersama satu kelompok paling banyak 3 file (§10.4), serta nama tabel `nilai_atribut_siswa` dan `wa_outbox` (§4.1) disetujui. | `07` §2.2 | DECISION |
 | Format versi data dan ID scan | `versi_data` berupa hash SHA-1 sepanjang 40 karakter heksadesimal, dan `uuid` scan berupa UUID versi 4. | §8.1, §8.2, `07` ARS-23, ARS-24 | RECOMMENDATION |
+
+### 2.5 Keputusan Session 7
+
+Keputusan Session 7 yang berdampak ke desain data. Rinciannya ada di `08` §2.
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| NIP di akun staf | Kolom opsional `akun.nip` untuk blok tanda tangan PDF, ditambahkan bersama export PDF di R2. | §5.1, `08` UI-61 | DECISION |
+| Kota sekolah | Kunci `pengaturan.sekolah_kota` untuk tempat di blok tanda tangan PDF, ditambahkan di R2. | §6.1, `08` UI-61 | DECISION |
+| Foto kecil | Foto ketiga berukuran 120×160 px disimpan dengan nama file yang sama dengan foto standar. Tidak ada kolom baru. | §6.5, `07` ARS-53 | DECISION |
 
 ## 3. Konvensi
 
@@ -208,6 +218,7 @@ Satu tabel untuk tiga jenis akun (`02` §2). Role Staf, Siswa, dan Stasiun didap
 | `password_diganti_at` | DATETIME | Ya | Waktu penggantian password terakhir. |
 | `slip_dibuat_at` | DATETIME | Ya | Waktu slip akun terakhir dibuat (akun siswa). |
 | `login_terakhir_at` | DATETIME | Ya | Waktu login terakhir yang berhasil. |
+| `nip` | VARCHAR(30) | Ya | R2. NIP atau nomor induk pegawai lain untuk akun staf, diisi admin, dan dicetak di blok tanda tangan PDF (`08` UI-61). Kosong untuk akun siswa dan stasiun. |
 | `created_at`, `updated_at` | DATETIME | | DB-02. |
 
 Kunci dan index: unik (`username`); unik (`siswa_id`); index (`jenis`, `status`).
@@ -265,6 +276,7 @@ Daftar kunci:
 | `sekolah_nama` | Kosong | Admin | R1 | FS-MD-01 |
 | `sekolah_alamat` | Kosong | Admin | R1 | FS-MD-01 |
 | `sekolah_logo` | Kosong (path file, DB-15) | Admin | R1 | FS-MD-01 |
+| `sekolah_kota` | Kosong | Admin | R2 | Tempat di blok tanda tangan PDF (`08` UI-61) |
 | `batas_mundur_hari` | 7 | Admin | R1 | BR-MUN-01, FS-PRS-10 |
 | `wa_tunda_menit` | 60 | Admin | R2 | BR-WA-02 |
 | `wa_ambang_persen` | 50 | Admin | R2 | BR-WA-03 |
@@ -329,7 +341,7 @@ Tingkat rombel tidak dapat diubah setelah rombel memiliki penempatan siswa, kare
 | `alamat` | VARCHAR(255) | Ya | Alamat rumah. |
 | `nama_ortu` | VARCHAR(100) | Ya | Nama orang tua/wali. Dapat dipakai di template pesan WA (R2). |
 | `wa_ortu` | VARCHAR(15) | Ya | Nomor WA orang tua/wali dalam format baku yang diawali 62, 10–15 digit (FS-MD-04). |
-| `foto_file` | VARCHAR(255) | Ya | Path relatif file foto (DB-15). Kosong berarti siswa tanpa foto. |
+| `foto_file` | VARCHAR(255) | Ya | Path relatif file foto standar (DB-15). Foto kiosk dan foto kecil memakai nama file yang sama di folder masing-masing (`07` ARS-51). Kosong berarti siswa tanpa foto. |
 | `foto_diganti_at` | DATETIME | Ya | Waktu penggantian foto terakhir. Dipakai juga kiosk untuk mengetahui foto yang perlu dimuat ulang. |
 | `created_at`, `updated_at` | DATETIME | | |
 
@@ -943,7 +955,7 @@ Penerimaan sinkron menulis `scan`, `status_stasiun`, dan `antrean_hitung_ulang` 
 
 ### 14.1 R2: notifikasi WhatsApp
 
-Tabel R2 dibuat sekarang di desain, dan migration-nya ditulis saat R2. Tabel R1 tidak perlu diubah, karena status harian (§11), status stasiun (§8.1), mode darurat (§9.3), dan nomor WA baku (§6.5) sudah tersedia (`04` §11).
+Tabel R2 dibuat sekarang di desain, dan migration-nya ditulis saat R2. Tabel R1 tidak perlu diubah untuk notifikasi WhatsApp, karena status harian (§11), status stasiun (§8.1), mode darurat (§9.3), dan nomor WA baku (§6.5) sudah tersedia (`04` §11). Export PDF di R2 menambah kolom `akun.nip` (§5.1) dan kunci `pengaturan.sekolah_kota` (§6.1), keduanya opsional (Session 7).
 
 #### `wa_template`
 
@@ -1113,7 +1125,7 @@ Fitur yang mengubah sumber status di §11.4 juga menulis `antrean_hitung_ulang` 
 
 ## 18. Perubahan pada dokumen lain
 
-Perubahan karena keputusan Session 5, termasuk keputusan di `13`. Perubahan karena keputusan Session 6 dicatat di `07` §18.
+Perubahan karena keputusan Session 5, termasuk keputusan di `13`. Perubahan karena keputusan Session 6 dicatat di `07` §18, dan karena keputusan Session 7 di `08` §14.
 
 | Dokumen | Versi | Perubahan |
 |---|---|---|
@@ -1146,3 +1158,4 @@ Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ. Session 6 
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 5: konvensi, 31 tabel R1 dan 3 tabel R2, aturan baca status harian, pemicu hitung ulang, index, integritas, dan keputusan Session 5. |
 | 0.2 | 2026-10-04 | Keputusan Session 6 (§2.4, `07`). Tabel `antrean_hitung_ulang` (§11.5) ditambahkan, sehingga tabel R1 menjadi 32. DB-11 menjadi DECISION. Kepala dokumen, §1, DB-03, §4.1, §4.2, §5.4, §6.1, §8.1, §8.2, §9.3, §11.4, §13, §16, §17.2, §18, dan §19 diperbarui. Di antaranya, `tanda_selisih_berubah` membandingkan selisih scan dengan selisih yang diukur server saat kiriman diterima, dan pembuatan baris status dimulai dari hari ini bila `status_dibangun_sampai` kosong. Kunci `cron_terakhir_at` ditambahkan di §6.1. Usulan di §4.1, §6.4, §6.6, dan §10.4 menjadi DECISION. |
+| 0.3 | 2026-10-04 | Keputusan Session 7 (§2.5, `08`). Kolom `akun.nip` (R2) dan kunci `pengaturan.sekolah_kota` (R2) ditambahkan. Keterangan `siswa.foto_file` memuat foto kecil. §1 dan §14.1 merujuk `08`. |

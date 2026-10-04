@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.5 (draft) |
+| Versi | 0.6 (draft) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), Session 5 (Database Architecture), dan Session 6 (System Architecture). |
-| Bergantung pada | [00-project-overview.md](00-project-overview.md), [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [07-system-architecture.md](07-system-architecture.md) |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), Session 5 (Database Architecture), Session 6 (System Architecture), dan Session 7 (UI/UX & Design System). |
+| Bergantung pada | [00-project-overview.md](00-project-overview.md), [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [07-system-architecture.md](07-system-architecture.md), [08-ui-ux-design-system.md](08-ui-ux-design-system.md) |
 
 ## 1. Cara membaca dokumen ini
 
@@ -13,7 +13,7 @@
 - **Isi alur.** Setiap alur berisi aktor, prasyarat, rujukan, alur utama, pengecualian, dan hasil.
 - **Rujukan.** Requirement dirujuk dengan ID `FR-*`/`NFR-*` dari `01`. Hak akses dirujuk dengan ID `HA-*` dari `02`. Pengguna hanya dapat menjalankan langkah yang sesuai hak dan cakupannya.
 - **Status.** Label status mengikuti `00`. Aturan bisnis yang dipakai alur, seperti aturan jam, status harian, batas mundur, dan mode darurat, ditetapkan di `05` dan dirujuk dengan ID `BR-*`. Bila sebuah langkah masih bergantung pada pertanyaan terbuka, langkah itu menyebut OQ-nya.
-- **Tingkat rincian.** Dokumen ini menjelaskan urutan kerja dan keputusan pengguna. Rincian setiap fitur, termasuk validasi dan acceptance criteria, ada di `04`; `04` §12.2 memetakan setiap alur ke fiturnya. Tampilan layar ditetapkan di Session 7, dan route di Session 8.
+- **Tingkat rincian.** Dokumen ini menjelaskan urutan kerja dan keputusan pengguna. Rincian setiap fitur, termasuk validasi dan acceptance criteria, ada di `04`; `04` §12.2 memetakan setiap alur ke fiturnya. Tampilan layar ditetapkan di `08`, dan route di Session 8.
 
 ## 2. Daftar alur
 
@@ -199,7 +199,7 @@ Alur pemasangan:
    - profil browser khusus kiosk (R-07);
    - sinkronisasi jam otomatis Windows aktif, dan laptop tidak tidur selama jam sekolah (`07` ARS-32).
 3. Admin membuka alamat kiosk lewat HTTPS (R-01), lalu login dengan akun stasiun.
-4. Admin memasang kiosk sebagai aplikasi di browser, lalu mengizinkan akses kamera. Kiosk memastikan penyimpanan permanen aktif (NFR-03, `07` ARS-21).
+4. Admin memasang kiosk sebagai aplikasi di browser, lalu mengizinkan akses kamera dan suara untuk alamat kiosk. Kiosk memastikan penyimpanan permanen aktif (NFR-03, `07` ARS-21), dan petugas menekan "Tes bunyi" (`08` UI-45).
 5. Kiosk memuat data siswa aktif beserta fotonya, lalu siap dipakai.
 6. Laptop ditempatkan di gerbang utama.
 
@@ -310,7 +310,7 @@ Alur utama:
 4. Dalam paling lama 1 detik, layar menampilkan foto, nama, rombel, jenis presensi, status, dan jam, disertai bunyi (NFR-01). Siswa tidak perlu menekan apa pun.
 5. Kiosk menyimpan scan di laptop dengan ID unik, dan penghitung scan belum tersinkron bertambah satu.
 6. Petugas mencocokkan foto di layar dengan wajah siswa (R-02).
-7. Layar kembali siap untuk siswa berikutnya. Durasi tampilan ditetapkan di Session 7.
+7. Layar kembali siap untuk siswa berikutnya: 3 detik setelah scan yang tercatat atau scan ganda, dan 6 detik setelah scan yang ditolak. Scan berikutnya langsung menggantikan hasil yang sedang tampil (DECISION, Session 7, `08` UI-41).
 
 Pengecualian:
 
@@ -702,7 +702,7 @@ Notifikasi "tidak hadir" dan "tidak scan pulang" dibuat setelah sesi terkait dit
 Rujukan: FR-LAP-05, `HA-LAP-06`.
 
 1. Staf yang berhak memilih cakupan flyer (satu rombel atau total) dan tanggalnya.
-2. Sistem menampilkan pratinjau dari template.
+2. Sistem menampilkan pratinjau flyer potret 1080×1350 px, yang digambar dengan Canvas API (DECISION, Session 7, `08` UI-65, UI-66).
 3. Staf mengunduh flyer sebagai PNG, lalu membagikannya secara manual.
 
 Flyer berisi angka saja, tanpa nama siswa (DECISION, Session 5, `13` LP-08).
@@ -720,7 +720,7 @@ Rujukan: FR-INF-03 s.d. FR-INF-05, AC-05.
 Rujukan: FR-KRT-01, FR-KRT-02, R-02.
 
 1. Admin memilih siswa baru, atau siswa yang kehilangan kartu.
-2. Sistem menampilkan pratinjau kartu. Desain kartu mengikuti OQ-13.
+2. Sistem menampilkan pratinjau kartu. Tata letak kartu mengikuti kartu OSIS lama, dan kartu dicetak sebagai PDF A4 berisi 10 kartu (DECISION, Session 7, `08` UI-62, UI-63). Contoh kartu lama diserahkan sebelum R3 (OQ-13).
 3. Admin mencetak kartu.
 
 Kartu pengganti memakai QR yang sama, sehingga kartu lama tidak dapat diblokir.
@@ -742,3 +742,4 @@ OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4. Alur yang terdampak su
 | 0.3 | 2026-10-03 | Keputusan Session 4b (`04` §2). UF-02 (nomor WA opsional), UF-12 E6 (pembatalan presensi manual), UF-14 E3–E4, UF-15 (penanda), UF-16 E3–E4, UF-17 E3, UF-18 E2, UF-19 E2–E3, UF-22 (isi riwayat di portal siswa), UF-27 (langkah 7, E4, E5), UF-28 langkah 3 (jadwal hari ini), dan UF-29 E3 (perubahan per kelompok) diperbarui. §1 merujuk `04`. |
 | 0.4 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). UF-02 (kolom template, E2 NISN yang sudah ada dilewati), UF-03 (format nama file foto), UF-07 (pindah rombel), UF-08 langkah 2 (penempatan massal), UF-22 (matriks laporan), dan UF-24 (isi flyer) diperbarui. OQ-11 dan OQ-12 dihapus dari §10 karena terjawab. |
 | 0.5 | 2026-10-04 | Keputusan Session 6 (`07`). UF-01 (admin pertama), UF-06 langkah 2 dan 4 (penyiapan laptop dan pemasangan kiosk), UF-09 E1 (batas umur data), UF-09 E3 (login berakhir), UF-15 langkah 5 (pembaruan dashboard), dan UF-21 E1 (pemulihan admin) diperbarui. UF-09 E5 (akun stasiun dinonaktifkan) ditambahkan. |
+| 0.6 | 2026-10-04 | Keputusan Session 7 (`08`). UF-06 langkah 4 (izin suara dan tes bunyi), UF-10 langkah 7 (lama hasil tampil), UF-24 (flyer), dan UF-26 (kartu) diperbarui. §1 merujuk `08`. |
