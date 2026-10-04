@@ -39,7 +39,7 @@ Laporan di layar termasuk R1 dan dirinci di `04`. Export ke file dan flyer terma
 
 | ID | Ketentuan | Status |
 |---|---|---|
-| IE-01 | **Satu sumber angka.** Semua laporan, di layar maupun file, membaca `status_harian` dengan aturan baca `06` §11.3. Tidak ada laporan yang menghitung status dengan cara lain, sehingga angka di layar, file, dan flyer selalu sama. | RECOMMENDATION |
+| IE-01 | **Satu sumber angka.** Semua laporan kehadiran (LP-01 s.d. LP-05 dan LP-08), di layar maupun file, membaca `status_harian` dengan aturan baca `06` §11.3. Tidak ada laporan yang menghitung status dengan cara lain, sehingga angka di layar, file, dan flyer selalu sama. | RECOMMENDATION |
 | IE-02 | **Rombel per tanggal.** Laporan per rombel memakai rombel siswa pada setiap tanggal (BR-REK-05), kecuali rekap rapor semester (LP-03). | DECISION (BR-REK-05); RECOMMENDATION (pengecualian LP-03) |
 | IE-03 | **Hari ini belum final.** Laporan yang mencakup hari ini mengikuti BR-REK-04. File dan flyer memuat tanda "Data hari ini belum final" beserta jam pembuatannya. | DECISION |
 | IE-04 | **Pembulatan.** Persentase kehadiran dihitung dari jumlah hari, lalu dibulatkan ke bilangan bulat terdekat. Nilai tepat setengah dibulatkan ke atas, misalnya 87,5% menjadi 88% dan 87,4% menjadi 87%. Persentase baris total dihitung dari jumlah total, bukan dari rata-rata persentase baris. Pembulatan hanya dilakukan saat ditampilkan atau ditulis ke file. | DECISION (bilangan bulat); RECOMMENDATION (setengah ke atas) |

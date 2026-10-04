@@ -5238,8 +5238,8 @@ Fitur R1 yang perlu diperhatikan agar R2 tidak memerlukan perubahan besar:
 | `HA-MD-01` | FS-MD-02 |
 | `HA-MD-02` | FS-MD-03 |
 | `HA-MD-03` | FS-MD-04, FS-MD-05, FS-MD-09 |
-| `HA-MD-04` | FS-MD-06 |
-| `HA-MD-05` | FS-MD-04, FS-PRS-06, FS-IZN-02 |
+| `HA-MD-04` | FS-MD-06, FS-MD-09 |
+| `HA-MD-05` | FS-MD-04, FS-MD-09, FS-PRS-06, FS-IZN-02 |
 | `HA-MD-06` | FS-MD-04 |
 | `HA-MD-07` | FS-MD-07 |
 | `HA-MD-08` | FS-MD-08 |

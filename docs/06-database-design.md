@@ -374,7 +374,7 @@ Definisi atribut tambahan yang dibuat admin (FR-MD-10, DECISION Session 5). Peng
 | Kolom | Tipe | Null | Keterangan |
 |---|---|---|---|
 | `id` | INT | | Primary key. |
-| `kode` | VARCHAR(30) | | Huruf kecil, angka, dan garis bawah, diawali huruf. Dipakai sebagai judul kolom di template import (`13` IM-01). Unik, tidak boleh sama dengan nama kolom bawaan, dan tidak dapat diubah setelah dibuat. |
+| `kode` | VARCHAR(30) | | Huruf kecil, angka, dan garis bawah, diawali huruf. Dipakai sebagai judul kolom di template import (`13` IM-01). Unik, tidak boleh sama dengan judul kolom bawaan template import tanpa membedakan huruf besar dan kecil (`13` §6.1), dan tidak dapat diubah setelah dibuat. |
 | `label` | VARCHAR(60) | | Label di formulir dan profil. |
 | `tipe` | VARCHAR(10) | | `teks`, `angka`, `tanggal`, atau `pilihan`. Tidak dapat diubah setelah ada nilai. |
 | `pilihan` | JSON | Ya | Daftar pilihan untuk tipe `pilihan`. |
@@ -786,7 +786,7 @@ Tabel ini memetakan pemicu di `04` §4.5 ke baris yang dihitung ulang. Mekanisme
 
 | Perubahan sumber | Baris yang dihitung ulang |
 |---|---|
-| Scan diterima, atau scan bertanda ditinjau | Hasil scan siswa itu pada tanggal itu (§8.2), lalu baris (siswa, tanggal). |
+| Scan diterima, atau scan bertanda ditinjau | (siswa, tanggal). |
 | Presensi manual dicatat atau dibatalkan | (siswa, tanggal). |
 | Koreksi disimpan, diganti, atau dihapus | (siswa, tanggal). |
 | Izin disetujui (termasuk penolakan yang diubah menjadi persetujuan), dibatalkan, atau dipersingkat | (siswa, setiap tanggal ≤ hari ini dalam rentang lama dan baru). |
@@ -799,6 +799,8 @@ Tabel ini memetakan pemicu di `04` §4.5 ke baris yang dihitung ulang. Mekanisme
 | Mode darurat diaktifkan atau diakhiri | Kolom `tanpa_pulang` semua siswa pada tanggal itu. |
 | Tanggal berganti | Baris hari ini dibuat untuk semua siswa yang hari sekolahnya hari ini. Baris dibuat saat pertama kali dibutuhkan atau oleh proses terjadwal (Session 6). |
 | NISN siswa dikoreksi | Tidak ada. Scan lama tetap tertaut lewat `siswa_id`. |
+
+Setiap hitung ulang baris (siswa, tanggal) lebih dulu menghitung ulang `jenis` dan `hasil` semua scan siswa itu pada tanggal itu (§8.2), karena keduanya bergantung pada aturan jam, kalender, dan tinjauan.
 
 Perintah CLI untuk membangun ulang `status_harian` per rentang tanggal disediakan untuk pemulihan dan pengujian (Session 6).
 
@@ -869,7 +871,7 @@ Log data siswa (`04` §4.4 butir 5, FS-MD-04, FS-MD-05).
 
 Kunci dan index: index (`siswa_id`, `created_at`); index (`kelompok`).
 
-Kode `jenis`: `siswa_dibuat` (dari formulir atau import), `data_diubah` (nama, atribut bawaan, dan atribut tambahan), `nisn_diubah`, `wa_diubah`, `foto_diganti`, `dinonaktifkan`, `diaktifkan_kembali`, `penempatan_dibuat`, `penempatan_diubah`, dan `penempatan_dihapus`. Pencatatan `siswa_dibuat` dan `data_diubah` memperluas cakupan log data siswa di `04` §4.4 (RECOMMENDATION).
+Kode `jenis`: `siswa_dibuat` (dari formulir atau import), `data_diubah` (nama, atribut bawaan, dan atribut tambahan), `nisn_diubah`, `wa_diubah`, `foto_diganti`, `dinonaktifkan`, `diaktifkan_kembali`, `penempatan_dibuat`, dan `penempatan_diubah`. Pencatatan `siswa_dibuat` dan `data_diubah` memperluas cakupan log data siswa di `04` §4.4 (RECOMMENDATION).
 
 ## 13. Integrasi dengan kiosk
 
