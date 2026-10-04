@@ -199,7 +199,7 @@ Alur pemasangan:
    - profil browser khusus kiosk (R-07);
    - sinkronisasi jam otomatis Windows aktif, dan laptop tidak tidur selama jam sekolah (`07` ARS-32).
 3. Admin membuka alamat kiosk lewat HTTPS (R-01), lalu login dengan akun stasiun.
-4. Admin memasang kiosk sebagai aplikasi di browser, lalu mengizinkan akses kamera dan suara untuk alamat kiosk. Kiosk memastikan penyimpanan permanen aktif (NFR-03, `07` ARS-21), dan petugas menekan "Tes bunyi" (`08` UI-45).
+4. Admin memasang kiosk sebagai aplikasi di browser, lalu mengizinkan akses kamera dan suara untuk alamat kiosk. Kiosk memastikan penyimpanan permanen aktif (NFR-03, `07` ARS-21), dan admin menekan "Tes bunyi" (`08` UI-45).
 5. Kiosk memuat data siswa aktif beserta fotonya, lalu siap dipakai.
 6. Laptop ditempatkan di gerbang utama.
 

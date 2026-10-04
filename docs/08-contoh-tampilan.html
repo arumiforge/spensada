@@ -1,4 +1,10 @@
 <!doctype html>
+<!--
+  Contoh visual untuk docs/08-ui-ux-design-system.md.
+  Huruf: Plus Jakarta Sans 2.071, Copyright 2020 The Plus Jakarta Sans Project Authors,
+  lisensi SIL Open Font License 1.1 (https://scripts.sil.org/OFL).
+  Ikon: Lucide 1.52.0, lisensi ISC (https://lucide.dev/license).
+-->
 <html lang="id">
 <head>
 <meta charset="utf-8">
@@ -58,7 +64,6 @@ button:focus-visible, a:focus-visible{ outline:2px solid var(--focus); outline-o
 .sec-kepala .no{ font-family:var(--f-mono); font-size:12.5px; color:var(--muted); letter-spacing:.04em }
 .catatan{ max-width:74ch; color:var(--muted); margin:0 }
 .tag{ display:inline-block; font-family:var(--f-mono); font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; padding:2px 8px; border-radius:999px; background:var(--soft); color:var(--fg); white-space:nowrap }
-.tag.usul{ background:var(--accent); color:var(--accent-fg) }
 .bingkai{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; display:grid; gap:12px; min-width:0; align-content:start }
 .bingkai-kepala{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; font-size:14.5px; font-weight:600 }
 .bingkai > p, .bingkai .ket{ margin:0; font-size:13.5px; color:var(--muted) }
@@ -119,7 +124,7 @@ button:focus-visible, a:focus-visible{ outline:2px solid var(--focus); outline-o
 .k-sesi{ border-top:1px solid var(--k-garis); padding-top:1cqw; display:grid; gap:.35cqw; opacity:.88; font-variant-numeric:tabular-nums }
 .k-hasil{ display:grid; grid-template-columns:auto 1fr; align-items:center; gap:2.6cqw; padding:2.4cqw 3.2cqw; background:var(--hasil,var(--k-siap)); min-width:0; min-height:0; transition:background-color .15s }
 .k-hasil.siap{ --hasil:var(--k-siap) } .k-hasil.berhasil{ --hasil:var(--s-hadir) } .k-hasil.catatan{ --hasil:var(--s-terlambat) } .k-hasil.info{ --hasil:var(--k-info) } .k-hasil.tolak{ --hasil:var(--s-alpa) }
-.k-foto{ height:33cqw; aspect-ratio:3/4; border-radius:1cqw; overflow:hidden; box-shadow:0 0 0 .45cqw var(--k-garis-kuat) }
+.k-foto{ height:min(27cqw,400px); aspect-ratio:3/4; border-radius:1cqw; overflow:hidden; box-shadow:0 0 0 .45cqw var(--k-garis-kuat) }
 .k-tanpa-foto{ width:22cqw; height:22cqw; display:grid; place-items:center; border-radius:50%; background:var(--k-kaca) }
 .k-tanpa-foto .ikon{ width:13cqw; height:13cqw; stroke-width:1.8 }
 .k-teks{ display:grid; gap:1cqw; min-width:0 }
@@ -135,18 +140,6 @@ button:focus-visible, a:focus-visible{ outline:2px solid var(--focus); outline-o
 .k-bawah .tb{ margin-left:auto; display:flex; gap:.8cqw }
 .k-tombol{ border:1px solid var(--k-garis-kuat); border-radius:.6cqw; padding:.45cqw 1cqw; color:inherit; display:inline-flex; align-items:center; gap:.5cqw }
 .k-nol{ display:inline-flex; align-items:center; gap:.5cqw }
-/* Varian B: hasil memenuhi layar, kamera kecil di pojok */
-.kiosk.var-b .k-tengah{ grid-template-columns:1fr }
-.kiosk.var-b .k-kamera{ position:absolute; right:1.6cqw; bottom:1.6cqw; width:21%; padding:.6cqw; border-radius:1cqw; z-index:2 }
-.kiosk.var-b .k-kamera p, .kiosk.var-b .k-sesi{ display:none }
-.kiosk.var-b .k-hasil{ padding-right:26%; }
-/* Varian C: kamera besar, hasil sebagai kartu di bawah */
-.kiosk.var-c .k-tengah{ grid-template-columns:1fr }
-.kiosk.var-c .k-kamera{ display:grid; place-items:center; padding:1.4cqw }
-.kiosk.var-c .k-video{ width:auto; height:100% }
-.kiosk.var-c .k-kamera p, .kiosk.var-c .k-sesi{ display:none }
-.kiosk.var-c .k-hasil{ position:absolute; left:4cqw; right:4cqw; bottom:2cqw; border-radius:1.2cqw; padding:1.4cqw 2cqw; gap:2cqw }
-.kiosk.var-c .k-foto{ height:15cqw } .kiosk.var-c .k-nama{ font-size:2.8cqw } .kiosk.var-c .k-judul{ font-size:3.2cqw } .kiosk.var-c .k-rombel, .kiosk.var-c .k-sub{ font-size:1.8cqw }
 
 /* ---------- Panel staf ---------- */
 .gulir{ overflow-x:auto; border:1px solid var(--line); border-radius:10px }
@@ -204,9 +197,8 @@ button:focus-visible, a:focus-visible{ outline:2px solid var(--focus); outline-o
 /* ---------- Slip ---------- */
 .a4-wadah{ container-type:inline-size; width:100%; max-width:420px }
 .a4{ aspect-ratio:210/297; width:100%; background:var(--a-putih); color:var(--a-teks); padding:3.5cqw; display:grid; grid-template-columns:1fr 1fr; box-shadow:0 10px 26px -18px var(--bayang); font-family:var(--a-huruf) }
-.a4.d8{ grid-template-rows:repeat(4,1fr) } .a4.d10{ grid-template-rows:repeat(5,1fr) }
+.a4.d8{ grid-template-rows:repeat(4,1fr) }
 .slip{ border:1px dashed var(--a-garis-potong); padding:2.3cqw; display:grid; align-content:start; gap:.8cqw; font-size:1.95cqw; line-height:1.3; min-height:0; overflow:hidden }
-.d10 .slip{ font-size:1.7cqw; padding:1.6cqw; gap:.45cqw }
 .slip-kepala{ display:flex; align-items:center; gap:1.2cqw; border-bottom:1px solid var(--a-garis); padding-bottom:.8cqw }
 .slip-kepala .k-logo{ width:4.6cqw; height:4.6cqw; font-size:1.05cqw; background:var(--a-utama); color:var(--a-putih) }
 .slip-kepala b{ display:block; font-size:1.05em } .slip-kepala span{ font-size:.85em; color:var(--a-redup) }
@@ -219,7 +211,6 @@ button:focus-visible, a:focus-visible{ outline:2px solid var(--focus); outline-o
 .fl-wadah{ container-type:inline-size; width:100%; max-width:440px }
 .fl{ background:var(--a-putih); color:var(--a-teks); font-family:var(--a-huruf); display:grid; overflow:hidden; border-radius:1.2cqw; box-shadow:0 10px 26px -18px var(--bayang) }
 .fl.potret{ aspect-ratio:4/5; grid-template-rows:auto auto auto 1fr auto }
-.fl.kotak{ aspect-ratio:1/1; grid-template-rows:auto auto auto 1fr auto }
 .fl-kepala{ background:var(--a-utama); color:var(--a-putih); padding:4.6cqw 6cqw 4cqw; display:flex; gap:3cqw; align-items:center }
 .fl-kepala .k-logo{ width:11cqw; height:11cqw; font-size:2.3cqw }
 .fl-kepala b{ font-size:4.3cqw; display:block; line-height:1.15 } .fl-kepala span{ font-size:3cqw; opacity:.85 }
@@ -236,34 +227,12 @@ button:focus-visible, a:focus-visible{ outline:2px solid var(--focus); outline-o
 .fl-t span{ font-size:2.8cqw; font-weight:700; display:flex; align-items:center; gap:.9cqw }
 .fl-kaki{ padding:2.8cqw 6cqw 4cqw; display:flex; justify-content:space-between; align-items:center; gap:2cqw; font-size:2.7cqw; border-top:.3cqw solid var(--a-garis) }
 .fl-stempel{ background:var(--s-terlambat-m); color:var(--s-terlambat-t); padding:1cqw 2cqw; border-radius:1.2cqw; font-weight:700 }
-.fl.kotak .fl-persen{ font-size:15cqw } .fl.kotak .fl-angka{ grid-template-columns:repeat(4,1fr); padding-block:2.6cqw } .fl.kotak .fl-t b{ font-size:6cqw } .fl.kotak .fl-judul h4{ font-size:6cqw } .fl.kotak .fl-kepala{ padding-block:3.4cqw 3cqw }
 .fl-tingkat{ padding:3cqw 6cqw; display:grid; gap:1.6cqw; align-content:start }
 .fl-tingkat .tk{ display:grid; grid-template-columns:1fr auto auto; gap:3cqw; align-items:center; font-size:3.3cqw; padding:1.7cqw 2.6cqw; border-radius:1.6cqw; background:var(--a-latar); font-variant-numeric:tabular-nums }
 .fl-tingkat .tk b{ font-size:4.6cqw; color:var(--a-utama) }
 .fl-tingkat .tk.libur{ color:var(--a-redup); font-style:italic }
 .fl-angka.tiga{ grid-template-columns:repeat(3,1fr); padding:1cqw 0 0 }
 
-/* ---------- Kartu ---------- */
-.kr-wadah{ container-type:inline-size; width:100%; max-width:440px }
-.kr-wadah.tegak{ max-width:260px }
-.kr{ background:var(--a-putih); color:var(--a-teks); font-family:var(--a-huruf); border-radius:3.6cqw; overflow:hidden; display:grid; box-shadow:0 10px 26px -18px var(--bayang); border:1px solid var(--a-garis) }
-.kr.datar{ aspect-ratio:85.6/54; grid-template-rows:22% 1fr 10% }
-.kr.tegak{ aspect-ratio:54/85.6; grid-template-rows:15% 1fr 6.5% }
-.kr-kepala{ background:var(--a-utama); color:var(--a-putih); display:flex; align-items:center; gap:2.6cqw; padding:0 4cqw; min-width:0 }
-.kr-kepala .k-logo{ width:8.5cqw; height:8.5cqw; font-size:1.8cqw }
-.kr-kepala b{ display:block; font-size:3.5cqw; letter-spacing:.02em; line-height:1.15 } .kr-kepala span{ font-size:2.5cqw; opacity:.9; letter-spacing:.08em }
-.kr-isi{ display:grid; grid-template-columns:auto 1fr auto; gap:3.4cqw; align-items:center; padding:2.6cqw 4cqw; min-height:0 }
-.kr-foto{ height:28cqw; aspect-ratio:3/4; border-radius:1.2cqw; overflow:hidden }
-.kr-data{ display:grid; gap:1.4cqw; min-width:0 }
-.kr-data small{ display:block; font-size:2.2cqw; color:var(--a-redup); text-transform:uppercase; letter-spacing:.07em }
-.kr-data b{ font-size:4cqw; line-height:1.12; display:block }
-.kr-nisn{ font-family:var(--a-mono); font-size:4.3cqw; font-weight:700; letter-spacing:.05em }
-.kr-qr{ width:27cqw; aspect-ratio:1; display:block }
-.kr-qr canvas{ width:100%; height:100%; image-rendering:pixelated; display:block }
-.kr-kaki{ background:var(--a-utama-muda); color:var(--a-utama); font-size:2.2cqw; display:flex; align-items:center; justify-content:space-between; padding:0 4cqw; font-weight:600 }
-.kr.tegak .kr-kepala{ padding:0 5cqw; gap:3cqw } .kr.tegak .kr-kepala .k-logo{ width:13cqw; height:13cqw; font-size:2.6cqw } .kr.tegak .kr-kepala b{ font-size:5.2cqw } .kr.tegak .kr-kepala span{ font-size:3.6cqw }
-.kr.tegak .kr-isi{ grid-template-columns:1fr; justify-items:center; text-align:center; gap:3.4cqw; padding:5cqw }
-.kr.tegak .kr-foto{ height:44cqw } .kr.tegak .kr-data b{ font-size:6.4cqw } .kr.tegak .kr-data small{ font-size:3.4cqw } .kr.tegak .kr-nisn{ font-size:6.6cqw } .kr.tegak .kr-qr{ width:40cqw } .kr.tegak .kr-kaki{ font-size:3.4cqw; justify-content:center } .kr.tegak .kr-kaki span:last-child{ display:none }
 
 footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13.5px }
 @media (prefers-reduced-motion: reduce){ .k-hasil{ transition:none } }
@@ -276,8 +245,9 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
 .isian.galat input{ border-color:var(--s-alpa) } .isian .pesan-galat{ color:var(--s-alpa-t); font-size:13px; display:flex; gap:6px; align-items:center }
 .isian input:focus-visible, .tombol:focus-visible{ outline:2px solid #2F6FDB; outline-offset:2px }
 .baris{ display:flex; flex-wrap:wrap; gap:10px; align-items:center }
-.fl-tingkat{ padding:2cqw 6cqw; gap:1.1cqw } .fl-tingkat .tk{ padding:1.1cqw 2.6cqw } .fl-angka.tiga .fl-t{ padding:1.6cqw 2.4cqw } .fl-angka.tiga .fl-t b{ font-size:5.6cqw } [data-flyer="total"] .fl-persen{ font-size:17cqw }
+.fl-tingkat{ padding:1.4cqw 6cqw; gap:.9cqw } [data-flyer="total"] .fl-kaki{ padding-block:2cqw 3cqw } .fl-tingkat .tk{ padding:1.1cqw 2.6cqw } .fl-angka.tiga .fl-t{ padding:1.6cqw 2.4cqw } .fl-angka.tiga .fl-t b{ font-size:5.6cqw } [data-flyer="total"] .fl-persen{ font-size:14cqw } [data-flyer="total"] .fl-judul{ padding-top:3cqw } [data-flyer="total"] .fl-besar{ padding-top:1.5cqw }
 [data-flyer="rombel"] .fl-angka{ grid-template-columns:repeat(4,1fr) } [data-flyer="rombel"] .fl-t b{ font-size:6.4cqw } [data-flyer="rombel"] .fl-t span{ font-size:2.5cqw }
+.fl-angka.empat{ grid-template-columns:repeat(4,1fr); gap:1.4cqw; padding:1cqw 0 0 } .fl-angka.empat .fl-t{ padding:1.2cqw 1.8cqw } .fl-angka.empat .fl-t b{ font-size:4.8cqw } .fl-angka.empat .fl-t span{ font-size:2.3cqw }
 </style>
 </head>
 <body>
@@ -285,7 +255,6 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
 <!-- Ikon: Lucide 1.52.0, lisensi ISC -->
 <symbol id="i-award" viewBox="0 0 24 24"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526" /> <circle cx="12" cy="8" r="6" /></symbol>
 <symbol id="i-badge-check" viewBox="0 0 24 24"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" /> <path d="m16 9-5.5 5.5L8 12" /></symbol>
-<symbol id="i-bell" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0" /> <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></symbol>
 <symbol id="i-calendar-days" viewBox="0 0 24 24"><path d="M8 2v3" /> <path d="M16 2v3" /> <rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M3 9h18" /> <path d="M8 13h.01" /> <path d="M12 13h.01" /> <path d="M16 13h.01" /> <path d="M8 17h.01" /> <path d="M12 17h.01" /> <path d="M16 17h.01" /></symbol>
 <symbol id="i-camera" viewBox="0 0 24 24"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" /> <circle cx="12" cy="13" r="3" /></symbol>
 <symbol id="i-chart-column" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16" /> <path d="M18 17V9" /> <path d="M13 17V5" /> <path d="M8 17v-3" /></symbol>
@@ -338,7 +307,7 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
     <p class="lead">Contoh visual keputusan Session 7. Sumber kebenaran tetap <code>08-ui-ux-design-system.md</code>; bila berbeda, dokumen itu yang berlaku (UI-77). Nama, angka, logo, dan foto adalah contoh fiktif. Waktu contoh mengikuti <code>04</code> §1: Selasa, 13 Oktober 2026.</p>
   </header>
 
-  <main id="pratinjau" data-utama="dongker" data-palet="a" data-huruf="sistem" data-label="kelas">
+  <main id="pratinjau">
 
     <!-- 1. STATUS -->
     <section class="sec" id="status" aria-labelledby="h-status">
@@ -422,13 +391,13 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
             <div class="menu-grup">Laporan</div>
             <div class="menu-item"><svg class="ikon"><use href="#i-chart-column"/></svg>Rekap per <span class="lbl-k">kelas</span></div>
             <div class="menu-item"><svg class="ikon"><use href="#i-user"/></svg>Riwayat siswa</div>
-            <div class="menu-grup">Stasiun</div>
+            <div class="menu-grup">Akun dan stasiun</div>
             <div class="menu-item"><svg class="ikon"><use href="#i-wifi"/></svg>Status stasiun</div>
           </nav>
           <div class="isi">
             <div class="bar-atas"><span class="chip c-netral garis"><svg class="ikon"><use href="#i-calendar-days"/></svg>Tahun ajaran 2026/2027 · Semester ganjil</span>
               <div class="kanan"><span class="kecil">Rina Wulandari · Wali kelas 7A, Guru piket</span><span class="avatar">RW</span></div></div>
-            <div class="darurat" id="banner-darurat" hidden><svg class="ikon"><use href="#i-siren"/></svg>Mode darurat aktif sejak 06.30. Siswa tanpa presensi tetap "belum hadir", dan Alpa tidak terbentuk. <a>Presensi per <span class="lbl-k">kelas</span></a></div>
+            <div class="darurat" id="banner-darurat" hidden><svg class="ikon"><use href="#i-siren"/></svg>Mode darurat aktif sejak 06.30. Siswa tanpa presensi tetap belum hadir, dan Alpa tidak terbentuk. <a>Presensi per <span class="lbl-k">kelas</span></a></div>
             <div class="konten">
               <div class="judul-hal"><h4>Dashboard hari ini</h4><span>Selasa, 13 Oktober 2026 · Hari sekolah</span><span class="kecil">Diperbarui 07.32</span></div>
               <div class="chips"><span class="chip c-netral garis">Masuk 07.00</span><span class="chip c-netral garis">Terlambat setelah 07.00</span><span class="chip c-netral garis">Tutup sesi masuk 08.00</span><span class="chip c-netral garis">Pulang 13.00</span><span class="chip c-hadir"><svg class="ikon"><use href="#i-scan-line"/></svg>Sesi masuk berjalan</span></div>
@@ -454,7 +423,7 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
                     <tr><td><b>8A</b></td><td>Yusuf Hidayat</td><td class="n">32</td><td class="n">24</td><td class="n">3</td><td class="n">1</td><td class="n">0</td><td class="n">2</td><td class="n"><span class="angka-sorot">2</span></td><td></td></tr>
                     <tr><td><b>8B</b></td><td>Lina Marlina</td><td class="n">31</td><td class="n">27</td><td class="n">1</td><td class="n">0</td><td class="n">1</td><td class="n">0</td><td class="n"><span class="angka-sorot">2</span></td><td><span class="penanda"><svg class="ikon"><use href="#i-triangle-alert"/></svg>1</span></td></tr>
                     <tr><td><b>8C</b></td><td>Agus Setiawan</td><td class="n">32</td><td class="n">25</td><td class="n">2</td><td class="n">1</td><td class="n">1</td><td class="n">0</td><td class="n"><span class="angka-sorot">3</span></td><td></td></tr>
-                    <tr class="libur"><td><b>9A–9C</b></td><td colspan="9">Libur tingkat 9: pasca-asesmen</td></tr>
+                    <tr class="libur"><td><b>9A–9C</b></td><td colspan="9">Libur Tingkat 9: pasca-asesmen</td></tr>
                     <tr class="total"><td>Total</td><td></td><td class="n">190</td><td class="n">154</td><td class="n">13</td><td class="n">3</td><td class="n">5</td><td class="n">2</td><td class="n">13</td><td>2</td></tr>
                   </tbody></table>
               </div>
@@ -477,7 +446,7 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
                 <tr><td><b>8A</b></td><td class="n">24</td><td class="n">3</td><td class="n">1</td><td class="n">0</td><td class="n">2</td><td class="n"><span class="angka-sorot">2</span></td></tr>
                 <tr class="total"><td>Total</td><td class="n">154</td><td class="n">13</td><td class="n">3</td><td class="n">5</td><td class="n">2</td><td class="n">13</td></tr>
               </tbody></table></div>
-            <div class="legenda kecil"><span><span class="kode c-hadir">H</span> Hadir</span><span><span class="kode c-terlambat">T</span> Terlambat</span><span><span class="kode c-belum">–</span> Belum hadir</span></div>
+            <div class="legenda kecil"><span><span class="kode c-hadir">H</span> Hadir</span><span><span class="kode c-terlambat">T</span> Terlambat</span><span><span class="kode c-izin">I</span> Izin</span><span><span class="kode c-sakit">S</span> Sakit</span><span><span class="kode c-dispensasi">D</span> Dispensasi</span><span><span class="kode c-belum">–</span> Belum hadir</span></div>
           </div>
         </div>
         <div class="bingkai" style="flex:1 1 280px">
@@ -499,7 +468,7 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
           <div class="hp-isi">
             <div><b>Budi Santoso</b><br><span class="kecil"><span class="lbl-K">Kelas</span> 7A · 2026/2027</span></div>
             <div style="display:flex;justify-content:space-between;align-items:center"><svg class="ikon"><use href="#i-chevron-left"/></svg><b>Oktober 2026</b><svg class="ikon"><use href="#i-chevron-right"/></svg></div>
-            <div class="legenda kecil"><span class="chip c-hadir">Hadir 6</span><span class="chip c-terlambat">Terlambat 1</span><span class="chip c-sakit">Sakit 2</span><span class="chip c-dispensasi">Dispensasi 1</span><span class="chip c-alpa">Alpa 1</span><span class="chip c-netral garis">Kehadiran 73%</span></div>
+            <div class="legenda kecil"><span class="chip c-hadir"><svg class="ikon"><use href="#i-circle-check"/></svg>Hadir 6</span><span class="chip c-terlambat"><svg class="ikon"><use href="#i-clock-alert"/></svg>Terlambat 1</span><span class="chip c-sakit"><svg class="ikon"><use href="#i-thermometer"/></svg>Sakit 2</span><span class="chip c-dispensasi"><svg class="ikon"><use href="#i-award"/></svg>Dispensasi 1</span><span class="chip c-alpa"><svg class="ikon"><use href="#i-circle-x"/></svg>Alpa 1</span><span class="chip c-netral garis">Kehadiran 73%</span></div>
             <div class="kal" id="kalender"></div>
             <div class="hari"><div class="baris1"><b>Selasa, 13 Okt</b><span class="chip c-hadir"><svg class="ikon"><use href="#i-circle-check"/></svg>Hadir</span></div><span class="kecil">Masuk 06.48 · belum final</span></div>
             <div class="hari"><div class="baris1"><b>Senin, 12 Okt</b><span class="chip c-dispensasi"><svg class="ikon"><use href="#i-award"/></svg>Dispensasi</span></div><span class="kecil">Lomba cerdas cermat · disetujui</span></div>
@@ -547,7 +516,7 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
         <p class="catatan">Tombol, isian, bilah peringatan, dan pesan kilat dengan teks dasar 16 px dan target sentuh 44 px (UI-19, UI-28).</p></div>
       <div class="bingkai"><div class="app komponen">
         <div class="baris"><button type="button" class="tombol tombol-utama">Simpan presensi manual</button><button type="button" class="tombol tombol-kedua">Periksa</button><button type="button" class="tombol tombol-bahaya">Batalkan presensi</button><button type="button" class="tombol tombol-teks">Kembali</button></div>
-        <div class="isian"><label for="contoh-jam">Jam masuk</label><span class="bantu">Dapat diubah: 6–13 Oktober 2026</span><input id="contoh-jam" type="text" value="08.10"></div>
+        <div class="isian"><label for="contoh-jam">Jam masuk</label><span class="bantu">Dapat diubah: 6–13 Oktober 2026</span><input id="contoh-jam" type="time" step="60" value="08:10"></div>
         <div class="isian galat"><label for="contoh-alasan">Alasan</label><span class="bantu">Alasan dapat dibaca siswa.</span><input id="contoh-alasan" type="text" value="" aria-invalid="true" aria-describedby="galat-alasan"><span class="pesan-galat" id="galat-alasan"><svg class="ikon"><use href="#i-circle-x"/></svg>Alasan wajib diisi.</span></div>
         <div class="isian"><label for="contoh-catatan">Catatan (opsional)</label><input id="contoh-catatan" type="text"></div>
         <div class="peringatan c-hadir" role="status"><svg class="ikon"><use href="#i-circle-check"/></svg>Presensi manual Fajar Nugroho tersimpan: Terlambat, 08.10.</div>
@@ -563,19 +532,17 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
 <script>
 (function(){
   var root = document.getElementById('pratinjau');
-  var labelNow = 'kelas';
   function ikon(n){ return '<svg class="ikon"><use href="#i-' + n + '"/></svg>'; }
   function foto(){ return '<svg class="foto-svg"><use href="#foto"/></svg>'; }
-  function L(){ return labelNow === 'rombel' ? 'Rombel' : 'Kelas'; }
 
   /* ---------- Kiosk ---------- */
   var KEADAAN = {
     siap: { kelas:'siap' },
     hadir: { kelas:'berhasil', nama:'Budi Santoso', rombel:'7A', judul:'HADIR', ikon:'circle-check', sub:'Masuk · 06.52', bunyi:'berhasil' },
-    terlambat: { kelas:'catatan', nama:'Siti Rahmawati', rombel:'8B', judul:'TERLAMBAT', ikon:'clock-alert', sub:'Masuk · 07.05', bunyi:'terlambat' },
+    terlambat: { kelas:'catatan', nama:'Siti Rahmawati', rombel:'8B', judul:'TERLAMBAT', ikon:'clock-alert', sub:'Masuk · 07.05', bunyi:'berhasil' },
     pulang: { kelas:'berhasil', nama:'Budi Santoso', rombel:'7A', judul:'PULANG', ikon:'circle-check', sub:'Pulang · 13.05', bunyi:'berhasil' },
-    pulangawal: { kelas:'catatan', nama:'Andi Pratama', rombel:'9C', judul:'PULANG LEBIH AWAL', ikon:'log-out', sub:'Pulang · 12.40', bunyi:'terlambat' },
-    ganda: { kelas:'info', nama:'Budi Santoso', rombel:'7A', judul:'SUDAH TERCATAT', ikon:'badge-check', sub:'Masuk pukul 06.52', bunyi:'peringatan' },
+    pulangawal: { kelas:'catatan', nama:'Andi Pratama', rombel:'9C', judul:'PULANG LEBIH AWAL', ikon:'log-out', sub:'Pulang · 12.40', bunyi:'berhasil' },
+    ganda: { kelas:'info', nama:'Budi Santoso', rombel:'7A', judul:'SUDAH TERCATAT', ikon:'badge-check', sub:'Kamu sudah tercatat masuk pukul 06.52.', bunyi:'peringatan' },
     tidakterdaftar: { kelas:'tolak', judul:'KARTU TIDAK TERDAFTAR', ikon:'circle-x', sub:'Temui guru piket.', bunyi:'galat' },
     ditutup: { kelas:'tolak', judul:'SESI MASUK SUDAH DITUTUP', ikon:'circle-x', sub:'Temui guru piket.', bunyi:'galat' }
   };
@@ -585,7 +552,7 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
       return '<div class="k-siap-isi">' + ikon('scan-line') + '<b>Silakan scan kartu</b><span>Scan masuk dibuka · batas terlambat 07.00 · sesi masuk ditutup 08.00</span></div>';
     }
     var kiri = d.nama ? '<div class="k-foto">' + foto() + '</div>' : '<div class="k-tanpa-foto">' + ikon('circle-x') + '</div>';
-    var teks = '<div class="k-teks">' + (d.nama ? '<div class="k-nama">' + d.nama + '</div><div class="k-rombel"><span class="lbl-K">' + L() + '</span> ' + d.rombel + '</div>' : '') +
+    var teks = '<div class="k-teks">' + (d.nama ? '<div class="k-nama">' + d.nama + '</div><div class="k-rombel"><span class="lbl-K">Kelas</span> ' + d.rombel + '</div>' : '') +
       '<div class="k-judul">' + ikon(d.ikon) + '<span>' + d.judul + '</span></div><div class="k-sub">' + d.sub + '</div></div>';
     return kiri + teks;
   }
@@ -594,16 +561,15 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
       '<div class="k-atas"><span class="k-logo">LOGO</span><div class="k-id"><b>SMP Negeri 1 Contoh</b><small>Spensada · kiosk presensi</small></div>' +
       '<span class="k-pil">' + ikon('scan-line') + 'Gerbang 1</span><span class="k-pil">' + ikon('wifi') + 'Online</span><span class="k-jam">06.52</span></div>' +
       '<div class="k-tengah"><div class="k-kamera"><div class="k-video"><span class="langsung">● Kamera</span><span class="bidik"></span></div>' +
-      '<p>Arahkan QR kartu ke kamera, atau pakai scanner.</p><div class="k-sesi"><span>Sesi masuk 06.00–07.59</span><span>Batas terlambat 07.00</span><span>Sesi pulang 12.00–16.59</span></div></div>' +
+      '<p>Arahkan QR kartu ke kamera, atau pakai scanner.</p><div class="k-sesi"><span>Sesi masuk 06.00–08.00</span><span>Batas terlambat 07.00</span><span>Sesi pulang 12.00–17.00</span></div></div>' +
       '<div class="k-hasil ' + KEADAAN[keadaan].kelas + '">' + isiHasil(keadaan) + '</div></div>' +
       '<div class="k-bawah"><span>Data dimuat 06.05 · 286 siswa</span><span class="k-nol">' + ikon('cloud-upload') + 'Belum tersinkron 0</span><span>Sinkron 06.52</span>' +
       '<span class="tb"><span class="k-tombol">' + ikon('refresh-cw') + 'Sinkron sekarang</span><span class="k-tombol">' + ikon('download') + 'Muat ulang data</span><span class="k-tombol">' + ikon('menu') + '</span></span></div></div>';
   }
-  document.querySelectorAll('[data-kiosk]').forEach(function(el){ el.innerHTML = kioskHTML(el.dataset.kiosk, 'hadir'); });
   var sim = document.getElementById('simulator');
   sim.innerHTML = kioskHTML('a', 'siap');
   var simHasil = sim.querySelector('.k-hasil');
-  var pengaturan = { lama:[3,6], bunyiTerlambat:'berhasil' };
+  var lama = [3, 6];
   var pewaktu = null;
 
   /* ---------- Bunyi (Web Audio API) ---------- */
@@ -629,10 +595,9 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
     var d = KEADAAN[k];
     simHasil.className = 'k-hasil ' + d.kelas;
     simHasil.innerHTML = isiHasil(k);
-    var jenis = d.bunyi === 'terlambat' ? pengaturan.bunyiTerlambat : d.bunyi;
-    try { BUNYI[jenis](); } catch (e) {}
+    try { BUNYI[d.bunyi](); } catch (e) {}
     clearTimeout(pewaktu);
-    var detik = d.kelas === 'tolak' ? pengaturan.lama[1] : pengaturan.lama[0];
+    var detik = d.kelas === 'tolak' ? lama[1] : lama[0];
     pewaktu = setTimeout(function(){ simHasil.className = 'k-hasil siap'; simHasil.innerHTML = isiHasil('siap'); }, detik * 1000);
   }
   document.getElementById('tombol-sim').addEventListener('click', function(e){
@@ -656,18 +621,16 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
 
   /* ---------- Slip ---------- */
   var siswa = [['Budi Santoso','0012345678','Rk7m','Xq4t'],['Citra Ayu Lestari','0012345679','Hn3w','Pz8c'],['Dimas Arya Putra','0012345680','Tv6b','Ke2s'],['Eka Puspitasari','0012345683','Wm9d','Ry5h'],
-    ['Farhan Maulana','0012345684','Gx4p','Nc7v'],['Gita Permata Sari','0012345685','Js2k','Bw6y'],['Hafiz Ramadhan','0012345686','Pd8r','Mt3e'],['Intan Nurhaliza','0012345687','Yb5n','Hf9q'],
-    ['Joko Susilo','0012345688','Cq7t','Va4m'],['Kirana Dewi','0012345689','Ne6x','Sp2w']];
-  function slipHTML(s, ringkas){
+    ['Farhan Maulana','0012345684','Gx4p','Nc7v'],['Gita Permata Sari','0012345685','Js2k','Bw6y'],['Hafiz Ramadhan','0012345686','Pd8r','Mt3e'],['Intan Nurhaliza','0012345687','Yb5n','Hf9q']];
+  function slipHTML(s){
     return '<div class="slip"><div class="slip-kepala"><span class="k-logo">LOGO</span><div><b>SMP Negeri 1 Contoh</b><span>Akun Spensada</span></div></div>' +
-      '<dl><dt>Nama</dt><dd>' + s[0] + '</dd><dt>NISN</dt><dd>' + s[1] + '</dd><dt><span class="lbl-K">' + L() + '</span></dt><dd>7A</dd></dl>' +
+      '<dl><dt>Nama</dt><dd>' + s[0] + '</dd><dt>NISN</dt><dd>' + s[1] + '</dd><dt><span class="lbl-K">Kelas</span></dt><dd>7A</dd></dl>' +
       '<div><span style="color:var(--a-redup)">Password awal</span></div><div class="pw"><span>' + s[2] + '</span><span>' + s[3] + '</span></div>' +
-      (ringkas ? '<div>Buka <span class="alamat">spensada.sch.id</span>, login dengan NISN, lalu ganti password.</div>'
-               : '<div>Buka <span class="alamat">spensada.sch.id</span></div><ol><li>Login dengan NISN dan password di atas.</li><li>Ganti password, lalu simpan baik-baik.</li></ol><div style="color:var(--a-redup)">Lupa password? Hubungi wali kelas.</div>') + '</div>';
+      ('<div>Buka <span class="alamat">spensada.sch.id</span></div><ol><li>Login dengan NISN dan password di atas.</li><li>Ganti password, lalu simpan baik-baik.</li></ol><div style="color:var(--a-redup)">Lupa password? Hubungi wali kelas.</div>') + '</div>';
   }
   document.querySelectorAll('[data-slip]').forEach(function(el){
     var n = Number(el.dataset.slip), out = '';
-    for (var j = 0; j < n; j++) out += slipHTML(siswa[j], n === 10);
+    for (var j = 0; j < n; j++) out += slipHTML(siswa[j]);
     el.innerHTML = out;
   });
 
@@ -675,14 +638,14 @@ footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); col
   function ubin(c, ik, label, nilai){ return '<div class="fl-t c-' + c + '"><b>' + nilai + '</b><span>' + ikon(ik) + label + '</span></div>'; }
   function flyerHTML(jenis){
     var kepala = '<div class="fl-kepala"><span class="k-logo">LOGO</span><div><b>SMP Negeri 1 Contoh</b><span>Kehadiran siswa</span></div></div>';
-    var kaki = '<div class="fl-kaki"><span class="fl-stempel">Data hari ini belum final, dibuat pukul 07.32</span><span>Spensada</span></div>';
+    var kaki = '<div class="fl-kaki"><span class="fl-stempel">Data hari ini belum final, dibuat pukul 07.32 WIB</span><span>Spensada</span></div>';
     if (jenis === 'total') {
-      return kepala + '<div class="fl-judul"><h4>Kehadiran hari ini</h4><p>Selasa, 13 Oktober 2026 <span class="chip">Seluruh sekolah</span></p></div>' +
+      return kepala + '<div class="fl-judul"><h4>Kehadiran siswa</h4><p>Selasa, 13 Oktober 2026 <span class="chip">Seluruh sekolah</span></p></div>' +
         '<div class="fl-besar"><span class="fl-persen">95%</span><span class="fl-persen-k">kehadiran sementara<br>190 siswa hari ini</span></div>' +
         '<div class="fl-tingkat"><div class="tk"><span>Tingkat 7 · 95 siswa</span><span>Belum hadir 6</span><b>96%</b></div><div class="tk"><span>Tingkat 8 · 95 siswa</span><span>Belum hadir 7</span><b>95%</b></div><div class="tk libur"><span>Tingkat 9</span><span>Libur</span><span>—</span></div>' +
-        '<div class="fl-angka tiga">' + ubin('hadir','circle-check','Hadir',154) + ubin('terlambat','clock-alert','Terlambat',13) + ubin('belum','circle-dashed','Belum hadir',13) + '</div></div>' + kaki;
+        '<div class="fl-angka empat">' + ubin('hadir','circle-check','Hadir',154) + ubin('terlambat','clock-alert','Terlambat',13) + ubin('izin','file-text','Izin',3) + ubin('sakit','thermometer','Sakit',5) + ubin('dispensasi','award','Dispensasi',2) + ubin('alpa','circle-x','Alpa',0) + ubin('belum','circle-dashed','Belum hadir',13) + '</div></div>' + kaki;
     }
-    return kepala + '<div class="fl-judul"><h4>Kehadiran hari ini</h4><p>Selasa, 13 Oktober 2026 <span class="chip"><span class="lbl-K">' + L() + '</span> 7A</span></p></div>' +
+    return kepala + '<div class="fl-judul"><h4>Kehadiran siswa</h4><p>Selasa, 13 Oktober 2026 <span class="chip"><span class="lbl-K">Kelas</span> 7A</span></p></div>' +
       '<div class="fl-besar"><span class="fl-persen">97%</span><span class="fl-persen-k">kehadiran sementara<br>32 siswa hari ini</span></div>' +
       '<div class="fl-angka">' + ubin('hadir','circle-check','Hadir',27) + ubin('terlambat','clock-alert','Terlambat',2) + ubin('izin','file-text','Izin',1) +
       ubin('sakit','thermometer','Sakit',0) + ubin('dispensasi','award','Dispensasi',0) + ubin('alpa','circle-x','Alpa',0) + ubin('belum','circle-dashed','Belum hadir',2) + '</div>' + kaki;

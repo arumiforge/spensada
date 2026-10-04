@@ -180,7 +180,7 @@ Contoh pesan kiosk untuk BR-JAM-06 dan BR-SCN-03. Teks final ada di `08` §7.3:
 | Setelah sesi masuk ditutup, sebelum jendela pulang | "Sesi masuk sudah ditutup. Temui guru piket." |
 | Setelah sesi pulang ditutup | "Sesi pulang sudah ditutup." |
 | Bukan hari sekolah | "Hari ini bukan hari sekolah." |
-| Siswa sedang libur | "Kelas 9 libur hari ini." |
+| Siswa sedang libur | "Tingkat 9 libur hari ini." |
 | NISN tidak dikenal | "Kartu tidak terdaftar. Temui guru piket." |
 | Scan ganda | "Sudah tercatat masuk pukul 06.52." |
 
@@ -420,4 +420,4 @@ Nilai usulan yang perlu dipastikan saat implementasi:
 | 0.2 | 2026-10-03 | Keputusan Session 4b (`04` §2). BR-KAL-03, BR-SCN-10, BR-STS-07, BR-KOR-08, BR-KOR-09, BR-IZN-07, BR-IZN-10, BR-IZN-11, BR-DRT-06, dan BR-DRT-07 menjadi DECISION; BR-STS-07 diperluas. BR-KOR-11 diganti dengan pembatalan presensi manual. BR-KOR-10, BR-IZN-05, BR-IZN-09, BR-JAM-10, dan BR-REK-04 diperbarui. §2.3 ditambahkan, dan kebutuhan data di §14 dilengkapi. |
 | 0.3 | 2026-10-04 | Keputusan Session 5 (§2.4). BR-KAL-06, BR-SCN-03, BR-STS-06, BR-KOR-10, BR-REK-04, dan BR-REK-05 menjadi DECISION, begitu juga syarat 4 BR-KAL-05. BR-IZN-12 memuat batas 3 lampiran. BR-REK-03 memuat pembulatan bilangan bulat. BR-REK-05 memuat pengecualian rekap rapor. BR-REK-01 dan §14 merujuk `06` dan `13`. |
 | 0.4 | 2026-10-04 | Keputusan Session 6 (§2.5, `07`). BR-KAL-06 dan BR-REK-05 menjadi DECISION sepenuhnya. BR-SCN-07 merujuk mekanisme jam kiosk di `07`, dan toleransi 2 menit di BR-SCN-08 ditetapkan. Keadaan kedua BR-SCN-08 memakai selisih yang diukur server saat scan diterima. §1, §14, §15, dan §16 diperbarui. |
-| 0.5 | 2026-10-04 | Keputusan Session 7 (`08`). Contoh pesan kiosk di §4.2 merujuk teks final di `08` §7.3. Kepala dokumen dan §15 diperbarui. |
+| 0.5 | 2026-10-04 | Keputusan Session 7 (`08`). Contoh pesan kiosk di §4.2 merujuk teks final di `08` §7.3, dan contoh libur memakai "Tingkat". Kepala dokumen dan §15 diperbarui. |

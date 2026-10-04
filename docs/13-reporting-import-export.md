@@ -193,7 +193,7 @@ Catatan:
 | Isi | Nama dan logo sekolah, judul, tanggal, cakupan, jumlah siswa yang hari itu memiliki hari sekolah, jumlah Hadir, Terlambat, Izin, Sakit, Dispensasi, Alpa, dan Belum hadir (selama data belum final), serta persentase kehadiran (IE-04). Flyer total sekolah juga memuat angka per tingkat. |
 | Tidak dimuat | Nama, foto, NISN, atau data individu siswa lain (DECISION, OQ-11). |
 | Hari ini | Bila status hari ini belum final, flyer memuat tanda IE-03: "Data hari ini belum final, dibuat pukul JJ.MM". |
-| Status | DECISION (angka saja); RECOMMENDATION (rincian isi). Desain flyer, Canvas API, dan format potret 1080×1350 px ditetapkan di `08` §11 (DECISION, Session 7). |
+| Status | DECISION (angka saja); RECOMMENDATION (rincian isi). Canvas API dan format potret 1080×1350 px DECISION (Session 7, `08` UI-65, UI-66); susunan flyer RECOMMENDATION (`08` UI-67). |
 
 ## 6. Import siswa (IM-01)
 
@@ -275,4 +275,4 @@ Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 5: matriks laporan × format, rincian tujuh laporan dan flyer, template import siswa, import penempatan, format nama file foto, dan ketentuan umum. OQ-11 dan OQ-12 terjawab. |
 | 0.2 | 2026-10-04 | Keputusan Session 6 (`07`). IE-02 dan LP-03 (pengecualian rekap rapor) menjadi DECISION. IE-12 memuat mPDF dan Composer. IM-13 dan §8 memuat dukungan ZIP dan ukuran foto. §2, termasuk judulnya, dan §9 diperbarui. |
-| 0.3 | 2026-10-04 | Keputusan Session 7 (`08`). Judul kolom yang memuat "Rombel" diganti "Kelas", termasuk nama file contoh di IE-07. IE-06, IE-10, IE-12, LP-08, §1, §8, dan §9 merujuk `08`. |
+| 0.3 | 2026-10-04 | Keputusan Session 7 (`08`). Judul kolom yang memuat "Rombel" diganti "Kelas", termasuk nama file contoh di IE-07. IM-01 menerima judul kolom lama "Rombel". IE-06, IE-10, IE-12, LP-08, §1, §8, dan §9 merujuk `08`. |

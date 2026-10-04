@@ -71,7 +71,7 @@ Tabel ini memuat nilai dari `04` §14.2 dan `05` §16 yang dijadwalkan di Sessio
 | Batas tanpa kontak sebelum stasiun disorot | 10 menit | FS-KIO-05 |
 | Jeda pengabaian NISN yang sama | 5 detik. Lama hasil scan tampil ditetapkan di Session 7 (`08` UI-41). | FS-KIO-02 |
 | Interval pembaruan dashboard | 30 detik, juga untuk status stasiun | FS-LAP-01, FS-KIO-05 |
-| Ukuran foto | Foto standar paling besar 600×800 px, dan foto kiosk 300×400 px, dalam JPEG. Foto kecil 120×160 px dan ukuran tampil ditetapkan di Session 7 (§2.4, `08` UI-23). | FS-MD-07, FS-KIO-01 |
+| Ukuran foto | Foto standar paling besar 600×800 px, dan foto kiosk 300×400 px, dalam JPEG. Foto kecil 120×160 px dan ukuran tampil ditetapkan di Session 7 (§2.4, `08` UI-22, UI-23). | FS-MD-07, FS-KIO-01 |
 | Masa berlaku login akun stasiun | 90 hari sejak kontak terakhir. Masa sesi staf dan siswa tetap ditetapkan di Session 9. | FS-AKN-01, FS-AKN-04 |
 
 ### 2.4 Keputusan Session 7
@@ -400,8 +400,10 @@ public/
   kiosk-pemindai.js      Web Worker pembaca QR (ARS-22)
   aset/
     css/  js/            aset panel, portal, dan halaman publik
-    kiosk/               modul JavaScript, CSS, bunyi, ikon, dan manifest kiosk
+    ikon/                sprite ikon Lucide (`08` UI-20)
+    kiosk/               modul JavaScript, CSS, dan manifest kiosk; bunyi dibuat Web Audio (`08` UI-45)
     vendor/zxing-wasm/3.1.4/
+    vendor/plus-jakarta-sans/2.071/   font WOFF2 (`08` UI-13)
 tests/
   kasus/                 kasus uji JSON bersama (ARS-59)
   js/                    uji modul kiosk dengan node --test
@@ -415,7 +417,7 @@ writable/
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-18 | **Migration dan seeder.** Migration mengikuti `06`: satu file per tabel, atau per tabel induk beserta anaknya, dengan urutan sesuai foreign key. Kolom turunan (DB-10) dan `CHECK` ditulis dengan SQL langsung. Setiap migration memiliki langkah `down`, agar rilis dapat dikembalikan (ARS-08). Migration tabel R2 ditulis saat R2 (`06` §14.1). Seeder `PengaturanAwal` mengisi kunci `pengaturan` dengan default di `06` §6.1 dan dijalankan di setiap instalasi. Seeder `DataContoh` mengisi data fiktif untuk lokal dan pengujian, dan menolak berjalan di production. | RECOMMENDATION |
-| ARS-19 | **Tampilan dan JavaScript di luar kiosk.** Panel, portal, dan halaman publik memakai View Layouts CI4 per area. JavaScript ditulis sebagai modul ES kecil per halaman di `public/aset/js/`, tanpa framework dan tanpa build (C-01). Formulir tetap bekerja tanpa JavaScript, kecuali fitur yang memang membutuhkannya: pembaruan berkala (ARS-50), pratinjau unggahan, dan flyer (R2). Tampilan memakai CSS sendiri tanpa library dan tanpa build, dengan aturan di `08` (DECISION, Session 7). | RECOMMENDATION; DECISION (CSS sendiri, Session 7) |
+| ARS-19 | **Tampilan dan JavaScript di luar kiosk.** Panel, portal, dan halaman publik memakai View Layouts CI4 per area. JavaScript ditulis sebagai modul ES kecil per halaman di `public/aset/js/`, tanpa framework dan tanpa build (C-01). Formulir tetap bekerja tanpa JavaScript, kecuali fitur yang memang membutuhkannya: pembaruan berkala (ARS-50), pratinjau unggahan, dan flyer (R2). Tampilan memakai CSS sendiri tanpa library dan tanpa build, dengan aturan di `08` (DECISION, Session 7). | DECISION (CSS sendiri, Session 7); RECOMMENDATION (rincian) |
 
 ## 6. Kiosk
 
@@ -1006,4 +1008,4 @@ Session 6 menjawab OQ-09, dan tidak menambah OQ baru. Hal yang dijadwalkan di Se
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 6: keputusan arsitektur, hosting dan instalasi, library, struktur aplikasi, kiosk, hitung ulang lewat antrean, konkurensi, waktu, sesi, pembaruan halaman, file unggahan, cron dan perintah CLI, pengujian, panduan lokal dan production, serta traceability. OQ-09 terjawab. |
-| 0.2 | 2026-10-04 | Keputusan Session 7 (§2.4, `08`). ARS-10 (flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide), ARS-19, ARS-22, ARS-51, ARS-53 (foto kecil), §2.1, §2.3, §17.1, dan §19 diperbarui. |
+| 0.2 | 2026-10-04 | Keputusan Session 7 (§2.4, `08`). ARS-10 (flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide), ARS-19, ARS-22, ARS-51, ARS-53 (foto kecil), §2.1, §2.3, §5.3, §17.1, dan §19 diperbarui. |

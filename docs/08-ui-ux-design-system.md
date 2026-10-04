@@ -32,21 +32,21 @@ Daftar halaman dan route ditetapkan di Session 8 (`09`), dan teks validasi serta
 | Cara membangun tampilan | CSS sendiri dengan token (variabel CSS), tanpa library dan tanpa build. Ikon memakai subset Lucide (lisensi ISC) yang disalin ke server sebagai satu file SVG. Kiosk juga memakai CSS sendiri. | ARS-10, ARS-11, ARS-19, NFR-16, UI-08, UI-20 | DECISION |
 | Huruf | Plus Jakarta Sans (SIL OFL), disalin ke server dan dipakai di aplikasi, flyer, dan PDF. Font didaftarkan di mPDF. | UI-13 s.d. UI-15 | DECISION |
 | Warna utama | Biru dongker. Admin tidak dapat mengubah tema (FS-MD-01). | UI-09 | DECISION |
-| Palet status | Palet A: Hadir hijau, Terlambat oranye tua, Izin biru, Sakit ungu, Dispensasi toska, Alpa merah, dan Belum hadir abu-abu. Status selalu disertai ikon, huruf singkat, dan teks. | FS-PRS-05, UI-01, UI-10 | DECISION |
+| Palet status | Palet A: Hadir hijau, Terlambat oranye tua, Izin biru, Sakit ungu, Dispensasi toska, Alpa merah, dan Belum hadir abu-abu. Status selalu disertai ikon, huruf singkat, dan teks. | FS-PRS-05, UI-01, UI-12 | DECISION |
 | Tata letak kiosk | Kamera dan jadwal sesi di kiri, hasil scan di kanan dengan lebar dua pertiga layar. | FS-KIO-02, UI-39 | DECISION |
 | Bunyi kiosk | Tiga nada sintetis dari Web Audio API, tanpa file suara: berhasil, peringatan, dan galat. Scan yang tercatat, termasuk Terlambat dan pulang lebih awal, berbunyi berhasil. Scan ganda berbunyi peringatan. Scan yang ditolak berbunyi galat. | FS-KIO-02, FR-KIO-04, UI-41, UI-45 | DECISION |
 | Lama hasil scan tampil | 3 detik untuk scan yang tercatat dan scan ganda. 6 detik untuk scan yang ditolak. Scan berikutnya tetap langsung menggantikan hasil (FS-KIO-02 butir 8). | UF-10 langkah 7, UI-41 | DECISION |
-| Navigasi | Panel: menu samping di layar ≥1024 px, yang menjadi menu lipat di tablet dan ponsel. Menu dikelompokkan dan hanya memuat halaman yang boleh dibuka role pengguna. Portal siswa: menu bawah di ponsel (Riwayat, Izin, Akun), dan menu atas di layar lebar. | `02` §8, NFR-11, UI-29, UI-35 | DECISION |
-| Sapaan | Staf disapa "Anda". Siswa disapa "kamu" di portal siswa dan kiosk. Slip, flyer, dan dokumen cetak memakai bahasa formal tanpa "kamu". | UI-49 | DECISION |
+| Navigasi | Panel: menu samping di layar ≥1024 px, yang menjadi menu lipat di tablet dan ponsel. Menu dikelompokkan dan hanya memuat halaman yang boleh dibuka role pengguna. Portal siswa: menu bawah di ponsel (Riwayat, Izin, Akun), dan menu atas di layar lebar. | `02` §8, NFR-11, UI-29, UI-31, UI-35 | DECISION |
+| Sapaan | Staf disapa "Anda". Siswa disapa "kamu" di portal siswa dan kiosk. Slip dan flyer memakai bahasa formal tanpa "kamu". | UI-49 | DECISION |
 | Format tanggal dan jam | Tanggal di tabel "13 Okt 2026", dan di judul "Selasa, 13 Oktober 2026". Jam memakai format 24 jam dengan titik: "07.00", atau "07.00.59" bila detik diperlukan. CSV tetap memakai format `13` IE-09. | `04` §4.8, UI-53 | DECISION |
 | Foto kecil | Ukuran ketiga 120×160 px dibuat saat foto disimpan, khusus untuk daftar. Foto menjadi tiga ukuran: standar, kiosk, dan kecil. | ARS-53, FS-LAP-02, FS-PRS-09, UI-22 | DECISION |
 | Paket nilai tampilan | Nilai di §2.2. | UI-19, UI-23, UI-26, UI-27 | DECISION |
-| Slip akun | 8 slip per halaman A4 (ukuran A7, 2 kolom × 4 baris), dengan garis potong putus-putus, password berhuruf besar, dan petunjuk login lengkap. | FS-AKN-05, `02` §7.2, UI-58 | DECISION |
+| Slip akun | 8 slip per halaman A4 (ukuran A7, 2 kolom × 4 baris), dengan garis potong putus-putus, password dengan huruf berukuran besar, dan petunjuk login lengkap. | FS-AKN-05, `02` §7.2, UI-58 | DECISION |
 | Template PDF (R2) | Kop berisi logo, nama, dan alamat sekolah dengan garis bawah. Rekap per rombel dan rekap rapor memuat blok tanda tangan: tempat dan tanggal cetak, "Wali Kelas 7A", ruang tanda tangan, nama wali kelas, dan NIP. NIP disimpan sebagai isian opsional di akun staf. Tempat diambil dari isian baru "Kota/kabupaten" di identitas sekolah. Kaki halaman memuat pembuat, waktu cetak, dan nomor halaman. | `13` IE-06, IE-10, UI-60, UI-61 | DECISION |
 | Cara membuat flyer | Canvas API tanpa library. Flyer digambar di canvas selebar 1080 px dengan Plus Jakarta Sans, lalu diunduh sebagai PNG. Pratinjau memakai canvas yang sama. | R-19, `13` LP-08, ARS-10, UI-65 | DECISION |
 | Format flyer | Potret 4:5, 1080×1350 px, untuk flyer per rombel dan flyer total sekolah. | `13` LP-08, UI-66 | DECISION |
 | Desain kartu (OQ-13) | Kartu siswa baru dan kartu pengganti mengikuti tata letak kartu OSIS yang sekarang dipakai. Sekolah menyerahkan contoh kartu sebelum R3, lalu desain dirinci saat itu. OQ-13 tetap terbuka sampai contoh diterima. | OQ-13, FR-KRT-01, UI-62 | DECISION |
-| Cetak kartu (R3) | PDF A4 dari mPDF berisi 10 kartu (2 × 5) dengan garis potong, untuk dicetak di kertas foto atau lembar PVC lalu dilaminasi. QR dibuat di server dengan chillerlan/php-qrcode 6 (MIT). | FS-KRT-01, ARS-10, UI-63 | DECISION |
+| Cetak kartu (R3) | PDF A4 dari mPDF berisi 10 kartu (2 × 5) dengan garis potong, untuk dicetak di kertas foto atau lembar PVC lalu dilaminasi. QR dibuat di server dengan chillerlan/php-qrcode 6 (lisensi MIT atau Apache-2.0). | FS-KRT-01, ARS-10, UI-63 | DECISION |
 | Contoh visual | Halaman pratinjau Session 7 diperbarui menjadi contoh tampilan final dan disimpan sebagai `docs/08-contoh-tampilan.html`, tanpa CDN. Dokumen ini tetap menjadi sumber kebenaran. | UI-77 | DECISION |
 
 ### 2.2 Nilai yang dipastikan
@@ -67,7 +67,7 @@ Tabel ini memuat nilai dari `04` §14.2, `07` §19, dan `13` §9 yang dijadwalka
 | Teks dasar | 16 px | Panel, portal, halaman publik |
 | Target sentuh di ponsel | Paling kecil 44×44 px | Panel, portal, halaman publik |
 | Label rombel | "Kelas" | `00` §9 |
-| Warna dan ikon status | §4.2 | FS-PRS-05 |
+| Warna dan ikon status | Palet A, selalu dengan ikon, huruf singkat, dan teks. Nilai warna dan nama ikon di §4.2 berstatus RECOMMENDATION (UI-12). | FS-PRS-05 |
 | Cara membuat flyer | Canvas API | FS-LAP-06 |
 
 ### 2.3 Catatan antarmuka awal di `04`
@@ -78,7 +78,7 @@ Setiap fitur di `04` memuat catatan antarmuka awal yang belum menjadi keputusan.
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-01 | **Status tidak hanya warna.** Setiap status, penanda, dan hasil scan ditampilkan dengan warna, ikon, dan teks. Di tempat sempit, teks boleh diganti huruf singkat (§4.2), asalkan keterangannya tersedia di halaman yang sama. Alasannya, sebagian petugas buta warna merah-hijau, dan dokumen sering dicetak hitam-putih. | DECISION |
+| UI-01 | **Status tidak hanya warna.** Setiap status, penanda, dan hasil scan ditampilkan dengan warna, ikon, dan teks. Di tempat sempit, teks boleh diganti huruf singkat (§4.2), asalkan keterangannya tersedia di halaman yang sama. Alasannya, sebagian petugas buta warna merah-hijau, dan dokumen sering dicetak hitam-putih. | DECISION (status selalu dengan warna, ikon, huruf singkat, dan teks); RECOMMENDATION (huruf singkat menggantikan teks di tempat sempit dengan keterangan di halaman yang sama, serta penerapan pada penanda dan hasil scan) |
 | UI-02 | **Terbaca dari jauh di kiosk.** Hasil scan terbaca dari jarak 1–2 meter, dan foto cukup besar untuk dicocokkan dengan wajah siswa (FS-KIO-02, R-02). | RECOMMENDATION |
 | UI-03 | **Data seperlunya.** Tampilan hanya memuat data yang boleh dilihat pengguna (`02` §5). Staf tanpa role khusus hanya melihat angka. Siswa tidak melihat penanda, nama staf, atau nama stasiun (FS-LAP-04). Kiosk hanya menampilkan foto, nama, rombel, jenis, status, dan jam (FR-KIO-04). Flyer dan halaman publik hanya memuat angka (`13` LP-08, FR-INF-05). | RECOMMENDATION |
 | UI-04 | **Tetap bekerja tanpa JavaScript.** Halaman dan formulir panel, portal, dan halaman publik bekerja tanpa JavaScript (ARS-19). JavaScript hanya menambah kenyamanan, misalnya pembaruan berkala, pratinjau unggahan, dan dialog konfirmasi. Pengecualiannya kiosk dan flyer, yang memang membutuhkan JavaScript. | RECOMMENDATION |
@@ -93,9 +93,9 @@ Setiap fitur di `04` memuat catatan antarmuka awal yang belum menjadi keputusan.
 | ID | Aturan | Status |
 |---|---|---|
 | UI-08 | **Token warna.** Semua warna ditulis sebagai variabel CSS di `:root` (§13). Komponen hanya memakai token, bukan nilai warna langsung. | DECISION (CSS sendiri dengan token); RECOMMENDATION (nama dan nilai token) |
-| UI-09 | **Warna utama.** Biru dongker dipakai untuk menu samping panel, bilah atas portal, tombol utama, tautan, dan kepala flyer serta PDF. Warna utama tidak dipakai untuk menandai status. | DECISION (biru dongker); RECOMMENDATION (pemakaian) |
+| UI-09 | **Warna utama.** Biru dongker dipakai untuk menu samping panel, bilah atas portal, tombol utama, tautan, dan kepala flyer serta PDF. Warna utama tidak dipakai untuk menandai status. Admin tidak dapat mengubah warna atau tema (FS-MD-01). | DECISION (biru dongker); RECOMMENDATION (pemakaian) |
 | UI-10 | **Tema terang saja.** Panel, portal, dan halaman publik hanya memakai tema terang di R1–R3. Kiosk memakai latar gelap dengan blok hasil berwarna (§7). | RECOMMENDATION |
-| UI-11 | **Kontras.** Teks memakai kontras paling kecil 4,5:1 terhadap latarnya. Garis isian formulir, ikon tanpa teks, dan cincin fokus paling kecil 3:1 (WCAG 2.2 AA). Semua token di tabel di bawah sudah memenuhi syarat itu. | RECOMMENDATION |
+| UI-11 | **Kontras.** Teks memakai kontras paling kecil 4,5:1 terhadap latarnya. Garis isian formulir, ikon tanpa teks, dan cincin fokus paling kecil 3:1 (WCAG 2.2 AA). Semua pasangan warna yang dipakai di tabel di bawah memenuhi syarat itu. Di latar gelap, yaitu menu samping dan kiosk, cincin fokus memakai `--fokus-terang`, karena `--fokus` hanya 2,37:1 terhadap warna utama. | RECOMMENDATION |
 
 Token warna dasar (UI-08):
 
@@ -103,21 +103,22 @@ Token warna dasar (UI-08):
 |---|---|---|---|
 | `--warna-utama` | `#1B3A6B` | Menu samping, tombol utama, tautan, kepala flyer dan PDF | 11,27:1 terhadap putih |
 | `--warna-utama-gelap` | `#132A4F` | Tombol utama saat ditekan, bilah atas kiosk | 14,27:1 terhadap putih |
-| `--warna-utama-muda` | `#E7EDF6` | Baris terpilih, baris rombel milik wali kelas, latar chip netral | Teks utama di atasnya 9,57:1 |
+| `--warna-utama-muda` | `#E7EDF6` | Baris terpilih, baris rombel milik wali kelas, latar chip netral | Warna utama di atasnya 9,57:1, teks utama 13,30:1 |
 | `--latar` | `#F5F7FA` | Latar halaman | — |
 | `--permukaan` | `#FFFFFF` | Kartu, tabel, dan isian | — |
 | `--garis` | `#D9DFE7` | Garis pemisah dan tepi kartu | Hiasan, tanpa syarat kontras |
 | `--garis-isian` | `#8A94A3` | Tepi isian formulir, kotak centang | 3,07:1 terhadap putih |
 | `--teks` | `#1B2430` | Teks utama | 15,65:1 terhadap putih, 14,58:1 terhadap latar |
 | `--teks-redup` | `#5B6676` | Teks keterangan | 5,82:1 terhadap putih, 5,42:1 terhadap latar |
-| `--fokus` | `#2F6FDB` | Cincin fokus keyboard | 4,75:1 terhadap putih |
+| `--fokus` | `#2F6FDB` | Cincin fokus keyboard di latar terang | 4,75:1 terhadap putih, 4,43:1 terhadap latar |
+| `--fokus-terang` | `#FFFFFF` | Cincin fokus keyboard di latar gelap | 11,27:1 terhadap warna utama |
 | `--sukses`, `--info`, `--peringatan`, `--bahaya` | Sama dengan warna pekat Hadir, Izin, Terlambat, dan Alpa (§4.2) | Bilah peringatan dan pesan kilat | §4.2 |
 
 ### 4.2 Warna dan ikon status
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-12 | **Palet A.** Setiap status memakai tiga warna: pekat untuk latar berteks putih (kiosk, flyer, ubin pekat), muda untuk latar chip, dan teks untuk tulisan di atas warna muda. Ikon memakai nama Lucide (UI-20). Huruf singkat dipakai di kalender, tabel sempit, dan PDF. | DECISION (palet A, ikon, huruf singkat, dan teks); RECOMMENDATION (nilai dan ikon) |
+| UI-12 | **Palet A.** Setiap status memakai tiga warna: pekat untuk latar berteks putih (kiosk, flyer, ubin pekat), muda untuk latar chip, dan teks untuk tulisan di atas warna muda. Ikon memakai nama Lucide (UI-20). Huruf singkat dipakai di kalender, tabel sempit, dan PDF. | DECISION (palet A; selalu dengan ikon, huruf singkat, dan teks; teks putih di atas warna pekat memenuhi WCAG AA); RECOMMENDATION (nilai warna dan nama ikon) |
 
 Status harian dan keadaan sementara (BR-STS-01):
 
@@ -151,8 +152,8 @@ Tanda lain:
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-13 | **Plus Jakarta Sans.** Semua area, flyer, dan PDF memakai Plus Jakarta Sans, karya Tokotype dengan lisensi SIL OFL 1.1. Versi saat dokumen ini ditulis adalah 2.071, berupa variable font dengan ketebalan 200–800. Font disalin ke `public/aset/vendor/plus-jakarta-sans/2.071/` beserta file lisensinya, dalam format WOFF2 untuk subset latin dan latin-ext. Ukuran subset latin ±27 KB. Font tidak dimuat dari CDN (ARS-11). | DECISION (font, disalin ke server, dipakai di aplikasi, flyer, dan PDF); RECOMMENDATION (versi, lokasi, dan subset) |
-| UI-14 | **Pemakaian di browser.** `@font-face` memakai `font-display: swap`, dengan cadangan `system-ui, "Segoe UI", Roboto, sans-serif`. Ketebalan yang dipakai: 400 untuk teks, 600 untuk label dan judul kecil, 700 untuk judul dan angka, dan 800 untuk hasil kiosk dan angka besar flyer. Angka di tabel, ubin, jam, kiosk, dan flyer memakai `font-variant-numeric: tabular-nums`, karena angka bawaan font ini proporsional. Password dan contoh kode memakai huruf berlebar tetap bawaan sistem (`ui-monospace, Consolas, monospace`). Service Worker kiosk ikut menyimpan file font (ARS-22). | RECOMMENDATION |
+| UI-13 | **Plus Jakarta Sans.** Semua area, flyer, dan PDF memakai Plus Jakarta Sans, karya Tokotype dengan lisensi SIL OFL 1.1. Versi saat dokumen ini ditulis adalah 2.071, berupa variable font dengan ketebalan 200–800. Font disalin ke `public/aset/vendor/plus-jakarta-sans/2.071/` beserta file lisensinya, dalam format WOFF2 untuk subset latin dan latin-ext dengan `unicode-range`. Subset diambil dari paket `@fontsource-variable/plus-jakarta-sans` atau dibuat dengan `pyftsubset` dari file upstream. Ukurannya ±27 KB (latin) dan ±22 KB (latin-ext). Font tidak dimuat dari CDN (ARS-11). | DECISION (font, disalin ke server, dipakai di aplikasi, flyer, dan PDF); RECOMMENDATION (versi, lokasi, dan subset) |
+| UI-14 | **Pemakaian di browser.** `@font-face` memakai `font-display: swap`, dengan cadangan `system-ui, "Segoe UI", Roboto, sans-serif`. Ketebalan yang dipakai: 400 untuk teks, 600 untuk label dan judul kecil, 700 untuk judul dan angka, dan 800 untuk hasil kiosk dan angka besar flyer. Angka di tabel, ubin, jam, dan kiosk memakai `font-variant-numeric: tabular-nums`, karena angka bawaan font ini proporsional. Canvas tidak mendukung pengaturan itu, sehingga angka di flyer diratakan tengah di setiap ubin. Password dan contoh kode memakai huruf berlebar tetap bawaan sistem (`ui-monospace, Consolas, monospace`). Service Worker kiosk ikut menyimpan file font (ARS-22). | RECOMMENDATION |
 | UI-15 | **Pemakaian di mPDF dan canvas.** mPDF tidak memakai variable font. Karena itu PDF memakai file TTF statis Plus Jakarta Sans Regular dan Bold yang didaftarkan di konfigurasi `fontdata` mPDF. Flyer menunggu `document.fonts.load()` selesai sebelum menggambar, agar canvas tidak memakai font cadangan. | DECISION (font didaftarkan di mPDF); RECOMMENDATION (rincian) |
 
 Skala huruf panel, portal, dan halaman publik (teks dasar 16 px, DECISION):
@@ -171,7 +172,7 @@ Ukuran huruf kiosk dihitung dari lebar layar (§7.1).
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-16 | **Jarak.** Jarak memakai kelipatan 4 px: 4, 8, 12, 16, 24, 32, dan 48 px (`--jarak-1` s.d. `--jarak-7`). Sibling diberi jarak dengan `gap` di flex atau grid. | RECOMMENDATION |
+| UI-16 | **Jarak.** Jarak memakai kelipatan 4 px: 4, 8, 12, 16, 24, 32, dan 48 px (`--jarak-1` s.d. `--jarak-7`). Elemen bersebelahan diberi jarak dengan `gap` di flex atau grid. | RECOMMENDATION |
 | UI-17 | **Sudut dan bayangan.** Isian dan tombol bersudut 6 px, kartu 10 px, dan chip berbentuk pil. Bayangan hanya untuk dialog dan menu lipat. Kartu cukup bertepi `--garis`. | RECOMMENDATION |
 | UI-18 | **Titik henti.** Ponsel di bawah 600 px, tablet 600–1023 px, dan layar lebar mulai 1024 px. Isi halaman panel selebar paling besar 1200 px, dan isi portal paling besar 720 px. Tata letak ditulis dari ponsel ke layar lebar. | RECOMMENDATION |
 | UI-19 | **Target sentuh.** Tombol, tautan di daftar, dan isian di ponsel paling kecil 44×44 px. | DECISION |
@@ -207,7 +208,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 | ID | Aturan | Status |
 |---|---|---|
 | UI-22 | **Tiga ukuran file.** Foto standar paling besar 600×800 px, foto kiosk 300×400 px, dan foto kecil 120×160 px, semuanya JPEG tanpa dipotong (ARS-53). Foto kecil dibuat dari foto standar, sama seperti foto kiosk, dan disimpan di `foto/kecil/` dengan nama file yang sama. Foto kecil dipakai untuk daftar, sehingga daftar 32 siswa sekitar 160 KB. | DECISION (foto kecil 120×160 untuk daftar); RECOMMENDATION (folder) |
-| UI-23 | **Ukuran tampil.** Foto selalu memakai rasio 3:4 dengan `object-fit: cover`. Ukuran tampilnya ada di tabel di bawah. | DECISION |
+| UI-23 | **Ukuran tampil.** Foto selalu memakai rasio 3:4 dengan `object-fit: cover`. Ukuran tampilnya ada di tabel di bawah. | DECISION (ukuran tampil di tabel); RECOMMENDATION (rasio dan `object-fit`) |
 | UI-24 | **Pengganti foto.** Siswa tanpa foto, atau yang fotonya belum terunduh di kiosk, tampil dengan siluet abu-abu dan inisial nama (FS-MD-07 E3). Daftar siswa admin menandai "tanpa foto" (FS-MD-04). | RECOMMENDATION |
 | UI-25 | **Pemuatan.** Foto di daftar memakai `loading="lazy"`, `width`, dan `height`, agar halaman tidak bergeser saat foto dimuat. Teks alternatif foto berisi nama siswa, kecuali di daftar yang nama siswanya sudah tertulis di sebelahnya (`alt=""`). | RECOMMENDATION |
 
@@ -273,7 +274,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-35 | **Kerangka portal.** Di ponsel, portal memakai bilah atas berisi logo dan judul halaman, serta menu bawah tetap berisi Riwayat, Izin, dan Akun. Di R3, menu bawah ditambah Jadwal dan Pengumuman. Di layar ≥600 px, menu bawah berpindah ke bilah atas. Halaman awal portal adalah riwayat kehadiran (`02` §8). | DECISION (menu bawah di ponsel, menu atas di layar lebar); RECOMMENDATION (rincian) |
+| UI-35 | **Kerangka portal.** Di ponsel, portal memakai bilah atas berisi logo dan judul halaman, serta menu bawah tetap berisi Riwayat, Izin, dan Akun. Di R3, menu bawah ditambah Jadwal dan Pengumuman. Di layar lebar (≥1024 px, UI-18), menu bawah berpindah ke bilah atas. Di tablet (600–1023 px) menu bawah tetap dipakai. Halaman awal portal adalah riwayat kehadiran (`02` §8). | DECISION (menu bawah di ponsel, menu atas di layar lebar); RECOMMENDATION (rincian) |
 | UI-36 | **Riwayat di portal.** Urutan dari atas: nama dan kelas, pemilih bulan, ringkasan periode (jumlah per status dan persentase kehadiran), kalender bulanan berwarna dengan huruf singkat, lalu daftar harian dari yang terbaru (FS-LAP-04). Tanggal yang dikoreksi menampilkan "Dikoreksi" beserta alasannya. Hari ini diberi tanda "Belum final" sampai statusnya final. | RECOMMENDATION |
 | UI-37 | **Pengajuan izin/sakit.** Formulir satu kolom dengan pilihan "Satu hari" atau "Beberapa hari", jenis Izin atau Sakit, keterangan, dan lampiran opsional, paling banyak 3 file (FS-IZN-01). Lampiran dapat diambil langsung dari kamera ponsel. | RECOMMENDATION |
 
@@ -289,12 +290,12 @@ Ikon yang dipakai (selain ikon status di §4.2):
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-39 | **Tiga bagian layar.** Kiosk berjalan sebagai jendela aplikasi layar penuh di laptop berlayar mendatar, dengan acuan 1366×768 px. Layar dibagi tiga: bilah atas (±9% tinggi), bagian tengah, dan bilah bawah (±8% tinggi). Bagian tengah dibagi dua: kolom kamera (±31% lebar) dan blok hasil (sisanya). Ukuran huruf dan foto dihitung dari ukuran layar (`vw`, `vh`, dan `clamp()`), sehingga tata letak sama di 1366×768 dan 1920×1080. | DECISION (kamera kiri, hasil kanan); RECOMMENDATION (proporsi) |
+| UI-39 | **Tiga bagian layar.** Kiosk berjalan sebagai jendela aplikasi layar penuh di laptop berlayar mendatar, dengan acuan 1366×768 px. Layar dibagi tiga: bilah atas (±9% tinggi), bagian tengah, dan bilah bawah (±8% tinggi). Bagian tengah dibagi dua: kolom kamera (±31% lebar) dan blok hasil (sisanya). Ukuran huruf dihitung dari ukuran layar (`vw`, `vh`, dan `clamp()`), sehingga proporsinya sama di 1366×768 dan 1920×1080. Tinggi foto ±50% layar, tetapi paling besar 400 px, sesuai ukuran foto kiosk. Sisa ruang diisi teks. | DECISION (kamera dan jadwal sesi di kiri, hasil di kanan selebar ±dua pertiga layar); RECOMMENDATION (proporsi lain dan ukuran huruf) |
 | UI-40 | **Isi setiap bagian.** Lihat tabel di bawah. | RECOMMENDATION |
 
 | Bagian | Isi |
 |---|---|
-| Bilah atas | Logo dan nama sekolah, "Spensada · kiosk presensi", nama stasiun, keadaan koneksi, dan jam WIB besar. |
+| Bilah atas | Logo dan nama sekolah, "Spensada · kiosk presensi", nama stasiun, keadaan koneksi, dan jam besar. |
 | Kolom kamera | Pratinjau kamera dengan bingkai bidik, arahan "Arahkan QR kartu ke kamera, atau pakai scanner.", dan jadwal hari ini: jendela masuk, batas terlambat, dan jendela pulang. |
 | Blok hasil | Saat siap: ikon `scan-line`, "Silakan scan kartu", dan keterangan sesi yang sedang berjalan. Saat ada hasil: foto, nama, kelas, judul hasil dengan ikon, dan keterangan jenis serta jam. Huruf nama ±4,2% lebar layar dan judul hasil ±5,2% lebar layar, yaitu ±57 px dan ±71 px di layar 1366 px. |
 | Bilah bawah | Waktu data dimuat dan jumlah siswa, jumlah belum tersinkron, waktu sinkron terakhir, tombol "Sinkron sekarang" dan "Muat ulang data", serta tombol `menu` untuk tindakan petugas lain. |
@@ -303,7 +304,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-41 | **Empat jenis hasil.** Hasil scan dibedakan menurut tabel di bawah. Warna blok hasil sama dengan warna status terkait, sehingga petugas melihat arti yang sama di kiosk dan di panel. Scan berikutnya langsung menggantikan hasil yang sedang tampil (FS-KIO-02 butir 8). Setelah lama tampil habis, blok hasil kembali siap. | DECISION (bunyi dan lama tampil); RECOMMENDATION (warna, ikon, dan pengelompokan) |
+| UI-41 | **Empat jenis hasil.** Hasil scan dibedakan menurut tabel di bawah. Warna blok hasil mengikuti warna status: hijau untuk tercatat, oranye tua untuk tercatat dengan catatan, dan merah untuk ditolak. Scan ganda memakai biru, sebagai informasi bahwa tidak ada yang baru dicatat. Scan berikutnya langsung menggantikan hasil yang sedang tampil (FS-KIO-02 butir 8). Setelah lama tampil habis, blok hasil kembali siap. | DECISION (bunyi dan lama tampil); RECOMMENDATION (warna, ikon, dan pengelompokan) |
 | UI-42 | **Hasil tanpa siswa.** Scan yang ditolak sebelum NISN dicari, yaitu di luar jendela atau bukan hari sekolah, serta kartu yang tidak terdaftar, tampil tanpa foto dan nama. Ikon `circle-x` besar menggantikan foto. Hasil ini mengikuti urutan pemeriksaan BR-SCN-01. | RECOMMENDATION |
 
 | Jenis hasil | Keadaan | Warna blok | Ikon | Bunyi | Lama tampil |
@@ -340,7 +341,7 @@ Sebelum jam buka scan masuk dan di antara jendela masuk dan jendela pulang, blok
 | ID | Aturan | Status |
 |---|---|---|
 | UI-43 | **Layar tidak siap.** Bila kiosk tidak dapat menerima scan, blok hasil diganti pesan tetap untuk petugas (tabel pertama di bawah). Kamera dan scanner tidak memproses scan selama pesan itu tampil. | RECOMMENDATION |
-| UI-44 | **Peringatan petugas.** Keadaan yang tidak menghentikan scan tampil sebagai pita kuning di atas bilah bawah, satu per baris, dengan tombol tindakan bila ada (tabel kedua di bawah). Penghitung belum tersinkron berwarna oranye bila lebih dari nol dan kiosk sedang offline (FS-KIO-03). | RECOMMENDATION |
+| UI-44 | **Peringatan petugas.** Keadaan yang tidak menghentikan scan tampil sebagai pita di atas bilah bawah, berlatar `--status-terlambat-muda` dengan teks `--status-terlambat-teks`,, satu per baris, dengan tombol tindakan bila ada (tabel kedua di bawah). Penghitung belum tersinkron berwarna oranye bila lebih dari nol dan kiosk sedang offline (FS-KIO-03). | RECOMMENDATION |
 
 | Keadaan | Pesan | Rujukan |
 |---|---|---|
@@ -368,9 +369,9 @@ Sebelum jam buka scan masuk dan di antara jendela masuk dan jendela pulang, blok
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-45 | **Bunyi Web Audio.** Bunyi dibuat dengan `OscillatorNode` dan `GainNode` dari satu `AudioContext`, tanpa file suara (tabel di bawah). Peramban dapat menahan `AudioContext` sampai ada interaksi pengguna. Bila keadaannya `suspended`, kiosk menampilkan peringatan "Bunyi belum aktif" dan memanggil `resume()` pada klik atau penekanan tombol pertama. Saat pemasangan stasiun, admin mengizinkan suara untuk alamat kiosk di pengaturan situs browser (UF-06). Menu petugas memuat tombol "Tes bunyi". | DECISION (tiga nada Web Audio dan pemetaannya); RECOMMENDATION (nada dan rincian) |
+| UI-45 | **Bunyi Web Audio.** Bunyi dibuat dengan `OscillatorNode` dan `GainNode` dari satu `AudioContext`, tanpa file suara (tabel di bawah). Browser dapat menahan `AudioContext` sampai ada interaksi pengguna. Bila keadaannya `suspended`, kiosk menampilkan peringatan "Bunyi belum aktif" dan memanggil `resume()` pada klik atau penekanan tombol pertama. Chrome mengizinkan bunyi tanpa klik untuk aplikasi yang sudah dipasang. Di Edge, admin mengatur "Putar otomatis media" menjadi "Izinkan" untuk alamat kiosk saat pemasangan stasiun (UF-06). Bunyi pertama diputar setelah `resume()` selesai. Menu petugas memuat tombol "Tes bunyi". | DECISION (tiga nada Web Audio dan pemetaannya); RECOMMENDATION (nada dan rincian) |
 | UI-46 | **Fokus dan scanner USB.** Tombol kiosk tidak menahan fokus. Setelah tombol diklik, fokus dikembalikan ke halaman, agar Enter dari scanner USB tidak menekan tombol itu (ARS-26). | RECOMMENDATION |
-| UI-47 | **Layar tetap menyala.** Selama kiosk tampil, kiosk meminta `navigator.wakeLock.request('screen')` dan memintanya lagi saat jendela kembali terlihat. Pengaturan daya Windows tetap menjadi pengaman utama (ARS-32). | RECOMMENDATION |
+| UI-47 | **Layar tetap menyala.** Selama kiosk tampil, kiosk meminta `navigator.wakeLock.request('screen')` dan memintanya lagi saat jendela kembali terlihat. Bila permintaan ditolak, kiosk tidak menampilkan galat. Pengaturan daya Windows tetap menjadi pengaman utama (ARS-32). | RECOMMENDATION |
 | UI-48 | **Tindakan berisiko di menu.** Logout, hapus data lokal, dan layar penuh berada di menu petugas, bukan di layar utama. PIN petugas ditetapkan di Session 9 (`02` §9). | RECOMMENDATION |
 
 | Bunyi | Nada | Bentuk gelombang | Durasi | Dipakai untuk |
@@ -488,39 +489,39 @@ Singkatan bulan: Jan, Feb, Mar, Apr, Mei, Jun, Jul, Agu, Sep, Okt, Nov, Des.
 | ID | Aturan | Status |
 |---|---|---|
 | UI-58 | **8 slip per A4.** Halaman slip berukuran A4 tegak dengan 8 slip berukuran A7 (±105 × 74 mm), dalam 2 kolom × 4 baris, dengan garis potong putus-putus. Margin halaman 0, dan setiap slip memiliki ruang dalam ±6 mm agar isi tetap tercetak di printer yang tidak dapat mencetak sampai tepi. | DECISION (8 slip A7 dengan garis potong); RECOMMENDATION (margin) |
-| UI-59 | **Isi slip.** Logo dan nama sekolah, judul "Akun Spensada", nama, NISN, kelas, password awal, alamat aplikasi, dan petunjuk: "1. Login dengan NISN dan password di atas. 2. Ganti password, lalu simpan baik-baik. Lupa password? Hubungi wali kelas." Password memakai huruf berlebar tetap berukuran ±16 pt, dibagi dua kelompok 4 karakter dengan jarak, dan tanpa karakter yang mirip (`02` §7.2 butir 5). Halaman slip di layar menampilkan peringatan "Password hanya tampil sekali. Cetak atau simpan sekarang." (FS-AKN-05). Slip satu siswa hasil reset memakai isi yang sama dalam satu halaman. | DECISION (password berhuruf besar dan petunjuk lengkap); RECOMMENDATION (rincian) |
+| UI-59 | **Isi slip.** Logo dan nama sekolah, judul "Akun Spensada", nama, NISN, kelas, password awal, alamat aplikasi, dan petunjuk: "1. Login dengan NISN dan password di atas. 2. Ganti password, lalu simpan baik-baik. Lupa password? Hubungi wali kelas." Password memakai huruf berlebar tetap berukuran ±16 pt, dibagi per 4 karakter dengan jarak, dengan panjang password yang ditetapkan di Session 9, dan tanpa karakter yang mirip (`02` §7.2 butir 5). Halaman slip di layar menampilkan peringatan "Password hanya tampil sekali. Cetak atau simpan sekarang." (FS-AKN-05). Slip satu siswa hasil reset memakai isi yang sama dalam satu halaman. | DECISION (password dengan huruf berukuran besar dan petunjuk lengkap); RECOMMENDATION (rincian) |
 
 ### 10.3 PDF laporan (R2)
 
 | ID | Aturan | Status |
 |---|---|---|
 | UI-60 | **Kop, kaki, dan isi.** Setiap PDF dimulai dengan kop: logo di kiri, nama sekolah dengan huruf tebal kapital, alamat, dan garis ganda di bawahnya. Setelah kop: judul laporan, cakupan, rentang, dan keterangan "belum final" bila perlu (`13` IE-03, IE-06). Kaki setiap halaman memuat "Dibuat oleh <nama> pada 13 Okt 2026, 07.32 WIB" dan "Halaman 1 dari 3". Ukuran A4, dengan orientasi mengikuti `13` IE-10. Status di tabel ditulis dengan teks atau huruf singkat (§4.2), dan warna hanya sebagai pelengkap, agar tetap terbaca bila dicetak hitam-putih. | DECISION (kop dan kaki halaman); RECOMMENDATION (rincian) |
-| UI-61 | **Blok tanda tangan.** Rekap per rombel (LP-01) dan rekap rapor semester (LP-03) memuat blok tanda tangan di kanan bawah halaman terakhir: "Kota Contoh, 13 Oktober 2026", "Wali Kelas 7A,", ruang tanda tangan ±25 mm, nama wali kelas, lalu "NIP. <nip>". Bila NIP kosong, baris "NIP." tetap dicetak untuk ditulis tangan. Kota berasal dari isian "Kota/kabupaten" di identitas sekolah. Bila isian itu kosong, hanya tanggal yang dicetak. NIP berasal dari isian opsional di akun staf. Kedua isian ditambahkan bersama export PDF di R2 (`06` §5.1, §6.1). | DECISION |
+| UI-61 | **Blok tanda tangan.** Rekap per rombel (LP-01) dan rekap rapor semester (LP-03) memuat blok tanda tangan di kanan bawah halaman terakhir: "Kota Contoh, 13 Oktober 2026", "Wali Kelas 7A,", ruang tanda tangan ±25 mm, nama wali kelas, lalu "NIP. <nip>". Bila NIP kosong, baris "NIP." tetap dicetak untuk ditulis tangan. Kota berasal dari isian "Kota/kabupaten" di identitas sekolah. Bila isian itu kosong, hanya tanggal yang dicetak. NIP berasal dari isian opsional di akun staf. Kedua isian ditambahkan bersama export PDF di R2 (`06` §5.1, §6.1). | DECISION (tempat dan tanggal cetak, "Wali Kelas 7A", ruang tanda tangan, nama wali kelas, NIP opsional di akun staf, dan isian "Kota/kabupaten"); RECOMMENDATION (letak, ukuran ruang, dan perilaku bila isian kosong) |
 
 ### 10.4 Kartu siswa (R3)
 
 | ID | Aturan | Status |
 |---|---|---|
 | UI-62 | **Mengikuti kartu lama.** Kartu siswa baru dan kartu pengganti mengikuti tata letak kartu OSIS yang sekarang dipakai. Sekolah menyerahkan contoh kartu, berupa kartu fisik, foto, atau file desain, sebelum R3. Desain lalu dirinci saat FS-KRT-01 dirinci. Isinya tetap mengikuti FR-KRT-01: foto, nama, NISN, dan QR berisi NISN polos (C-04). OQ-13 tetap terbuka sampai contoh diterima. | DECISION |
-| UI-63 | **Cetak sebagai PDF A4.** mPDF membuat PDF A4 berisi 10 kartu (2 × 5) dengan garis potong, untuk dicetak di kertas foto atau lembar PVC lalu dilaminasi. Susunan 10 kartu berlaku bila kartu lama berukuran standar 85,6 × 54 mm. QR dibuat di server dengan chillerlan/php-qrcode 6 (lisensi MIT atau Apache-2.0). | DECISION |
-| UI-64 | **Aturan QR kartu.** QR berisi tepat 10 digit NISN, hitam di atas putih, dengan zona kosong paling kecil 4 modul, tingkat koreksi galat M, dan lebar paling kecil 20 mm, agar mudah dibaca webcam (R-03). Hasil cetak pertama diuji dengan kiosk sebelum dicetak massal. | RECOMMENDATION |
+| UI-63 | **Cetak sebagai PDF A4.** mPDF membuat PDF A4 berisi 10 kartu (2 × 5) dengan garis potong, untuk dicetak di kertas foto atau lembar PVC lalu dipotong dan dilaminasi satu per satu. Susunan 10 kartu mengandaikan kartu lama berukuran standar 85,6 × 54 mm. QR dibuat di server dengan chillerlan/php-qrcode 6 (lisensi MIT atau Apache-2.0). | DECISION (PDF A4 dari mPDF, 10 kartu 2 × 5, garis potong, kertas foto atau lembar PVC lalu dilaminasi, chillerlan/php-qrcode 6); RECOMMENDATION (syarat ukuran 85,6 × 54 mm) |
+| UI-64 | **Aturan QR kartu.** QR berisi tepat 10 digit NISN, hitam di atas putih, dengan zona kosong paling kecil 4 modul, tingkat koreksi galat M yang diatur jelas karena bawaan chillerlan adalah L, dan lebar paling kecil 20 mm termasuk zona kosong (±0,69 mm per modul), agar mudah dibaca webcam (R-03). QR disisipkan ke PDF sebagai gambar vektor (SVG), agar modul tetap tajam. Hasil cetak pertama diuji dengan kiosk sebelum dicetak massal. | RECOMMENDATION |
 
 ## 11. Flyer kehadiran (R2)
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-65 | **Canvas API.** Flyer digambar dengan JavaScript di elemen canvas berukuran 1080×1350 px, tanpa library. Data diambil dari server sebagai JSON yang dibaca dengan aturan baca yang sama dengan laporan (`13` IE-01). Pratinjau di halaman memakai canvas yang sama yang diperkecil dengan CSS, sehingga hasil unduhan sama persis dengan pratinjau. Tombol "Unduh PNG" memakai `canvas.toBlob('image/png')`. Logo sekolah diambil dari alamat logo di domain yang sama, sehingga canvas dapat diekspor. | DECISION (Canvas API, 1080 px, dan pratinjau dari canvas yang sama); RECOMMENDATION (rincian) |
+| UI-65 | **Canvas API.** Flyer digambar dengan JavaScript di elemen canvas berukuran 1080×1350 px, tanpa library. Data diambil dari server sebagai JSON yang dibaca dengan aturan baca yang sama dengan laporan (`13` IE-01). Pratinjau di halaman memakai canvas yang sama yang diperkecil dengan CSS, sehingga hasil unduhan sama persis dengan pratinjau. Tombol "Unduh PNG" memakai `canvas.toBlob(simpan, 'image/png')`, dengan `simpan` sebagai fungsi yang menerima Blob. Logo sekolah diambil dari alamat logo di domain yang sama, sehingga canvas dapat diekspor. | DECISION (Canvas API, 1080 px, dan pratinjau dari canvas yang sama); RECOMMENDATION (rincian) |
 | UI-66 | **Potret 4:5.** Flyer per rombel dan flyer total sekolah sama-sama berukuran 1080×1350 px. | DECISION |
 | UI-67 | **Isi dan susunan.** Dari atas: kepala berwarna utama dengan logo dan nama sekolah, judul "Kehadiran siswa", tanggal panjang, dan cakupan ("Kelas 7A" atau "Seluruh sekolah"). Lalu persentase kehadiran berukuran besar, jumlah siswa yang memiliki hari sekolah, dan ubin berwarna per status: Hadir, Terlambat, Izin, Sakit, Dispensasi, Alpa, serta Belum hadir selama data belum final (`13` LP-08). Flyer total menambah baris per tingkat dengan persentasenya. Kaki flyer memuat cap "Data hari ini belum final, dibuat pukul 07.32 WIB" bila perlu (`13` IE-03) dan nama produk "Spensada". Flyer tidak memuat nama, foto, atau NISN siswa. | RECOMMENDATION |
-| UI-68 | **Nama file.** `spensada_flyer_<cakupan>_<YYYYMMDD>.png`, misalnya `spensada_flyer_7A_20261013.png` dan `spensada_flyer_sekolah_20261013.png`, mengikuti pola `13` IE-07. | RECOMMENDATION |
+| UI-68 | **Nama file.** `spensada_flyer_<cakupan>_<YYYYMMDD>.png`, misalnya `spensada_flyer_7A_20261013.png` dan `spensada_flyer_sekolah_20261013.png`, mengikuti pola `13` IE-07 dengan satu tanggal. | RECOMMENDATION |
 
 ## 12. Aksesibilitas, perangkat, dan kinerja
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-69 | **Aksesibilitas.** Target WCAG 2.2 tingkat AA. Setiap halaman memiliki `lang="id"`, tautan "Lewati ke isi", landmark `header`, `nav`, dan `main`, satu `h1`, cincin fokus yang terlihat (2 px `--fokus` dengan jarak 2 px), label untuk setiap isian, dan urutan fokus yang mengikuti urutan baca. Halaman tetap dapat dipakai saat diperbesar 200%. Animasi dimatikan bila pengguna memilih `prefers-reduced-motion`. | RECOMMENDATION |
+| UI-69 | **Aksesibilitas.** Target WCAG 2.2 tingkat AA. Setiap halaman memiliki `lang="id"`, tautan "Lewati ke isi", landmark `header`, `nav`, dan `main`, satu `h1`, cincin fokus yang terlihat (2 px `--fokus` atau `--fokus-terang` dengan jarak 2 px, UI-11), label untuk setiap isian, dan urutan fokus yang mengikuti urutan baca. Halaman tetap dapat dipakai saat diperbesar 200%. Animasi dimatikan bila pengguna memilih `prefers-reduced-motion`. | RECOMMENDATION |
 | UI-70 | **Browser.** Kiosk: Chrome atau Edge terbaru di Windows (A-04). Panel, portal, dan halaman publik: fitur yang sudah didukung Chrome dan Edge 100, Samsung Internet 19, Firefox 100, dan Safari 15.4 ke atas, termasuk `<dialog>`, `gap`, `aspect-ratio`, dan `:focus-visible`. CSS nesting, `:has()`, dan container query tidak dipakai untuk tata letak, karena ponsel lama siswa mungkin belum mendukungnya. | RECOMMENDATION |
-| UI-71 | **Batas ukuran.** Ukuran per halaman panel, portal, dan halaman publik, di luar foto: CSS paling besar 40 KB, JavaScript paling besar 30 KB, dan font paling besar 60 KB. Semuanya sebelum kompresi. Foto di satu halaman daftar paling besar ±200 KB. Batas ini diperiksa saat fase implementasi. | RECOMMENDATION |
+| UI-71 | **Batas ukuran.** Ukuran per halaman panel, portal, dan halaman publik, di luar foto: CSS paling besar 40 KB, JavaScript paling besar 30 KB, dan font paling besar 60 KB. Semuanya sebelum kompresi. Foto di satu halaman daftar paling besar ±250 KB, yaitu 50 foto kecil × ±5 KB. Batas ini diperiksa saat fase implementasi. | RECOMMENDATION |
 | UI-72 | **Tanpa JavaScript.** Bila JavaScript mati, panel dan portal tetap dapat dibuka dan formulir tetap dapat dikirim (UI-04). Dashboard menampilkan "Muat ulang halaman untuk data terbaru." sebagai pengganti pembaruan berkala. | RECOMMENDATION |
 
 ## 13. Aset dan struktur tampilan
@@ -554,7 +555,7 @@ File TTF untuk mPDF (UI-15) ditaruh di luar `public/`, misalnya `app/ThirdParty/
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-77 | **Contoh tampilan.** `docs/08-contoh-tampilan.html` adalah satu file HTML mandiri yang menampilkan keputusan dokumen ini: warna dan status, komponen dasar, kiosk dengan simulator bunyi dan lama tampil, dashboard panel, portal siswa, slip, dan flyer. File itu tidak memuat apa pun dari internet, karena font dan ikon disisipkan di dalamnya. Bila desain berubah, dokumen ini diperbarui lebih dulu, lalu file contoh. | DECISION |
+| UI-77 | **Contoh tampilan.** `docs/08-contoh-tampilan.html` adalah satu file HTML mandiri yang menampilkan keputusan dokumen ini: warna dan status, komponen dasar, kiosk dengan simulator bunyi dan lama tampil, dashboard panel, portal siswa, slip, dan flyer. File itu tidak memuat apa pun dari internet, karena font dan ikon disisipkan di dalamnya. Bila contoh berbeda dengan dokumen ini, dokumen ini yang berlaku. Bila desain berubah, dokumen ini diperbarui lebih dulu, lalu file contoh. | DECISION (contoh final tanpa pilihan yang tidak dipakai, tanpa CDN, dan dokumen ini sebagai sumber kebenaran); RECOMMENDATION (rincian) |
 
 ## 14. Perubahan pada dokumen lain
 
@@ -568,7 +569,7 @@ Perubahan karena keputusan Session 7:
 | `04-feature-specification.md` | 0.4 | §2.6 (keputusan Session 7) ditambahkan. §1 dan pengantar catatan antarmuka awal merujuk `08`. §4.8, FS-AKN-05, FS-MD-03, FS-MD-07, FS-KIO-01, FS-KIO-02, FS-PRS-05, FS-LAP-03, FS-LAP-04, §11, §13, §14.1, dan §14.2 diperbarui. |
 | `05-business-rules.md` | 0.5 | Contoh pesan kiosk di `05` §4.2 merujuk teks final di `08` §7.3. Kepala dokumen dan §15 diperbarui. |
 | `06-database-design.md` | 0.3 | §2.5 (keputusan Session 7) ditambahkan. Kolom `akun.nip` (R2) dan kunci `pengaturan.sekolah_kota` (R2) ditambahkan. Keterangan `siswa.foto_file` memuat foto kecil. §1, §14.1, dan §18 merujuk `08`. |
-| `07-system-architecture.md` | 0.2 | §2.4 (keputusan Session 7) ditambahkan. ARS-10 (flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide), ARS-19, ARS-22 (font dan ikon di cache kiosk), ARS-51, ARS-53 (foto kecil), §2.1, §2.3, §17.1, dan §19 diperbarui. |
+| `07-system-architecture.md` | 0.2 | §2.4 (keputusan Session 7) ditambahkan. ARS-10 (flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide), ARS-19, ARS-22 (font dan ikon di cache kiosk), ARS-51, ARS-53 (foto kecil), §2.1, §2.3, §5.3, §17.1, dan §19 diperbarui. |
 | `13-reporting-import-export.md` | 0.3 | Judul kolom yang memuat "Rombel" diganti "Kelas", termasuk nama file contoh di IE-07. IE-06, IE-10, IE-12, LP-08, §1, §8, dan §9 merujuk `08`. |
 
 File `docs/08-contoh-tampilan.html` juga dibuat di Session 7 (UI-77). `02` tidak berubah.
