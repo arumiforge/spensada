@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.4 (draft) |
-| Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, dan Session 4b. |
-| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md) |
+| Versi | 0.5 (draft) |
+| Tanggal | 2026-10-04 |
+| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, Session 4b, dan Session 5. |
+| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
 
 Dokumen ini adalah titik masuk dokumentasi proyek. Baca dokumen ini sebelum dokumen lain.
 
@@ -101,7 +101,7 @@ Kiosk adalah satu-satunya bagian yang berperilaku seperti aplikasi client di bro
 
 Isi R1:
 
-- Master data: tahun ajaran, rombel, dan siswa (termasuk nomor WA orang tua/wali).
+- Master data: tahun ajaran, rombel, dan siswa (termasuk nomor WA orang tua/wali dan atribut tambahan yang diatur admin).
 - Import siswa dari Excel/CSV.
 - Foto siswa.
 - Login per role.
@@ -172,15 +172,15 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | R-09 | Kiriman sinkron bisa terulang, dan satu siswa bisa scan di beberapa stasiun. | ID unik per scan dari laptop. Scan pertama yang berlaku: server memakai scan paling awal dari semua stasiun (`05` BR-SCN-03). | RECOMMENDATION (ID unik); DECISION (aturan penggabungan, Session 4) | Session 4 |
 | R-10 | Endpoint sinkron bisa disalahgunakan untuk mengirim presensi palsu. | Hanya untuk akun stasiun yang login, dilindungi CSRF, dan divalidasi server. | RECOMMENDATION | Session 9 |
 | R-11 | Zona waktu default CodeIgniter adalah `UTC`, dan zona waktu server hosting bisa berbeda dari sekolah. | Zona waktu aplikasi dan database diset eksplisit ke WIB (`Asia/Jakarta`, +07:00). Lihat `05` BR-JAM-12 dan §14. | CONFIRMED (default CI4); DECISION (WIB, OQ-05) | Session 4 (zona), Session 6 (teknis) |
-| R-12 | NISN bisa diawali nol, dan Excel sering membuang nol di depan. | NISN disimpan sebagai teks 10 digit, `id` internal menjadi primary key, dan import divalidasi per baris. | RECOMMENDATION | Session 5 |
-| R-13 | Status Alpa salah bila dihitung sebelum semua data masuk. | Status dapat dihitung ulang setiap kali data berubah, sehingga scan yang tersinkron belakangan mengoreksi Alpa. Sesi masuk ditutup otomatis. Pesan "tidak hadir" ditunda, menunggu semua stasiun tersinkron, dan ditahan bila jumlah siswa tercatat masuk di bawah ambang (`05` BR-STS-06, BR-WA-02, BR-WA-03). | DECISION (tutup otomatis, tunda, ambang); RECOMMENDATION (hitung ulang) | Session 4 |
-| R-14 | Riwayat rekap rusak saat kenaikan kelas bila siswa hanya punya satu kolom kelas. | Penempatan siswa ke rombel dicatat per tahun ajaran. | RECOMMENDATION | Session 5 |
+| R-12 | NISN bisa diawali nol, dan Excel sering membuang nol di depan. | NISN disimpan sebagai teks 10 digit, `id` internal menjadi primary key, dan import divalidasi per baris. Template XLSX memformat kolom NISN sebagai teks (`06` DB-03, `13` IM-01). | RECOMMENDATION | Session 5 |
+| R-13 | Status Alpa salah bila dihitung sebelum semua data masuk. | Status dapat dihitung ulang setiap kali data berubah, sehingga scan yang tersinkron belakangan mengoreksi Alpa. Hasilnya disimpan sebagai salinan yang dapat dibangun ulang (`06` §11). Sesi masuk ditutup otomatis. Pesan "tidak hadir" ditunda, menunggu semua stasiun tersinkron, dan ditahan bila jumlah siswa tercatat masuk di bawah ambang (`05` BR-STS-06, BR-WA-02, BR-WA-03). | DECISION (tutup otomatis, tunda, ambang: Session 4; hitung ulang dan salinan: Session 5) | Session 4, 5 |
+| R-14 | Riwayat rekap rusak saat kenaikan kelas bila siswa hanya punya satu kolom kelas. | Penempatan siswa ke rombel dicatat dengan tanggal mulai dan selesai, dan rombel pada setiap tanggal disalin ke status harian (`06` §6.7, §11; `05` BR-REK-05). | DECISION (Session 5) | Session 5 |
 | R-15 | Keterbatasan hosting terkait document root dan cron. | Pastikan document root bisa diarahkan ke `public/` dan cron tersedia sebelum memilih hosting. | RECOMMENDATION | Session 6 (OQ-09) |
 | R-16 | Volume WhatsApp tinggi. Default scan masuk berarti ±500–1.000 pesan setiap pagi. Jeda dan kuota provider membatasi kecepatan kirim, dan nomor bisa diblokir. | Pesan dikirim lewat antrean (outbox) dan proses terjadwal, lalu diuji di R2. Risiko nomor diblokir diterima pengguna. | DECISION (risiko blokir diterima); RECOMMENDATION (antrean) | Sebelum R2 (OQ-10) |
-| R-17 | Data siswa termasuk data anak, dan surat sakit termasuk data kesehatan. Keduanya data pribadi spesifik menurut UU 27/2022 tentang Pelindungan Data Pribadi. | File unggahan disimpan di luar `public/` dengan akses terbatas. Halaman publik tanpa data individu. Isi flyer diputuskan lewat OQ-11. | RECOMMENDATION | Session 9 |
+| R-17 | Data siswa termasuk data anak, dan surat sakit termasuk data kesehatan. Keduanya data pribadi spesifik menurut UU 27/2022 tentang Pelindungan Data Pribadi. | File unggahan disimpan di luar `public/` dengan akses terbatas. Halaman publik tanpa data individu. Flyer hanya berisi angka (OQ-11, `13` LP-08). | RECOMMENDATION; isi flyer DECISION (Session 5) | Session 9 |
 | R-18 | XLSX, PDF, dan QR membutuhkan library PHP via Composer, padahal framework saat ini dipasang tanpa Composer. Repository juga belum punya `.gitignore`, sehingga `.env` (password database) dan isi `writable/` bisa ikut ter-push. | Pindah ke Composer appstarter. `.gitignore` dibuat sebelum commit kode pertama. | RECOMMENDATION (keputusan final OQ-09) | Session 6 |
 | R-19 | Flyer dibuat di browser dari template HTML menjadi PNG. | Kemungkinan butuh satu library JavaScript kecil. | RECOMMENDATION | Session 6 dan 7 |
-| R-20 | Volume data ±400 ribu catatan scan per tahun (±1.000 siswa × 2 scan × ±200 hari). | Index yang tepat. Volume ini ringan untuk MySQL. | RECOMMENDATION | Session 5 |
+| R-20 | Volume data ±400 ribu catatan scan per tahun (±1.000 siswa × 2 scan × ±200 hari). | Index yang tepat (`06` §15). Volume ini ringan untuk MySQL, dan data tidak dihapus di R1 (`06` DB-13). | RECOMMENDATION | Session 5 |
 | R-21 | Pesan "tidak hadir" bisa terkirim massal secara keliru bila server belum menerima scan, misalnya internet sekolah mati sepanjang pagi atau semua stasiun mati. | Waktu tunda, syarat semua stasiun tersinkron, ambang pengaman yang menahan pesan, dan mode darurat (`05` §10 dan §11). | DECISION | Session 4 |
 | R-22 | Izin/sakit/dispensasi yang disetujui menang atas kehadiran fisik. Siswa berizin yang ternyata datang tetap tercatat Izin bila data izinnya tidak dibatalkan. | Penanda di dashboard, daftar presensi rombel, dan riwayat siswa bagi staf yang melihat daftar nama, serta pembatalan izin oleh staf yang berhak (`05` BR-STS-07, BR-IZN-09). | DECISION (aturan prioritas: Session 4; penanda: Session 4b) | Session 4, 4b |
 
@@ -210,8 +210,8 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | OQ-08 | Jumlah stasiun scan (laptop) dan lokasinya. | Session 3 (lokasi); sebelum uji coba R1 (jumlah) | Sebagian: semua stasiun di gerbang utama, untuk scan masuk dan pulang. Jumlah laptop belum diketahui. |
 | OQ-09 | Jenis hosting (shared atau VPS) dan cara instalasi framework (Composer). | Session 6 | Terbuka |
 | OQ-10 | Provider gateway WhatsApp. | Sebelum R2 | Terbuka |
-| OQ-11 | Laporan apa saja dan format masing-masing (matriks laporan × format); isi flyer (angka saja atau dengan nama siswa). | Session 5 (ditulis di `13-reporting-import-export.md`) | Terbuka |
-| OQ-12 | Format nama file foto siswa yang ada saat ini. | Session 5 (ditulis di `13-reporting-import-export.md`) | Terbuka |
+| OQ-11 | Laporan apa saja dan format masing-masing (matriks laporan × format); isi flyer (angka saja atau dengan nama siswa). | Session 5 (ditulis di `13-reporting-import-export.md`) | Terjawab: tujuh laporan dengan matriks format di `13` §4; flyer berisi angka saja (`13` LP-08). |
+| OQ-12 | Format nama file foto siswa yang ada saat ini. | Session 5 (ditulis di `13-reporting-import-export.md`) | Terjawab: nama file foto saat ini belum seragam; format baku nama file diawali 10 digit NISN (`13` IM-03). |
 | OQ-13 | Desain kartu siswa baru: mengikuti kartu lama atau desain baru. | Session 7 | Terbuka |
 | OQ-14 | Cara pembuatan akun siswa dan password awal. | Session 3 | Terjawab: lihat `02` §2 dan §7.2. |
 | OQ-15 | Batas mundur (berapa hari ke belakang) untuk koreksi presensi dan input izin/sakit oleh staf; apakah siswa boleh mengajukan izin/sakit untuk tanggal yang sudah lewat. | Session 4 | Terjawab: hari ini dan 7 hari kalender sebelumnya, diatur admin; admin tidak dibatasi; siswa boleh mengajukan untuk tanggal lampau dalam batas ini (`05` §9). |
@@ -220,7 +220,7 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 
 ## 9. Glosarium
 
-Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antarmuka. Nama teknis (tabel, kolom, route) ditetapkan di Session 5–8 dan dipetakan ke istilah ini.
+Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antarmuka. Nama teknis (tabel, kolom, route) ditetapkan di Session 5–8 dan dipetakan ke istilah ini. Nama tabel dan kolom ada di `06`.
 
 | Istilah | Definisi |
 |---|---|
@@ -277,6 +277,12 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Tahun ajaran | Periode akademik sekolah, umumnya Juli–Juni, terdiri dari dua semester. |
 | Rombel | Rombongan belajar: kelompok kelas tempat siswa terdaftar pada satu tahun ajaran, misalnya 7A. Label di antarmuka ditetapkan di Session 7. |
 | Tingkat | Jenjang kelas dalam satu sekolah, misalnya 7, 8, dan 9. |
+| Penempatan | Catatan bahwa seorang siswa berada di satu rombel sejak tanggal mulai sampai tanggal selesai. Rombel siswa pada setiap tanggal ditentukan dari penempatan (`05` BR-REK-05). |
+| Import penempatan | Penempatan banyak siswa sekaligus lewat file berisi rombel tujuan, misalnya saat rombel diacak ulang pada kenaikan kelas (`13` IM-02). |
+| Masa aktif | Periode ketika siswa berstatus aktif, dari tanggal mulai sampai tanggal terakhir aktif. Seorang siswa dapat memiliki beberapa periode, misalnya setelah diaktifkan kembali (`05` BR-KAL-06). |
+| NIS | Nomor induk siswa dari sekolah. Hanya informasi; login dan QR tetap memakai NISN. |
+| Atribut tambahan siswa | Atribut siswa yang dibuat admin sendiri, misalnya agama. Tidak dipakai logika presensi atau laporan (`04` FS-MD-09). |
+| Salinan status harian | Hasil penentuan status yang disimpan per siswa per hari sekolah dan selalu dapat dibangun ulang dari sumbernya. Bagian yang bergantung pada jam sekarang diturunkan saat dibaca (`06` §11). |
 | Hari sekolah | Tanggal kegiatan belajar menurut pola mingguan, jadwal khusus, dan kalender sekolah. Karena libur dapat berlaku per tingkat atau rombel, hari sekolah ditentukan per siswa (`05` BR-KAL-05). |
 | Kalender sekolah | Daftar hari libur (untuk semua siswa, tingkat tertentu, atau rombel tertentu) dan jadwal khusus yang diatur admin. |
 | Dashboard hari ini | Halaman pantauan kehadiran pada hari berjalan, per rombel. |
@@ -299,20 +305,20 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 
 | Dokumen | Isi | Sesi | Status |
 |---|---|---|---|
-| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–4b | Draft 0.4 |
-| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–4b | Draft 0.4 |
-| `02-user-roles-and-permissions.md` | Role dan permission | Session 3–4b | Draft 0.3 |
-| `03-user-flow.md` | Alur pengguna | Session 3–4b | Draft 0.3 |
-| `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b | Draft 0.1 |
-| `05-business-rules.md` | Aturan bisnis | Session 4–4b | Draft 0.2 |
-| `06-database-design.md` | Desain database | Session 5 | Belum dibuat |
+| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–5 | Draft 0.5 |
+| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–5 | Draft 0.5 |
+| `02-user-roles-and-permissions.md` | Role dan permission | Session 3–5 | Draft 0.4 |
+| `03-user-flow.md` | Alur pengguna | Session 3–5 | Draft 0.4 |
+| `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b–5 | Draft 0.2 |
+| `05-business-rules.md` | Aturan bisnis | Session 4–5 | Draft 0.3 |
+| `06-database-design.md` | Desain database | Session 5 | Draft 0.1 |
 | `07-system-architecture.md` | Arsitektur sistem | Session 6 | Belum dibuat |
 | `08-ui-ux-design-system.md` | Sistem desain UI/UX | Session 7 | Belum dibuat |
 | `09-page-and-route-specification.md` | Halaman dan route | Session 8 | Belum dibuat |
 | `10-api-specification.md` | API, termasuk sinkron kiosk | Session 8 | Belum dibuat |
 | `11-validation-and-error-handling.md` | Validasi dan penanganan error | Session 9 | Belum dibuat |
 | `12-security.md` | Keamanan | Session 9 | Belum dibuat |
-| `13-reporting-import-export.md` | Laporan, import, dan export | Session 5 | Belum dibuat |
+| `13-reporting-import-export.md` | Laporan, import, dan export | Session 5 | Draft 0.1 |
 | `14-development-roadmap.md` | Roadmap pengembangan | Session 10 | Belum dibuat |
 | `15-implementation-phases.md` | Dokumen fase implementasi | Session 11 | Belum dibuat |
 
@@ -324,9 +330,9 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | 2 | Product & Feature Definition | Selesai; dokumen direview di Session 3 |
 | 3 | User Roles & User Flow | Selesai; usulan di `02` dan `03` ditinjau di Session 4 |
 | 4 | Business Rules | Selesai; usulan yang berdampak ke R1 ditinjau di Session 4b |
-| 4b | Feature Specification (`04`), lanjutan Session 4 sebelum Session 5 | Selesai, menunggu review dokumen |
-| 5 | Database Architecture | Berikutnya |
-| 6 | System Architecture | Belum |
+| 4b | Feature Specification (`04`), lanjutan Session 4 sebelum Session 5 | Selesai |
+| 5 | Database Architecture (`06`), serta laporan, import, dan export (`13`) | Selesai, menunggu review dokumen |
+| 6 | System Architecture | Berikutnya |
 | 7 | UI/UX & Design System | Belum |
 | 8 | Routes / Pages / API | Belum |
 | 9 | Security / Validation / Error Handling | Belum |
@@ -357,3 +363,4 @@ Aturan ini berlaku untuk AI atau developer yang mengerjakan kode di repository i
 | 0.2 | 2026-10-03 | Hasil review dan keputusan Session 3. A-01, A-02, dan A-05 dikonfirmasi. OQ-01, OQ-02, dan OQ-14 terjawab; OQ-08 terjawab sebagian. OQ-15 dan OQ-16 ditambahkan. Aktor, glosarium (akun dan role), serta peta dokumen diperbarui. |
 | 0.3 | 2026-10-03 | Keputusan Session 4 (`05`). OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab; OQ-17 ditambahkan. Status Dispensasi ditambahkan, sehingga status harian menjadi enam. R-02, R-05, R-09, R-11, dan R-13 diperbarui; R-21 dan R-22 ditambahkan. Isi R1 dan glosarium (aturan jam, status, koreksi, mode darurat, batas mundur) diperbarui. `04` dijadwalkan di Session 4b. |
 | 0.4 | 2026-10-03 | Keputusan Session 4b (`04` §2). `04` dibuat. R-22 diperbarui (penanda menjadi DECISION). Glosarium ditambah: penanda, daftar presensi rombel, kelompok dispensasi, scan bertanda, status stasiun, dan spesifikasi fitur. Definisi presensi manual dan koreksi status diperbarui. Peta dokumen dan progres sesi diperbarui. Tidak ada OQ yang terjawab atau ditambahkan. |
+| 0.5 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). `06` dan `13` dibuat. OQ-11 dan OQ-12 terjawab. R-12, R-13, R-14, R-17, dan R-20 diperbarui. Glosarium ditambah: penempatan, import penempatan, masa aktif, NIS, atribut tambahan siswa, dan salinan status harian. Isi R1, peta dokumen, dan progres sesi diperbarui. |

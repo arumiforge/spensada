@@ -2,15 +2,15 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.3 (draft) |
-| Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules) dan Session 4b (Feature Specification). |
+| Versi | 0.4 (draft) |
+| Tanggal | 2026-10-04 |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), dan Session 5 (Database Architecture). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): ID requirement (`FR-*`, `NFR-*`). |
-| Dokumen terkait | [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md) |
+| Dokumen terkait | [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
 
 Dokumen ini menetapkan jenis akun, role, cakupan data, dan hak akses setiap role. Dokumen ini menjawab OQ-02 dan OQ-14, serta sebagian OQ-08. Batas mundur (OQ-15) ditetapkan di `05` dan diterapkan pada cakupan di §5.
 
-Nama teknis seperti tabel, kolom, kunci permission, dan route ditetapkan di Session 5–8. Hak akses di sini memakai ID `HA-<MODUL>-<NN>` dengan kode modul dari `01` §2. ID tidak pernah dinomori ulang.
+Nama teknis seperti tabel, kolom, kunci permission, dan route ditetapkan di Session 5–8. Akun dan role disimpan di tabel `akun` dan `akun_role` (`06` §5). Hak akses di sini memakai ID `HA-<MODUL>-<NN>` dengan kode modul dari `01` §2. ID tidak pernah dinomori ulang.
 
 ## 1. Ringkasan keputusan Session 3
 
@@ -53,6 +53,15 @@ Keputusan Session 4b yang mengubah dokumen ini (rinciannya di `04` §2):
 | Penanda | Pemegang `HA-LAP-02` dan `HA-LAP-03` melihat penanda di daftar nama, termasuk untuk tanggal lampau (`05` BR-STS-07). Siswa tidak melihat penanda. | DECISION |
 | Riwayat di portal siswa | Siswa melihat alasan koreksi dan catatan verifikasi, tanpa nama staf (`HA-LAP-04`). | DECISION |
 | Daftar presensi rombel per tanggal | Untuk hari ini memakai `HA-LAP-02`, dan untuk tanggal lain memakai `HA-LAP-03` (`04` FS-LAP-02). Tidak ada hak akses baru. | RECOMMENDATION |
+
+Keputusan Session 5 yang mengubah dokumen ini (rinciannya di `06` §2 dan `13` §2):
+
+| Topik | Perubahan | Status |
+|---|---|---|
+| Atribut tambahan siswa | Admin mengelola definisi atribut tambahan siswa (`HA-MD-11`, `04` FS-MD-09). | DECISION |
+| Profil siswa | `HA-MD-05` mencakup atribut opsional baru dan atribut tambahan. | DECISION |
+| Export | Export mengikuti matriks laporan di `13` §4. Data siswa hanya diekspor admin. Log perubahan presensi diekspor oleh pemegang `HA-PRS-06` sesuai cakupannya. | DECISION (matriks); RECOMMENDATION (hak export di luar `HA-LAP-05`) |
+| Flyer | Flyer berisi angka saja, sehingga `HA-LAP-06` tidak berubah (OQ-11). | DECISION |
 
 ## 2. Jenis akun
 
@@ -148,12 +157,13 @@ Cara membaca:
 | HA-MD-02 | Kelola rombel dan tetapkan wali kelas | Ya | — | — | — | — | — | — | — | FR-MD-02 | DECISION |
 | HA-MD-03 | Tambah, ubah, dan nonaktifkan siswa; tempatkan siswa ke rombel | Ya | — | — | — | — | — | — | — | FR-MD-03, FR-MD-04 | DECISION |
 | HA-MD-04 | Import siswa dari Excel/CSV | Ya | — | — | — | — | — | — | — | FR-MD-05 | DECISION |
-| HA-MD-05 | Lihat profil siswa: NISN, nama, rombel, foto, nomor WA orang tua/wali | Semua | — | Rombel | Semua | Semua | Semua | Sendiri | — | FR-MD-03 | RECOMMENDATION |
+| HA-MD-05 | Lihat profil siswa: NISN, nama, rombel, foto, nomor WA orang tua/wali, atribut opsional, dan atribut tambahan | Semua | — | Rombel | Semua | Semua | Semua | Sendiri | — | FR-MD-03 | RECOMMENDATION |
 | HA-MD-06 | Ubah nomor WA orang tua/wali | Semua | — | Rombel | — | — | — | — | — | FR-MD-09 | DECISION |
 | HA-MD-07 | Unggah atau ganti foto siswa satu per satu | Semua | — | Rombel | — | — | — | — | — | FR-MD-06, FR-MD-09 | DECISION |
 | HA-MD-08 | Unggah foto massal | Ya | — | — | — | — | — | — | — | FR-MD-07 | RECOMMENDATION |
 | HA-MD-09 | Atur identitas sekolah: nama resmi, alamat, logo | Ya | — | — | — | — | — | — | — | FR-MD-08 | DECISION |
-| HA-MD-10 | Lihat log perubahan nomor WA dan foto siswa | Semua | — | Rombel | — | Semua | Semua | — | — | FR-MD-09 | RECOMMENDATION |
+| HA-MD-10 | Lihat log data siswa: perubahan nomor WA, foto, dan data siswa lainnya | Semua | — | Rombel | — | Semua | Semua | — | — | FR-MD-09 | RECOMMENDATION |
+| HA-MD-11 | Kelola definisi atribut tambahan siswa | Ya | — | — | — | — | — | — | — | FR-MD-10 | DECISION (Session 5) |
 
 ### 6.3 Kiosk dan stasiun (KIO) — R1
 
@@ -317,12 +327,11 @@ Rincian teknis ditulis di Session 9 (`12-security.md`).
 
 ## 11. Pertanyaan terbuka terkait
 
-OQ-07 dan OQ-15 terjawab di Session 4: `HA-PRS-05` menjadi DEPRECATED, dan batas mundur diterapkan di §5.
+OQ-07 dan OQ-15 terjawab di Session 4: `HA-PRS-05` menjadi DEPRECATED, dan batas mundur diterapkan di §5. OQ-11 terjawab di Session 5: flyer berisi angka saja, dan `HA-LAP-06` tidak berubah.
 
 | OQ | Pertanyaan | Dampak ke dokumen ini |
 |---|---|---|
 | OQ-08 | Jumlah stasiun scan | Jumlah akun stasiun. Desain mendukung jumlah stasiun berapa pun. |
-| OQ-11 | Isi flyer | Dapat mengubah `HA-LAP-06`. |
 | OQ-17 | Pencatatan pembukaan lampiran surat | Dapat menambah pencatatan pada `HA-IZN-05`. |
 
 ## Riwayat perubahan
@@ -332,3 +341,4 @@ OQ-07 dan OQ-15 terjawab di Session 4: `HA-PRS-05` menjadi DEPRECATED, dan batas
 | 0.1 | 2026-10-03 | Draft awal dari Session 3. |
 | 0.2 | 2026-10-03 | Keputusan Session 4 (`05`). Usulan slip akun, admin tidak membuka kiosk, dan status stasiun disetujui. Pimpinan dapat membuka lampiran. `HA-PRS-05` DEPRECATED. `HA-PRS-07` s.d. `HA-PRS-09`, `HA-IZN-06`, dan `HA-WA-03` ditambahkan. Dispensasi masuk ke hak IZN. Batas mundur diterapkan pada cakupan. Tugas petugas diperbarui. |
 | 0.3 | 2026-10-03 | Keputusan Session 4b (`04` §2). Tabel keputusan Session 4b ditambahkan di §1. `HA-PRS-03` (pembatalan presensi manual), `HA-PRS-04` (hapus koreksi), `HA-IZN-06` (per kelompok), `HA-LAP-02` (penanda), `HA-LAP-03` (daftar presensi rombel per tanggal), dan `HA-LAP-04` (isi riwayat di portal) diperjelas. |
+| 0.4 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). Tabel keputusan Session 5 ditambahkan di §1. `HA-MD-11` (kelola atribut tambahan siswa) ditambahkan. `HA-MD-05` dan `HA-MD-10` diperjelas. `HA-LAP-06` ditinjau bersama OQ-11 tanpa perubahan. |
