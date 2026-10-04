@@ -161,7 +161,7 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 |---|---|---|---|---|
 | NFR-01 | Kinerja | Umpan balik scan di kiosk muncul paling lama 1 detik setelah QR terbaca, tanpa bergantung pada jaringan. | RECOMMENDATION | R-03 |
 | NFR-02 | Kinerja | Antrean pagi 500–1.000 siswa dilayani oleh beberapa stasiun scan di gerbang utama, yang dipakai untuk scan masuk dan pulang. Jumlah stasiun mengikuti OQ-08. | DECISION (skala, lokasi) | R-03 |
-| NFR-03 | Keandalan | Scan yang sudah tercatat di laptop tidak hilang karena internet putus, browser ditutup, atau laptop restart. Kiosk meminta persistent storage ke browser (`07` ARS-21). | RECOMMENDATION | R-06, R-08 |
+| NFR-03 | Keandalan | Scan yang sudah tercatat di laptop tidak hilang karena internet putus, browser ditutup, atau laptop restart. Kiosk meminta penyimpanan permanen (persistent storage) ke browser (`07` ARS-21). | RECOMMENDATION | R-06, R-08 |
 | NFR-04 | Keandalan | Sinkron bersifat idempotent: kiriman ulang tidak menggandakan data. | RECOMMENDATION | R-09 |
 | NFR-05 | Keandalan | Kegagalan gateway WhatsApp tidak memengaruhi pencatatan presensi. | RECOMMENDATION | R-16 |
 | NFR-06 | Keamanan | Seluruh aplikasi diakses lewat HTTPS, baik lokal maupun production. Ini wajib karena webcam hanya berjalan di HTTPS. | CONFIRMED (syarat browser) | R-01 |
@@ -183,7 +183,7 @@ Library yang dipakai (NFR-16). Versi, lisensi, dan alasannya ada di `07` ARS-10.
 | zxing-wasm (JavaScript) | Membaca QR di kiosk (wajib) | R1 | DECISION (Session 6) |
 | PhpSpreadsheet | Import .xlsx (R1) dan export XLSX (R2) | R1, R2 | RECOMMENDATION |
 | mPDF | Export PDF | R2 | DECISION (Session 6) |
-| Library JS pembuat gambar | Flyer kehadiran, bila perlu | R2 | Ditunda ke Session 7 |
+| Library JS pembuat gambar | Flyer kehadiran, bila perlu | R2 | DECISION (ditunda ke Session 7) |
 | chillerlan/php-qrcode | QR di kartu | R3 | RECOMMENDATION (dipastikan bersama OQ-13) |
 
 ## 5. Batasan
@@ -195,7 +195,7 @@ Library yang dipakai (NFR-16). Versi, lisensi, dan alasannya ada di `07` ARS-10.
 | C-03 | Production di VPS (OQ-09, `07` ARS-01). Document root diarahkan ke `public/`, dan cron tersedia sejak R1. | DECISION (hosting online; VPS, Session 6) |
 | C-04 | Format QR kartu tidak dapat diubah: NISN polos. | CONFIRMED |
 | C-05 | Gateway WhatsApp adalah layanan pihak ketiga tidak resmi. Risiko nomor diblokir diterima. | DECISION |
-| C-06 | Import .xlsx di R1 membutuhkan PhpSpreadsheet yang dipasang lewat Composer. Karena itu repository dipindah ke Composer appstarter di fase implementasi pertama (OQ-09, `07` ARS-07). | DECISION (Composer appstarter, Session 6) |
+| C-06 | Import .xlsx di R1 membutuhkan PhpSpreadsheet yang dipasang lewat Composer. Karena itu repository dipindah ke Composer appstarter di fase implementasi pertama (OQ-09, `07` ARS-07). | DECISION (Composer appstarter, Session 6); RECOMMENDATION (waktu migrasi) |
 
 ## 6. Kriteria keberhasilan v1
 
@@ -313,4 +313,4 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | 0.3 | 2026-10-03 | Keputusan Session 4 (`05`). Modul IZN mencakup dispensasi. FR-AKN-06 (mekanisme slip disetujui), FR-KIO-04, FR-KIO-05, FR-KIO-10 s.d. FR-KIO-12, FR-PRS-02 s.d. FR-PRS-08, FR-IZN-01 s.d. FR-IZN-05, FR-LAP-01, FR-LAP-02, FR-WA-02, FR-WA-07, dan NFR-09 diperbarui. FR-PRS-09 s.d. FR-PRS-11, FR-IZN-06, FR-IZN-07, dan FR-WA-08 ditambahkan. Kriteria keberhasilan 5 dan AC-03 disesuaikan dengan dispensasi dan mode darurat. OQ-17 ditambahkan. |
 | 0.4 | 2026-10-03 | Keputusan Session 4b (`04` §2). FR-MD-03 dan FR-MD-05 (nomor WA opsional), FR-PRS-06 (pembatalan presensi manual), FR-PRS-07 (hapus koreksi, koreksi saat ada izin), FR-IZN-06 dan FR-IZN-07 (dispensasi per kelompok, siswa bentrok dilewati), FR-LAP-01 (penanda), dan FR-LAP-03 (isi riwayat di portal siswa) diperbarui. §1, §7, dan §9 merujuk `04`. |
 | 0.5 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). FR-MD-03 (atribut opsional dan masa aktif), FR-MD-04 (penempatan massal), FR-MD-05 (NISN yang sudah ada dilewati), FR-MD-07 (format nama file foto), FR-IZN-05 (paling banyak 3 lampiran), FR-LAP-04 (matriks laporan), FR-LAP-05 (isi flyer), dan NFR-14 diperbarui. FR-MD-10 (atribut tambahan siswa) ditambahkan. OQ-11 dan OQ-12 dihapus dari §8 karena terjawab. |
-| 0.6 | 2026-10-04 | Keputusan Session 6 (`07`). C-03 (VPS) dan C-06 (Composer appstarter) menjadi DECISION. NFR-03, NFR-09, dan NFR-16 diperbarui, dan daftar library memuat zxing-wasm dan mPDF. OQ-09 dihapus dari §8 karena terjawab. §9 merujuk `07`. |
+| 0.6 | 2026-10-04 | Keputusan Session 6 (`07`). C-03 (VPS) dan C-06 (Composer appstarter) menjadi DECISION. NFR-03, NFR-09, dan NFR-16 diperbarui, dan daftar library memuat zxing-wasm dan mPDF, dengan flyer ditunda ke Session 7. OQ-09 dihapus dari §8 karena terjawab. §9 merujuk `07`. |

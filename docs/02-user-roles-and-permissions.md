@@ -69,7 +69,7 @@ Keputusan Session 6 yang mengubah dokumen ini (rinciannya di `07` §2):
 |---|---|---|
 | Login akun stasiun | Akun stasiun login dengan username dan password di halaman login yang sama. Login bertahan 90 hari sejak kontak terakhir, dan berakhir lebih awal bila kredensial diganti, akun dinonaktifkan, atau petugas logout (`07` ARS-30). | DECISION (90 hari); RECOMMENDATION (mekanisme) |
 | Admin pertama | Dibuat lewat perintah CLI saat instalasi. Perintah serupa memulihkan akses bila satu-satunya admin lupa password (`07` ARS-49). | DECISION |
-| Sesi | Status akun dan waktu ganti password diperiksa di setiap permintaan, sehingga akun yang dinonaktifkan dan penggantian password mengakhiri sesi lain (`07` ARS-47). | DECISION |
+| Sesi | Status akun dan waktu ganti password diperiksa di setiap permintaan. Penonaktifan akun mengakhiri semua sesinya, dan penggantian password mengakhiri sesi lain (`07` ARS-47). | DECISION |
 | Peta hak akses di kode | Matriks di §6 ditulis sebagai konfigurasi kode dengan kunci berupa ID `HA-*` (`07` ARS-15). | RECOMMENDATION |
 
 ## 2. Jenis akun
@@ -80,7 +80,7 @@ Ada tiga jenis akun. Pengunjung halaman publik tidak memakai akun.
 |---|---|---|---|---|---|---|
 | Akun staf | Semua guru dan staf, termasuk admin | Username dari admin | Admin | Acak, ditampilkan sekali saat dibuat | Direset oleh admin | DECISION |
 | Akun siswa | Setiap siswa aktif | NISN | Otomatis dari data siswa | Acak, dibagikan lewat slip akun per rombel | Direset oleh admin atau wali kelas (untuk rombelnya) | DECISION |
-| Akun stasiun | Setiap laptop stasiun scan | Username dari admin. Login bertahan 90 hari sejak kontak terakhir (`07` ARS-30). | Admin | Diisi admin saat memasang laptop | Admin mengganti kredensial | DECISION (satu akun per laptop; login 90 hari, Session 6); RECOMMENDATION (rincian login; keamanan di Session 9) |
+| Akun stasiun | Setiap laptop stasiun scan | Username dari admin | Admin | Diisi admin saat memasang laptop | Admin mengganti kredensial | DECISION (satu akun per laptop; login 90 hari sejak kontak terakhir, Session 6, `07` ARS-30); RECOMMENDATION (rincian login; keamanan di Session 9) |
 
 Aturan jenis akun:
 

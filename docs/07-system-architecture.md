@@ -5,8 +5,8 @@
 | Versi | 0.1 (draft, menunggu review) |
 | Tanggal | 2026-10-04 |
 | Sumber | Discovery Session 6 (System Architecture) |
-| Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan batasan (`C-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan ketentuan umum (§4). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). [06-database-design.md](06-database-design.md): tabel dan aturan data (`DB-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export. |
-| Dokumen terkait | `08-ui-ux-design-system.md` (Session 7), `09-page-and-route-specification.md` dan `10-api-specification.md` (Session 8), serta `12-security.md` (Session 9). Ketiganya belum dibuat. |
+| Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan batasan (`C-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [03-user-flow.md](03-user-flow.md): alur pengguna (`UF-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan ketentuan umum (§4). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). [06-database-design.md](06-database-design.md): tabel dan aturan data (`DB-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export. |
+| Dokumen terkait | `08-ui-ux-design-system.md` (Session 7), `09-page-and-route-specification.md` dan `10-api-specification.md` (Session 8), serta `12-security.md` (Session 9). Keempatnya belum dibuat. |
 
 Dokumen ini menetapkan arsitektur sistem Spensada: hosting dan instalasi, library, struktur aplikasi CodeIgniter 4, arsitektur kiosk, mekanisme hitung ulang status, konkurensi, waktu, sesi dan login, pembaruan halaman, penyimpanan file, proses terjadwal, pengujian, serta panduan lokal dan production. Dokumen ini menjawab OQ-09.
 
@@ -39,12 +39,12 @@ Route dan bentuk API ditetapkan di Session 8, tampilan di Session 7, dan rincian
 | Perubahan bersamaan | `updated_at` dipakai sebagai token versi, dan dibandingkan di klausa `WHERE` saat menyimpan. | DB-11, `04` §4.6, ARS-40 | DECISION |
 | Sesi | Sesi CI4 disimpan sebagai file di `writable/session`. Status akun dan waktu ganti password diperiksa di setiap permintaan. Cron harian membersihkan file sesi lama. | `06` §5.4, ARS-47 | DECISION |
 | Admin pertama | Dibuat lewat perintah CLI `spark`. Perintah serupa memulihkan akses bila satu-satunya admin lupa password. | `02` §3, UF-01, UF-21 E1, ARS-49 | DECISION |
-| Login akun stasiun | Bertahan 90 hari sejak kontak terakhir. Login berakhir lebih awal bila kredensial diganti, akun dinonaktifkan, atau petugas logout. | `02` §7.3, FS-AKN-04, ARS-30 | DECISION |
-| Jam kiosk yang dibuka offline | Kiosk memakai selisih jam terakhir dan menampilkan peringatan sampai selisih diukur ulang. Jam laptop yang tampak mundur dilaporkan ke petugas. | BR-SCN-07, R-05, ARS-28 | DECISION |
+| Login akun stasiun | Bertahan 90 hari sejak kontak terakhir. Login berakhir lebih awal bila admin mengganti kredensial atau menonaktifkan akun. | `02` §7.3, FS-AKN-04, ARS-30 | DECISION |
+| Jam kiosk yang dibuka offline | Kiosk memakai selisih jam terakhir dan menampilkan peringatan sampai selisih diukur ulang. Jam laptop yang tampak mundur dilaporkan ke petugas. Server tetap menandai scan dengan jam tidak wajar. | BR-SCN-07, BR-SCN-08, R-05, ARS-28 | DECISION |
 | Pembaruan halaman | Dashboard dan status stasiun meminta fragmen HTML setiap 30 detik. Polling berhenti saat tab tidak terlihat. | FS-LAP-01, FS-KIO-05, ARS-50 | DECISION |
 | Nilai parameter | Paket nilai di §2.3. | `04` §14.2, ARS-33 | DECISION |
 | Cron di R1 | Dipakai sebagai pelengkap, setiap menit dan setiap hari. Aplikasi tetap benar tanpa cron. | `06` §11.4, ARS-56 | DECISION |
-| Uji logika kiosk | Kasus uji JSON dipakai bersama oleh PHPUnit dan test runner bawaan Node.js. Node.js hanya alat pengembangan. | NFR-15, ARS-59 | DECISION |
+| Uji logika kiosk | Kasus uji JSON dipakai bersama oleh PHPUnit dan test runner bawaan Node.js. Node.js hanya alat pengembangan, tanpa paket npm dan tanpa build. | NFR-15, ARS-59 | DECISION |
 
 ### 2.2 Tinjauan RECOMMENDATION Session 5
 
@@ -58,7 +58,7 @@ Route dan bentuk API ditetapkan di Session 8, tampilan di Session 7, dan rincian
 
 ### 2.3 Nilai yang dipastikan
 
-Nilai dari `04` §14.2 dan `05` §16 yang dijadwalkan di Session 6. Semuanya DECISION, dari ronde diskusi Session 6. Daftar lengkap parameter kiosk ada di ARS-33.
+Tabel ini memuat nilai dari `04` §14.2 dan `05` §16 yang dijadwalkan di Session 6. Semuanya DECISION, dari ronde diskusi Session 6. Daftar lengkap parameter kiosk, termasuk nilai yang masih RECOMMENDATION, ada di ARS-33.
 
 | Nilai | Ditetapkan | Fitur |
 |---|---|---|
@@ -119,7 +119,7 @@ flowchart LR
 
 ### 3.2 Alur data utama
 
-1. Pagi hari, kiosk memuat data kiosk dari server (§6.4), lalu siswa scan. Scan disimpan di laptop lebih dulu (§6.2).
+1. Pagi hari, kiosk memuat data kiosk dari server (§6.4), lalu siswa memindai kartu. Scan disimpan di laptop lebih dulu (§6.2).
 2. Kiosk mengirim scan ke server lewat sinkron (§6.7). Server menyimpan scan dan antrean hitung ulang dalam satu transaksi, lalu memproses antrean (§7).
 3. Hitung ulang memperbarui `status_harian`. Dashboard dan halaman lain membaca salinan ini dengan aturan baca `06` §11.3. Bagian halaman yang berubah diperbarui setiap 30 detik (§11).
 4. Tindakan staf, misalnya presensi manual, koreksi, dan izin, mengikuti pola yang sama: perubahan sumber, entri log, dan antrean ditulis dalam satu transaksi, lalu antrean diproses.
@@ -135,7 +135,7 @@ flowchart LR
 | ARS-03 | **Ekstensi PHP.** Lihat tabel di bawah. Perintah `aplikasi:cek` memeriksa semuanya (ARS-57). | RECOMMENDATION |
 | ARS-04 | **Pengaturan PHP dan Nginx.** Lihat tabel di bawah. Batas unggah final ditetapkan bersama format dan ukuran file di Session 9. | RECOMMENDATION |
 | ARS-05 | **Kapasitas.** VPS awal 2 vCPU, RAM 2–4 GB, dan SSD paling kecil 40 GB. Data di `06` §15 kurang dari 1 GB per tahun, ditambah foto dan lampiran. | RECOMMENDATION |
-| ARS-06 | **Backup.** Database di-dump setiap hari, dan `writable/uploads/` disalin, ke lokasi di luar VPS. Pemulihan diuji berkala. Retensi dan enkripsi backup ditetapkan di Session 9, karena backup memuat data anak (R-17). | RECOMMENDATION |
+| ARS-06 | **Backup.** Setiap hari, database di-dump dan `writable/uploads/` disalin ke lokasi di luar VPS. Pemulihan diuji berkala. Retensi dan enkripsi backup ditetapkan di Session 9, karena backup memuat data anak (R-17). | RECOMMENDATION |
 
 Perangkat lunak server (ARS-02):
 
@@ -148,7 +148,7 @@ Perangkat lunak server (ARS-02):
 | Composer | 2.x | Untuk deploy (ARS-08). |
 | git | Bawaan sistem operasi | Mengambil kode dari GitHub (ARS-08). |
 | Sertifikat HTTPS | Let's Encrypt lewat certbot, diperpanjang otomatis | R-01, NFR-06. |
-| Sinkron waktu | NTP, misalnya systemd-timesyncd atau chrony | Jam server menjadi acuan jam kiosk (ARS-46). |
+| Sinkronisasi jam | NTP, misalnya systemd-timesyncd atau chrony | Jam server menjadi acuan jam kiosk (ARS-46). |
 
 Ekstensi PHP (ARS-03):
 
@@ -181,16 +181,17 @@ Pengaturan PHP dan Nginx (ARS-04):
 
 | ID | Aturan | Status |
 |---|---|---|
-| ARS-07 | **Composer appstarter.** Repository dipindah ke struktur appstarter CodeIgniter 4.7 di commit pertama fase implementasi. Langkahnya di bawah tabel. `composer.lock` di-commit, sedangkan `vendor/` tidak. | DECISION |
-| ARS-08 | **Deploy lewat git dan Composer.** Server mengambil kode dari GitHub, lalu menjalankan `composer install --no-dev --optimize-autoloader`, `php spark migrate`, dan `php spark optimize`. Rilis production memakai tag git, sehingga dapat dikembalikan ke tag sebelumnya. Langkah lengkapnya di §16. | DECISION (git dan Composer di server); RECOMMENDATION (tag dan urutan perintah) |
-| ARS-09 | **`.gitignore`.** File `.gitignore` dibuat di PR Session 6. Isinya mengikuti appstarter, ditambah `CLAUDE.local.md`, `.claude/settings.local.json`, dan `node_modules/` (§4.3). | DECISION |
+| ARS-07 | **Composer appstarter.** Repository dipindah ke struktur appstarter CodeIgniter 4.7. Framework dan library dipasang di `vendor/` lewat `composer.json` milik aplikasi, dan diperbarui dengan `composer update`. Folder `system/` dihapus dari repository, dan `vendor/` tidak di-commit. Migrasi dilakukan di commit pertama fase implementasi, dengan langkah di bawah tabel. `composer.lock` di-commit. | DECISION (appstarter, `system/` dihapus, `vendor/` tidak di-commit, dan pembaruan lewat Composer); RECOMMENDATION (waktu migrasi, `composer.lock`, dan langkah 1–5) |
+| ARS-08 | **Deploy lewat git dan Composer.** Server mengambil kode dari GitHub, lalu menjalankan `composer install --no-dev` dan `php spark migrate`. Rilis production memakai tag git, sehingga dapat dikembalikan ke tag sebelumnya. File yang di-commit tidak pernah diubah di server, sehingga checkout selalu bersih. Karena itu `php spark optimize` tidak dipakai: perintah itu menulis ulang `app/Config/Optimize.php` yang di-commit. Cache konfigurasi CI4 tidak dipakai di R1, dan kinerja cukup dari opcache serta autoloader Composer yang dioptimalkan (ARS-07 langkah 1). Langkah lengkapnya di §16. | DECISION (git dan Composer di server); RECOMMENDATION (tag, urutan perintah, dan tanpa `spark optimize`) |
+| ARS-09 | **`.gitignore`.** File `.gitignore` dibuat di PR Session 6, agar `.env`, isi `writable/`, `vendor/`, dan `CLAUDE.local.md` tidak ikut ter-push. Isinya mengikuti appstarter, ditambah `CLAUDE.local.md`, `.claude/settings.local.json`, `node_modules/`, dan file dump database (§4.3). | DECISION (dibuat di PR Session 6, beserta file yang dilindungi); RECOMMENDATION (isi lengkap) |
 
 Langkah pindah ke appstarter (ARS-07):
 
 1. Ganti `composer.json` di akar repository, yang saat ini milik framework, dengan `composer.json` aplikasi berdasarkan appstarter. Isinya:
    - `require`: `php` `^8.3` dan `codeigniter4/framework` `^4.7`. Library ditambahkan saat rilisnya dimulai (ARS-10);
    - `require-dev`: mengikuti appstarter;
-   - `config.platform.php`: `8.3`, agar paket yang terpasang tetap cocok dengan PHP 8.3 walaupun laptop pengembang memakai versi lebih baru.
+   - `config.platform.php`: `8.3`, agar paket yang terpasang tetap cocok dengan PHP 8.3 walaupun laptop pengembang memakai versi lebih baru;
+   - `config.optimize-autoloader`: `true`, agar setiap `composer install` membuat autoloader yang dioptimalkan.
 2. Jalankan `composer install`, lalu commit `composer.lock`.
 3. Hapus `system/` dari repository. Ubah `systemDirectory` di `app/Config/Paths.php` ke `vendor/codeigniter4/framework/system`.
 4. Samakan `spark`, `public/index.php`, `preload.php`, `phpunit.dist.xml`, `env`, dan `tests/` dengan appstarter versi yang sama.
@@ -207,7 +208,7 @@ File ini dibuat di PR Session 6 (ARS-09). Pola `writable/` mengikuti appstarter,
 CLAUDE.local.md
 .claude/settings.local.json
 
-# Environment: berisi password database dan kunci aplikasi
+# Environment: berisi password database dan kunci enkripsi aplikasi
 .env
 .env.*
 
@@ -223,6 +224,10 @@ CLAUDE.local.md
 /writable/debugbar/*
 !/writable/debugbar/index.html
 php_errors.log
+
+# Dump database: berisi data siswa (R-17)
+*.sql
+*.sql.gz
 
 # Dependensi
 /vendor/
@@ -262,11 +267,11 @@ $RECYCLE.BIN/
 | Library | Versi | Lisensi | Kegunaan | Rilis | Cara pasang | Status |
 |---|---|---|---|---|---|---|
 | `codeigniter4/framework` | ^4.7 (saat ini 4.7.4) | MIT | Framework | R1 | Composer | CONFIRMED (stack); DECISION (Composer) |
-| `phpoffice/phpspreadsheet` | ^5.10 | MIT | Membaca XLSX import (FS-MD-06, `13` IM-02) dan membuat template import (R1); export XLSX (R2) | R1 | Composer | RECOMMENDATION |
+| `phpoffice/phpspreadsheet` | ^5.10 | MIT | Membaca XLSX import (FS-MD-06, `13` IM-01, IM-02) dan membuat template import (R1); export XLSX (R2) | R1 | Composer | RECOMMENDATION |
 | `mpdf/mpdf` | ^8.3 | GPL-2.0-only | Export PDF (`13` IE-10, IE-12) | R2 | Composer | DECISION |
 | `zxing-wasm`, bagian reader | 3.1.4, dikunci | MIT | Membaca QR dari webcam di kiosk (R-04) | R1 | Disalin ke `public/aset/vendor/` | DECISION |
 | `chillerlan/php-qrcode` | ^6.0 | MIT atau Apache-2.0 | QR berisi NISN di kartu, keluaran SVG (FS-KRT-01) | R3 | Composer | RECOMMENDATION (dipastikan bersama OQ-13) |
-| Flyer PNG | — | — | Canvas API tanpa library, atau template HTML dengan library kecil seperti snapdom | R2 | — | Ditunda ke Session 7 (DECISION) |
+| Flyer PNG | — | — | Canvas API tanpa library, atau template HTML dengan library kecil seperti snapdom | R2 | — | DECISION (ditunda ke Session 7) |
 | `phpunit/phpunit`, `fakerphp/faker`, `mikey179/vfsstream` | Mengikuti appstarter | BSD-3-Clause, MIT, BSD-3-Clause | Pengujian dan data contoh (`require-dev`) | R1 | Composer | RECOMMENDATION |
 | Node.js | LTS, versi 22 atau lebih baru | MIT | Uji modul JavaScript kiosk dengan `node --test`, tanpa paket npm (ARS-59) | R1 | Dipasang di laptop pengembang | DECISION |
 
@@ -309,8 +314,8 @@ Alasan dan alternatif (NFR-16):
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-14 | **Lapisan kode.** Setiap lapisan memiliki tugas dan larangan di tabel di bawah. Nama kelas memakai istilah domain di glosarium (`00` §9), misalnya `HitungUlang` dan `PenentuStatus`. | RECOMMENDATION |
-| ARS-15 | **Peta hak akses.** Role bersifat tetap (`02` §1), sehingga peta hak akses ditulis sebagai konfigurasi kode `app/Config/HakAkses.php`, bukan tabel. Kunci setiap hak adalah ID-nya di `02`, misalnya `HA-PRS-03`, beserta role dan cakupannya (Semua, Rombel, Hari ini, Sendiri, Angka, atau Ya). Service `HakAkses` menjawab dua hal: apakah akun boleh melakukan hak itu untuk data tertentu, dan cakupan data untuk menyaring daftar dan laporan. Batas mundur (`04` §4.2) ikut diperiksa di service ini. | RECOMMENDATION |
-| ARS-16 | **Satu tempat untuk setiap logika.** Logika yang menentukan presensi hanya ada di satu tempat di server (tabel di bawah). Kode lain memanggilnya, tidak menghitung sendiri. Hanya `HitungUlang` yang menulis `status_harian` dan kolom hasil `scan` (DB-12). Semua halaman, laporan, dan file membaca status lewat `PembacaStatus` (`13` IE-01). | RECOMMENDATION |
+| ARS-15 | **Peta hak akses.** Role bersifat tetap (`02` §1), sehingga peta hak akses ditulis sebagai konfigurasi kode `app/Config/HakAkses.php`, bukan tabel. Setiap hak dicatat dengan ID-nya di `02` sebagai kunci, misalnya `HA-PRS-03`, dan berisi role serta cakupannya (Semua, Rombel, Hari ini, Sendiri, Rombelnya, Angka, atau Ya, `02` §5). Service `HakAkses` menjawab dua hal: apakah akun boleh melakukan hak itu untuk data tertentu, dan cakupan data untuk menyaring daftar dan laporan. Batas mundur (`04` §4.2) ikut diperiksa di service ini. | RECOMMENDATION |
+| ARS-16 | **Satu tempat untuk setiap logika.** Logika yang menentukan presensi hanya ada di satu tempat di server (tabel di bawah). Kode lain memanggilnya, tidak menghitung sendiri. Hanya `HitungUlang` yang menulis `status_harian` (DB-12). Kolom hasil `scan` diisi pertama kali oleh `PenilaiScan` saat scan diterima, lalu dihitung ulang oleh `HitungUlang`. Semua halaman, laporan, dan file membaca status lewat `PembacaStatus` (`13` IE-01). | RECOMMENDATION |
 | ARS-17 | **Parameter teknis.** Nilai teknis yang tidak diatur admin, misalnya toleransi selisih jam dan interval sinkron, disimpan di `app/Config/Spensada.php` dan dapat ditimpa lewat `.env` (`06` §6.1). Nilai yang diatur admin tetap di tabel `pengaturan`. Kiosk menerima parameternya dari server di data kiosk (ARS-23), sehingga perubahan nilai tidak memerlukan perubahan kode kiosk. | RECOMMENDATION |
 
 | Lapisan | Folder | Tugas | Tidak boleh |
@@ -331,9 +336,9 @@ Logika presensi dan tempatnya (ARS-16):
 |---|---|---|---|
 | Aturan jam tanggal T dan hari sekolah bagi siswa (BR-KAL-05, `06` §7) | `Kalender` | Hitung ulang, data kiosk, validasi formulir, dan kepala dashboard | Data kiosk berisi hasilnya per tanggal (ARS-23). |
 | Jendela scan, jenis presensi, serta Hadir, Terlambat, atau pulang lebih awal menurut jam (BR-JAM-03 s.d. BR-JAM-05) | `AturanJam` | `PenilaiScan`, `PenentuStatus` | Modul `aturan.js`, diuji dengan kasus uji yang sama (ARS-59). |
-| Penilaian scan: tanda dan hasil (`06` §8.2) | `PenilaiScan` | Penerimaan sinkron dan hitung ulang | Pemeriksaan BR-SCN-01 di `aturan.js`. |
+| Penilaian scan: tanda, dan nilai awal kolom hasil saat diterima (`06` §8.2) | `PenilaiScan` | Penerimaan sinkron dan hitung ulang | Pemeriksaan BR-SCN-01 di `aturan.js`. |
 | Status, kejadian pulang, dan penanda (FS-PRS-05) | `PenentuStatus`, fungsi murni tanpa akses database | `HitungUlang` | Tidak ada. Kiosk hanya menampilkan status sementara (BR-JAM-11). |
-| Penulisan `status_harian` dan kolom hasil `scan` | `HitungUlang` | Pemrosesan antrean (§7) | — |
+| Penulisan `status_harian`, dan hitung ulang kolom hasil `scan` | `HitungUlang` | Pemrosesan antrean (§7) | — |
 | Aturan baca status (`06` §11.3) | `PembacaStatus` | Dashboard, daftar presensi, riwayat, rekap, export, flyer, dan halaman publik | — |
 | Hak dan cakupan | `HakAkses` | Filter `hak` dan service | — |
 | Jam sekarang | `Jam`, memakai `Time::now()` CI4 | Semua service | Modul `jam.js` (ARS-27). |
@@ -437,7 +442,7 @@ sequenceDiagram
 | ARS-21 | **IndexedDB dan penyimpanan permanen.** Lihat butir di bawah tabel. | RECOMMENDATION |
 
 1. Data kiosk dan scan disimpan di IndexedDB, dalam satu database `spensada-kiosk` dengan nomor versi skema (tabel di bawah). `localStorage` tidak dipakai untuk data, karena kapasitasnya kecil dan tidak transaksional.
-2. Kiosk meminta penyimpanan permanen dengan `navigator.storage.persist()` (NFR-03). Chrome dan Edge tidak menampilkan dialog untuk permintaan ini, tetapi memutuskannya sendiri dari penilaian browser, misalnya apakah situs dipasang sebagai aplikasi. Karena itu pemasangan stasiun (UF-06) memasang kiosk sebagai aplikasi di profil browser kiosk, lalu memastikan penyimpanan permanen aktif lewat bilah status kiosk. Bila tetap ditolak, kiosk menampilkan peringatan (FS-KIO-01 butir 9).
+2. Kiosk meminta penyimpanan permanen dengan `navigator.storage.persist()` (NFR-03). Chrome dan Edge tidak menampilkan dialog untuk permintaan ini, tetapi memutuskannya sendiri dari penilaian browser, misalnya apakah situs dipasang sebagai aplikasi. Karena itu, saat pemasangan stasiun (UF-06), admin memasang kiosk sebagai aplikasi di profil browser kiosk, lalu memastikan penyimpanan permanen aktif lewat bilah status kiosk. Bila tetap ditolak, kiosk menampilkan peringatan (FS-KIO-01 butir 9).
 3. Kiosk memantau kuota dengan `navigator.storage.estimate()` dan memperingatkan petugas bila hampir penuh (FS-KIO-01 E5).
 4. Data baru menggantikan data lama dalam satu transaksi IndexedDB, setelah seluruh data kiosk selesai diunduh dan diperiksa. Kegagalan di tengah jalan tidak merusak data lama (FS-KIO-01 butir 4).
 5. Scan tersinkron dihapus setelah tanggalnya lewat. Scan belum tersinkron tidak pernah dihapus otomatis (FS-KIO-03 butir 7).
@@ -461,7 +466,7 @@ sequenceDiagram
 
 1. `public/sw-kiosk.js` didaftarkan dengan cakupan `/kiosk`, sehingga hanya halaman kiosk yang dikendalikan. Panel, portal, dan halaman publik tidak memakai Service Worker.
 2. Saat dipasang, Service Worker menyimpan kerangka halaman kiosk dan semua aset kiosk di Cache Storage, dengan nama cache yang memuat versi aplikasi.
-3. Halaman `/kiosk` diambil dari jaringan lebih dulu. Bila offline atau server tidak menjawab, Service Worker memakai salinan di cache (R-08, FR-KIO-09). Respons yang mengalihkan ke halaman login tidak disimpan, sehingga stasiun yang sesinya habis tetap diminta login.
+3. Halaman `/kiosk` diambil dari jaringan lebih dulu. Bila offline atau server tidak menjawab, Service Worker memakai salinan di cache (R-08, FR-KIO-09). Respons yang mengalihkan ke halaman login tidak disimpan, sehingga stasiun yang loginnya berakhir tetap diminta login.
 4. Aset kiosk diambil dari cache. URL aset memuat versi aplikasi, sehingga versi baru selalu diunduh ulang.
 5. API `/kiosk/api/…` selalu lewat jaringan dan tidak disimpan Service Worker. Data kiosk tersimpan di IndexedDB.
 6. Versi baru aktif saat kiosk dibuka ulang. Kiosk memberi tahu petugas bila versi baru sudah tersedia.
@@ -470,39 +475,38 @@ sequenceDiagram
 
 | ID | Aturan | Status |
 |---|---|---|
-| ARS-23 | **Data kiosk dan versinya.** Isinya di tabel di bawah. `versi_format` adalah angka yang naik bila struktur data kiosk berubah secara tidak kompatibel. Kiosk dengan kode lama menolak format yang lebih baru dan meminta petugas membuka ulang kiosk. `versi_data` berisi 40 karakter heksadesimal, yaitu hash SHA-1 dari isi data kiosk tanpa jam server dan waktu dibangun (`06` §8.1). Respons sinkron memuat versi data terbaru. Bila berbeda dengan milik kiosk, kiosk memuat ulang data di latar belakang (FS-KIO-01 butir 1). | RECOMMENDATION |
+| ARS-23 | **Data kiosk dan versinya.** Isinya di tabel di bawah. `versi_format` adalah angka yang naik bila struktur data kiosk berubah secara tidak kompatibel. Kiosk dengan kode lama menolak format yang lebih baru dan meminta petugas membuka ulang kiosk. `versi_data` berisi 40 karakter heksadesimal, yaitu hash SHA-1 dari isi data kiosk tanpa waktu dibangun (`06` §8.1). Respons sinkron memuat versi data terbaru. Bila berbeda dengan milik kiosk, kiosk memuat ulang data di latar belakang (FS-KIO-01 butir 1). | RECOMMENDATION |
 | ARS-24 | **ID unik scan.** Kiosk membuat ID scan dengan `crypto.randomUUID()`, yaitu UUID versi 4 berupa 36 karakter huruf kecil dengan tanda hubung, sesuai `scan.uuid` (`06` §8.2, DB-16). Server menolak ID dengan format lain sebagai scan rusak (FS-KIO-04 E3). Bentuk API dirinci di `10`. | RECOMMENDATION |
 
 | Bagian | Isi | Sumber (`06` §13) |
 |---|---|---|
 | Versi | `versi_format`, `versi_data`, dan waktu data dibangun | — |
-| Jam server | Jam server dalam milidetik, untuk mengukur selisih jam (ARS-27) | — |
-| Stasiun dan sekolah | Nama stasiun, nama sekolah, dan versi logo | `akun`, `pengaturan` |
+| Sekolah | Nama sekolah dan versi logo | `pengaturan` |
 | Parameter | Nilai di ARS-33 | `Config\Spensada` |
 | Siswa | Siswa yang aktif dan ditempatkan di rombel pada hari ini: ID, NISN, nama, rombel, tingkat, dan versi foto | `siswa`, `masa_aktif`, `penempatan`, `rombel` |
 | Aturan | Untuk hari ini dan 14 hari ke depan: hari sekolah, aturan jam, dan sumbernya | `pola_mingguan`, `pola_mingguan_hari`, `jadwal_khusus`, `jadwal_hari_ini`, `semester` |
 | Libur | Libur yang mencakup rentang itu, beserta cakupannya | `libur`, `libur_cakupan` |
 | Pola | Pola mingguan yang berlaku pada akhir rentang, untuk tanggal di luar rentang | `pola_mingguan`, `pola_mingguan_hari` |
 
-Data kiosk tidak memuat nomor WA, izin, riwayat, atau siswa nonaktif (FS-KIO-01 butir 3).
+Data kiosk tidak memuat nomor WA, izin, riwayat, atau siswa nonaktif (FS-KIO-01 butir 3). Isinya sama untuk semua stasiun pada tanggal yang sama. Respons muat data menambahkan jam server dalam milidetik (ARS-27) dan nama akun stasiun di luar data kiosk, sehingga keduanya tidak ikut di-cache dan di-hash.
 
-Server menyimpan data kiosk yang sudah dibangun di cache CI4 paling lama 60 detik, dengan kunci yang memuat tanggal hari ini. Dengan begitu perubahan data, misalnya siswa baru atau jadwal hari ini yang diubah, sampai ke kiosk dalam sekitar satu menit, tanpa penanda perubahan di setiap jalur penyimpanan. (RECOMMENDATION)
+Server menyimpan data kiosk yang sudah dibangun di cache CI4 paling lama 60 detik, dengan kunci yang memuat tanggal hari ini dan `versi_format`. Dengan begitu perubahan data, misalnya siswa baru atau jadwal hari ini yang diubah, sampai ke kiosk dalam sekitar satu menit, tanpa penanda perubahan di setiap jalur penyimpanan. (RECOMMENDATION)
 
-Foto diunduh terpisah per siswa, hanya bila versi fotonya berbeda dengan yang tersimpan, paling banyak 4 unduhan bersamaan. Versi foto diambil dari `siswa.foto_diganti_at`. Siswa yang fotonya belum terunduh tampil dengan gambar pengganti (FS-MD-07 E3). (RECOMMENDATION)
+Foto diunduh terpisah per siswa dengan `fetch(..., { cache: 'no-store' })`, hanya bila versi fotonya berbeda dengan yang tersimpan, paling banyak 4 unduhan bersamaan. Foto hanya disimpan di IndexedDB, bukan di cache browser (ARS-52). Versi foto diambil dari `siswa.foto_diganti_at`. Siswa yang fotonya belum terunduh tampil dengan gambar pengganti (FS-MD-07 E3). (RECOMMENDATION)
 
 ### 6.5 Input scan
 
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-25 | **Kamera.** Kamera dibuka dengan `getUserMedia` di halaman HTTPS (R-01), dengan resolusi 640×480 atau 1280×720. Frame dibaca beberapa kali per detik dan didekode zxing-wasm di Web Worker, sehingga layar tidak tersendat. Hanya format QR yang dicari. Isi QR dibersihkan dari spasi dan akhir baris, lalu harus tepat 10 digit (FS-KIO-02). NISN yang sama diabaikan selama 5 detik setelah hasil tampil (AC-KIO-02-06). Hasil tampil setelah scan tersimpan di IndexedDB (FS-KIO-02 butir 7). Resolusi final dan target 1 detik (NFR-01) diuji di laptop sekolah sebelum uji coba R1. | DECISION (zxing-wasm, jeda 5 detik); RECOMMENDATION (rincian) |
-| ARS-26 | **Scanner USB.** Scanner USB bekerja sebagai keyboard (FR-KIO-03). Kiosk mendengarkan penekanan tombol di seluruh halaman tanpa kolom isian. Masukan dianggap berasal dari scanner bila berisi tepat 10 digit, diakhiri Enter, dan jeda antartombolnya paling lama 50 milidetik. Ketikan manusia lebih lambat, sehingga diabaikan. Penekanan tombol saat kolom isian aktif, misalnya PIN petugas, tidak diproses sebagai scan. Scanner diatur memakai akhiran Enter. Angka 50 milidetik dipastikan saat uji dengan scanner yang dipakai sekolah. | RECOMMENDATION |
+| ARS-26 | **Scanner USB.** Scanner USB bekerja sebagai keyboard (FR-KIO-03). Kiosk mendengarkan penekanan tombol di seluruh halaman tanpa kolom isian. Masukan dianggap berasal dari scanner bila berisi paling sedikit 4 karakter, diakhiri Enter, dan jeda antartombolnya paling lama 50 milidetik. Ketikan manusia lebih lambat, sehingga diabaikan. Isi masukan scanner lalu diperiksa sama seperti hasil kamera: bila bukan tepat 10 digit, kiosk menampilkan "QR tidak dikenali" (FS-KIO-02 E1, AC-KIO-02-12). Penekanan tombol saat kolom isian aktif, misalnya PIN petugas, tidak diproses sebagai scan. Scanner diatur memakai akhiran Enter. Angka 50 milidetik dipastikan saat uji dengan scanner yang dipakai sekolah. | RECOMMENDATION |
 
 ### 6.6 Jam kiosk
 
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-27 | **Jam terkoreksi.** Lihat langkah di bawah tabel. Cara ini menjawab BR-SCN-07: kiosk tetap memakai jam yang benar bila jam Windows berubah saat kiosk berjalan. | RECOMMENDATION |
-| ARS-28 | **Kiosk dibuka tanpa internet.** Bila kiosk dibuka offline sehingga selisih jam belum diukur hari itu, kiosk tetap menerima scan dengan jam laptop ditambah selisih terakhir yang tersimpan. Kiosk menampilkan peringatan "jam belum dicek hari ini" sampai pengukuran berhasil. Bila jam terkoreksi lebih awal dari scan terakhir atau kontak terakhir yang tersimpan, kiosk meminta petugas memeriksa jam laptop. Scan tetap diterima, dan server menandai jam yang tidak wajar (BR-SCN-08). | DECISION |
+| ARS-28 | **Kiosk dibuka tanpa internet.** Bila kiosk dibuka offline sehingga selisih jam belum diukur hari itu, kiosk tetap menerima scan dengan jam laptop ditambah selisih terakhir yang tersimpan. Kiosk menampilkan peringatan "jam belum dicek hari ini" sampai pengukuran berhasil. Bila jam terkoreksi lebih awal dari scan terakhir atau kontak terakhir yang tersimpan, kiosk meminta petugas memeriksa jam laptop. Scan tetap diterima. Saat scan terkirim, server menandai scan yang selisih jamnya tidak wajar (ARS-27 langkah 6 dan 7, BR-SCN-08). | DECISION (selisih terakhir, peringatan, laporan jam mundur, dan penandaan di server); RECOMMENDATION (cara penandaan) |
 
 Langkah ARS-27:
 
@@ -513,7 +517,8 @@ Langkah ARS-27:
    - Bila ada jeda timer yang panjang, misalnya laptop tidur, kiosk memakai jam laptop ditambah selisih terakhir sampai pengukuran berikutnya.
 4. **WIB.** Jam diubah ke WIB dengan menambah 7 jam pada waktu UTC, tanpa memakai zona waktu Windows (BR-SCN-07). Tanggal scan adalah tanggal WIB dari jam terkoreksi.
 5. **Catatan scan.** Setiap scan menyimpan jam scan (jam terkoreksi), jam laptop asli, dan selisih yang dipakai dalam detik (`06` §8.2).
-6. **Laporan.** Setiap kontak melaporkan selisih terakhir ke `status_stasiun.selisih_jam_detik`. Server menandai scan sesuai BR-SCN-08 dengan toleransi 2 menit.
+6. **Penandaan di server.** Setiap kiriman sinkron, termasuk kontak berkala, membawa jam laptop saat kiriman dibuat. Server menghitung selisih saat itu, yaitu jam server saat kiriman diterima dikurangi jam laptop itu, lalu menyimpannya di `status_stasiun.selisih_jam_detik`. Scan yang selisihnya (`scan.selisih_detik`) berbeda lebih dari 2 menit dari selisih itu diberi `tanda_selisih_berubah` (BR-SCN-08). Dengan cara ini, scan dari kiosk yang dibuka offline setelah jam laptop diubah tetap ditandai saat terkirim (ARS-28).
+7. **Keterbatasan.** Bila jam laptop sudah dibetulkan sebelum scan terkirim, perubahan itu tidak terdeteksi server. Sebaliknya, scan yang dicatat sebelum jam Windows diubah, tetapi baru terkirim setelahnya, ikut ditandai walaupun jamnya benar. Keduanya jarang terjadi, dan scan bertanda tetap dipakai sampai ditinjau (BR-SCN-08).
 
 ### 6.7 Sinkron dan kontak
 
@@ -521,24 +526,24 @@ Langkah ARS-27:
 |---|---|---|
 | ARS-29 | **Sinkron dan kontak berkala.** Lihat butir di bawah tabel. | DECISION (interval dan ukuran kiriman); RECOMMENDATION (mekanisme) |
 
-1. Satu jenis permintaan melayani dua hal: mengirim scan belum tersinkron, paling banyak 100 per kiriman, dan melaporkan keadaan kiosk, yaitu jumlah scan belum tersinkron, selisih jam, dan versi data. Kiriman tanpa scan adalah kontak berkala (FS-KIO-03 butir 2).
+1. Satu jenis permintaan melayani dua hal: mengirim scan belum tersinkron, paling banyak 100 per kiriman, dan melaporkan keadaan kiosk, yaitu jumlah scan belum tersinkron, jam laptop saat kiriman dibuat (ARS-27 langkah 6), dan versi data. Kiriman tanpa scan adalah kontak berkala (FS-KIO-03 butir 2).
 2. Selama ada scan belum tersinkron, kiosk mengirim setiap 5 detik. Bila tidak ada, kiosk tetap menghubungi server setiap 60 detik.
 3. Hanya satu permintaan sinkron yang berjalan pada satu waktu. Bila gagal, kiosk mencoba lagi dengan jeda 5, 10, 20, 40, lalu 60 detik, dan langsung mencoba saat browser kembali online (FS-KIO-03 butir 6).
-4. Respons memuat ID scan yang diterima, termasuk yang sudah diterima sebelumnya, ID yang ditolak beserta alasannya, jam server, versi data, status akun stasiun, dan token CSRF untuk permintaan berikutnya (FS-KIO-04 butir 8).
+4. Respons memuat ID scan yang diterima, termasuk yang sudah diterima sebelumnya, ID yang ditolak beserta alasannya, jam server, versi data, status dan nama akun stasiun, serta token CSRF untuk permintaan berikutnya (FS-KIO-04 butir 8).
 5. Kiosk mengirim token CSRF lewat header `X-CSRF-TOKEN`. Bila token ditolak, kiosk mengambil token baru lewat permintaan baca, lalu mengulang. Pengaturan CSRF final ditetapkan di Session 9.
-6. Server menyimpan scan dengan `INSERT IGNORE` berdasarkan `uuid` (DB-16), menulis penilaian saat diterima, memperbarui `status_stasiun`, dan menulis antrean hitung ulang dalam satu transaksi. Setelah itu server memproses antrean (§7). Penerimaan scan tidak bergantung pada berhasilnya hitung ulang.
+6. Dalam satu transaksi, server menyimpan scan dengan `INSERT IGNORE` berdasarkan `uuid` (DB-16), mengisi penilaian dan nilai awal kolom hasil (ARS-16), memperbarui `status_stasiun`, dan menulis antrean hitung ulang. Scan dengan NISN tidak dikenal disimpan dengan `hasil = ditolak` dan tidak menulis antrean (FS-KIO-04 E4). Setelah commit, server memproses antrean (§7). Penerimaan scan tidak bergantung pada berhasilnya hitung ulang.
 
 ### 6.8 Akun stasiun dan laptop
 
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-30 | **Login stasiun 90 hari.** Lihat butir di bawah tabel. | DECISION (90 hari sejak kontak terakhir); RECOMMENDATION (mekanisme) |
-| ARS-31 | **Akun nonaktif dan data lokal.** Server menjawab permintaan dari akun stasiun nonaktif dengan status "nonaktif". Kiosk lalu menghapus database IndexedDB beserta data siswa, foto, dan scan di dalamnya, menampilkan bahwa akun tidak aktif, dan menghentikan scan (FS-AKN-04 butir 4, AC-AKN-04-03). Bila sesi berakhir atau kredensial diganti, server menjawab "login ulang". Kiosk meminta login, sedangkan data dan scan tetap tersimpan (FS-KIO-01 E2). Scan belum tersinkron hanya dikirim dengan akun stasiun yang mencatatnya. Bila akun stasiun lain login di laptop yang sama, kiosk menahan scan itu dan meminta petugas login kembali dengan akun semula. | RECOMMENDATION |
-| ARS-32 | **Laptop stasiun.** Laptop stasiun memakai Chrome atau Edge terbaru (A-04) dengan profil browser khusus kiosk (R-07), akun Windows non-admin (R-05), sinkron waktu otomatis Windows, dan pengaturan daya yang mencegah laptop tidur selama jam sekolah. Kiosk dipasang sebagai aplikasi dari browser (ARS-21), lalu izin kamera diberikan. Langkah ini masuk ke UF-06. | RECOMMENDATION |
+| ARS-31 | **Akun nonaktif dan data lokal.** Server menjawab permintaan dari akun stasiun nonaktif dengan status "nonaktif". Kiosk lalu menghapus database IndexedDB beserta data siswa, foto, dan scan di dalamnya, menampilkan bahwa akun tidak aktif, dan menghentikan scan (FS-AKN-04 butir 4, AC-AKN-04-03). Bila login stasiun berakhir, yaitu cookie login kedaluwarsa atau tidak sah, kredensial diganti, atau petugas logout, server menjawab "login ulang". Kiosk meminta login, sedangkan data dan scan tetap tersimpan (FS-KIO-01 E2). Scan belum tersinkron hanya dikirim dengan akun stasiun yang mencatatnya. Bila akun stasiun lain login di laptop yang sama, kiosk menahan scan itu dan meminta petugas login kembali dengan akun semula. | RECOMMENDATION |
+| ARS-32 | **Laptop stasiun.** Laptop stasiun memakai Chrome atau Edge terbaru (A-04) dengan profil browser khusus kiosk (R-07), akun Windows non-admin (R-05), sinkronisasi jam otomatis Windows, dan pengaturan daya yang mencegah laptop tidur selama jam sekolah. Kiosk dipasang sebagai aplikasi dari browser (ARS-21), lalu izin kamera diberikan. Langkah ini masuk ke UF-06. | RECOMMENDATION |
 
 Butir ARS-30:
 
-1. Saat akun stasiun login, server membuat sesi CI4 biasa dan cookie login stasiun. Cookie berisi ID akun, waktu kedaluwarsa, dan tanda tangan HMAC dengan kunci aplikasi atas ID akun, waktu kedaluwarsa, dan cap kredensial akun. Cookie bersifat HttpOnly dan Secure.
+1. Saat akun stasiun login, server membuat sesi CI4 biasa dan cookie login stasiun. Cookie berisi ID akun, waktu kedaluwarsa, dan tanda tangan HMAC dengan kunci enkripsi aplikasi atas ID akun, waktu kedaluwarsa, dan cap kredensial akun. Cookie bersifat HttpOnly dan Secure.
 2. Cap kredensial diturunkan dari hash password akun, sehingga cookie langsung tidak berlaku saat admin mengganti kredensial (FS-AKN-04 butir 2). Cara ini tidak membutuhkan tabel baru.
 3. Bila sesi CI4 habis, filter `sesi` membuat sesi baru dari cookie yang sah, selama akun masih aktif.
 4. Masa berlaku cookie 90 hari. Masa itu diperpanjang paling banyak sekali sehari saat kiosk menghubungi server, sehingga stasiun yang dipakai rutin tidak pernah diminta login ulang, termasuk setelah libur semester.
@@ -587,7 +592,7 @@ Bagian ini menetapkan mekanisme yang diserahkan `06` §11.4 dan §16 ke Session 
 
 | ID | Aturan | Status |
 |---|---|---|
-| ARS-35 | **Antrean hitung ulang.** Setiap perubahan sumber di `06` §11.4 menulis baris `antrean_hitung_ulang` dalam transaksi yang sama dengan perubahan itu (tabel di bawah). Karena ditulis dalam transaksi yang sama, setiap perubahan yang tersimpan pasti memiliki antreannya. | DECISION |
+| ARS-35 | **Antrean hitung ulang.** Setiap perubahan sumber di `06` §11.4 menulis baris `antrean_hitung_ulang` dalam transaksi yang sama dengan perubahan itu. Karena ditulis dalam transaksi yang sama, setiap perubahan yang tersimpan pasti memiliki antreannya. Siswa dan tanggal di setiap baris mengikuti tabel di bawah. | DECISION (antrean dalam transaksi yang sama); RECOMMENDATION (siswa dan tanggal per perubahan) |
 | ARS-36 | **Pemrosesan antrean.** Lihat butir di bawah tabel. | DECISION (diproses segera; dilanjutkan permintaan berikutnya, cron, atau CLI); RECOMMENDATION (rincian) |
 
 | Perubahan sumber (`06` §11.4) | Siswa | Tanggal |
@@ -600,13 +605,13 @@ Bagian ini menetapkan mekanisme yang diserahkan `06` §11.4 dan §16 ke Session 
 | Jadwal khusus atau libur berubah | Semua | Rentang lama dan baru |
 | Tanggal semester berubah | Semua | Tanggal yang masuk atau keluar dari semester |
 
-Rentang yang tidak bersambung ditulis sebagai beberapa baris antrean. Tanggal setelah hari ini tidak diproses, karena barisnya baru dibuat saat tanggal itu tiba (ARS-37, BR-STS-08). Perubahan libur per tingkat atau rombel dihitung ulang untuk semua siswa pada rentang itu. Hasilnya sama dengan menghitung siswa dalam cakupan saja, tetapi aturannya lebih sederhana.
+Rentang yang tidak bersambung ditulis sebagai beberapa baris antrean. Tanggal setelah hari ini tidak diproses, karena barisnya baru dibuat saat tanggal itu tiba (ARS-37, BR-STS-08). Scan dengan NISN tidak dikenal tidak menulis antrean, karena tidak memiliki siswa (ARS-29 butir 6). Untuk libur per tingkat atau rombel, `06` §11.4 cukup menghitung ulang siswa dalam cakupan lama dan baru. Antrean memakai semua siswa, yang mencakup keduanya, agar aturannya lebih sederhana. Hasil bagi siswa di luar cakupan tidak berubah.
 
 Butir ARS-36:
 
 1. Antrean diproses segera setelah transaksi commit, di permintaan yang sama, sehingga halaman berikutnya sudah menampilkan status baru.
-2. Pemrosesan berjalan satu per satu untuk seluruh aplikasi, memakai kunci aplikasi `spensada:status` (ARS-42). Pemegang kunci memproses semua antrean yang menunggu, termasuk milik permintaan lain, sebelum melepas kunci. Dengan begitu hasil hitungan yang lebih lama tidak pernah menimpa hasil yang lebih baru.
-3. Permintaan sinkron dari kiosk tidak menunggu kunci. Bila kunci sedang dipakai, antreannya diproses pemegang kunci. Permintaan dari staf menunggu kunci paling lama 5 detik.
+2. Pemrosesan berjalan satu per satu untuk seluruh aplikasi, memakai kunci bernama `spensada:status` (ARS-42). Pemegang kunci memproses semua antrean yang menunggu, termasuk milik permintaan lain, sebelum melepas kunci. Dengan begitu hasil hitungan yang lebih lama tidak pernah menimpa hasil yang lebih baru.
+3. Permintaan sinkron dari kiosk tidak menunggu kunci. Bila kunci sedang dipakai, antreannya diproses pemegang kunci, atau paling lambat oleh permintaan baca berikutnya atau cron setiap menit. Permintaan dari staf menunggu kunci paling lama 5 detik. Sebelum menunggu kunci, permintaan menyelesaikan penulisan sesi, misalnya pesan berhasil, lalu menutup sesi (ARS-48).
 4. Antrean yang menunggu digabung lebih dulu, sehingga setiap pasangan siswa dan tanggal hanya dihitung sekali. Antrean untuk semua siswa dihitung per tanggal dengan cara kelompok (ARS-34).
 5. Di permintaan web, pemrosesan dibatasi 10 detik. Sisanya dilanjutkan permintaan berikutnya yang membaca status, cron setiap menit (ARS-56), atau perintah CLI. Halaman yang menampilkan tanggal dengan antrean tersisa memberi tanda "sedang diperbarui".
 6. Antrean yang gagal dicoba lagi pada pemrosesan berikutnya. Setelah 5 kali gagal, antrean ditandai gagal, dicatat di log aplikasi, dan ditampilkan sebagai peringatan bagi admin. Perintah `status:antrean` mencobanya lagi setelah penyebabnya diperbaiki.
@@ -616,7 +621,7 @@ Butir ARS-36:
 
 | ID | Aturan | Status |
 |---|---|---|
-| ARS-37 | **Pastikan status terkini.** `PembacaStatus` menjalankan tiga langkah di bawah kunci `spensada:status` sebelum status dibaca. Cron setiap menit menjalankan langkah yang sama (ARS-56). Bila tidak ada pekerjaan, langkah ini hanya beberapa query ringan. Permintaan baca menunggu kunci paling lama 5 detik. Bila kunci belum didapat, status dibaca apa adanya, dan halaman memberi tanda "sedang diperbarui". (1) Menutup mode darurat yang masih terbuka setelah pukul 23.59 pada tanggalnya (ARS-38). (2) Membuat baris `status_harian` untuk setiap tanggal setelah `pengaturan.status_dibangun_sampai` sampai hari ini (`06` §11.4). Setiap tanggal dibuat dalam transaksi sendiri bersama pembaruan `status_dibangun_sampai`. (3) Memproses sisa antrean (ARS-36). | RECOMMENDATION |
+| ARS-37 | **Pastikan status terkini.** `PembacaStatus` menjalankan tiga langkah di bawah kunci `spensada:status` sebelum status dibaca. Cron setiap menit menjalankan langkah yang sama (ARS-56). Bila tidak ada pekerjaan, langkah ini hanya beberapa query ringan. Permintaan baca menunggu kunci paling lama 5 detik. Bila kunci belum didapat, status dibaca apa adanya, dan halaman memberi tanda "sedang diperbarui". (1) Menutup mode darurat yang masih terbuka setelah pukul 23.59 pada tanggalnya (ARS-38). (2) Membuat baris `status_harian` untuk setiap tanggal setelah `pengaturan.status_dibangun_sampai` sampai hari ini (`06` §11.4). Setiap tanggal dibuat dalam transaksi sendiri bersama pembaruan `status_dibangun_sampai`. Bila `status_dibangun_sampai` masih kosong, pembuatan dimulai dari hari ini, sehingga aplikasi yang mulai dipakai di tengah tahun ajaran tidak membuat Alpa untuk tanggal sebelumnya. Nilai awalnya saat go-live ditetapkan bersama prosedur go-live di Session 10. (3) Memproses sisa antrean (ARS-36). Di permintaan web, langkah 2 dan 3 bersama-sama dibatasi 10 detik, seperti ARS-36 butir 5. | RECOMMENDATION |
 | ARS-38 | **Mode darurat berakhir otomatis.** Aturan baca menganggap mode darurat tidak aktif sejak pukul 23.59.00 pada tanggalnya, walaupun barisnya belum ditutup (`06` §9.3, BR-DRT-05). Penutupan barisnya ditulis oleh cron mulai pukul 23.59, atau oleh langkah ARS-37 yang berjalan lebih dulu: `selesai_at` diisi pukul 23.59.00, `berakhir_otomatis = 1`, pelaku kosong, entri log `darurat_diakhiri`, dan antrean tanggal itu. Aktivasi mode darurat baru juga menutup periode lama yang masih terbuka lebih dulu, karena hanya satu periode yang boleh aktif (DB-10). | RECOMMENDATION |
 | ARS-39 | **Bangun ulang dan periksa.** Perintah `php spark status:bangun --mulai=<tanggal> --selesai=<tanggal>` menghitung ulang `status_harian` dan kolom hasil `scan` untuk rentang itu, lewat antrean dan pemrosesan yang sama. Pilihan `--siswa=<id>` membatasi ke satu siswa. Pilihan `--periksa` hanya membandingkan salinan dengan hasil hitungan baru, lalu melaporkan perbedaannya tanpa menulis. Mode periksa dipakai di pengujian dan setelah perubahan kode penentuan status (`06` §11.4). | RECOMMENDATION |
 
@@ -626,8 +631,8 @@ Butir ARS-36:
 |---|---|---|
 | ARS-40 | **Token versi.** Formulir pengubah data membawa nilai `updated_at` saat formulir dibuka. Penyimpanan memakai `UPDATE ... WHERE id = ? AND updated_at = ?`. Bila tidak ada baris yang cocok, penyimpanan ditolak, lalu sistem menampilkan data terbaru beserta pengubah dan waktunya (`04` §4.6, DB-11). Koneksi MySQLi memakai `foundRows = true`, agar jumlah baris yang cocok terbaca benar walaupun nilainya tidak berubah. Tabel anak (`pola_mingguan_hari`, `libur_cakupan`) hanya diubah bersama induknya, dan `updated_at` induknya selalu diperbarui, sehingga token induk mencakup anaknya. Dua penyimpanan pada detik yang sama tidak terbedakan. Risiko ini diterima, karena formulir diisi manusia. | DECISION (token `updated_at`); RECOMMENDATION (rincian) |
 | ARS-41 | **Penjaga keadaan.** Perubahan yang bergantung pada keadaan data memeriksa keadaan itu di klausa `WHERE` atau dengan kunci unik, bukan dengan token versi (tabel di bawah). Bila penjaga gagal, sistem menampilkan keputusan yang sudah ada beserta pelakunya. | RECOMMENDATION |
-| ARS-42 | **Kunci aplikasi.** Pemeriksaan yang melibatkan banyak baris dan tidak dapat ditegakkan kunci unik memakai kunci bernama MySQL (`GET_LOCK`). Kunci diambil sebelum transaksi dan dilepas setelah commit. Bila koneksi terputus, MySQL melepas kunci itu sendiri. Daftar kunci ada di tabel di bawah. Pemeriksaan per siswa, yaitu masa aktif, penempatan, dan izin, tetap mengunci baris `siswa` dengan `SELECT ... FOR UPDATE` (`06` §16). | RECOMMENDATION |
-| ARS-43 | **Transaksi.** Satu tindakan pengguna adalah satu transaksi, berisi perubahan data, entri log, dan antrean hitung ulang (`06` §16). Urutan penguncian selalu sama: kunci aplikasi lebih dulu, lalu baris `siswa` dengan ID menaik, agar tidak terjadi deadlock. Koneksi MySQLi memakai mode strict (`strictOn = true`), sehingga data yang tidak valid ditolak, bukan dipotong diam-diam. File unggahan ditulis ke lokasi akhirnya dengan nama acak sebelum commit. Bila transaksi gagal, file itu dihapus. File lama yang diganti dihapus setelah commit. | RECOMMENDATION |
+| ARS-42 | **Kunci bernama.** Pemeriksaan yang melibatkan banyak baris dan tidak dapat ditegakkan kunci unik memakai kunci bernama MySQL (`GET_LOCK`). Kunci diambil sebelum transaksi dan dilepas setelah commit. Bila koneksi terputus, MySQL melepas kunci itu sendiri. Daftar kunci ada di tabel di bawah. Pemeriksaan per siswa, yaitu masa aktif, penempatan, dan izin, tetap mengunci baris `siswa` dengan `SELECT ... FOR UPDATE` (`06` §16). | RECOMMENDATION |
+| ARS-43 | **Transaksi.** Satu tindakan pengguna adalah satu transaksi, berisi perubahan data, entri log, dan antrean hitung ulang (`06` §16). Urutan penguncian selalu sama: kunci bernama lebih dulu, lalu baris `siswa` dengan ID menaik, agar tidak terjadi deadlock. Koneksi MySQLi memakai mode strict (`strictOn = true`), sehingga data yang tidak valid ditolak, bukan dipotong diam-diam. File unggahan ditulis ke lokasi akhirnya dengan nama acak sebelum commit. Bila transaksi gagal, file itu dihapus. File lama yang diganti dihapus setelah commit. | RECOMMENDATION |
 
 | Perubahan | Penjaga (ARS-41) |
 |---|---|
@@ -637,13 +642,14 @@ Butir ARS-36:
 | Tinjauan scan | Kunci unik `scan_tinjauan.scan_id` (FS-KIO-06 E2). |
 | Aktivasi mode darurat | Kunci unik `mode_darurat.aktif_kunci` (DB-10). |
 
-| Kunci aplikasi | Melindungi |
+| Kunci bernama | Melindungi |
 |---|---|
 | `spensada:kalender` | Pola mingguan, jadwal khusus, jadwal hari ini, dan libur, termasuk pemeriksaan tumpang tindih jadwal khusus (`06` §16). |
 | `spensada:tahun_ajaran` | Tahun ajaran dan semester, termasuk pemeriksaan tumpang tindih rentang (`06` §16). |
 | `spensada:admin` | Perubahan role dan status akun admin, agar selalu ada admin aktif (`02` §4 butir 6). |
 | `spensada:status` | Pembuatan baris dan hitung ulang `status_harian` (ARS-36, ARS-37). |
-| `spensada:tugas` | Satu putaran tugas cron pada satu waktu (ARS-56). |
+| `spensada:tugas_menit` | Satu putaran `tugas:menit` pada satu waktu (ARS-56). |
+| `spensada:tugas_harian` | Satu putaran `tugas:harian` pada satu waktu (ARS-56). |
 
 ## 9. Waktu
 
@@ -658,7 +664,7 @@ Butir ARS-36:
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-47 | **Sesi file.** Sesi CI4 memakai `FileHandler` di `writable/session` (`06` §5.4). Sesi hanya menyimpan ID akun, jenis akun, dan waktu login. Filter `sesi` memuat akun di setiap permintaan, lalu memeriksa butir di bawah tabel. File sesi yang lebih tua dari masa berlaku sesi dihapus tugas harian (ARS-56). Masa berlaku sesi staf dan siswa, regenerasi ID sesi, dan pembatasan percobaan login ditetapkan di Session 9. | DECISION (file, pemeriksaan per permintaan, pembersihan oleh cron); RECOMMENDATION (rincian) |
-| ARS-48 | **Penguncian sesi.** `FileHandler` mengunci file sesi selama permintaan berjalan, sehingga permintaan bersamaan dari satu browser saling menunggu. Permintaan yang hanya membaca sesi, yaitu API kiosk, fragmen polling, dan unduhan foto, menutup sesi dengan `session()->close()` segera setelah identitas dibaca. | RECOMMENDATION |
+| ARS-48 | **Penguncian sesi.** `FileHandler` mengunci file sesi selama permintaan berjalan, sehingga permintaan bersamaan dari satu browser saling menunggu. Permintaan yang hanya membaca sesi, yaitu API kiosk, fragmen polling, dan unduhan foto, menutup sesi dengan `session()->close()` segera setelah identitas dibaca. Permintaan yang memproses antrean hitung ulang juga menutup sesi lebih dulu (ARS-36 butir 3). | RECOMMENDATION |
 | ARS-49 | **Admin pertama dan pemulihan.** Admin pertama dibuat dengan `php spark admin:pertama`, dan akses admin dipulihkan dengan `php spark admin:pulihkan <username>` (butir di bawah tabel). Keduanya hanya dapat dijalankan dari terminal server, dan dicatat di `log_aktivitas` dengan pelaku kosong. | DECISION (CLI); RECOMMENDATION (rincian) |
 
 Pemeriksaan filter `sesi` (ARS-47):
@@ -685,7 +691,7 @@ Server-Sent Events dan WebSocket tidak dipakai, karena setiap koneksi terbuka me
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-51 | **Lokasi dan nama file.** Semua file disimpan di `writable/uploads/` (DB-15) dengan nama acak 32 karakter heksadesimal, di folder pada tabel di bawah. | RECOMMENDATION |
-| ARS-52 | **Penyajian file.** File hanya disajikan lewat controller setelah hak diperiksa (`04` §4.9, R-17). Foto disajikan bagi pemegang hak lihat profil siswa (`HA-MD-05`) dan bagi akun stasiun. Lampiran disajikan bagi pemegang `HA-IZN-05`. Respons memakai tipe file yang tersimpan, `X-Content-Type-Options: nosniff`, dan `Cache-Control: private`. Logo disajikan tanpa login (`04` §4.9 butir 2). Pencatatan pembukaan lampiran mengikuti OQ-17. | RECOMMENDATION |
+| ARS-52 | **Penyajian file.** File hanya disajikan lewat controller setelah hak diperiksa (`04` §4.9, R-17). Foto disajikan bagi pemegang hak lihat profil siswa (`HA-MD-05`) dan bagi akun stasiun. Lampiran disajikan bagi pemegang `HA-IZN-05`. Respons memakai tipe file yang tersimpan, `X-Content-Type-Options: nosniff`, dan `Cache-Control: no-store`, agar foto dan lampiran tidak tertinggal di cache browser perangkat bersama atau laptop stasiun (R-07, R-17). Logo disajikan tanpa login dan boleh disimpan di cache (`04` §4.9 butir 2). Pencatatan pembukaan lampiran mengikuti OQ-17. | RECOMMENDATION |
 | ARS-53 | **Foto.** Foto diperkecil di server dengan library Image CI4 (GD). Foto diputar sesuai orientasi EXIF, diperkecil tanpa dipotong agar muat dalam 600×800 px untuk foto standar dan 300×400 px untuk foto kiosk, lalu disimpan sebagai JPEG. Penyimpanan ulang membuang metadata EXIF, termasuk lokasi. File asli tidak disimpan. Foto lama dihapus setelah penggantian tersimpan, dan penggantiannya dicatat di log data siswa (FR-MD-09). Ukuran tampil ditetapkan di Session 7, dan format serta ukuran unggahan di Session 9. | DECISION (ukuran); RECOMMENDATION (rincian) |
 | ARS-54 | **Foto massal.** Admin mengunggah satu file ZIP, atau beberapa file gambar sekaligus (FS-MD-08). Rincian pemeriksaannya di butir di bawah tabel. | DECISION (ZIP dan beberapa file); RECOMMENDATION (rincian) |
 | ARS-55 | **File sementara.** Import siswa, import penempatan, dan foto massal memakai dua langkah: pratinjau, lalu konfirmasi (FS-MD-06, FS-MD-08, `13` IM-11). File yang diunggah disimpan di `tmp/<token>/` bersama hasil pratinjaunya, dan token itu dibawa formulir konfirmasi. Folder dihapus setelah konfirmasi atau pembatalan. Sisa folder yang lebih tua dari 24 jam dihapus tugas harian (ARS-56). | RECOMMENDATION |
@@ -710,8 +716,8 @@ Pemeriksaan foto massal (ARS-54):
 
 | ID | Aturan | Status |
 |---|---|---|
-| ARS-56 | **Cron di R1.** Cron di VPS menjalankan dua perintah (tabel di bawah). Aplikasi tetap benar tanpa cron, karena langkah ARS-37 juga berjalan sebelum status dibaca. Kedua perintah memakai kunci aplikasi, sehingga tidak berjalan ganda bila satu putaran belum selesai. Waktu terakhir cron berjalan disimpan di cache CI4, dan dashboard admin menampilkan peringatan bila cron tidak berjalan lebih dari 5 menit. | DECISION (cron sebagai pelengkap, setiap menit dan setiap hari); RECOMMENDATION (isi dan peringatan) |
-| ARS-57 | **Perintah aplikasi.** Perintah `spark` milik aplikasi ada di tabel kedua di bawah. Perintah bawaan CI4 yang dipakai: `migrate`, `db:seed`, `db:create`, `key:generate`, `optimize`, `phpini:check`, dan `routes`. | RECOMMENDATION |
+| ARS-56 | **Cron di R1.** Cron di VPS menjalankan dua perintah (tabel di bawah). Aplikasi tetap benar tanpa cron, karena langkah ARS-37 juga berjalan sebelum status dibaca. Setiap perintah memakai kunci bernamanya sendiri (ARS-42), sehingga perintah yang sama tidak berjalan ganda bila putaran sebelumnya belum selesai. Kedua perintah boleh berjalan bersamaan. Waktu terakhir cron berjalan disimpan di cache CI4, dan dashboard admin menampilkan peringatan bila cron tidak berjalan lebih dari 5 menit. | DECISION (cron sebagai pelengkap, setiap menit dan setiap hari); RECOMMENDATION (isi dan peringatan) |
+| ARS-57 | **Perintah aplikasi.** Perintah `spark` milik aplikasi ada di tabel kedua di bawah. Perintah bawaan CI4 yang dipakai: `migrate`, `migrate:rollback`, `db:seed`, `db:create`, `key:generate`, `cache:clear`, `phpini:check`, dan `routes`. | RECOMMENDATION |
 
 | Jadwal | Perintah | Isi |
 |---|---|---|
@@ -732,7 +738,7 @@ Pemeriksaan foto massal (ARS-54):
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-58 | **Uji PHP.** Pengujian memakai PHPUnit dengan alat uji CI4. Service berisi aturan, yaitu `AturanJam`, `Kalender`, `PenentuStatus`, `PenilaiScan`, dan `HakAkses`, diuji per unit. Alur yang menyentuh database diuji terhadap database uji MySQL 8.4 tersendiri, bukan SQLite, karena desain memakai fitur khusus MySQL seperti kolom turunan, `GET_LOCK`, dan `INSERT IGNORE`. Acceptance criteria di `04` menjadi dasar kasus uji. | RECOMMENDATION |
-| ARS-59 | **Kasus uji bersama.** Kasus uji aturan jam, jendela scan, hari sekolah, dan penentuan status disimpan sebagai berkas JSON di `tests/kasus/`. Sumbernya contoh di `05` §6 dan §13, serta acceptance criteria di `04`. Berkas yang sama dijalankan oleh PHPUnit dan oleh `node --test` untuk modul `aturan.js` kiosk, sehingga kiosk dan server memberi hasil yang sama untuk kasus yang sama. Node.js hanya alat pengembangan: tanpa paket npm, tanpa build, dan tidak dipasang di production. | DECISION |
+| ARS-59 | **Kasus uji bersama.** Kasus uji aturan jam, jendela scan, hari sekolah, dan penentuan status disimpan sebagai berkas JSON di `tests/kasus/`. Sumbernya contoh di `05` §6 dan §13, serta acceptance criteria di `04`. Berkas yang sama dijalankan oleh PHPUnit dan oleh `node --test` untuk modul `aturan.js` kiosk, sehingga kiosk dan server memberi hasil yang sama untuk kasus yang sama. Node.js hanya alat pengembangan: tanpa paket npm, tanpa build, dan tidak dipasang di production. | DECISION (kasus uji JSON bersama untuk PHPUnit dan `node --test`, serta Node.js hanya alat pengembangan); RECOMMENDATION (folder, sumber kasus, dan pembagian berkas) |
 
 Perilaku kiosk di browser, yaitu kamera, scanner USB, offline, Service Worker, dan perubahan jam Windows, diuji manual mengikuti acceptance criteria FS-KIO-01 s.d. FS-KIO-03 di laptop sekolah sebelum uji coba R1 (OQ-08). (RECOMMENDATION)
 
@@ -761,7 +767,7 @@ Status: RECOMMENDATION. Panduan ini berlaku setelah migrasi appstarter (ARS-07),
    - `CI_ENVIRONMENT = development`;
    - `app.baseURL = 'https://spensada.test/'`;
    - koneksi database `database.default.*`, termasuk `DBDriver` dari ARS-45;
-   - kunci aplikasi dari `php spark key:generate`.
+   - kunci enkripsi aplikasi dari `php spark key:generate`.
 5. Buat database `spensada` dan `spensada_test` dengan `utf8mb4` dan `utf8mb4_general_ci` (DB-04), misalnya dengan `php spark db:create spensada` atau HeidiSQL dari Laragon.
 6. Jalankan `php spark migrate` dan `php spark db:seed PengaturanAwal`. Bila perlu data contoh, jalankan juga `php spark db:seed DataContoh`.
 7. Jalankan `php spark admin:pertama`, lalu `php spark aplikasi:cek`.
@@ -786,15 +792,24 @@ Status: RECOMMENDATION. Panduan ini berlaku setelah migrasi appstarter (ARS-07),
 
 Status: RECOMMENDATION. Pengamanan server ditetapkan di Session 9, dan jadwal go-live di Session 10.
 
+Server memakai dua user sistem:
+
+| User | Tugas | Hak |
+|---|---|---|
+| `deploy` | Menjalankan git dan Composer. | Pemilik semua file kode dan `.env`. File kode dapat dibaca user lain. |
+| `spensada` | User aplikasi. Menjalankan pool PHP-FPM, cron, dan semua perintah `php spark`, misalnya `sudo -u spensada php spark migrate`. | Pemilik `writable/`. Dapat membaca `.env` lewat grupnya, tetapi tidak dapat mengubah file kode. |
+
+Dengan pembagian ini, file di `writable/`, termasuk log, cache, dan sesi, selalu dibuat user yang sama, dan kode tidak dapat diubah lewat aplikasi.
+
 ### 16.1 Penyiapan pertama
 
 1. Siapkan VPS sesuai ARS-02 s.d. ARS-05: sistem operasi, Nginx, PHP 8.3-FPM beserta ekstensinya, MySQL 8.4, Composer, git, certbot, dan NTP. Akses SSH memakai kunci, bukan password (Session 9).
 2. Set zona waktu sistem ke `Asia/Jakarta` (ARS-46).
-3. Buat database `spensada` (`utf8mb4`) dan user MySQL khusus aplikasi yang hanya berhak atas database itu.
-4. Clone repository ke `/var/www/spensada` memakai deploy key GitHub yang hanya dapat membaca, lalu checkout tag rilis (ARS-08).
-5. Jalankan `composer install --no-dev --optimize-autoloader`.
-6. Buat `.env` production: `CI_ENVIRONMENT = production`, `app.baseURL` dengan domain HTTPS, koneksi database, dan kunci aplikasi dari `php spark key:generate`. Pengaturan cookie dan HTTPS mengikuti Session 9. File `.env` hanya dapat dibaca user aplikasi.
-7. Atur hak folder: `writable/` dapat ditulis user PHP-FPM, sedangkan folder lain hanya dapat dibaca.
+3. Buat user `deploy` dan `spensada`, lalu buat pool PHP-FPM yang berjalan sebagai `spensada`.
+4. Buat database `spensada` (`utf8mb4`) dan user MySQL khusus aplikasi yang hanya berhak atas database itu.
+5. Sebagai `deploy`, clone repository ke `/var/www/spensada` memakai deploy key GitHub yang hanya dapat membaca, checkout tag rilis (ARS-08), lalu jalankan `composer install --no-dev`.
+6. Buat `.env` production: `CI_ENVIRONMENT = production`, `app.baseURL` dengan domain HTTPS, koneksi database, dan kunci enkripsi aplikasi dari `php spark key:generate --show`. Pengaturan cookie dan HTTPS mengikuti Session 9.
+7. Atur hak file: `.env` milik `deploy` dengan grup `spensada` dan mode `640`, serta `writable/` beserta isinya milik `spensada`.
 8. Atur server block Nginx:
    - document root `/var/www/spensada/public`;
    - permintaan yang bukan file diteruskan ke `index.php`;
@@ -802,8 +817,8 @@ Status: RECOMMENDATION. Pengamanan server ditetapkan di Session 9, dan jadwal go
    - `client_max_body_size` sesuai ARS-04, dan tipe `application/wasm`;
    - HTTP dialihkan ke HTTPS.
 9. Pasang sertifikat Let's Encrypt dengan certbot.
-10. Jalankan `php spark migrate`, `php spark db:seed PengaturanAwal`, `php spark admin:pertama`, `php spark optimize`, `php spark phpini:check`, dan `php spark aplikasi:cek`.
-11. Pasang cron untuk user aplikasi (ARS-56) dan cron backup (ARS-06). Contoh, dengan zona waktu server WIB:
+10. Sebagai `spensada`, jalankan `php spark migrate`, `php spark db:seed PengaturanAwal`, `php spark admin:pertama`, `php spark phpini:check`, dan `php spark aplikasi:cek`.
+11. Pasang cron di crontab user `spensada` (ARS-56), dan cron backup (ARS-06). Contoh, dengan zona waktu server WIB:
 
 ```text
 * * * * *  cd /var/www/spensada && php spark tugas:menit  >> /dev/null 2>&1
@@ -813,11 +828,11 @@ Status: RECOMMENDATION. Pengamanan server ditetapkan di Session 9, dan jadwal go
 ### 16.2 Rilis berikutnya
 
 1. Buat tag rilis di GitHub setelah semua uji lulus.
-2. Di server, jalankan `git fetch --tags`, lalu `git checkout <tag>`.
-3. Jalankan `composer install --no-dev --optimize-autoloader`, `php spark migrate`, dan `php spark optimize`.
+2. Sebagai `deploy`, pastikan `git status` bersih, lalu jalankan `git fetch --tags`, `git checkout <tag>`, dan `composer install --no-dev`.
+3. Sebagai `spensada`, jalankan `php spark migrate` dan `php spark cache:clear`. Cache dibersihkan agar data kiosk dan isi cache lain dibangun ulang dengan kode baru.
 4. Muat ulang PHP-FPM agar opcache memakai kode baru.
 5. Jalankan `php spark aplikasi:cek`, lalu periksa halaman login, dashboard, dan satu kiosk.
-6. Bila rilis bermasalah, jalankan `php spark migrate:rollback` sampai batch sebelum rilis bila ada migration baru. Setelah itu checkout tag sebelumnya, jalankan `composer install --no-dev --optimize-autoloader`, lalu muat ulang PHP-FPM.
+6. Bila rilis bermasalah dan ada migration baru, jalankan `php spark migrate:rollback` sebagai `spensada`, selagi kode rilis itu masih terpasang. Perintah ini mengembalikan batch migration terakhir, yaitu batch rilis itu, dan meminta konfirmasi di production. Setelah itu ulangi langkah 2 dan 3 dengan tag sebelumnya, tanpa `php spark migrate`, lalu muat ulang PHP-FPM.
 
 Kiosk mendapat versi baru saat dibuka ulang (ARS-22).
 
@@ -828,6 +843,7 @@ Kiosk mendapat versi baru saat dibuka ulang (ARS-22).
 | Risiko | Penanganan |
 |---|---|
 | R-01 | HTTPS di lokal dan production: ARS-02, §15.2 langkah 2, dan §16.1 langkah 9. |
+| R-03 | Pembacaan QR di Web Worker, scanner USB, dan sinkron yang tidak membatasi jumlah stasiun: ARS-25, ARS-26, ARS-29. |
 | R-04 | zxing-wasm: ARS-10, ARS-25. |
 | R-05 | Jam kiosk: ARS-27, ARS-28, ARS-32. |
 | R-06 | IndexedDB, penyimpanan permanen, penghitung belum tersinkron, dan sinkron otomatis: ARS-21, ARS-29, ARS-31. |
@@ -860,7 +876,7 @@ Kiosk mendapat versi baru saat dibuka ulang (ARS-22).
 | NFR-10 | ARS-11, ARS-23, ARS-51, ARS-52 |
 | NFR-11 | ARS-19, ARS-32 |
 | NFR-12 | ARS-05, ARS-34 |
-| NFR-15 | §5 |
+| NFR-15 | ARS-12 s.d. ARS-19, ARS-58, ARS-59 |
 | NFR-16 | ARS-10, ARS-11 |
 
 NFR-13 menunggu provider WA (OQ-10), dan NFR-14 ditangani di `06`.
@@ -870,6 +886,8 @@ NFR-13 menunggu provider WA (OQ-10), dan NFR-14 ditangani di `06`.
 | Fitur atau ketentuan | Arsitektur |
 |---|---|
 | FS-AKN-01 | ARS-13, ARS-47, ARS-48 |
+| FS-AKN-02 | ARS-47 |
+| FS-AKN-03 | ARS-49 |
 | FS-AKN-04 | ARS-30, ARS-31 |
 | FS-MD-06 | ARS-10, ARS-55 |
 | FS-MD-07 | ARS-51 s.d. ARS-53 |
@@ -879,11 +897,15 @@ NFR-13 menunggu provider WA (OQ-10), dan NFR-14 ditangani di `06`.
 | FS-KIO-03 | ARS-29 |
 | FS-KIO-04 | ARS-29, ARS-35, ARS-36 |
 | FS-KIO-05 | ARS-33, ARS-50 |
+| FS-KIO-06 | ARS-41 |
 | FS-PRS-05 | ARS-34 s.d. ARS-39 |
 | FS-PRS-08 | ARS-38 |
+| FS-IZN-01 s.d. FS-IZN-03 | ARS-43, ARS-51, ARS-52 |
+| FS-IZN-06 | ARS-52 |
 | FS-LAP-01 | ARS-50 |
 | `04` §4.5 (hitung ulang) | ARS-35 s.d. ARS-37 |
 | `04` §4.6 (perubahan bersamaan) | ARS-40, ARS-41 |
+| `06` §16 (integritas dan transaksi) | ARS-40 s.d. ARS-43 |
 
 ## 18. Perubahan pada dokumen lain
 
@@ -891,14 +913,14 @@ Perubahan karena keputusan Session 6:
 
 | Dokumen | Versi | Perubahan |
 |---|---|---|
-| `00-project-overview.md` | 0.6 | OQ-09 terjawab. R-01, R-04 s.d. R-06, R-08, R-11, R-13, R-15, R-18, dan R-19 diperbarui. Stack (§7.1), environment (§7.2), dan kondisi repository (§7.3) diperbarui. Glosarium ditambah: data kiosk, selisih jam, dan antrean hitung ulang. Peta dokumen memuat `07` sebagai draft, dan progres sesi diperbarui. |
-| `01-product-requirements.md` | 0.6 | C-03 (VPS) dan C-06 (Composer appstarter) menjadi DECISION. NFR-03, NFR-09, dan NFR-16 diperbarui, dan daftar library memuat zxing-wasm dan mPDF. OQ-09 dihapus dari §8 karena terjawab. Traceability (§9) merujuk `07`. |
+| `00-project-overview.md` | 0.6 | OQ-09 terjawab. R-01, R-04 s.d. R-06, R-08, R-11, R-13, R-15, R-18, dan R-19 diperbarui. Stack (§7.1), environment (§7.2), dan kondisi repository (§7.3) diperbarui. Glosarium ditambah: data kiosk, selisih jam, antrean hitung ulang, dan sesi login. Peta dokumen memuat `07` sebagai draft, dan progres sesi diperbarui. |
+| `01-product-requirements.md` | 0.6 | C-03 (VPS) dan C-06 (Composer appstarter) menjadi DECISION. NFR-03, NFR-09, dan NFR-16 diperbarui, dan daftar library memuat zxing-wasm dan mPDF, dengan flyer ditunda ke Session 7. OQ-09 dihapus dari §8 karena terjawab. Traceability (§9) merujuk `07`. |
 | `02-user-roles-and-permissions.md` | 0.5 | Keputusan Session 6 ditambahkan di §1. Detail login akun stasiun (§2, §7.3) dan pembuatan admin pertama (§3) diperbarui. |
-| `03-user-flow.md` | 0.5 | UF-01 (admin pertama), UF-06 langkah 2 dan 4 (penyiapan laptop dan pemasangan kiosk), UF-09 E1 (batas umur data), UF-15 langkah 5 (pembaruan dashboard), dan UF-21 E1 (pemulihan admin) diperbarui. |
-| `04-feature-specification.md` | 0.3 | §2.5 (keputusan Session 6) ditambahkan. §4.5 dan §4.6 merujuk mekanisme di dokumen ini. Nilai parameter FS-AKN-01, FS-AKN-04, FS-MD-07, FS-MD-08, FS-KIO-01 s.d. FS-KIO-05, dan FS-LAP-01 ditetapkan. FS-AKN-03, FS-MD-03, FS-MD-04, FS-IZN-03, pengantar §7, §11, §13, §14.1, dan §14.2 diperbarui. |
-| `05-business-rules.md` | 0.4 | §2.5 (keputusan Session 6) ditambahkan. BR-KAL-06 dan BR-REK-05 menjadi DECISION sepenuhnya. BR-SCN-07 merujuk mekanisme jam kiosk di dokumen ini, dan toleransi 2 menit di BR-SCN-08 ditetapkan. §1, §14, §15, dan §16 diperbarui. |
-| `06-database-design.md` | 0.2 | §2.4 (keputusan Session 6) dan §11.5 (`antrean_hitung_ulang`) ditambahkan, sehingga tabel R1 menjadi 32. DB-11 menjadi DECISION. DB-03, §4.1, §4.2, §5.4, §6.1, §8.1, §8.2, §9.3, §11.4, §13, §16, §17.2, §18, dan §19 diperbarui. Usulan di §4.1, §6.4, §6.6, dan §10.4 menjadi DECISION. |
-| `13-reporting-import-export.md` | 0.2 | IE-02 dan LP-03 (pengecualian rekap rapor) menjadi DECISION. IE-12 memuat mPDF dan Composer. IM-13 dan §8 memuat dukungan ZIP dan ukuran foto. §2 dan §9 diperbarui. |
+| `03-user-flow.md` | 0.5 | UF-01 (admin pertama), UF-06 langkah 2 dan 4 (penyiapan laptop dan pemasangan kiosk), UF-09 E1 (batas umur data), UF-09 E3 (login berakhir), UF-15 langkah 5 (pembaruan dashboard), dan UF-21 E1 (pemulihan admin) diperbarui. UF-09 E5 (akun stasiun dinonaktifkan) ditambahkan. |
+| `04-feature-specification.md` | 0.3 | §2.5 (keputusan Session 6) ditambahkan. §4.5 dan §4.6 merujuk mekanisme di dokumen ini. Nilai parameter FS-AKN-01, FS-AKN-04, FS-MD-07, FS-KIO-01 s.d. FS-KIO-05, dan FS-LAP-01 ditetapkan, dan usulan batas unggah FS-MD-08 ditambahkan. Masa berlaku akun stasiun disebut masa login, bukan sesi. Selisih jam diukur server dari jam laptop di setiap kiriman (FS-KIO-03, FS-KIO-04). FS-AKN-03, FS-MD-03, FS-MD-04, FS-IZN-03, pengantar §7, §11, §13, §14.1, dan §14.2 diperbarui. |
+| `05-business-rules.md` | 0.4 | §2.5 (keputusan Session 6) ditambahkan. BR-KAL-06 dan BR-REK-05 menjadi DECISION sepenuhnya. BR-SCN-07 merujuk mekanisme jam kiosk di dokumen ini, toleransi 2 menit di BR-SCN-08 ditetapkan, dan keadaan kedua BR-SCN-08 memakai selisih yang diukur server. §1, §14, §15, dan §16 diperbarui. |
+| `06-database-design.md` | 0.2 | §2.4 (keputusan Session 6) dan §11.5 (`antrean_hitung_ulang`) ditambahkan, sehingga tabel R1 menjadi 32. DB-11 menjadi DECISION. Kepala dokumen, §1, DB-03, §4.1, §4.2, §5.4, §6.1, §8.1, §8.2, §9.3, §11.4, §13, §16, §17.2, §18, dan §19 diperbarui. Usulan di §4.1, §6.4, §6.6, dan §10.4 menjadi DECISION. |
+| `13-reporting-import-export.md` | 0.2 | IE-02 dan LP-03 (pengecualian rekap rapor) menjadi DECISION. IE-12 memuat mPDF dan Composer. IM-13 dan §8 memuat dukungan ZIP dan ukuran foto. §2, termasuk judulnya, dan §9 diperbarui. |
 
 File `.gitignore` di akar repository juga dibuat di Session 6 (ARS-09).
 
@@ -914,6 +936,9 @@ Session 6 menjawab OQ-09, dan tidak menambah OQ baru.
 | Pengaturan CSRF, cookie, header keamanan, PIN petugas, masa sesi staf dan siswa, serta pembatasan percobaan login | ARS-13, ARS-29, ARS-30, ARS-47 | Session 9 |
 | Format dan ukuran file unggahan, serta batas ZIP | ARS-04, ARS-54 | Session 9 |
 | Pengamanan server, serta retensi backup dan log | ARS-01, ARS-06, ARS-56 | Session 9 |
+| Tempat kredensial gateway WA | `06` §6.1 | Session 9, sebelum R2 (OQ-10) |
+| Nilai awal `status_dibangun_sampai` saat go-live | ARS-37 | Session 10 |
+| Lisensi proyek di `LICENSE` dan README, termasuk kecocokan dengan lisensi mPDF | ARS-07 langkah 5, ARS-10 | Pemilik proyek, sebelum migrasi appstarter |
 | Library QR untuk kartu | ARS-10 | Sebelum R3 (OQ-13) |
 | Resolusi kamera, jeda antartombol scanner, dan target 1 detik di laptop sekolah | ARS-25, ARS-26 | Uji di laptop sekolah, sebelum uji coba R1 (OQ-08) |
 | Jumlah stasiun | NFR-02 | Sebelum uji coba R1 (OQ-08) |

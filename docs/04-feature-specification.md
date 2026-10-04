@@ -114,7 +114,7 @@ Keputusan Session 6 yang berdampak ke fitur. Rinciannya ada di `07` §2.
 | Login akun stasiun | Bertahan 90 hari sejak kontak terakhir (`07` ARS-30). | FS-AKN-01, FS-AKN-04 | DECISION |
 | Admin pertama | Dibuat lewat perintah CLI. Perintah serupa memulihkan akses bila satu-satunya admin lupa password (`07` ARS-49). | FS-AKN-03 | DECISION |
 | Foto | Foto standar paling besar 600×800 px dan foto kiosk 300×400 px, dalam JPEG (`07` ARS-53). Foto massal diunggah sebagai ZIP atau beberapa file sekaligus (`07` ARS-54). | FS-MD-07, FS-MD-08, FS-KIO-01 | DECISION |
-| Parameter kiosk | Nilai di `07` §2.3 dan ARS-33. | FS-KIO-01 s.d. FS-KIO-05 | DECISION |
+| Parameter kiosk | Nilai di `07` §2.3. Parameter lain di `07` ARS-33 mengikuti status di tabel itu. | FS-KIO-01 s.d. FS-KIO-05 | DECISION |
 | Jam kiosk yang dibuka offline | Kiosk memakai selisih jam terakhir dan menampilkan peringatan (`07` ARS-28). | FS-KIO-02 | DECISION |
 | Hitung ulang | Antrean ditulis dalam transaksi yang sama dengan perubahan sumber, lalu diproses segera (`07` ARS-35, ARS-36). | §4.5, FS-PRS-05 | DECISION |
 | Perubahan bersamaan | `updated_at` dipakai sebagai token versi (`07` ARS-40). | §4.6 | DECISION |
@@ -247,7 +247,7 @@ Ketentuan di bagian ini berlaku untuk semua fitur, sehingga tidak diulang di set
 
 ### 4.6 Perubahan bersamaan
 
-Saat menyimpan perubahan, sistem memeriksa bahwa data belum diubah orang lain sejak formulir dibuka. Bila sudah berubah, penyimpanan ditolak. Sistem lalu menampilkan data terbaru, termasuk siapa yang mengubahnya dan kapan. Aturan ini sejalan dengan BR-IZN-08, yaitu keputusan yang tersimpan lebih dulu yang berlaku. Cara teknisnya memakai `updated_at` sebagai token versi (DECISION, Session 6, `07` ARS-40 dan ARS-41).
+Saat menyimpan perubahan, sistem memeriksa bahwa data belum diubah orang lain sejak formulir dibuka. Bila sudah berubah, penyimpanan ditolak. Sistem lalu menampilkan data terbaru, termasuk siapa yang mengubahnya dan kapan. Aturan ini sejalan dengan BR-IZN-08, yaitu keputusan yang tersimpan lebih dulu yang berlaku. Cara teknisnya memakai `updated_at` sebagai token versi (DECISION, Session 6, `07` ARS-40). Perubahan yang bergantung pada keadaan data, misalnya verifikasi pengajuan yang masih menunggu (BR-IZN-08), memeriksa keadaan itu saat menyimpan (RECOMMENDATION, `07` ARS-41).
 
 ### 4.7 Konfirmasi
 
@@ -327,7 +327,7 @@ Tindakan massal, tindakan yang membuat password baru, dan tindakan yang mengubah
 |---|---|---|---|
 | Batas percobaan login gagal dan lama penolakan | Belum ditetapkan | Sistem | Session 9 |
 | Masa berlaku sesi staf dan siswa | Belum ditetapkan | Sistem | Session 9 |
-| Masa berlaku sesi akun stasiun | 90 hari sejak kontak terakhir (`02` §7.3, `07` ARS-30) | Sistem | Session 6 (DECISION) |
+| Masa berlaku login akun stasiun | 90 hari sejak kontak terakhir (`02` §7.3, `07` ARS-30) | Sistem | Session 6 (DECISION) |
 
 **Di luar cakupan**
 
@@ -669,7 +669,7 @@ Then staf dapat mencatat presensi manual hari ini untuk siswa semua rombel
 **Perilaku**
 
 1. **Tambah.** Sistem membuat password acak dan menampilkannya sekali. Admin memakainya untuk login di laptop stasiun (UF-06). Akun stasiun tidak wajib mengganti password.
-2. **Ganti kredensial.** Sistem membuat password baru dan mengakhiri sesi akun stasiun itu, sehingga kiosk meminta login ulang. Scan yang belum tersinkron tetap tersimpan di laptop dan dikirim setelah login ulang (FS-KIO-03).
+2. **Ganti kredensial.** Sistem membuat password baru dan mengakhiri login akun stasiun itu, sehingga kiosk meminta login ulang. Scan yang belum tersinkron tetap tersimpan di laptop dan dikirim setelah login ulang (FS-KIO-03).
 3. **Nonaktifkan.**
    - Sebelum menonaktifkan, sistem menampilkan status stasiun: waktu sinkron terakhir dan jumlah scan belum tersinkron yang terakhir dilaporkan (FS-KIO-05).
    - Bila jumlah itu lebih dari nol, atau stasiun belum melapor hari ini, sistem memperingatkan bahwa scan yang belum tersinkron akan hilang (UF-06).
@@ -696,7 +696,7 @@ Then staf dapat mencatat presensi manual hari ini untuk siswa semua rombel
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
-| Masa berlaku sesi akun stasiun | 90 hari sejak kontak terakhir (`02` §7.3, `07` ARS-30) | Sistem | Session 6 (DECISION) |
+| Masa berlaku login akun stasiun | 90 hari sejak kontak terakhir (`02` §7.3, `07` ARS-30) | Sistem | Session 6 (DECISION) |
 
 **Di luar cakupan**
 
@@ -1075,7 +1075,7 @@ Then penyimpanan ditolak
 | Alur | UF-01, UF-08 |
 | Aktor dan hak | Admin (`HA-MD-02`). |
 | Aturan terkait | `02` §4 butir 2 (role wali kelas berasal dari penugasan) |
-| Status | DECISION (rombel per tahun ajaran; satu wali kelas per rombel); RECOMMENDATION (rincian) |
+| Status | DECISION (rombel per tahun ajaran; satu wali kelas per rombel; tingkat dikunci setelah ada penempatan, Session 6); RECOMMENDATION (rincian) |
 
 **Prasyarat**
 
@@ -1159,7 +1159,7 @@ Then penyimpanan ditolak
 | Alur | UF-07 |
 | Aktor dan hak | Admin: tambah, ubah, dan nonaktifkan (`HA-MD-03`). Lihat profil: admin, guru piket, guru BK, dan pimpinan (semua), wali kelas (rombel), siswa (sendiri) (`HA-MD-05`). Ubah nomor WA: admin (semua) dan wali kelas (rombel) (`HA-MD-06`). Lihat log perubahan: admin, guru BK, dan pimpinan (semua), wali kelas (rombel) (`HA-MD-10`). |
 | Aturan terkait | BR-KAL-06, R-12 |
-| Status | DECISION (NISN unik; nomor WA opsional dan divalidasi, Session 4b; pengubah nomor WA; perubahan dicatat; atribut siswa dan alasan penonaktifan, Session 5); RECOMMENDATION (rincian) |
+| Status | DECISION (NISN unik; nomor WA opsional dan divalidasi, Session 4b; pengubah nomor WA; perubahan dicatat; atribut siswa dan alasan penonaktifan, Session 5; periode aktif yang dibatalkan tidak dihitung, Session 6); RECOMMENDATION (rincian) |
 
 **Prasyarat**
 
@@ -1872,8 +1872,8 @@ Tidak ada isian. Pemicunya adalah membuka kiosk, menekan tombol "Muat ulang data
 | Kode | Keadaan | Respons |
 |---|---|---|
 | E1 | Kiosk belum pernah memuat data dan laptop offline. | Scan dinonaktifkan dengan pesan "Data belum dimuat. Hubungkan ke internet." (UF-09 E2) |
-| E2 | Sesi akun stasiun berakhir. | Kiosk meminta login ulang. Data dan scan di laptop tetap tersimpan (UF-09 E3). |
-| E3 | Akun stasiun nonaktif. | Data di laptop dihapus (FS-AKN-04). |
+| E2 | Login akun stasiun berakhir. | Kiosk meminta login ulang. Data dan scan di laptop tetap tersimpan (UF-09 E3). |
+| E3 | Akun stasiun nonaktif. | Data di laptop dihapus, dan scan berhenti (FS-AKN-04, UF-09 E5). |
 | E4 | Pemuatan gagal di tengah jalan. | Data lama tetap dipakai, dengan pesan gagal memuat. |
 | E5 | Penyimpanan browser penuh. | Peringatan untuk petugas. Scan baru tidak boleh ditampilkan berhasil bila gagal disimpan (FS-KIO-02 E8). |
 | E6 | Pola mingguan belum lengkap. | Kiosk menolak scan dengan pesan "Aturan jam belum diatur. Hubungi admin." |
@@ -2191,8 +2191,8 @@ Tidak ada isian. Pemicunya adalah interval otomatis dan tombol "Sinkron sekarang
 
 **Perilaku**
 
-1. Selama online, kiosk mengirim scan yang belum tersinkron ke server setiap beberapa detik, dalam kelompok.
-2. Kiosk juga menghubungi server secara berkala walaupun tidak ada scan baru. Setiap kontak melaporkan jumlah scan belum tersinkron, selisih jam, dan versi data yang dimuat (FS-KIO-05).
+1. Selama online, kiosk mengirim scan yang belum tersinkron ke server setiap 5 detik, paling banyak 100 scan per kiriman (`07` §2.3).
+2. Kiosk juga menghubungi server setiap 60 detik walaupun tidak ada scan baru. Setiap kontak melaporkan jumlah scan belum tersinkron, jam laptop saat itu, dan versi data yang dimuat. Server mengukur selisih jam dari jam laptop itu (FS-KIO-05, `07` ARS-27).
 3. Server membalas daftar ID scan yang diterima, termasuk ID yang sudah diterima sebelumnya, jam server, versi data, dan status akun (FS-KIO-04). Kiosk menandai scan tersebut tersinkron, dan penghitung berkurang.
 4. Bila versi data di server berubah, kiosk memuat ulang data (FS-KIO-01).
 5. Petugas dapat menekan "Sinkron sekarang". Kiosk menampilkan hasilnya: jumlah scan terkirim, atau alasan gagal.
@@ -2207,7 +2207,7 @@ Tidak ada isian. Pemicunya adalah interval otomatis dan tombol "Sinkron sekarang
 | Kode | Keadaan | Respons |
 |---|---|---|
 | E1 | Offline. | Indikator koneksi berubah. Scan tetap berjalan, dan sinkron berjalan sendiri saat koneksi kembali (UF-11 E1). |
-| E2 | Sesi akun stasiun berakhir. | Sinkron berhenti, dan kiosk meminta login ulang. Scan belum tersinkron tetap tersimpan. |
+| E2 | Login akun stasiun berakhir. | Sinkron berhenti, dan kiosk meminta login ulang. Scan belum tersinkron tetap tersimpan. |
 | E3 | Akun stasiun nonaktif. | Data di laptop dihapus (FS-AKN-04). |
 | E4 | Server menolak sebagian scan karena datanya rusak. | Scan itu tetap di laptop dengan tanda galat dan dilaporkan di status stasiun. Scan lain tetap tersinkron. |
 | E5 | Akhir hari, masih ada scan belum tersinkron dan tidak ada internet. | Laptop boleh dimatikan, dan petugas melapor ke guru piket. Sinkron berjalan saat online kembali (UF-11 E5). |
@@ -2311,6 +2311,8 @@ Then kiosk terbuka dari cache dan penghitung tetap menunjukkan 12
 | Jenis dan status menurut kiosk | Wajib. |
 | Jam scan, jam laptop asli, dan selisih jam | Wajib. Jam scan dalam WIB. |
 
+Setiap kiriman juga membawa jam laptop saat kiriman dibuat. Server memakainya untuk mengukur selisih jam stasiun (`07` ARS-27).
+
 **Perilaku**
 
 1. Untuk setiap scan dengan ID baru, server menyimpan catatan scan apa adanya beserta waktu diterima (BR-SCN-06). ID yang sudah ada hanya dibalas sebagai diterima.
@@ -2321,7 +2323,7 @@ Then kiosk terbuka dari cache dan penghitung tetap menunjukkan 12
    | Keadaan | Selama belum ditinjau |
    |---|---|
    | Jam scan lebih dari toleransi di depan jam server saat diterima | Dipakai |
-   | Selisih jam laptop berubah lebih dari toleransi dari pengukuran sebelumnya | Dipakai |
+   | Selisih jam yang dipakai kiosk berbeda lebih dari toleransi dari selisih yang diukur server saat kiriman diterima (`07` ARS-27) | Dipakai |
    | Menurut aturan server, scan berada di luar jendela, atau tanggalnya bukan hari sekolah bagi siswa | Tidak dipakai |
    | Scan diterima lebih lambat dari batas mundur setelah tanggal scan | Dipakai |
 
@@ -2330,13 +2332,13 @@ Then kiosk terbuka dari cache dan penghitung tetap menunjukkan 12
 5. **Penggabungan** (BR-SCN-03, BR-SCN-04). Untuk setiap siswa, tanggal, dan jenis, scan paling awal yang dipakai menjadi kandidat presensi. Scan lainnya diberi hasil "ganda". Presensi masuk adalah yang paling awal di antara scan masuk yang dipakai dan presensi manual masuk yang tidak dibatalkan. Aturan yang sama berlaku untuk presensi pulang.
 6. Server menghitung ulang status dan kejadian siswa yang terdampak (FS-PRS-05, §4.5). Scan yang tiba setelah tanggal berganti tetap mengoreksi status tanggal itu (UF-11 E6).
 7. Server memperbarui status stasiun: waktu kontak dan sinkron terakhir, jumlah belum tersinkron yang dilaporkan, selisih jam, dan versi data (FS-KIO-05).
-8. Respons berisi ID yang diterima, jam server, versi data, dan status akun stasiun.
+8. Respons berisi ID yang diterima, jam server, versi data, serta status dan nama akun stasiun.
 
 **Keadaan kosong dan error**
 
 | Kode | Keadaan | Respons |
 |---|---|---|
-| E1 | Permintaan tanpa sesi akun stasiun yang sah. | Ditolak. Kiosk meminta login ulang (FS-KIO-03 E2). |
+| E1 | Permintaan tanpa login akun stasiun yang sah. | Ditolak. Kiosk meminta login ulang (FS-KIO-03 E2). |
 | E2 | Akun stasiun nonaktif. | Ditolak dengan status "nonaktif" (FS-AKN-04). |
 | E3 | Satu scan dalam kiriman rusak, misalnya NISN bukan 10 digit. | Hanya scan itu yang ditolak, dengan alasan. Scan lain tetap diproses. |
 | E4 | NISN tidak dikenal server. | Disimpan dengan hasil ditolak dan tidak dipakai. |
@@ -4215,7 +4217,7 @@ Then status siswa D hari ini menjadi Izin
 | Alur | UF-19 E2 |
 | Aktor dan hak | Admin (semua), wali kelas (rombel), guru piket (semua), dan guru BK (semua) (`HA-IZN-02`). |
 | Aturan terkait | BR-IZN-04, BR-IZN-05, BR-IZN-07, BR-REK-02, BR-REK-03 |
-| Status | DECISION (input massal; bentrok dilewati dan dilaporkan, Session 4b); RECOMMENDATION (cara memilih siswa) |
+| Status | DECISION (input massal; bentrok dilewati dan dilaporkan, Session 4b; lampiran bersama paling banyak 3 file, Session 6); RECOMMENDATION (cara memilih siswa) |
 
 **Prasyarat**
 
@@ -5358,4 +5360,4 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 4b: 40 fitur R1 dirinci beserta acceptance criteria, 9 fitur R2/R3 sebagai kerangka, ketentuan umum, traceability, dan keputusan Session 4b. |
 | 0.2 | 2026-10-04 | Keputusan Session 5 (§2.4). FS-MD-09 (atribut tambahan siswa) ditambahkan beserta AC-MD-09-01 s.d. AC-MD-09-03. FS-MD-03 (tingkat tidak dapat diubah setelah ada penempatan), FS-MD-04, FS-MD-05, FS-MD-06, dan FS-MD-08 diperbarui, dengan AC-MD-04-07, AC-MD-05-04, AC-MD-06-05, dan AC-MD-08-03 ditambahkan. FS-KIO-04 (tanda di luar aturan dinilai ulang), FS-PRS-05 (definisi koreksi), FS-PRS-11, FS-IZN-01 s.d. FS-IZN-03 (paling banyak 3 lampiran), FS-IZN-06, FS-LAP-01, FS-LAP-03 (pembulatan bilangan bulat, AC-LAP-03-01), §4.4, §4.5, §11, §12, dan §14 diperbarui. |
-| 0.3 | 2026-10-04 | Keputusan Session 6 (§2.5, `07`). §4.5 dan §4.6 merujuk mekanisme di `07`. Nilai parameter FS-AKN-01, FS-AKN-04, FS-MD-07, FS-MD-08, FS-KIO-01 s.d. FS-KIO-05, dan FS-LAP-01 ditetapkan. FS-AKN-03, FS-MD-03, FS-MD-04, FS-IZN-03, pengantar §7, §11, §13, §14.1, dan §14.2 diperbarui. OQ-09 terjawab. |
+| 0.3 | 2026-10-04 | Keputusan Session 6 (§2.5, `07`). §4.5 dan §4.6 merujuk mekanisme di `07`. Nilai parameter FS-AKN-01, FS-AKN-04, FS-MD-07, FS-KIO-01 s.d. FS-KIO-05, dan FS-LAP-01 ditetapkan, dan usulan batas unggah FS-MD-08 ditambahkan. Masa berlaku akun stasiun disebut masa login, bukan sesi (FS-AKN-01, FS-AKN-04, FS-KIO-01, FS-KIO-03, FS-KIO-04). Selisih jam diukur server dari jam laptop di setiap kiriman (FS-KIO-03, FS-KIO-04). FS-AKN-03, FS-MD-03, FS-MD-04, FS-IZN-03, pengantar §7, §11, §13, §14.1, dan §14.2 diperbarui. OQ-09 terjawab. |

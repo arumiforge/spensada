@@ -2,7 +2,7 @@
 CLAUDE.local.md
 .claude/settings.local.json
 
-# Environment: berisi password database dan kunci aplikasi
+# Environment: berisi password database dan kunci enkripsi aplikasi
 .env
 .env.*
 
@@ -18,6 +18,10 @@ CLAUDE.local.md
 /writable/debugbar/*
 !/writable/debugbar/index.html
 php_errors.log
+
+# Dump database: berisi data siswa (R-17)
+*.sql
+*.sql.gz
 
 # Dependensi
 /vendor/

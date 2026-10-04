@@ -22,7 +22,7 @@ Laporan di layar termasuk R1 dan dirinci di `04`, kecuali tampilan rekap semua r
 - **Nama kolom.** Judul kolom file ditulis persis seperti di dokumen ini. Teks layar ditetapkan di Session 7.
 - **Contoh.** Contoh tanggal mengikuti `04` §1: "hari ini" adalah Selasa, 13 Oktober 2026.
 
-## 2. Keputusan Session 5
+## 2. Keputusan Session 5 dan 6
 
 | Topik | Keputusan | OQ | Status |
 |---|---|---|---|
@@ -263,7 +263,7 @@ Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
-| Library XLSX dan PDF, serta instalasi lewat Composer | IE-12, OQ-09 | Ditetapkan di Session 6: PhpSpreadsheet dan mPDF lewat Composer (`07` ARS-10) |
+| Library XLSX dan PDF, serta instalasi lewat Composer | IE-12, OQ-09 | Session 6: mPDF dan instalasi lewat Composer berstatus DECISION, dan PhpSpreadsheet berstatus RECOMMENDATION (`07` ARS-10) |
 | Desain template PDF dan flyer, serta cara pembuatan flyer PNG | IE-10, IE-12, LP-08 | Session 7 |
 | Ukuran file dan jumlah baris maksimal import | IM-01, IM-02 | Session 9 |
 | Format gambar dan ukuran maksimal foto | IM-03 | Session 9 |
@@ -274,4 +274,4 @@ Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 5: matriks laporan × format, rincian tujuh laporan dan flyer, template import siswa, import penempatan, format nama file foto, dan ketentuan umum. OQ-11 dan OQ-12 terjawab. |
-| 0.2 | 2026-10-04 | Keputusan Session 6 (`07`). IE-02 dan LP-03 (pengecualian rekap rapor) menjadi DECISION. IE-12 memuat mPDF dan Composer. IM-13 dan §8 memuat dukungan ZIP dan ukuran foto. §2 dan §9 diperbarui. |
+| 0.2 | 2026-10-04 | Keputusan Session 6 (`07`). IE-02 dan LP-03 (pengecualian rekap rapor) menjadi DECISION. IE-12 memuat mPDF dan Composer. IM-13 dan §8 memuat dukungan ZIP dan ukuran foto. §2, termasuk judulnya, dan §9 diperbarui. |
