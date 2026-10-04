@@ -9,7 +9,7 @@
 
 Dokumen ini menetapkan laporan dan formatnya, isi flyer kehadiran, template import siswa, import penempatan, dan format nama file foto untuk upload massal. Dokumen ini menjawab OQ-11 dan OQ-12.
 
-Laporan di layar termasuk R1 dan dirinci di `04`. Export ke file dan flyer termasuk R2 (`00` §6.1). Import siswa, penempatan massal, dan foto massal termasuk R1.
+Laporan di layar termasuk R1 dan dirinci di `04`, kecuali tampilan rekap semua rombel (LP-02) yang termasuk R2. Export ke file dan flyer termasuk R2 (`00` §6.1). Import siswa, penempatan massal, dan foto massal termasuk R1.
 
 ## 1. Cara membaca dokumen ini
 
@@ -30,7 +30,7 @@ Laporan di layar termasuk R1 dan dirinci di `04`. Export ke file dan flyer terma
 | Isi flyer | Angka saja, tanpa nama siswa (LP-08). | OQ-11 | DECISION |
 | Foto siswa yang ada | Nama file foto saat ini belum seragam. | OQ-12 | CONFIRMED |
 | Format nama file foto | Nama file diawali 10 digit NISN. Sisa nama setelah garis bawah, spasi, atau tanda hubung diabaikan (IM-03). | OQ-12 | DECISION |
-| Kolom template import siswa | NISN, nama lengkap, dan rombel wajib. NIS, jenis kelamin, tanggal lahir, alamat, nama orang tua/wali, nomor WA, dan atribut tambahan bersifat opsional (IM-01). | — | DECISION (isi kolom); RECOMMENDATION (judul dan format) |
+| Kolom template import siswa | NISN, nama lengkap, dan rombel wajib. NIS, jenis kelamin, tanggal lahir, alamat, nama orang tua/wali, dan nomor WA bersifat opsional. Atribut tambahan wajib atau tidak sesuai definisinya (IM-01). | — | DECISION (isi kolom); RECOMMENDATION (judul dan format) |
 | NISN yang sudah ada saat import | Baris dilewati dan dilaporkan sebagai baris gagal, beserta nama pemilik NISN. Import hanya menambah siswa baru (UF-02 E2). | — | DECISION |
 | Penempatan massal | Dua cara: per rombel asal ke rombel tujuan (FS-MD-05), dan lewat file import penempatan untuk pengacakan rombel (IM-02). | — | DECISION |
 | Pembulatan persentase | Persentase kehadiran ditampilkan sebagai bilangan bulat (IE-04). | — | DECISION |
@@ -41,7 +41,7 @@ Laporan di layar termasuk R1 dan dirinci di `04`. Export ke file dan flyer terma
 |---|---|---|
 | IE-01 | **Satu sumber angka.** Semua laporan kehadiran (LP-01 s.d. LP-05 dan LP-08), di layar maupun file, membaca `status_harian` dengan aturan baca `06` §11.3. Tidak ada laporan yang menghitung status dengan cara lain, sehingga angka di layar, file, dan flyer selalu sama. | RECOMMENDATION |
 | IE-02 | **Rombel per tanggal.** Laporan per rombel memakai rombel siswa pada setiap tanggal (BR-REK-05), kecuali rekap rapor semester (LP-03). | DECISION (BR-REK-05); RECOMMENDATION (pengecualian LP-03) |
-| IE-03 | **Hari ini belum final.** Laporan yang mencakup hari ini mengikuti BR-REK-04. File dan flyer memuat tanda "Data hari ini belum final" beserta jam pembuatannya. | DECISION |
+| IE-03 | **Hari ini belum final.** Laporan yang mencakup hari ini mengikuti BR-REK-04. File dan flyer memuat tanda "Data hari ini belum final, dibuat pukul JJ.MM". | DECISION (BR-REK-04); RECOMMENDATION (tanda di file dan flyer) |
 | IE-04 | **Pembulatan.** Persentase kehadiran dihitung dari jumlah hari, lalu dibulatkan ke bilangan bulat terdekat. Nilai tepat setengah dibulatkan ke atas, misalnya 87,5% menjadi 88% dan 87,4% menjadi 87%. Persentase baris total dihitung dari jumlah total, bukan dari rata-rata persentase baris. Pembulatan hanya dilakukan saat ditampilkan atau ditulis ke file. | DECISION (bilangan bulat); RECOMMENDATION (setengah ke atas) |
 | IE-05 | **Hak dan cakupan.** Export mengikuti hak dan cakupan laporan yang sama di layar, ditambah `HA-LAP-05` (§4). Isi file sama dengan yang boleh dilihat pengguna di layar. | RECOMMENDATION |
 | IE-06 | **Identitas file.** XLSX dan PDF memuat nama sekolah (FS-MD-01), judul laporan, cakupan (rombel atau sekolah), rentang tanggal, waktu dibuat, dan nama pembuat. PDF juga memuat logo sekolah dan nomor halaman. CSV hanya berisi satu baris judul kolom dan baris data. | RECOMMENDATION |
@@ -49,32 +49,42 @@ Laporan di layar termasuk R1 dan dirinci di `04`. Export ke file dan flyer terma
 | IE-08 | **XLSX.** NISN dan NIS ditulis sebagai sel teks, sehingga nol di depan tetap utuh (R-12). Tanggal ditulis sebagai sel tanggal, dan jumlah sebagai sel angka. Persentase ditulis sebagai angka bulat. Setiap file memiliki lembar "Keterangan" berisi arti kode dan filter yang dipakai. | RECOMMENDATION |
 | IE-09 | **CSV.** UTF-8 dengan BOM, pemisah koma, dan tanda kutip ganda untuk teks. Judul kolom memakai `snake_case`. Tanggal `YYYY-MM-DD`, jam `HH:MM:SS`, dan status memakai kode di `06`. CSV ditujukan untuk diolah aplikasi lain. Untuk dibuka di Excel, pengguna memakai XLSX. | RECOMMENDATION |
 | IE-10 | **PDF.** Ukuran A4. Rekap dan daftar memakai orientasi lanskap bila kolomnya banyak. Rekap per rombel (LP-01) dan rekap rapor (LP-03) memuat tempat tanda tangan wali kelas. | RECOMMENDATION |
-| IE-11 | **Rentang.** Rentang laporan paling panjang satu tahun ajaran dan tidak melewati hari ini, sama dengan FS-LAP-03. | RECOMMENDATION |
+| IE-11 | **Rentang.** Rentang laporan mengikuti layar asalnya. Rentang rekap (LP-01 s.d. LP-03) berada di dalam satu tahun ajaran dan tidak melewati hari ini, sama dengan FS-LAP-03. | RECOMMENDATION |
 | IE-12 | **Library.** XLSX dibuat dan dibaca dengan PhpSpreadsheet, dan PDF dibuat dengan library PHP yang dipilih di Session 6. Keduanya bergantung pada OQ-09 (C-06, NFR-16). Flyer dibuat di browser (R-19). | RECOMMENDATION |
 | IE-13 | **Catatan export.** Export laporan berisi nama siswa (LP-01, LP-03 s.d. LP-07) dicatat di `log_aktivitas`. Rinciannya ditetapkan bersama kebijakan data pribadi di Session 9 (R-17). | RECOMMENDATION |
 
-Contoh query rekap per rombel (LP-01) dengan aturan baca `06` §11.3. Nilai `:final_hari_ini` dan `:pulang_ditutup` dihitung sekali di PHP dari aturan jam dan mode darurat hari ini.
+Contoh query rekap per rombel (LP-01) dengan aturan baca `06` §11.3. Daftar siswa diambil dari penempatan, sehingga siswa yang ditempatkan tetapi tidak memiliki hari sekolah dalam rentang tetap tampil dengan angka 0. Nilai `:final_hari_ini` dan `:pulang_ditutup` dihitung sekali di PHP dari aturan jam dan mode darurat hari ini. `:ta_selesai` adalah tanggal selesai tahun ajaran rombel itu.
 
 ```sql
 SELECT s.id, s.nisn, s.nis, s.nama, s.jenis_kelamin,
-  SUM(sh.status IS NOT NULL OR sh.tanggal < :hari_ini OR :final_hari_ini) AS hari_sekolah,
-  SUM(sh.status = 'hadir')      AS hadir,
-  SUM(sh.status = 'terlambat')  AS terlambat,
-  SUM(sh.status = 'izin')       AS izin,
-  SUM(sh.status = 'sakit')      AS sakit,
-  SUM(sh.status = 'dispensasi') AS dispensasi,
-  SUM(sh.status = 'alpa'
-      OR (sh.status IS NULL AND (sh.tanggal < :hari_ini OR :final_hari_ini))) AS alpa,
-  SUM(sh.status IS NULL AND sh.tanggal = :hari_ini AND NOT :final_hari_ini)   AS belum_hadir,
-  SUM(sh.pulang_awal) AS pulang_awal,
-  SUM(sh.tanpa_pulang AND (sh.tanggal < :hari_ini OR :pulang_ditutup))        AS tidak_scan_pulang
-FROM status_harian sh
-JOIN siswa s ON s.id = sh.siswa_id
-WHERE sh.rombel_id = :rombel_id
-  AND sh.tanggal BETWEEN :mulai AND :selesai
+  COALESCE(SUM(sh.status IS NOT NULL OR sh.tanggal < :hari_ini OR :final_hari_ini), 0) AS hari_sekolah,
+  COALESCE(SUM(sh.status = 'hadir'), 0)      AS hadir,
+  COALESCE(SUM(sh.status = 'terlambat'), 0)  AS terlambat,
+  COALESCE(SUM(sh.status = 'izin'), 0)       AS izin,
+  COALESCE(SUM(sh.status = 'sakit'), 0)      AS sakit,
+  COALESCE(SUM(sh.status = 'dispensasi'), 0) AS dispensasi,
+  COALESCE(SUM(sh.status = 'alpa'
+      OR (sh.status IS NULL AND (sh.tanggal < :hari_ini OR :final_hari_ini))), 0) AS alpa,
+  COALESCE(SUM(sh.status IS NULL AND sh.tanggal = :hari_ini AND NOT :final_hari_ini), 0) AS belum_hadir,
+  COALESCE(SUM(sh.pulang_awal), 0) AS pulang_awal,
+  COALESCE(SUM(sh.tanpa_pulang AND (sh.tanggal < :hari_ini OR :pulang_ditutup)), 0) AS tidak_scan_pulang
+FROM (
+  SELECT DISTINCT p.siswa_id
+  FROM penempatan p
+  WHERE p.rombel_id = :rombel_id
+    AND p.tanggal_mulai <= :selesai
+    AND COALESCE(p.tanggal_selesai, :ta_selesai) >= :mulai
+) ps
+JOIN siswa s ON s.id = ps.siswa_id
+LEFT JOIN status_harian sh
+  ON sh.siswa_id = ps.siswa_id
+ AND sh.rombel_id = :rombel_id
+ AND sh.tanggal BETWEEN :mulai AND :selesai
 GROUP BY s.id, s.nisn, s.nis, s.nama, s.jenis_kelamin
 ORDER BY s.nama;
 ```
+
+`COALESCE` diperlukan karena `SUM` menghasilkan `NULL`, bukan 0, bila siswa tidak memiliki baris dalam rentang atau semua nilainya `NULL`.
 
 ## 4. Matriks laporan × format (OQ-11)
 
@@ -107,7 +117,7 @@ Catatan:
 | Filter | Tahun ajaran, rombel, dan rentang tanggal (IE-11). |
 | Baris | Satu baris per siswa yang ditempatkan di rombel itu pada salah satu tanggal dalam rentang (IE-02). Urut nama. |
 | Kolom | No, NISN, NIS, Nama, L/P, Hari sekolah, Hadir, Terlambat, Izin, Sakit, Dispensasi, Alpa, Belum hadir (hanya bila hari ini belum final), Ketidakhadiran (Sakit + Izin + Alpa), Kehadiran (%), Pulang lebih awal, Tidak scan pulang, dan Keterangan (misalnya "pindah"). |
-| Total | Baris total menjumlahkan semua kolom. Persentase total mengikuti IE-04. |
+| Total | Baris total menjumlahkan semua kolom. Persentase total mengikuti IE-04. Siswa tanpa hari sekolah dalam rentang, misalnya siswa yang periode aktifnya dibatalkan (`06` §6.6), tampil dengan angka 0 dan persentase "—". |
 | Kepala | Rombel, wali kelas, tahun ajaran, rentang, dan jumlah siswa. |
 | Status | RECOMMENDATION (kolom); DECISION (format) |
 
@@ -178,9 +188,9 @@ Catatan:
 |---|---|
 | Tujuan | Gambar PNG ringkasan kehadiran untuk dibagikan staf, misalnya ke grup WhatsApp (FR-LAP-05, UF-24). |
 | Cakupan | Satu rombel atau total sekolah, untuk satu tanggal. |
-| Isi | Nama dan logo sekolah, judul, tanggal, cakupan, jumlah siswa wajib hadir, jumlah Hadir, Terlambat, Izin, Sakit, Dispensasi, dan Alpa, serta persentase kehadiran (IE-04). Flyer total sekolah juga memuat angka per tingkat. |
+| Isi | Nama dan logo sekolah, judul, tanggal, cakupan, jumlah siswa yang hari itu memiliki hari sekolah, jumlah Hadir, Terlambat, Izin, Sakit, Dispensasi, Alpa, dan Belum hadir (selama data belum final), serta persentase kehadiran (IE-04). Flyer total sekolah juga memuat angka per tingkat. |
 | Tidak dimuat | Nama, foto, NISN, atau data individu siswa lain (DECISION, OQ-11). |
-| Hari ini | Bila status hari ini belum final, flyer memuat tanda "Data sementara pukul JJ.MM" (IE-03). |
+| Hari ini | Bila status hari ini belum final, flyer memuat tanda IE-03: "Data hari ini belum final, dibuat pukul JJ.MM". |
 | Status | DECISION (angka saja); RECOMMENDATION (rincian isi). Desain template ditetapkan di Session 7. |
 
 ## 6. Import siswa (IM-01)

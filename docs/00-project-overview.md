@@ -281,7 +281,7 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Import penempatan | Penempatan banyak siswa sekaligus lewat file berisi rombel tujuan, misalnya saat rombel diacak ulang pada kenaikan kelas (`13` IM-02). |
 | Masa aktif | Periode ketika siswa berstatus aktif, dari tanggal mulai sampai tanggal terakhir aktif. Seorang siswa dapat memiliki beberapa periode, misalnya setelah diaktifkan kembali (`05` BR-KAL-06). |
 | NIS | Nomor induk siswa dari sekolah. Hanya informasi; login dan QR tetap memakai NISN. |
-| Atribut tambahan siswa | Atribut siswa yang dibuat admin sendiri, misalnya agama. Tidak dipakai logika presensi atau laporan (`04` FS-MD-09). |
+| Atribut tambahan siswa | Atribut siswa yang dibuat admin sendiri, misalnya agama. Tidak dipakai logika presensi, rekap, atau filter laporan, tetapi ikut di export data siswa (`04` FS-MD-09). |
 | Salinan status harian | Hasil penentuan status yang disimpan per siswa per hari sekolah dan selalu dapat dibangun ulang dari sumbernya. Bagian yang bergantung pada jam sekarang diturunkan saat dibaca (`06` §11). |
 | Hari sekolah | Tanggal kegiatan belajar menurut pola mingguan, jadwal khusus, dan kalender sekolah. Karena libur dapat berlaku per tingkat atau rombel, hari sekolah ditentukan per siswa (`05` BR-KAL-05). |
 | Kalender sekolah | Daftar hari libur (untuk semua siswa, tingkat tertentu, atau rombel tertentu) dan jadwal khusus yang diatur admin. |

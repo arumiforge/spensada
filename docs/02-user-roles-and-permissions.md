@@ -59,8 +59,8 @@ Keputusan Session 5 yang mengubah dokumen ini (rinciannya di `06` §2 dan `13` �
 | Topik | Perubahan | Status |
 |---|---|---|
 | Atribut tambahan siswa | Admin mengelola definisi atribut tambahan siswa (`HA-MD-11`, `04` FS-MD-09). | DECISION |
-| Profil siswa | `HA-MD-05` mencakup atribut opsional baru dan atribut tambahan. | DECISION |
-| Export | Export mengikuti matriks laporan di `13` §4. Data siswa hanya diekspor admin. Log perubahan presensi diekspor oleh pemegang `HA-PRS-06` sesuai cakupannya. | DECISION (matriks); RECOMMENDATION (hak export di luar `HA-LAP-05`) |
+| Profil siswa | `HA-MD-05` mencakup atribut opsional baru dan atribut tambahan. Pembagian hak lihatnya tidak berubah. | DECISION (atribut); RECOMMENDATION (hak lihat) |
+| Export | Export mengikuti matriks laporan di `13` §4. Setiap export memerlukan `HA-LAP-05` ditambah hak melihat laporan yang sama di layar (`13` IE-05). Data siswa hanya diekspor admin. Log perubahan presensi diekspor oleh pemegang `HA-PRS-06` yang juga memegang `HA-LAP-05`, sesuai cakupannya. | DECISION (matriks); RECOMMENDATION (pembagian hak export) |
 | Flyer | Flyer berisi angka saja, sehingga `HA-LAP-06` tidak berubah (OQ-11). | DECISION |
 
 ## 2. Jenis akun
@@ -157,7 +157,7 @@ Cara membaca:
 | HA-MD-02 | Kelola rombel dan tetapkan wali kelas | Ya | — | — | — | — | — | — | — | FR-MD-02 | DECISION |
 | HA-MD-03 | Tambah, ubah, dan nonaktifkan siswa; tempatkan siswa ke rombel | Ya | — | — | — | — | — | — | — | FR-MD-03, FR-MD-04 | DECISION |
 | HA-MD-04 | Import siswa dari Excel/CSV | Ya | — | — | — | — | — | — | — | FR-MD-05 | DECISION |
-| HA-MD-05 | Lihat profil siswa: NISN, nama, rombel, foto, nomor WA orang tua/wali, atribut opsional, dan atribut tambahan | Semua | — | Rombel | Semua | Semua | Semua | Sendiri | — | FR-MD-03 | RECOMMENDATION |
+| HA-MD-05 | Lihat profil siswa: NISN, nama, rombel, foto, nomor WA orang tua/wali, atribut opsional, dan atribut tambahan | Semua | — | Rombel | Semua | Semua | Semua | Sendiri | — | FR-MD-03 | RECOMMENDATION (hak lihat); DECISION (isi atribut, Session 5) |
 | HA-MD-06 | Ubah nomor WA orang tua/wali | Semua | — | Rombel | — | — | — | — | — | FR-MD-09 | DECISION |
 | HA-MD-07 | Unggah atau ganti foto siswa satu per satu | Semua | — | Rombel | — | — | — | — | — | FR-MD-06, FR-MD-09 | DECISION |
 | HA-MD-08 | Unggah foto massal | Ya | — | — | — | — | — | — | — | FR-MD-07 | RECOMMENDATION |
@@ -209,7 +209,7 @@ Pimpinan dapat membuka lampiran (keputusan Session 4, mengganti usulan Session 3
 | HA-LAP-03 | Rekap per rombel untuk rentang tanggal, dan daftar presensi rombel untuk tanggal selain hari ini | Semua | — | Rombel | — | Semua | Semua | — | — | R1 | FR-LAP-02 | RECOMMENDATION |
 | HA-LAP-04 | Riwayat kehadiran per siswa. Siswa melihat alasan koreksi dan catatan verifikasi tanpa nama staf. | Semua | — | Rombel | — | Semua | Semua | Sendiri | — | R1 | FR-LAP-03 | DECISION (siswa; isi riwayat di portal, Session 4b); RECOMMENDATION (staf) |
 | HA-LAP-05 | Export rekap ke XLSX, CSV, dan PDF | Semua | — | Rombel | — | Semua | Semua | — | — | R2 | FR-LAP-04 | RECOMMENDATION |
-| HA-LAP-06 | Buat flyer kehadiran | Ya | — | Rombel | — | — | Ya | — | — | R2 | FR-LAP-05 | RECOMMENDATION (ditinjau ulang bersama OQ-11) |
+| HA-LAP-06 | Buat flyer kehadiran | Ya | — | Rombel | — | — | Ya | — | — | R2 | FR-LAP-05 | RECOMMENDATION (ditinjau bersama OQ-11 di Session 5: tidak berubah, karena flyer berisi angka saja) |
 
 ### 6.7 Notifikasi WhatsApp (WA) — R2
 

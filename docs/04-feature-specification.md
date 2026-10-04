@@ -50,7 +50,7 @@ Dokumen ini juga mencatat keputusan Session 4b atas usulan di `05` (§2). Dokume
 
   Semua jam memakai WIB.
 - **Acceptance criteria.** Ditulis dalam format Given/When/Then seperti `01` §7. Sebuah fitur dianggap selesai bila semua acceptance criteria-nya lulus, dan dokumen fase di Session 11 merujuk ID ini. (RECOMMENDATION)
-- **Nama teknis.** Tabel, kolom, route, dan teks layar ditetapkan di Session 5–8. Contoh pesan di dokumen ini bukan teks final.
+- **Nama teknis.** Tabel, kolom, route, dan teks layar ditetapkan di Session 5–8. Nama tabel dan kolom ada di `06`. Contoh pesan di dokumen ini bukan teks final.
 
 ## 2. Keputusan Session 4b
 
@@ -100,6 +100,8 @@ Keputusan Session 5 yang berdampak ke fitur. Rinciannya ada di `06` §2 dan `13`
 | Import siswa | Kolom template mengikuti `13` §6.1. Baris dengan NISN yang sudah ada dilewati dan dilaporkan. | FS-MD-06 | DECISION |
 | Nama file foto | Nama file diawali 10 digit NISN (`13` IM-03, OQ-12). | FS-MD-08 | DECISION |
 | Status harian | Disimpan sebagai salinan; bagian yang bergantung pada jam sekarang diturunkan saat dibaca (`06` §11). | FS-PRS-05, §4.5 | DECISION |
+| Tinjauan usulan di `05` | BR-KAL-06, BR-SCN-03 (scan ganda disimpan dengan tanda), BR-STS-06, BR-KOR-10 (cakupan log yang diperluas), BR-REK-04, dan BR-REK-05 menjadi DECISION. | FS-MD-04, FS-MD-05, FS-KIO-04, FS-PRS-05, FS-PRS-11, FS-LAP-03 | DECISION |
+| Lampiran | Paling banyak 3 file per data izin/sakit/dispensasi. | FS-IZN-01 s.d. FS-IZN-03 | DECISION |
 | Pembulatan persentase | Bilangan bulat (`13` IE-04). | FS-LAP-03 | DECISION |
 | Laporan dan flyer | Matriks laporan × format di `13` §4. Flyer berisi angka saja (OQ-11). | FS-LAP-05, FS-LAP-06 | DECISION |
 
@@ -1080,6 +1082,7 @@ Then penyimpanan ditolak
 4. Hak wali kelas hanya berasal dari rombel tahun ajaran aktif. Penugasan di tahun ajaran yang belum aktif baru berlaku saat tahun ajaran itu diaktifkan.
 5. Rombel hanya dapat dihapus bila belum pernah memiliki penempatan siswa.
 6. Daftar rombel menandai rombel tanpa wali kelas atau dengan wali kelas yang akunnya nonaktif.
+7. Tingkat rombel tidak dapat diubah setelah rombel memiliki penempatan siswa, karena libur per tingkat dan rekap bergantung padanya (`06` §6.4).
 
 **Keadaan kosong dan error**
 
@@ -1088,6 +1091,7 @@ Then penyimpanan ditolak
 | E1 | Nama rombel sudah dipakai di tahun ajaran itu. | Penyimpanan ditolak. |
 | E2 | Wali kelas yang dipilih akunnya nonaktif. | Penyimpanan ditolak. |
 | E3 | Menghapus rombel yang memiliki penempatan siswa. | Ditolak. |
+| E4 | Mengubah tingkat rombel yang memiliki penempatan siswa. | Ditolak. |
 
 **Data dan log**
 
@@ -1154,21 +1158,23 @@ Then penyimpanan ditolak
 | Nomor WA orang tua/wali | Tidak | Bila diisi: nomor ponsel Indonesia yang diawali `08`, `628`, atau `+628`. Disimpan dalam format baku yang diawali 62, misalnya `081234567890` menjadi `6281234567890`. Panjangnya 10–15 digit setelah dibakukan. (DECISION opsional dan divalidasi, Session 4b) |
 | Rombel dan tanggal mulai | Ya, saat siswa ditambah | Penempatan awal (FS-MD-05). |
 | Tanggal mulai aktif | Ya, saat siswa ditambah | Default hari ini (BR-KAL-06). |
-| NIS | Tidak | Teks, paling banyak 20 karakter. Unik bila diisi. Hanya informasi; login dan QR tetap memakai NISN. (DECISION, Session 5) |
-| Jenis kelamin | Tidak | L atau P. (DECISION, Session 5) |
-| Tanggal lahir | Tidak | Tanggal, tidak boleh tanggal ke depan. (DECISION, Session 5) |
-| Alamat rumah | Tidak | Teks. (DECISION, Session 5) |
-| Nama orang tua/wali | Tidak | Teks. (DECISION, Session 5) |
-| Atribut tambahan | Mengikuti definisinya | Isian dari FS-MD-09, divalidasi sesuai tipe dan wajib tidaknya. (DECISION, Session 5) |
+| NIS | Tidak | Teks, paling banyak 20 karakter. Unik bila diisi. Hanya informasi; login dan QR tetap memakai NISN. |
+| Jenis kelamin | Tidak | L atau P. |
+| Tanggal lahir | Tidak | Tanggal, tidak boleh tanggal ke depan. |
+| Alamat rumah | Tidak | Teks. |
+| Nama orang tua/wali | Tidak | Teks. |
+| Atribut tambahan | Mengikuti definisinya | Isian dari FS-MD-09, divalidasi sesuai tipe dan wajib tidaknya. |
+
+NIS, jenis kelamin, tanggal lahir, alamat rumah, nama orang tua/wali, dan atribut tambahan adalah atribut siswa yang diputuskan di Session 5 (DECISION). Aturan validasinya berstatus RECOMMENDATION.
 
 **Perilaku**
 
 1. **Tambah siswa.** Sistem menyimpan siswa, penempatan awalnya, dan akun siswa yang belum aktif (FS-AKN-05). Kiosk mengenali siswa ini setelah memuat ulang data (FS-KIO-01).
 2. **Ubah data.** Admin mengubah NISN, nama, atribut lain, dan atribut tambahan. Koreksi NISN juga mengubah username akun siswa. Sistem memperingatkan bahwa QR di kartu harus berisi NISN baru (C-04).
 3. **Ubah nomor WA.** Admin, atau wali kelas untuk rombelnya, mengubah atau mengosongkan nomor WA. Siswa tidak dapat mengubahnya (`02` §10).
-4. **Nonaktifkan.** Admin mengisi tanggal terakhir aktif (default hari ini, tidak boleh tanggal ke depan) dan alasan: lulus, pindah sekolah, keluar, meninggal dunia, salah input, atau lainnya (DECISION, Session 5). Alasan "lainnya" wajib disertai keterangan. Akibatnya:
+4. **Nonaktifkan.** Admin mengisi tanggal terakhir aktif (default hari ini, tidak boleh tanggal ke depan) dan alasan: lulus, pindah sekolah, keluar, meninggal dunia, salah input, atau lainnya (DECISION, Session 5). Alasan "lainnya" wajib disertai keterangan (RECOMMENDATION). Akibatnya:
    - siswa tidak memiliki status setelah tanggal terakhir aktif (BR-KAL-05, BR-KAL-06), dan status tanggal itu dihitung ulang;
-   - bila alasannya salah input, periode aktif itu tidak dihitung sama sekali, sehingga siswa tidak memiliki status pada tanggal mana pun dalam periode itu (`06` §6.6, RECOMMENDATION);
+   - bila alasannya salah input, atau periode aktifnya belum dimulai, periode itu dibatalkan: admin tidak mengisi tanggal terakhir aktif, dan siswa tidak memiliki status pada tanggal mana pun dalam periode itu (`06` §6.6, RECOMMENDATION);
    - akun siswa nonaktif (FS-AKN-05);
    - siswa tidak lagi dimuat kiosk setelah data dimuat ulang;
    - riwayat kehadirannya tetap tersimpan.
@@ -1184,7 +1190,7 @@ Then penyimpanan ditolak
 | E1 | NISN bukan 10 digit. | "NISN harus 10 digit angka." |
 | E2 | NISN sudah dipakai siswa lain. | "NISN sudah terdaftar." Admin melihat nama siswa pemilik NISN itu. |
 | E3 | Nomor WA tidak valid. | "Nomor WA tidak valid." Isian lain tidak ikut tersimpan sampai nomor diperbaiki atau dikosongkan. |
-| E4 | Tanggal terakhir aktif di masa depan. | Ditolak. |
+| E4 | Tanggal terakhir aktif di masa depan, atau sebelum tanggal mulai aktif periode itu. | Ditolak. |
 | E5 | Wali kelas mengubah nomor WA siswa rombel lain. | Ditolak (§4.1). |
 | E6 | Belum ada siswa. | Daftar kosong dengan tautan ke tambah siswa dan import siswa. |
 | E7 | NIS sudah dipakai siswa lain. | "NIS sudah terdaftar." Admin melihat nama siswa pemilik NIS itu. |
@@ -1284,7 +1290,7 @@ Rujukan: FR-MD-03, BR-KAL-06, `06` §6.6.
 Given siswa L keliru ditambahkan dengan tanggal mulai aktif 1 Oktober 2026
 When admin menonaktifkan siswa L dengan alasan "salah input"
 Then siswa L tidak memiliki status pada tanggal mana pun sejak 1 Oktober 2026
-  And siswa L tidak dihitung di rekap rombelnya
+  And rekap rombelnya menampilkan siswa L dengan 0 hari sekolah
   And log data siswa mencatat penonaktifan beserta alasannya
 ```
 
@@ -1709,7 +1715,7 @@ Then file pertama ditandai cocok
 | Alur | UF-07 |
 | Aktor dan hak | Kelola definisi atribut: admin (`HA-MD-11`). Isi nilai: admin, bersama data siswa (`HA-MD-03`, `HA-MD-04`). Lihat nilai: sama dengan profil siswa (`HA-MD-05`). |
 | Aturan terkait | `06` §6.8 dan §6.9, `13` IM-01 |
-| Status | DECISION (atribut tambahan; tidak dipakai logika presensi dan laporan, Session 5); RECOMMENDATION (rincian) |
+| Status | DECISION (atribut tambahan; tidak dipakai logika presensi, rekap, atau filter laporan, Session 5); RECOMMENDATION (rincian) |
 
 **Prasyarat**
 
@@ -1733,7 +1739,7 @@ Then file pertama ditandai cocok
 3. Nilai divalidasi sesuai tipe. Atribut wajib harus diisi saat siswa ditambah, saat data siswa diubah, dan saat import. Siswa yang sudah ada sebelum atribut wajib dibuat tidak berubah, dan baru wajib diisi saat datanya diubah.
 4. Menyembunyikan atribut menghilangkannya dari formulir, profil, dan template, tetapi nilainya tetap tersimpan.
 5. Atribut hanya dapat dihapus bila belum ada siswa yang memiliki nilai. Pilihan yang sudah dipakai siswa tidak dapat dihapus.
-6. Atribut tambahan tidak dipakai logika presensi, rekap, filter laporan, atau kiosk (DECISION, Session 5). Nilainya ikut di export data siswa (`13` LP-06).
+6. Atribut tambahan tidak dipakai logika presensi, rekap, atau filter laporan (DECISION, Session 5). Atribut ini juga tidak dimuat kiosk (RECOMMENDATION). Nilainya ikut di export data siswa (`13` LP-06).
 7. Perubahan nilai dicatat di log data siswa (`06` §12.2). Perubahan definisi atribut dicatat di log aktivitas pengaturan (Session 9).
 
 **Keadaan kosong dan error**
@@ -1747,7 +1753,7 @@ Then file pertama ditandai cocok
 
 **Data dan log**
 
-- Ditulis: definisi atribut (`atribut_siswa`) dan nilai per siswa (`siswa_atribut`) (`06` §6.8, §6.9).
+- Ditulis: definisi atribut (`atribut_siswa`) dan nilai per siswa (`nilai_atribut_siswa`) (`06` §6.8, §6.9).
 - Log: nilai di log data siswa; definisi di log aktivitas pengaturan (Session 9).
 
 **Parameter dan default**
@@ -2274,7 +2280,7 @@ Then kiosk terbuka dari cache dan penghitung tetap menunjukkan 12
 | Alur | UF-11 |
 | Aktor dan hak | Akun stasiun (`HA-KIO-01`). |
 | Aturan terkait | BR-JAM-11, BR-SCN-03 s.d. BR-SCN-08, BR-STS-06, BR-WA-01 |
-| Status | DECISION (penggabungan: scan paling awal berlaku); RECOMMENDATION (idempotent, penandaan, dan rincian lain) |
+| Status | DECISION (penggabungan: scan paling awal berlaku; scan ganda disimpan dengan tanda, Session 5); RECOMMENDATION (idempotent, penandaan, dan rincian lain) |
 
 **Prasyarat**
 
@@ -2302,6 +2308,8 @@ Then kiosk terbuka dari cache dan penghitung tetap menunjukkan 12
    | Selisih jam laptop berubah lebih dari toleransi dari pengukuran sebelumnya | Dipakai |
    | Menurut aturan server, scan berada di luar jendela, atau tanggalnya bukan hari sekolah bagi siswa | Tidak dipakai |
    | Scan diterima lebih lambat dari batas mundur setelah tanggal scan | Dipakai |
+
+   Keadaan ketiga dinilai ulang setiap kali aturan jam atau kalender tanggal itu berubah (BR-JAM-11, `06` §8.2). Misalnya, scan pukul 08.30 yang diterima saat jam tutup sesi masuk diundur ke 09.00 menjadi bertanda bila jadwal hari ini kemudian dikembalikan.
 
 5. **Penggabungan** (BR-SCN-03, BR-SCN-04). Untuk setiap siswa, tanggal, dan jenis, scan paling awal yang dipakai menjadi kandidat presensi. Scan lainnya diberi hasil "ganda". Presensi masuk adalah yang paling awal di antara scan masuk yang dipakai dan presensi manual masuk yang tidak dibatalkan. Aturan yang sama berlaku untuk presensi pulang.
 6. Server menghitung ulang status dan kejadian siswa yang terdampak (FS-PRS-05, §4.5). Scan yang tiba setelah tanggal berganti tetap mengoreksi status tanggal itu (UF-11 E6).
@@ -2978,7 +2986,7 @@ Then aturan jam hari ini kembali ke pola mingguan atau jadwal khusus
 | Alur | UF-13, UF-14 |
 | Aktor dan hak | Sistem. Hasilnya dilihat lewat FS-LAP-01 s.d. FS-LAP-04 sesuai hak masing-masing. |
 | Aturan terkait | BR-KAL-05, BR-JAM-03 s.d. BR-JAM-09, BR-SCN-04, BR-SCN-10, BR-STS-01 s.d. BR-STS-08, BR-DRT-03 s.d. BR-DRT-05, BR-DRT-07, BR-IZN-02, BR-IZN-06, BR-REK-04 |
-| Status | DECISION (enam status, urutan prioritas, Alpa otomatis, sesi ditutup otomatis, penanda, Session 4b); RECOMMENDATION (dapat dihitung ulang, dan definisi rinci di bawah) |
+| Status | DECISION (enam status, urutan prioritas, Alpa otomatis, sesi ditutup otomatis, penanda, Session 4b; dapat dihitung ulang dan disimpan sebagai salinan, Session 5); RECOMMENDATION (definisi rinci di bawah) |
 
 **Prasyarat**
 
@@ -3004,7 +3012,7 @@ Tidak ada input pengguna. Sumber datanya:
 Definisi yang dipakai:
 
 - **Presensi masuk** siswa S pada tanggal T adalah yang paling awal di antara scan masuk yang dipakai dan presensi manual masuk yang tidak dibatalkan (BR-SCN-04). **Presensi pulang** ditentukan dengan cara yang sama.
-- **Koreksi** adalah koreksi status terakhir yang tidak dihapus untuk S pada T.
+- **Koreksi** adalah koreksi aktif untuk S pada T, yaitu koreksi yang belum diganti atau dihapus. Menghapus koreksi tidak mengaktifkan kembali koreksi sebelumnya (FS-PRS-07).
 - **Aturan jam T** diambil dari jadwal hari ini, lalu jadwal khusus, lalu pola mingguan yang berlaku pada T (FS-PRS-02 butir 5).
 
 Langkah penentuan untuk siswa S pada tanggal T:
@@ -3850,7 +3858,7 @@ Then wali kelas tidak dapat lagi mengoreksi status tanggal 9 Oktober 2026
 | Alur | UF-16 |
 | Aktor dan hak | Admin, guru BK, dan pimpinan (semua), wali kelas (rombel), guru piket (hari ini) (`HA-PRS-06`). |
 | Aturan terkait | BR-KOR-10, BR-MUN-03 |
-| Status | DECISION (setiap perubahan presensi tercatat); RECOMMENDATION (cakupan log yang diperluas dan pembagian hak lihat) |
+| Status | DECISION (setiap perubahan presensi tercatat; cakupan log yang diperluas, Session 5); RECOMMENDATION (pembagian hak lihat) |
 
 **Prasyarat**
 
@@ -3890,7 +3898,7 @@ Tidak ada.
 
 - Log akses atau log siapa yang melihat data (OQ-17, Session 9).
 - Log aktivitas akun (Session 9).
-- Export log.
+- Export log di R1. Export log ke CSV termasuk R2 (`13` LP-07).
 
 **Catatan antarmuka awal**
 
@@ -3950,7 +3958,7 @@ Validasi tanggal yang berlaku untuk semua fitur di bagian ini:
 | Alur | UF-17 |
 | Aktor dan hak | Siswa, untuk dirinya sendiri (`HA-IZN-01`, `HA-IZN-04`, `HA-IZN-05`). |
 | Aturan terkait | BR-IZN-01 s.d. BR-IZN-03, BR-IZN-06, BR-IZN-07, BR-IZN-11, BR-IZN-12, BR-MUN-01, BR-MUN-02 |
-| Status | DECISION (pengajuan siswa; tanggal lampau dalam batas mundur; bukan dispensasi; tumpang tindih dan tanggal ke depan, Session 4b); RECOMMENDATION (rentang tanggal, lampiran, pembatalan oleh siswa) |
+| Status | DECISION (pengajuan siswa; tanggal lampau dalam batas mundur; bukan dispensasi; tumpang tindih dan tanggal ke depan, Session 4b; paling banyak 3 lampiran, Session 5); RECOMMENDATION (rentang tanggal, lampiran opsional, pembatalan oleh siswa) |
 
 **Prasyarat**
 
@@ -3963,7 +3971,7 @@ Validasi tanggal yang berlaku untuk semua fitur di bagian ini:
 | Jenis | Ya | Izin atau Sakit. Dispensasi tidak tersedia (BR-IZN-03). |
 | Tanggal mulai dan selesai | Ya | Validasi tanggal di awal §9. |
 | Keterangan | Ya | Teks. |
-| Lampiran surat | Tidak | Satu file. Format dan ukurannya ditetapkan di Session 9 (§4.9). |
+| Lampiran surat | Tidak | Paling banyak 3 file (DECISION, Session 5). Format dan ukurannya ditetapkan di Session 9 (§4.9). |
 
 **Perilaku**
 
@@ -4102,7 +4110,7 @@ Then hanya Sabtu, 17 Oktober 2026 yang disebut sebagai hari sekolah terdampak
 | Jenis | Ya | Izin, Sakit, atau Dispensasi. |
 | Tanggal mulai dan selesai | Ya | Validasi tanggal di awal §9. |
 | Keterangan | Ya | Teks, termasuk sumber kabar, misalnya "telepon ibu pukul 06.30". |
-| Lampiran | Tidak | Foto surat atau surat tugas. |
+| Lampiran | Tidak | Foto surat atau surat tugas, paling banyak 3 file (DECISION, Session 5). |
 
 **Perilaku**
 
@@ -4204,7 +4212,7 @@ Then status siswa D hari ini menjadi Izin
 | Pilihan siswa | Ya | Salah satu cara: siswa terpilih (boleh lintas rombel), satu rombel, atau satu tingkat. Hanya siswa dalam cakupan yang dapat dipilih. Wali kelas hanya dapat memilih siswa rombelnya. |
 | Tanggal mulai dan selesai | Ya | Validasi tanggal di awal §9. |
 | Keterangan | Ya | Nama kegiatan, misalnya "Lomba OSN tingkat kabupaten". |
-| Lampiran | Tidak | Surat tugas. Satu lampiran berlaku untuk seluruh kelompok. |
+| Lampiran | Tidak | Surat tugas, paling banyak 3 file. Lampiran berlaku untuk seluruh kelompok (`06` §10.4). |
 
 **Perilaku**
 
@@ -4567,7 +4575,7 @@ Tidak ada.
 
 **Di luar cakupan**
 
-- Export daftar izin (R2 mengikuti OQ-11).
+- Export daftar izin. Laporan ini tidak termasuk matriks laporan Session 5 (`13` §4).
 
 **Catatan antarmuka awal**
 
@@ -4672,7 +4680,7 @@ Tidak ada isian.
 
 **Di luar cakupan**
 
-- Grafik tren dan perbandingan antarhari. Kebutuhan ini dapat ditinjau bersama laporan di Session 5 (OQ-11).
+- Grafik tren dan perbandingan antarhari. Kebutuhan ini tidak termasuk matriks laporan Session 5 (`13` §4).
 - Dashboard untuk siswa atau publik. Halaman publik ada di R3 (FS-INF-03).
 
 **Catatan antarmuka awal**
@@ -4923,7 +4931,7 @@ Then baris siswa B menunjukkan Terlambat, jam 08.10, sumber "manual", dan alasan
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
 | Rentang default | Bulan berjalan | Sistem | Session 7 |
-| Pembulatan persentase | Bilangan bulat, setengah ke atas (`13` IE-04) | Sistem | — (DECISION, Session 5) |
+| Pembulatan persentase | Bilangan bulat (DECISION, Session 5), dengan nilai tepat setengah dibulatkan ke atas (RECOMMENDATION) (`13` IE-04) | Sistem | — |
 
 **Di luar cakupan**
 
@@ -5332,4 +5340,4 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 4b: 40 fitur R1 dirinci beserta acceptance criteria, 9 fitur R2/R3 sebagai kerangka, ketentuan umum, traceability, dan keputusan Session 4b. |
-| 0.2 | 2026-10-04 | Keputusan Session 5 (§2.4). FS-MD-09 (atribut tambahan siswa) ditambahkan beserta AC-MD-09-01 s.d. AC-MD-09-03. FS-MD-04, FS-MD-05, FS-MD-06, dan FS-MD-08 diperbarui, dengan AC-MD-04-07, AC-MD-05-04, AC-MD-06-05, dan AC-MD-08-03 ditambahkan. FS-PRS-05, FS-LAP-03 (pembulatan bilangan bulat, AC-LAP-03-01), §4.4, §4.5, §11, §12, dan §14 diperbarui. |
+| 0.2 | 2026-10-04 | Keputusan Session 5 (§2.4). FS-MD-09 (atribut tambahan siswa) ditambahkan beserta AC-MD-09-01 s.d. AC-MD-09-03. FS-MD-03 (tingkat tidak dapat diubah setelah ada penempatan), FS-MD-04, FS-MD-05, FS-MD-06, dan FS-MD-08 diperbarui, dengan AC-MD-04-07, AC-MD-05-04, AC-MD-06-05, dan AC-MD-08-03 ditambahkan. FS-KIO-04 (tanda di luar aturan dinilai ulang), FS-PRS-05 (definisi koreksi), FS-PRS-11, FS-IZN-01 s.d. FS-IZN-03 (paling banyak 3 lampiran), FS-IZN-06, FS-LAP-01, FS-LAP-03 (pembulatan bilangan bulat, AC-LAP-03-01), §4.4, §4.5, §11, §12, dan §14 diperbarui. |

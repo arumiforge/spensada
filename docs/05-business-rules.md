@@ -81,14 +81,15 @@ Usulan di dokumen ini yang berdampak ke fitur R1 ditinjau di Session 4b. Rincian
 
 ### 2.4 Keputusan Session 5
 
-Usulan di dokumen ini yang berdampak ke data ditinjau di Session 5. Rinciannya ada di `06` §2.2.
+Usulan di dokumen ini yang berdampak ke data ditinjau di Session 5. Rinciannya ada di `06` §2 dan `13` §2.
 
 | Aturan | Hasil |
 |---|---|
-| BR-KAL-06 | Disetujui. Masa aktif disimpan sebagai periode, dan rombel per tanggal sebagai penempatan. |
+| BR-KAL-05, BR-KAL-06 | Disetujui. Masa aktif disimpan sebagai periode, dan rombel per tanggal sebagai penempatan, sehingga syarat 4 BR-KAL-05 menjadi DECISION. |
 | BR-SCN-03 | Disetujui: scan ganda disimpan dengan tanda "ganda". |
 | BR-STS-06 | Disetujui. Hasil hitungan disimpan sebagai salinan yang dapat dibangun ulang. Bagian yang bergantung pada jam sekarang diturunkan saat dibaca. |
 | BR-KOR-10 | Disetujui: cakupan log yang diperluas. |
+| BR-IZN-12 | Ditambah: paling banyak 3 lampiran per data. |
 | BR-REK-03 | Ditambah: persentase ditampilkan sebagai bilangan bulat. |
 | BR-REK-04, BR-REK-05 | Disetujui. |
 
@@ -100,8 +101,8 @@ Usulan di dokumen ini yang berdampak ke data ditinjau di Session 5. Rinciannya a
 | BR-KAL-02 | **Libur.** Admin menandai satu tanggal atau rentang tanggal sebagai libur, beserta keterangan. Libur berlaku untuk semua siswa, untuk tingkat tertentu, atau untuk rombel tertentu. Contohnya kelas 9 setelah ujian akhir, atau kelas 7 dan 9 saat kelas 8 mengikuti ANBK. | DECISION |
 | BR-KAL-03 | **Jadwal khusus.** Admin membuat jadwal khusus untuk satu tanggal atau rentang tanggal, berisi aturan jam lengkap (§4.1). Contohnya Ramadan, pekan ujian, atau rapat guru. Jadwal khusus mengalahkan pola mingguan hanya pada tanggal yang dicakupnya, dan berlaku untuk semua siswa. Bila jam berbeda per tingkat, admin memakai jam masuk yang paling lambat dan jam pulang yang paling awal. | DECISION (jadwal khusus: Session 4; berlaku untuk semua siswa: Session 4b) |
 | BR-KAL-04 | **Hari sekolah pengganti.** Jadwal khusus yang dipasang pada hari yang menurut pola mingguan bukan hari sekolah menjadikan tanggal itu hari sekolah, misalnya hari Minggu sebagai pengganti. | RECOMMENDATION |
-| BR-KAL-05 | **Hari sekolah bagi siswa.** Status harian hanya dihitung pada hari sekolah bagi siswa (syaratnya di bawah tabel). Di luar hari tersebut siswa tidak memiliki status, sehingga juga tidak Alpa. | DECISION (libur tidak dihitung Alpa); RECOMMENDATION (syarat 1 dan 4) |
-| BR-KAL-06 | **Masa aktif siswa.** Sistem mengetahui sejak dan sampai tanggal berapa siswa aktif, dan rombel siswa pada setiap tanggal. Siswa baru tidak menjadi Alpa sebelum tanggal mulai aktifnya. Siswa yang dinonaktifkan tetap memiliki riwayat sampai tanggal nonaktifnya. Seorang siswa dapat memiliki lebih dari satu periode aktif, misalnya setelah diaktifkan kembali. Periode aktif yang ditutup dengan alasan salah input tidak dihitung. Rinciannya di `06` §6.6 dan §6.7. | DECISION (Session 5); RECOMMENDATION (periode salah input tidak dihitung) |
+| BR-KAL-05 | **Hari sekolah bagi siswa.** Status harian hanya dihitung pada hari sekolah bagi siswa (syaratnya di bawah tabel). Di luar hari tersebut siswa tidak memiliki status, sehingga juga tidak Alpa. | DECISION (libur tidak dihitung Alpa; syarat 4, Session 5); RECOMMENDATION (syarat 1) |
+| BR-KAL-06 | **Masa aktif siswa.** Sistem mengetahui sejak dan sampai tanggal berapa siswa aktif, dan rombel siswa pada setiap tanggal. Siswa baru tidak menjadi Alpa sebelum tanggal mulai aktifnya. Siswa yang dinonaktifkan tetap memiliki riwayat sampai tanggal nonaktifnya. Seorang siswa dapat memiliki lebih dari satu periode aktif, misalnya setelah diaktifkan kembali. Periode aktif yang dibatalkan, yaitu ditutup dengan alasan salah input atau sebelum dimulai, tidak dihitung. Rinciannya di `06` §6.6 dan §6.7. | DECISION (Session 5); RECOMMENDATION (periode yang dibatalkan tidak dihitung) |
 | BR-KAL-07 | **Perubahan kalender.** Perubahan libur atau jadwal khusus berlaku untuk tanggal yang dicakupnya, termasuk tanggal lampau, dan status tanggal itu dihitung ulang. Perubahan pola mingguan berlaku mulai tanggal yang dipilih admin, dan tidak berlaku surut. Semua perubahan dicatat. | RECOMMENDATION |
 
 Syarat BR-KAL-05. Tanggal T adalah hari sekolah bagi siswa S bila keempat syarat terpenuhi:
@@ -265,7 +266,7 @@ Contoh, dengan batas terlambat 07.00 dan jam tutup sesi masuk 08.00:
 | BR-IZN-09 | **Ubah keputusan.** Staf yang berhak memverifikasi (`HA-IZN-06`) dapat membatalkan data yang sudah disetujui, memendekkan rentangnya, atau mengubah penolakan menjadi persetujuan. Alasan wajib diisi. Perubahan dicatat, status dihitung ulang, dan siswa melihat keputusan terbaru. Untuk data dari dispensasi massal, pembatalan dan pemendekan dapat diterapkan sekaligus ke semua data dalam kelompok dengan satu alasan, dan setiap data tetap tercatat di log. Untuk memperpanjang rentang atau mengganti jenis, staf membatalkan data lalu membuat data baru. | DECISION (ubah keputusan; perubahan per kelompok, Session 4b); RECOMMENDATION (perpanjang dan ganti jenis lewat data baru) |
 | BR-IZN-10 | **Batas mundur saat verifikasi.** Pengajuan yang dibuat dalam batas mundur tetap dapat diverifikasi walaupun tanggalnya sudah melewati batas mundur saat diverifikasi. Untuk perubahan keputusan (BR-IZN-09), batas mundur berlaku pada tanggal yang terdampak perubahan. | DECISION (Session 4b) |
 | BR-IZN-11 | **Tanggal ke depan.** Izin, sakit, dan dispensasi boleh dicatat untuk tanggal ke depan selama masih di tahun ajaran aktif. | DECISION (Session 4b) |
-| BR-IZN-12 | **Lampiran.** Lampiran surat bersifat opsional. Lampiran dapat dibuka oleh siswa pemiliknya, staf yang berhak memverifikasi sesuai cakupannya, dan pimpinan untuk semua siswa (`HA-IZN-05`). Perlu tidaknya mencatat setiap pembukaan lampiran ditinjau di Session 9 (OQ-17). | DECISION (akses pimpinan); RECOMMENDATION (lampiran opsional) |
+| BR-IZN-12 | **Lampiran.** Lampiran surat bersifat opsional, paling banyak 3 file per data. Lampiran dapat dibuka oleh siswa pemiliknya, staf yang berhak memverifikasi sesuai cakupannya, dan pimpinan untuk semua siswa (`HA-IZN-05`). Perlu tidaknya mencatat setiap pembukaan lampiran ditinjau di Session 9 (OQ-17). | DECISION (akses pimpinan; paling banyak 3 file, Session 5); RECOMMENDATION (lampiran opsional) |
 
 ## 9. Batas mundur (MUN)
 
@@ -322,7 +323,7 @@ Definisi untuk ambang:
 |---|---|---|
 | BR-REK-01 | **Isi rekap.** Rekap per siswa memuat jumlah hari sekolah, Hadir, Terlambat, Izin, Sakit, Dispensasi, dan Alpa, serta jumlah kejadian pulang lebih awal dan tidak scan pulang. Bentuk dan format laporan ditetapkan di `13` §4 dan §5 (OQ-11). | RECOMMENDATION |
 | BR-REK-02 | **Ketidakhadiran.** Ketidakhadiran adalah Sakit, Izin, dan Alpa, sama dengan kolom ketidakhadiran di rapor. Dispensasi bukan ketidakhadiran. | DECISION |
-| BR-REK-03 | **Persentase kehadiran.** (Hadir + Terlambat + Dispensasi) ÷ jumlah hari sekolah bagi siswa × 100%. Hari libur, termasuk libur tingkat atau rombel, tidak dihitung. Persentase ditampilkan sebagai bilangan bulat, dengan nilai tepat setengah dibulatkan ke atas (`13` IE-04). | DECISION (rumus: Session 4; bilangan bulat: Session 5) |
+| BR-REK-03 | **Persentase kehadiran.** (Hadir + Terlambat + Dispensasi) ÷ jumlah hari sekolah bagi siswa × 100%. Hari libur, termasuk libur tingkat atau rombel, tidak dihitung. Persentase ditampilkan sebagai bilangan bulat, dengan nilai tepat setengah dibulatkan ke atas (`13` IE-04). | DECISION (rumus: Session 4; bilangan bulat: Session 5); RECOMMENDATION (setengah ke atas) |
 | BR-REK-04 | **Hari berjalan.** Pada hari ini, siswa "belum hadir" tidak dihitung Alpa sampai sesi masuk ditutup dan mode darurat berakhir. Hari itu juga belum dihitung sebagai hari sekolah siswa tersebut, sehingga persentasenya tidak turun sementara. Rekap yang mencakup hari ini diberi tanda bahwa data hari ini belum final. | DECISION (Session 5) |
 | BR-REK-05 | **Rombel per tanggal.** Rekap per rombel memakai rombel tempat siswa ditempatkan pada setiap tanggal. Siswa yang pindah rombel tercatat di rombel lama untuk tanggal sebelum pindah. Pengecualiannya rekap rapor semester (`13` LP-03), yang menghitung semua hari sekolah siswa dalam semester itu. | DECISION (Session 5, R-14); RECOMMENDATION (pengecualian rekap rapor) |
 
@@ -360,7 +361,7 @@ Status: RECOMMENDATION. Kebutuhan ini dipenuhi oleh desain di `06`. Pemetaan keb
 | Semester | Tanggal mulai dan selesai. | BR-KAL-05 |
 | Masa aktif dan penempatan siswa | Tanggal mulai dan selesai aktif, serta penempatan rombel dengan tanggal mulai dan selesai. | BR-KAL-05, BR-KAL-06, BR-REK-05 |
 | Catatan scan | ID unik dari kiosk (unik di database), stasiun, siswa, jam scan (WIB), jam laptop asli, selisih jam, waktu diterima server, jenis menurut kiosk, hasil di server (dipakai, ganda, atau ditolak), tanda tinjauan beserta alasannya, dan hasil tinjauan. Tidak pernah diubah isinya atau dihapus. | BR-SCN-03 s.d. BR-SCN-08 |
-| Presensi harian | Satu baris per siswa per tanggal (siswa + tanggal unik): presensi masuk dan pulang beserta jam dan sumbernya (scan atau manual), serta koreksi status (nilai, alasan, pelaku, waktu, dan data penghapusan). Status hasil hitungan boleh disimpan sebagai salinan (BR-STS-06). | BR-SCN-04, BR-STS-02, BR-KOR-06 |
+| Presensi harian | Satu baris per siswa per tanggal (siswa + tanggal unik): presensi masuk dan pulang beserta jam dan sumbernya (scan atau manual), serta koreksi status (nilai, alasan, pelaku, waktu, dan data penghapusan). Status hasil hitungan disimpan sebagai salinan (BR-STS-06, `06` §11). | BR-SCN-04, BR-STS-02, BR-KOR-06 |
 | Presensi manual | Jenis, jam, alasan, catatan, penginput, serta penanda presensi per rombel darurat beserta status yang dipilih staf. Data pembatalan: tanda dibatalkan, alasan, pelaku, dan waktu. | BR-KOR-01, BR-DRT-04, BR-KOR-11 |
 | Izin/sakit/dispensasi | Siswa, jenis, tanggal mulai dan selesai, keterangan, lampiran, sumber (siswa atau staf), status (menunggu, disetujui, ditolak, dibatalkan), pengaju, verifikator, waktu, catatan, riwayat perubahan keputusan, dan penanda kelompok untuk input massal beserta lampiran bersamanya. | BR-IZN-01 s.d. BR-IZN-12 |
 | Mode darurat | Satu baris per periode (mode darurat dapat diaktifkan lagi pada hari yang sama): tanggal, waktu aktif, pelaku dan alasan, serta waktu berakhir dengan pelakunya atau penanda berakhir otomatis. | BR-DRT-02, BR-DRT-05 |
@@ -406,4 +407,4 @@ Nilai usulan yang perlu dipastikan saat implementasi:
 |---|---|---|
 | 0.1 | 2026-10-03 | Draft awal dari Session 4. |
 | 0.2 | 2026-10-03 | Keputusan Session 4b (`04` §2). BR-KAL-03, BR-SCN-10, BR-STS-07, BR-KOR-08, BR-KOR-09, BR-IZN-07, BR-IZN-10, BR-IZN-11, BR-DRT-06, dan BR-DRT-07 menjadi DECISION; BR-STS-07 diperluas. BR-KOR-11 diganti dengan pembatalan presensi manual. BR-KOR-10, BR-IZN-05, BR-IZN-09, BR-JAM-10, dan BR-REK-04 diperbarui. §2.3 ditambahkan, dan kebutuhan data di §14 dilengkapi. |
-| 0.3 | 2026-10-04 | Keputusan Session 5 (§2.4). BR-KAL-06, BR-SCN-03, BR-STS-06, BR-KOR-10, BR-REK-04, dan BR-REK-05 menjadi DECISION. BR-REK-03 memuat pembulatan bilangan bulat. BR-REK-01 dan §14 merujuk `06` dan `13`. |
+| 0.3 | 2026-10-04 | Keputusan Session 5 (§2.4). BR-KAL-06, BR-SCN-03, BR-STS-06, BR-KOR-10, BR-REK-04, dan BR-REK-05 menjadi DECISION, begitu juga syarat 4 BR-KAL-05. BR-IZN-12 memuat batas 3 lampiran. BR-REK-03 memuat pembulatan bilangan bulat. BR-REK-05 memuat pengecualian rekap rapor. BR-REK-01 dan §14 merujuk `06` dan `13`. |
