@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.3 (draft) |
-| Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules) dan Session 4b (Feature Specification). |
+| Versi | 0.4 (draft) |
+| Tanggal | 2026-10-04 |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), dan Session 5 (Database Architecture). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md), [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md) |
 
 ## 1. Cara membaca dokumen ini
@@ -98,7 +98,7 @@ Catatan: rombel dibuat sebelum import. Import mencocokkan nama rombel di file de
 
 - **Aktor:** admin.
 - **Prasyarat:** tahun ajaran aktif dan rombelnya sudah ada.
-- **Rujukan:** FR-MD-05, FR-AKN-05, `HA-MD-04`, R-12. Format kolom ditetapkan di Session 5 (`13-reporting-import-export.md`).
+- **Rujukan:** FR-MD-05, FR-AKN-05, `HA-MD-04`, R-12. Kolom template ada di `13` §6.1.
 
 Alur utama:
 
@@ -117,7 +117,7 @@ Alur utama:
 Pengecualian:
 
 - **E1** — Semua baris gagal: tidak ada data yang disimpan, dan admin memperbaiki file lalu mengunggah ulang.
-- **E2** — NISN sudah ada di database: perlakuannya (lewati atau perbarui data) ditetapkan di Session 5.
+- **E2** — NISN sudah ada di database, aktif maupun nonaktif: baris itu dilewati dan dilaporkan sebagai baris gagal beserta nama pemilik NISN. Data siswa yang sudah ada tidak berubah (DECISION, Session 5).
 
 Hasil: data siswa dan akun siswa tersedia. Kiosk mendapat data baru saat memuat ulang data (UF-09).
 
@@ -135,7 +135,7 @@ Alur satu per satu:
 Alur massal (admin):
 
 1. Admin mengunggah banyak file foto sekaligus.
-2. Sistem mencocokkan nama file dengan NISN. Format nama file mengikuti OQ-12.
+2. Sistem mencocokkan nama file dengan NISN. Nama file diawali 10 digit NISN, misalnya `0012345678.jpg` atau `0012345678_Budi Santoso.jpg` (DECISION, Session 5, `13` IM-03).
 3. Sistem melaporkan file yang cocok dan file yang tidak cocok.
 4. Sistem memperkecil dan menyimpan foto yang cocok.
 
@@ -228,7 +228,7 @@ Siswa baru:
 
    Selama kartu belum ada, siswa dicatat lewat presensi manual (UF-12).
 
-Pindah rombel: admin mengubah penempatan siswa. Riwayat di rombel lama tetap utuh. Aturan rincinya ditetapkan di Session 5.
+Pindah rombel: admin mengubah penempatan siswa. Riwayat di rombel lama tetap utuh. Aturan rincinya ada di `04` FS-MD-05 dan `06` §6.7.
 
 Keluar, pindah sekolah, atau lulus:
 
@@ -244,7 +244,7 @@ Keluar, pindah sekolah, atau lulus:
 Alur utama:
 
 1. Admin membuat tahun ajaran baru beserta semester dan rombelnya.
-2. Admin menempatkan siswa lama ke rombel baru (kenaikan kelas). Cara penempatan massal ditetapkan di Session 5.
+2. Admin menempatkan siswa lama ke rombel baru (kenaikan kelas), per rombel asal ke rombel tujuan, atau lewat file import penempatan bila rombel diacak ulang (DECISION, Session 5, `04` FS-MD-05, `13` IM-02).
 3. Admin menonaktifkan siswa kelas 9 yang lulus.
 4. Admin mengimpor siswa baru kelas 7 (UF-02), lalu wali kelas membagikan slip akun (UF-05).
 5. Admin menetapkan wali kelas setiap rombel baru.
@@ -673,7 +673,7 @@ Alur staf:
 1. Staf memilih rombel dan rentang tanggal. Contoh rentang: satu hari, satu bulan, atau satu semester.
 2. Sistem menampilkan tabel per siswa berisi jumlah hari Hadir, Terlambat, Izin, Sakit, dan Alpa.
 3. Staf membuka satu siswa untuk melihat riwayat hariannya.
-4. Di R2, staf mengekspor rekap ke XLSX, CSV, atau PDF. Pembagian format per laporan mengikuti OQ-11.
+4. Di R2, staf mengekspor rekap ke XLSX, CSV, atau PDF. Pembagian format per laporan mengikuti matriks di `13` §4.
 
 Alur siswa:
 
@@ -703,7 +703,7 @@ Rujukan: FR-LAP-05, `HA-LAP-06`.
 2. Sistem menampilkan pratinjau dari template.
 3. Staf mengunduh flyer sebagai PNG, lalu membagikannya secara manual.
 
-Isi flyer mengikuti OQ-11.
+Flyer berisi angka saja, tanpa nama siswa (DECISION, Session 5, `13` LP-08).
 
 ### UF-25 — Pengumuman dan halaman publik (R3)
 
@@ -725,12 +725,10 @@ Kartu pengganti memakai QR yang sama, sehingga kartu lama tidak dapat diblokir.
 
 ## 10. Pertanyaan terbuka yang memengaruhi alur
 
-OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4. Alur yang terdampak sudah diperbarui dengan rujukan ke `05`.
+OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4. Alur yang terdampak sudah diperbarui dengan rujukan ke `05`. OQ-11 dan OQ-12 terjawab di Session 5 (`13`).
 
 | OQ | Pertanyaan singkat | Alur terdampak |
 |---|---|---|
-| OQ-11 | Format laporan dan isi flyer | UF-22, UF-24 |
-| OQ-12 | Format nama file foto | UF-03 |
 | OQ-17 | Pencatatan pembukaan lampiran surat | UF-18 |
 
 ## Riwayat perubahan
@@ -740,3 +738,4 @@ OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4. Alur yang terdampak su
 | 0.1 | 2026-10-03 | Draft awal dari Session 3. |
 | 0.2 | 2026-10-03 | Keputusan Session 4 (`05`). Status mekanisme slip di UF-05 menjadi DECISION. Garis waktu, UF-01, UF-09 s.d. UF-19, dan UF-23 disesuaikan: jendela scan, penutupan sesi otomatis, scan ganda, prioritas status, koreksi, batas mundur, dan dispensasi. UF-27 (mode darurat), UF-28 (ubah jadwal hari ini), dan UF-29 (ubah keputusan izin/sakit/dispensasi) ditambahkan. |
 | 0.3 | 2026-10-03 | Keputusan Session 4b (`04` §2). UF-02 (nomor WA opsional), UF-12 E6 (pembatalan presensi manual), UF-14 E3–E4, UF-15 (penanda), UF-16 E3–E4, UF-17 E3, UF-18 E2, UF-19 E2–E3, UF-22 (isi riwayat di portal siswa), UF-27 (langkah 7, E4, E5), UF-28 langkah 3 (jadwal hari ini), dan UF-29 E3 (perubahan per kelompok) diperbarui. §1 merujuk `04`. |
+| 0.4 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). UF-02 (kolom template, E2 NISN yang sudah ada dilewati), UF-03 (format nama file foto), UF-07 (pindah rombel), UF-08 langkah 2 (penempatan massal), UF-22 (matriks laporan), dan UF-24 (isi flyer) diperbarui. OQ-11 dan OQ-12 dihapus dari §10 karena terjawab. |

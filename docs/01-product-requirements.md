@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.4 (draft) |
-| Tanggal | 2026-10-03 |
-| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan) Session 4 (aturan bisnis, `05`), dan Session 4b (spesifikasi fitur, `04`). |
+| Versi | 0.5 (draft) |
+| Tanggal | 2026-10-04 |
+| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan) Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), dan Session 5 (database, `06`; laporan, import, dan export, `13`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), asumsi (`A-xx`), dan pertanyaan terbuka (`OQ-xx`) |
 
 ## 1. Cara membaca dokumen ini
@@ -46,13 +46,14 @@ Dokumen ini menjawab *apa* yang dibutuhkan. Rincian setiap fitur dan acceptance 
 |---|---|---|---|---|---|
 | FR-MD-01 | Admin mengelola tahun ajaran beserta semesternya, dan menandai satu tahun ajaran sebagai aktif. | Admin | Core | R1 | DECISION (master data); RECOMMENDATION (struktur tahun ajaran dan semester) |
 | FR-MD-02 | Admin mengelola rombel per tahun ajaran (nama rombel dan tingkat), dan menetapkan satu wali kelas untuk setiap rombel. | Admin | Core | R1 | DECISION |
-| FR-MD-03 | Admin mengelola data siswa. Atribut minimal: NISN (unik, 10 digit), nama lengkap, status aktif, nomor WhatsApp orang tua/wali, dan foto. Nomor WA bersifat opsional; bila diisi, formatnya divalidasi dan disimpan dalam format baku 62…. Atribut lain ditetapkan di Session 5. | Admin | Core | R1 | CONFIRMED (NISN unik); DECISION (nomor WA, foto; nomor WA opsional, Session 4b) |
-| FR-MD-04 | Admin menempatkan siswa ke rombel per tahun ajaran, termasuk saat kenaikan kelas, sehingga riwayat tahun sebelumnya tetap utuh. | Admin | Core | R1 | RECOMMENDATION |
-| FR-MD-05 | Admin mengimpor data siswa dari file Excel (.xlsx) atau CSV. Setiap baris divalidasi (NISN 10 digit, NISN ganda, kolom wajib, dan format nomor WA bila diisi). Baris yang gagal dilaporkan beserta alasannya. | Admin | Supporting | R1 | DECISION (import Excel/CSV; nomor WA opsional, Session 4b); RECOMMENDATION (validasi per baris) |
+| FR-MD-03 | Admin mengelola data siswa. Atribut minimal: NISN (unik, 10 digit), nama lengkap, status aktif, nomor WhatsApp orang tua/wali, dan foto. Nomor WA bersifat opsional; bila diisi, formatnya divalidasi dan disimpan dalam format baku 62…. Atribut opsional lainnya: NIS, jenis kelamin, tanggal lahir, alamat rumah, dan nama orang tua/wali. Status aktif disimpan sebagai periode masa aktif (`06` §6.6). | Admin | Core | R1 | CONFIRMED (NISN unik); DECISION (nomor WA, foto; nomor WA opsional, Session 4b; atribut opsional dan masa aktif, Session 5) |
+| FR-MD-04 | Admin menempatkan siswa ke rombel per tahun ajaran, termasuk saat kenaikan kelas, sehingga riwayat tahun sebelumnya tetap utuh. Penempatan massal dilakukan per rombel asal ke rombel tujuan, atau lewat file import penempatan (`13` IM-02). | Admin | Core | R1 | DECISION (Session 5) |
+| FR-MD-05 | Admin mengimpor data siswa dari file Excel (.xlsx) atau CSV. Setiap baris divalidasi (NISN 10 digit, NISN ganda, kolom wajib, dan format nomor WA bila diisi). Baris yang gagal dilaporkan beserta alasannya. Baris dengan NISN yang sudah ada dilewati dan dilaporkan. Kolom template mengikuti `13` §6.1. | Admin | Supporting | R1 | DECISION (import Excel/CSV; nomor WA opsional, Session 4b; NISN yang sudah ada dilewati dan kolom template, Session 5); RECOMMENDATION (validasi per baris) |
 | FR-MD-06 | Admin, dan wali kelas untuk rombelnya, mengunggah foto siswa satu per satu dari halaman data siswa. | Admin, wali kelas | Supporting | R1 | DECISION (Session 3) |
-| FR-MD-07 | Admin mengunggah banyak foto sekaligus. Sistem mencocokkan nama file dengan NISN, melaporkan file yang tidak cocok, dan memperkecil ukuran foto secara otomatis. | Admin | Supporting | R1 | RECOMMENDATION (format nama file: OQ-12) |
+| FR-MD-07 | Admin mengunggah banyak foto sekaligus. Sistem mencocokkan nama file dengan NISN, melaporkan file yang tidak cocok, dan memperkecil ukuran foto secara otomatis. Nama file diawali 10 digit NISN (`13` IM-03). | Admin | Supporting | R1 | DECISION (format nama file, OQ-12, Session 5); RECOMMENDATION (rincian) |
 | FR-MD-08 | Admin mengatur identitas sekolah: nama resmi, alamat, dan logo. Nama produk tetap "Spensada". | Admin | Supporting | R1 | DECISION (OQ-01) |
 | FR-MD-09 | Wali kelas dapat mengubah nomor WhatsApp orang tua/wali dan foto siswa di rombelnya. Siswa tidak dapat mengubah nomor WA orang tua/wali. Setiap perubahan nomor WA dan foto dicatat: siapa, kapan, serta nilai lama dan baru (untuk foto cukup penggantiannya). | Admin, wali kelas | Supporting | R1 | DECISION (Session 3) |
+| FR-MD-10 | Admin menambah atribut siswa sendiri (label, tipe, wajib atau tidak, dan urutan). Nilainya diisi per siswa dan lewat import. Atribut tambahan tidak dipakai logika presensi, rekap, atau filter laporan. | Admin | Supporting | R1 | DECISION (Session 5) |
 
 ### 3.2 AKN — Akun dan akses
 
@@ -110,7 +111,7 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 | FR-IZN-02 | Admin, wali kelas (rombelnya), guru piket, dan guru BK menginput izin, sakit, atau dispensasi langsung atas nama siswa, misalnya berdasarkan surat atau pesan orang tua. Data yang diinput staf langsung berstatus disetujui. | Admin, wali kelas, guru piket, guru BK | Core | R1 | CONFIRMED; DECISION (pelaku, Session 3; langsung disetujui, Session 4) |
 | FR-IZN-03 | Admin, wali kelas (rombelnya), guru piket, dan guru BK memverifikasi pengajuan siswa (setujui atau tolak) dengan catatan. Hanya izin/sakit/dispensasi yang disetujui yang memengaruhi status presensi, dan yang disetujui menang atas presensi masuk (`05` BR-STS-03). | Admin, wali kelas, guru piket, guru BK | Core | R1 | CONFIRMED (verifikasi); DECISION (pelaku, Session 3; hanya yang disetujui berlaku dan menang atas presensi, Session 4) |
 | FR-IZN-04 | Siswa melihat status pengajuannya (menunggu, disetujui, ditolak, atau dibatalkan), termasuk keputusan terbaru bila staf mengubahnya. | Siswa | Core | R1 | RECOMMENDATION |
-| FR-IZN-05 | Lampiran surat disimpan di luar folder publik dan hanya dapat dibuka oleh siswa pemiliknya, staf yang berhak memverifikasi, dan pimpinan (`02`, `HA-IZN-05`). Pencatatan pembukaan lampiran mengikuti OQ-17. | Sistem | Core | R1 | DECISION (akses pimpinan, Session 4); RECOMMENDATION (penyimpanan di luar folder publik) |
+| FR-IZN-05 | Lampiran surat, paling banyak 3 file per data, disimpan di luar folder publik dan hanya dapat dibuka oleh siswa pemiliknya, staf yang berhak memverifikasi, dan pimpinan (`02`, `HA-IZN-05`). Pencatatan pembukaan lampiran mengikuti OQ-17. | Sistem | Core | R1 | DECISION (akses pimpinan, Session 4; paling banyak 3 file, Session 5); RECOMMENDATION (penyimpanan di luar folder publik) |
 | FR-IZN-06 | Staf yang berhak memverifikasi dapat mengubah keputusan: membatalkan data yang disetujui, memendekkan rentangnya, atau mengubah penolakan menjadi persetujuan. Alasan wajib diisi, perubahan dicatat, dan status presensi dihitung ulang (`05` BR-IZN-09). Untuk dispensasi massal, perubahan dapat diterapkan ke satu siswa atau sekaligus ke satu kelompok. | Admin, wali kelas, guru piket, guru BK | Core | R1 | DECISION (Session 4; per kelompok, Session 4b) |
 | FR-IZN-07 | Dispensasi adalah jenis ketiga di samping izin dan sakit, untuk tugas atau kegiatan resmi sekolah. Dispensasi hanya diinput staf, dan dapat diinput untuk banyak siswa sekaligus (siswa terpilih, satu rombel, atau satu tingkat). Pada input massal, siswa yang sudah memiliki data izin/sakit/dispensasi pada tanggal yang sama dilewati dan dilaporkan (`05` BR-IZN-07). Dispensasi bukan ketidakhadiran (`05` BR-IZN-05, BR-REK-02). | Admin, wali kelas, guru piket, guru BK | Core | R1 | DECISION (Session 4; siswa bentrok dilewati, Session 4b); RECOMMENDATION (cara memilih siswa) |
 
@@ -121,8 +122,8 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 | FR-LAP-01 | Dashboard hari ini menampilkan jumlah hadir, terlambat, izin, sakit, dispensasi, dan belum hadir/Alpa per rombel, beserta daftar siswa yang belum hadir. Data diperbarui seiring sinkron. Staf tanpa role khusus hanya melihat angka; wali kelas melihat daftar nama hanya untuk rombelnya (`02`, `HA-LAP-01`, `HA-LAP-02`). Daftar nama memuat penanda untuk keadaan yang perlu diperiksa (`05` BR-STS-07). | Semua akun staf | Supporting | R1 | DECISION (penanda, Session 4b) |
 | FR-LAP-02 | Rekap kehadiran per rombel untuk rentang tanggal tertentu (misalnya harian, bulanan, semester) ditampilkan di layar. Ketidakhadiran adalah Sakit, Izin, dan Alpa. Persentase kehadiran = (Hadir + Terlambat + Dispensasi) ÷ hari sekolah (`05` §12). | Admin, wali kelas, guru BK, pimpinan (cakupan: `02`) | Core | R1 | DECISION |
 | FR-LAP-03 | Staf dapat melihat riwayat kehadiran per siswa, dan siswa dapat melihat riwayatnya sendiri. Riwayat di portal siswa memuat status, jam masuk dan pulang, kejadian pulang, izin/sakit/dispensasi beserta catatan verifikasi, dan alasan koreksi, tanpa nama staf (`04` FS-LAP-04). | Admin, wali kelas, guru BK, pimpinan (cakupan: `02`), siswa | Core | R1 | DECISION (isi riwayat di portal, Session 4b) |
-| FR-LAP-04 | Rekap dapat diekspor ke Excel (.xlsx), CSV, dan PDF. Pembagian format per laporan mengikuti OQ-11. | Admin, wali kelas, guru BK, pimpinan (cakupan: `02`) | Supporting | R2 | DECISION |
-| FR-LAP-05 | Staf membuat flyer kehadiran berupa gambar PNG (per rombel atau total) dari template di browser, lalu mengunduhnya untuk dibagikan manual. Isi flyer mengikuti OQ-11. | Admin, wali kelas, pimpinan (cakupan: `02`) | Supporting | R2 | DECISION |
+| FR-LAP-04 | Rekap dapat diekspor ke Excel (.xlsx), CSV, dan PDF. Pembagian format per laporan mengikuti matriks di `13` §4 (OQ-11). | Admin, wali kelas, guru BK, pimpinan (cakupan: `02`) | Supporting | R2 | DECISION |
+| FR-LAP-05 | Staf membuat flyer kehadiran berupa gambar PNG (per rombel atau total) dari template di browser, lalu mengunduhnya untuk dibagikan manual. Flyer berisi angka saja, tanpa nama siswa (OQ-11, `13` LP-08). | Admin, wali kelas, pimpinan (cakupan: `02`) | Supporting | R2 | DECISION |
 
 ### 3.7 WA — Notifikasi WhatsApp
 
@@ -171,7 +172,7 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 | NFR-11 | Kompatibilitas | Kiosk berjalan di Chrome atau Edge versi terbaru di Windows (A-04). Panel staf/admin dan portal siswa dapat dipakai di desktop maupun ponsel. | ASSUMPTION (kiosk); RECOMMENDATION (responsif) | R-04 |
 | NFR-12 | Volume | Sistem menangani ±1.000 siswa aktif dan ±400 ribu catatan scan per tahun tanpa penurunan kinerja yang terasa. | RECOMMENDATION | R-20 |
 | NFR-13 | Volume | Outbox WA menangani ±500–1.000 pesan scan masuk setiap pagi. Target waktu habis antrean ditetapkan setelah provider dipilih (OQ-10). | DECISION (default scan masuk); RECOMMENDATION (target) | R-16 |
-| NFR-14 | Data | NISN disimpan sebagai teks 10 digit. Penempatan siswa ke rombel dicatat per tahun ajaran. | RECOMMENDATION | R-12, R-14 |
+| NFR-14 | Data | NISN disimpan sebagai teks 10 digit. Penempatan siswa ke rombel dicatat dengan tanggal mulai dan selesai per tahun ajaran (`06` §6.7). | DECISION (penempatan per tanggal, Session 5); RECOMMENDATION (NISN sebagai teks) | R-12, R-14 |
 | NFR-15 | Maintainability | Kode mengikuti struktur standar CodeIgniter 4 (controller, model, view, filter, migration, seeder, command). Tidak memakai framework frontend; kiosk ditulis dengan Vanilla JavaScript. | CONFIRMED (stack); RECOMMENDATION (struktur) | — |
 | NFR-16 | Dependensi | Library tambahan hanya dipakai bila perlu, dan alasannya dicatat. Daftar kandidat ada di bawah tabel. | RECOMMENDATION | R-04, R-18, R-19 |
 
@@ -280,15 +281,13 @@ Then pengunjung melihat pengumuman dan jumlah kehadiran per rombel hari ini
 
 ## 8. Pertanyaan terbuka yang memengaruhi requirement
 
-Daftar lengkap ada di `00` §8.2. OQ-01, OQ-02, dan OQ-14 terjawab di Session 3. OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4 (`05`).
+Daftar lengkap ada di `00` §8.2. OQ-01, OQ-02, dan OQ-14 terjawab di Session 3. OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4 (`05`). OQ-11 dan OQ-12 terjawab di Session 5 (`13`).
 
 | OQ | Pertanyaan singkat | Requirement terdampak |
 |---|---|---|
 | OQ-08 | Jumlah stasiun scan (lokasi sudah diputuskan) | NFR-02 |
 | OQ-09 | Jenis hosting dan instalasi Composer | C-03, C-06 |
 | OQ-10 | Provider gateway WhatsApp | FR-WA-01, NFR-13 |
-| OQ-11 | Matriks laporan × format; isi flyer | FR-LAP-04, FR-LAP-05 |
-| OQ-12 | Format nama file foto | FR-MD-07 |
 | OQ-13 | Desain kartu siswa baru | FR-KRT-01 |
 | OQ-17 | Pencatatan pembukaan lampiran surat oleh staf | FR-IZN-05 |
 
@@ -299,7 +298,7 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | Tautan | Dokumen |
 |---|---|
 | Aturan bisnis | `05` |
-| Tabel database | `06` |
+| Tabel database | `06` (§17.2 memetakan fitur ke tabel) |
 | Route dan API | `09`, `10` |
 | Halaman | `08`, `09` |
 | Fase implementasi | `15` |
@@ -313,3 +312,4 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | 0.2 | 2026-10-03 | Keputusan Session 3. FR-MD-08, FR-MD-09, FR-AKN-05 s.d. FR-AKN-08, dan FR-KIO-12 ditambahkan. Aktor dan status FR-MD, FR-AKN, FR-PRS, FR-IZN, FR-LAP, dan FR-INF diperbarui sesuai `02`. NFR-02 memuat lokasi stasiun. Kriteria keberhasilan dan acceptance criteria dikonfirmasi. OQ-15 dan OQ-16 ditambahkan. |
 | 0.3 | 2026-10-03 | Keputusan Session 4 (`05`). Modul IZN mencakup dispensasi. FR-AKN-06 (mekanisme slip disetujui), FR-KIO-04, FR-KIO-05, FR-KIO-10 s.d. FR-KIO-12, FR-PRS-02 s.d. FR-PRS-08, FR-IZN-01 s.d. FR-IZN-05, FR-LAP-01, FR-LAP-02, FR-WA-02, FR-WA-07, dan NFR-09 diperbarui. FR-PRS-09 s.d. FR-PRS-11, FR-IZN-06, FR-IZN-07, dan FR-WA-08 ditambahkan. Kriteria keberhasilan 5 dan AC-03 disesuaikan dengan dispensasi dan mode darurat. OQ-17 ditambahkan. |
 | 0.4 | 2026-10-03 | Keputusan Session 4b (`04` §2). FR-MD-03 dan FR-MD-05 (nomor WA opsional), FR-PRS-06 (pembatalan presensi manual), FR-PRS-07 (hapus koreksi, koreksi saat ada izin), FR-IZN-06 dan FR-IZN-07 (dispensasi per kelompok, siswa bentrok dilewati), FR-LAP-01 (penanda), dan FR-LAP-03 (isi riwayat di portal siswa) diperbarui. §1, §7, dan §9 merujuk `04`. |
+| 0.5 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). FR-MD-03 (atribut opsional dan masa aktif), FR-MD-04 (penempatan massal), FR-MD-05 (NISN yang sudah ada dilewati), FR-MD-07 (format nama file foto), FR-IZN-05 (paling banyak 3 lampiran), FR-LAP-04 (matriks laporan), FR-LAP-05 (isi flyer), dan NFR-14 diperbarui. FR-MD-10 (atribut tambahan siswa) ditambahkan. OQ-11 dan OQ-12 dihapus dari §8 karena terjawab. |
