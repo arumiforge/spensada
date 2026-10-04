@@ -2,11 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.4 (draft) |
+| Versi | 0.5 (draft) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), dan Session 5 (Database Architecture). |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), Session 5 (Database Architecture), dan Session 6 (System Architecture). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): ID requirement (`FR-*`, `NFR-*`). |
-| Dokumen terkait | [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
+| Dokumen terkait | [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
 
 Dokumen ini menetapkan jenis akun, role, cakupan data, dan hak akses setiap role. Dokumen ini menjawab OQ-02 dan OQ-14, serta sebagian OQ-08. Batas mundur (OQ-15) ditetapkan di `05` dan diterapkan pada cakupan di §5.
 
@@ -63,6 +63,15 @@ Keputusan Session 5 yang mengubah dokumen ini (rinciannya di `06` §2 dan `13` �
 | Export | Export mengikuti matriks laporan di `13` §4. Setiap export memerlukan `HA-LAP-05` ditambah hak melihat laporan yang sama di layar (`13` IE-05). Data siswa hanya diekspor admin. Log perubahan presensi diekspor oleh pemegang `HA-PRS-06` yang juga memegang `HA-LAP-05`, sesuai cakupannya. | DECISION (matriks); RECOMMENDATION (pembagian hak export) |
 | Flyer | Flyer berisi angka saja, sehingga `HA-LAP-06` tidak berubah (OQ-11). | DECISION |
 
+Keputusan Session 6 yang mengubah dokumen ini (rinciannya di `07` §2):
+
+| Topik | Perubahan | Status |
+|---|---|---|
+| Login akun stasiun | Akun stasiun login dengan username dan password di halaman login yang sama. Login bertahan 90 hari sejak kontak terakhir, dan berakhir lebih awal bila kredensial diganti, akun dinonaktifkan, atau petugas logout (`07` ARS-30). | DECISION (90 hari); RECOMMENDATION (mekanisme) |
+| Admin pertama | Dibuat lewat perintah CLI saat instalasi. Perintah serupa memulihkan akses bila satu-satunya admin lupa password (`07` ARS-49). | DECISION |
+| Sesi | Status akun dan penggantian password diperiksa di setiap permintaan. Penonaktifan akun mengakhiri semua sesinya, dan penggantian password mengakhiri sesi lain (`07` ARS-47). | DECISION |
+| Peta hak akses di kode | Matriks di §6 ditulis sebagai konfigurasi kode dengan kunci berupa ID `HA-*` (`07` ARS-15). | RECOMMENDATION |
+
 ## 2. Jenis akun
 
 Ada tiga jenis akun. Pengunjung halaman publik tidak memakai akun.
@@ -71,7 +80,7 @@ Ada tiga jenis akun. Pengunjung halaman publik tidak memakai akun.
 |---|---|---|---|---|---|---|
 | Akun staf | Semua guru dan staf, termasuk admin | Username dari admin | Admin | Acak, ditampilkan sekali saat dibuat | Direset oleh admin | DECISION |
 | Akun siswa | Setiap siswa aktif | NISN | Otomatis dari data siswa | Acak, dibagikan lewat slip akun per rombel | Direset oleh admin atau wali kelas (untuk rombelnya) | DECISION |
-| Akun stasiun | Setiap laptop stasiun scan | Ditetapkan di Session 6 dan 9 | Admin | Diisi admin saat memasang laptop | Admin mengganti kredensial | DECISION (satu akun per laptop); RECOMMENDATION (detail login) |
+| Akun stasiun | Setiap laptop stasiun scan | Username dari admin | Admin | Diisi admin saat memasang laptop | Admin mengganti kredensial | DECISION (satu akun per laptop; login 90 hari sejak kontak terakhir, Session 6, `07` ARS-30); RECOMMENDATION (rincian login; keamanan di Session 9) |
 
 Aturan jenis akun:
 
@@ -86,7 +95,7 @@ Aturan jenis akun:
 
 | Role | Jenis akun | Cara mendapatkan role | Ringkasan hak | Status |
 |---|---|---|---|---|
-| Admin | Staf | Diberikan oleh admin. Admin pertama dibuat saat instalasi (Session 6). | Semua hak di panel staf/admin: akun, master data, aturan jam, kalender, pengaturan, dan semua data siswa. | CONFIRMED |
+| Admin | Staf | Diberikan oleh admin. Admin pertama dibuat saat instalasi lewat perintah CLI (`07` ARS-49). | Semua hak di panel staf/admin: akun, master data, aturan jam, kalender, pengaturan, dan semua data siswa. | CONFIRMED |
 | Staf | Staf | Otomatis untuk setiap akun staf | Role dasar: dashboard hari ini berupa angka per rombel, dan ganti password. Di R3 juga jadwal dan pengumuman. | DECISION |
 | Wali kelas | Staf | Otomatis selama staf ditetapkan sebagai wali kelas sebuah rombel pada tahun ajaran aktif | Presensi, izin/sakit/dispensasi, nomor WA orang tua, foto, dan reset password untuk siswa di rombelnya. | DECISION (hak); RECOMMENDATION (didapat dari penugasan rombel) |
 | Guru piket | Staf | Diberikan oleh admin | Presensi manual dan koreksi pada hari berjalan untuk semua siswa. Input dan verifikasi izin/sakit/dispensasi untuk semua siswa dalam batas mundur. Mengubah jadwal hari ini dan mengaktifkan mode darurat. | DECISION |
@@ -271,10 +280,10 @@ Mekanisme slip akun (DECISION, Session 4):
 ### 7.3 Akun stasiun
 
 1. Admin membuat akun stasiun dengan nama yang mudah dikenali, misalnya "Gerbang 1" (`HA-AKN-03`).
-2. Admin login dengan akun stasiun sekali di laptop stasiun, di profil browser khusus kiosk (R-07).
-3. Sesi akun stasiun bertahan lama, sehingga petugas tidak perlu login setiap pagi. Masa berlaku dan cara login ditetapkan di Session 6 dan 9.
+2. Admin login dengan akun stasiun sekali di laptop stasiun, di profil browser khusus kiosk (R-07), lalu memasang kiosk sebagai aplikasi di browser (`07` ARS-32).
+3. Login akun stasiun bertahan 90 hari sejak kontak terakhir, sehingga petugas tidak perlu login setiap pagi (DECISION, Session 6). Mekanismenya ada di `07` ARS-30, dan rincian keamanannya di Session 9.
 4. Sebelum akun dicabut, misalnya karena laptop diganti, admin memastikan stasiun tidak memiliki scan belum tersinkron (`HA-KIO-02`).
-5. Setelah akun dicabut, data kiosk di laptop dihapus (R-07).
+5. Setelah akun dicabut, data kiosk di laptop dihapus (R-07, `07` ARS-31).
 6. Bila laptop hilang, admin langsung menonaktifkan akunnya. Scan yang belum tersinkron di laptop itu hilang.
 
 ## 8. Area dan halaman awal
@@ -342,3 +351,4 @@ OQ-07 dan OQ-15 terjawab di Session 4: `HA-PRS-05` menjadi DEPRECATED, dan batas
 | 0.2 | 2026-10-03 | Keputusan Session 4 (`05`). Usulan slip akun, admin tidak membuka kiosk, dan status stasiun disetujui. Pimpinan dapat membuka lampiran. `HA-PRS-05` DEPRECATED. `HA-PRS-07` s.d. `HA-PRS-09`, `HA-IZN-06`, dan `HA-WA-03` ditambahkan. Dispensasi masuk ke hak IZN. Batas mundur diterapkan pada cakupan. Tugas petugas diperbarui. |
 | 0.3 | 2026-10-03 | Keputusan Session 4b (`04` §2). Tabel keputusan Session 4b ditambahkan di §1. `HA-PRS-03` (pembatalan presensi manual), `HA-PRS-04` (hapus koreksi), `HA-IZN-06` (per kelompok), `HA-LAP-02` (penanda), `HA-LAP-03` (daftar presensi rombel per tanggal), dan `HA-LAP-04` (isi riwayat di portal) diperjelas. |
 | 0.4 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). Tabel keputusan Session 5 ditambahkan di §1. `HA-MD-11` (kelola atribut tambahan siswa) ditambahkan. `HA-MD-05` dan `HA-MD-10` diperjelas. `HA-LAP-06` ditinjau bersama OQ-11 tanpa perubahan. |
+| 0.5 | 2026-10-04 | Keputusan Session 6 (`07`). Tabel keputusan Session 6 ditambahkan di §1. Detail login akun stasiun (§2, §7.3) dan pembuatan admin pertama (§3) diperbarui. |

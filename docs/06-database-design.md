@@ -2,11 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
+| Versi | 0.2 (draft, menunggu review) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 5 (Database Architecture) |
+| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, §2.4). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`), bagian "Data dan log", dan ketentuan umum (§4). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`) dan kebutuhan data (§14). |
-| Dokumen terkait | [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export yang membaca dan menulis tabel di dokumen ini. |
+| Dokumen terkait | [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export yang membaca dan menulis tabel di dokumen ini. [07-system-architecture.md](07-system-architecture.md): mekanisme hitung ulang, penguncian, sesi, dan kiosk yang memakai tabel di dokumen ini. |
 
 Dokumen ini menetapkan desain database Spensada: konvensi, daftar tabel, kolom, tipe, relasi, kunci unik, dan index. Dokumen ini juga memutuskan cara menyimpan status harian (BR-STS-06), dan mencatat keputusan Session 5 atas usulan di `05` yang berdampak ke data.
 
@@ -20,7 +20,7 @@ Tabel R1 dirinci penuh. Tabel R2 (notifikasi WhatsApp) juga dirinci, agar R2 tid
 - **Tipe.** Tipe ditulis dalam tipe MySQL 8.4. `INT` berarti `INT UNSIGNED`, dan `BIGINT` berarti `BIGINT UNSIGNED`, kecuali disebut lain.
 - **Kolom tabel.** Kolom "Null" berisi "Ya" bila kolom boleh kosong. Kolom "Keterangan" memuat isi, kode nilai, dan aturan.
 - **Kode nilai.** Kolom berkode memakai kata huruf kecil dengan garis bawah, misalnya `tidak_hadir`. Daftar kodenya ada di keterangan kolom. Label di antarmuka ditetapkan di Session 7.
-- **Mekanisme.** Cara teknis seperti antrean hitung ulang, cron, dan penguncian ditetapkan di Session 6. Dokumen ini hanya menetapkan data yang dibutuhkan dan aturan integritasnya.
+- **Mekanisme.** Cara teknis seperti antrean hitung ulang, cron, dan penguncian ditetapkan di `07` (Session 6). Dokumen ini hanya menetapkan data yang dibutuhkan dan aturan integritasnya.
 
 ## 2. Keputusan Session 5
 
@@ -51,13 +51,25 @@ Tabel R1 dirinci penuh. Tabel R2 (notifikasi WhatsApp) juga dirinci, agar R2 tid
 
 Keputusan OQ-11, OQ-12, kolom template import, perlakuan NISN yang sudah ada, penempatan massal, dan pembulatan persentase ditulis di `13` §2.
 
+### 2.4 Keputusan Session 6
+
+Keputusan Session 6 yang berdampak ke desain data. Rinciannya ada di `07` §2.
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| Hitung ulang | Setiap perubahan sumber menulis antrean di tabel `antrean_hitung_ulang` dalam transaksi yang sama, lalu antrean diproses. | §11.5, `07` ARS-35 | DECISION |
+| Perubahan bersamaan | `updated_at` dipakai sebagai token versi. | DB-11, `07` ARS-40 | DECISION |
+| Sesi login | Sesi disimpan sebagai file, sehingga tidak ada tabel sesi. | §5.4, `07` ARS-47 | DECISION |
+| Usulan Session 5 | Periode aktif yang dibatalkan tidak dihitung (§6.6 aturan 4), tingkat rombel dikunci setelah ada penempatan (§6.4), lampiran bersama satu kelompok paling banyak 3 file (§10.4), serta nama tabel `nilai_atribut_siswa` dan `wa_outbox` (§4.1) disetujui. | `07` §2.2 | DECISION |
+| Format versi data dan ID scan | `versi_data` berupa hash SHA-1 sepanjang 40 karakter heksadesimal, dan `uuid` scan berupa UUID versi 4. | §8.1, §8.2, `07` ARS-23, ARS-24 | RECOMMENDATION |
+
 ## 3. Konvensi
 
 | ID | Aturan | Status |
 |---|---|---|
 | DB-01 | **Bahasa dan bentuk nama.** Nama tabel dan kolom memakai istilah domain berbahasa Indonesia sesuai glosarium (`00` §9), bentuk tunggal, huruf kecil, `snake_case`, tanpa singkatan yang tidak umum. Contohnya `siswa`, `rombel`, `penempatan`, `presensi_manual`, dan `koreksi_status`. Kolom teknis umum tetap `id` dan `<tabel>_id`. | DECISION |
 | DB-02 | **Kolom waktu CI4.** Tabel yang barisnya dapat diubah memiliki `created_at` dan `updated_at` (DATETIME), diisi otomatis oleh Model CI4 (`$useTimestamps`). Pengecualiannya: tabel yang barisnya hanya ditambah atau dihapus, seperti `scan`, `akun_role`, dan log, cukup memiliki `created_at` atau kolom waktu bernama sesuai isinya; tabel keadaan dan pengaturan (`pengaturan`, `status_stasiun`, `wa_template`) cukup memiliki `updated_at`; tabel anak yang selalu ditulis bersama induknya (`pola_mingguan_hari`, `libur_cakupan`) tidak memiliki kolom waktu sendiri; dan salinan `status_harian` memakai `dihitung_at`. Fitur soft delete CI4 (`deleted_at`) tidak dipakai, karena pembatalan dan penghapusan membutuhkan alasan dan pelaku (DB-09). | DECISION (nama kolom waktu); RECOMMENDATION (pengecualian dan tanpa soft delete) |
-| DB-03 | **Primary key.** Setiap tabel memiliki primary key satu kolom, agar dapat dipakai Model CI4. Tabel entitas memakai `id` `INT UNSIGNED AUTO_INCREMENT`, dan tabel bervolume tinggi memakai `BIGINT UNSIGNED`: `scan`, `status_harian`, `log_presensi`, `log_data_siswa`, `log_aktivitas`, dan `wa_outbox`. Pengecualiannya tiga tabel yang primary key-nya kunci alami: `pengaturan` (`kunci`), `status_stasiun` (`akun_id`), dan `wa_template` (`jenis_kejadian`). Pasangan yang harus unik, seperti akun dan role, memakai kunci unik di samping `id`. NISN bukan primary key. NISN disimpan sebagai teks dengan kunci unik, sehingga koreksi NISN tidak mengubah relasi (R-12). | RECOMMENDATION |
+| DB-03 | **Primary key.** Setiap tabel memiliki primary key satu kolom, agar dapat dipakai Model CI4. Tabel entitas memakai `id` `INT UNSIGNED AUTO_INCREMENT`, dan tabel bervolume tinggi memakai `BIGINT UNSIGNED`: `scan`, `status_harian`, `antrean_hitung_ulang`, `log_presensi`, `log_data_siswa`, `log_aktivitas`, dan `wa_outbox`. Pengecualiannya tiga tabel yang primary key-nya kunci alami: `pengaturan` (`kunci`), `status_stasiun` (`akun_id`), dan `wa_template` (`jenis_kejadian`). Pasangan yang harus unik, seperti akun dan role, memakai kunci unik di samping `id`. NISN bukan primary key. NISN disimpan sebagai teks dengan kunci unik, sehingga koreksi NISN tidak mengubah relasi (R-12). | RECOMMENDATION |
 | DB-04 | **Engine dan charset.** InnoDB, `utf8mb4`, dan `utf8mb4_general_ci`, sesuai `app/Config/Database.php`. | CONFIRMED (charset di konfigurasi); RECOMMENDATION (InnoDB) |
 | DB-05 | **Waktu.** Kolom tanggal-waktu memakai `DATETIME` berisi jam WIB, bukan `TIMESTAMP`. Zona waktu sesi MySQL diset `+07:00`, dan `appTimezone` diset `Asia/Jakarta` (`05` §14, R-11). Tanggal presensi memakai `DATE` menurut WIB. Jam pada aturan jam memakai `TIME`. Ketelitian sampai detik. | DECISION (WIB, OQ-05); RECOMMENDATION (tipe) |
 | DB-06 | **Kode nilai.** Kolom berkode memakai `VARCHAR` berisi kode huruf kecil, bukan tipe `ENUM` MySQL, agar penambahan kode tidak mengubah struktur kolom. Server memvalidasi kode dari daftar di dokumen ini. Kolom ya/tidak memakai `TINYINT(1)`. | RECOMMENDATION |
@@ -65,7 +77,7 @@ Keputusan OQ-11, OQ-12, kolom template import, perlakuan NISN yang sudah ada, pe
 | DB-08 | **Foreign key.** Semua relasi memakai foreign key dengan `ON DELETE RESTRICT` dan `ON UPDATE RESTRICT`. Data yang sudah dirujuk tidak dapat dihapus. Akun dan siswa dinonaktifkan, bukan dihapus (`02` §2 butir 5, FS-MD-04). | RECOMMENDATION |
 | DB-09 | **Pembatalan dan penghapusan.** Data transaksi tidak pernah dihapus. Contohnya scan, presensi manual, koreksi, izin, mode darurat, dan log. Pembatalan disimpan di kolom data itu sendiri: waktu, pelaku, dan alasan. Data pengaturan kalender boleh dihapus secara fisik, yaitu versi pola mingguan yang belum berlaku, jadwal khusus, jadwal hari ini, dan libur, karena log perubahan presensi menyimpan data lamanya secara lengkap. | RECOMMENDATION |
 | DB-10 | **Satu data aktif.** Aturan "paling banyak satu data aktif" ditegakkan database dengan kolom turunan (generated column) yang bernilai 1 saat data aktif dan `NULL` saat tidak aktif, ditambah kunci unik. Contoh di bawah tabel ini. Kolom ini ditulis dengan SQL langsung di migration, karena Forge CI4 belum mendukung generated column. | RECOMMENDATION |
-| DB-11 | **Perubahan bersamaan.** Pemeriksaan "data belum diubah orang lain" (`04` §4.6) memakai `updated_at` sebagai penanda versi. Formulir membawa nilai `updated_at` saat dibuka, dan penyimpanan ditolak bila nilainya sudah berbeda. Cara final ditetapkan di Session 6. | RECOMMENDATION |
+| DB-11 | **Perubahan bersamaan.** Pemeriksaan "data belum diubah orang lain" (`04` §4.6) memakai `updated_at` sebagai token versi. Formulir membawa nilai `updated_at` saat dibuka. Penyimpanan memakai `UPDATE ... WHERE id = ? AND updated_at = ?`, sehingga ditolak bila nilainya sudah berbeda. Rinciannya di `07` ARS-40 dan ARS-41. | DECISION (Session 6) |
 | DB-12 | **Salinan status harian.** Status harian disimpan sebagai salinan yang selalu dapat dibangun ulang dari sumbernya (§11). Salinan tidak pernah diubah langsung oleh pengguna. | DECISION |
 | DB-13 | **Retensi.** R1 tidak menghapus data presensi, scan, izin, maupun log. Penghapusan data pengaturan mengikuti DB-09. Kolom `tanggal` di tabel bervolume tinggi memungkinkan pengarsipan per tahun ajaran bila Session 9 memutuskannya. | DECISION |
 | DB-14 | **Isi log.** Data lama dan data baru di log disimpan sebagai `JSON`, berisi kolom yang berubah beserta konteks yang dibutuhkan untuk dibaca tanpa tabel lain, misalnya nama siswa dan tanggal. | RECOMMENDATION |
@@ -98,7 +110,7 @@ MySQL mengizinkan banyak baris dengan `aktif_kunci` `NULL`, sehingga presensi ya
 | Master data | `masa_aktif` | Periode aktif siswa | R1 | FS-MD-04 | DECISION (periode aktif); RECOMMENDATION (kolom) |
 | Master data | `penempatan` | Rombel siswa dengan tanggal mulai dan selesai | R1 | FS-MD-05 | DECISION (per tanggal, BR-REK-05); RECOMMENDATION (kolom) |
 | Master data | `atribut_siswa` | Definisi atribut tambahan siswa | R1 | FS-MD-09 | DECISION (atribut tambahan); RECOMMENDATION (kolom) |
-| Master data | `nilai_atribut_siswa` | Nilai atribut tambahan per siswa | R1 | FS-MD-09 | DECISION (atribut tambahan); RECOMMENDATION (kolom) |
+| Master data | `nilai_atribut_siswa` | Nilai atribut tambahan per siswa | R1 | FS-MD-09 | DECISION (atribut tambahan; nama tabel, Session 6); RECOMMENDATION (kolom) |
 | Kalender | `pola_mingguan` | Versi pola mingguan | R1 | FS-PRS-01 | RECOMMENDATION |
 | Kalender | `pola_mingguan_hari` | Hari sekolah dan aturan jam per hari dalam satu versi | R1 | FS-PRS-01 | RECOMMENDATION |
 | Kalender | `jadwal_khusus` | Aturan jam untuk tanggal atau rentang tanggal | R1 | FS-PRS-02 | RECOMMENDATION |
@@ -112,6 +124,7 @@ MySQL mengizinkan banyak baris dengan `aktif_kunci` `NULL`, sehingga presensi ya
 | Presensi | `koreksi_status` | Koreksi status dan penggantian atau penghapusannya | R1 | FS-PRS-07 | RECOMMENDATION |
 | Presensi | `mode_darurat` | Periode mode darurat | R1 | FS-PRS-08 | RECOMMENDATION |
 | Presensi | `status_harian` | Salinan status harian, presensi masuk dan pulang, kejadian, dan penanda | R1 | FS-PRS-05 | DECISION (salinan); RECOMMENDATION (kolom) |
+| Presensi | `antrean_hitung_ulang` | Antrean hitung ulang status | R1 | FS-PRS-05 | DECISION (antrean, Session 6); RECOMMENDATION (kolom) |
 | Izin | `izin` | Data izin, sakit, dan dispensasi | R1 | FS-IZN-01 s.d. FS-IZN-05 | RECOMMENDATION |
 | Izin | `izin_riwayat` | Riwayat keputusan setiap data izin | R1 | FS-IZN-01, FS-IZN-04, FS-IZN-05 | RECOMMENDATION |
 | Izin | `izin_kelompok` | Kelompok dispensasi massal | R1 | FS-IZN-03 | RECOMMENDATION |
@@ -119,10 +132,10 @@ MySQL mengizinkan banyak baris dengan `aktif_kunci` `NULL`, sehingga presensi ya
 | Log | `log_presensi` | Log perubahan presensi | R1 | FS-PRS-11 | DECISION (cakupan, BR-KOR-10); RECOMMENDATION (kolom) |
 | Log | `log_data_siswa` | Log data siswa | R1 | FS-MD-04, FS-MD-05, FS-MD-07, FS-MD-08 | RECOMMENDATION |
 | Notifikasi | `wa_template` | Jenis kejadian aktif dan template pesan | R2 | FS-WA-01 | RECOMMENDATION |
-| Notifikasi | `wa_outbox` | Antrean pesan WhatsApp | R2 | FS-WA-02, FS-WA-03 | RECOMMENDATION |
+| Notifikasi | `wa_outbox` | Antrean pesan WhatsApp | R2 | FS-WA-02, FS-WA-03 | DECISION (nama tabel, Session 6); RECOMMENDATION (kolom) |
 | Notifikasi | `wa_penahanan` | Penahanan pesan per tanggal dan jenis | R2 | FS-WA-03 | RECOMMENDATION |
 
-Total 31 tabel R1 dan 3 tabel R2. Kebutuhan R3 ada di §14.2. Tabel sesi login dan pembatasan percobaan login ditetapkan di Session 6 dan 9 (§5.4).
+Total 32 tabel R1 dan 3 tabel R2. Kebutuhan R3 ada di §14.2. Sesi login disimpan sebagai file, sehingga tidak ada tabel sesi. Pembatasan percobaan login ditetapkan di Session 9 (§5.4).
 
 ### 4.2 Relasi utama
 
@@ -151,6 +164,7 @@ erDiagram
     izin |o--o{ lampiran : melampirkan
     izin_kelompok |o--o{ lampiran : melampirkan
     siswa ||--o{ status_harian : memiliki
+    siswa |o--o{ antrean_hitung_ulang : "dihitung ulang"
     rombel ||--o{ status_harian : "rombel pada tanggal"
     siswa |o--o{ log_presensi : terdampak
     siswa ||--o{ log_data_siswa : terdampak
@@ -229,13 +243,13 @@ Kunci dan index: index (`jenis`, `created_at`); index (`akun_id`, `created_at`);
 
 ### 5.4 Sesi dan percobaan login
 
-Penyimpanan sesi CI4 (file atau database) ditetapkan di Session 6. Pembatasan percobaan login (NFR-08) ditetapkan di Session 9, termasuk apakah memakai cache CI4 atau tabel tersendiri. Keduanya tidak memengaruhi tabel lain.
+Sesi CI4 disimpan sebagai file di `writable/session`, sehingga tidak ada tabel sesi (DECISION, Session 6, `07` ARS-47). Pembatasan percobaan login (NFR-08) ditetapkan di Session 9, termasuk apakah memakai cache CI4 atau tabel tersendiri. Keduanya tidak memengaruhi tabel lain.
 
 ## 6. Pengaturan dan master data
 
 ### 6.1 `pengaturan`
 
-Pasangan kunci dan nilai untuk nilai yang diatur admin, ditambah satu penanda keadaan yang diatur sistem. Nilai teknis lain yang tidak diatur admin, seperti toleransi selisih jam, disimpan di konfigurasi aplikasi (Session 6).
+Pasangan kunci dan nilai untuk nilai yang diatur admin, ditambah satu penanda keadaan yang diatur sistem. Nilai teknis lain yang tidak diatur admin, seperti toleransi selisih jam, disimpan di konfigurasi aplikasi (`07` ARS-17).
 
 | Kolom | Tipe | Null | Keterangan |
 |---|---|---|---|
@@ -255,8 +269,9 @@ Daftar kunci:
 | `wa_tunda_menit` | 60 | Admin | R2 | BR-WA-02 |
 | `wa_ambang_persen` | 50 | Admin | R2 | BR-WA-03 |
 | `status_dibangun_sampai` | Kosong | Sistem | R1 | §11.4 |
+| `cron_terakhir_at` | Kosong | Sistem | R1 | `07` ARS-56 |
 
-Kredensial gateway WhatsApp tidak disimpan di tabel ini. Tempatnya ditetapkan di Session 6 dan 9 (OQ-10).
+Kredensial gateway WhatsApp tidak disimpan di tabel ini. Tempatnya ditetapkan di Session 9, sebelum R2 (OQ-10).
 
 ### 6.2 `tahun_ajaran`
 
@@ -299,7 +314,7 @@ Kunci dan index: unik (`tahun_ajaran_id`, `nama`); index (`wali_kelas_id`); inde
 
 Riwayat pergantian wali kelas dicatat di `log_aktivitas` (FS-MD-03).
 
-Tingkat rombel tidak dapat diubah setelah rombel memiliki penempatan siswa, karena libur per tingkat dan `status_harian.tingkat` bergantung padanya (FS-MD-03). (RECOMMENDATION)
+Tingkat rombel tidak dapat diubah setelah rombel memiliki penempatan siswa, karena libur per tingkat dan `status_harian.tingkat` bergantung padanya (FS-MD-03). (DECISION, Session 6)
 
 ### 6.5 `siswa`
 
@@ -347,7 +362,7 @@ Aturan:
 1. Periode yang dihitung adalah periode dengan `dibatalkan = 0`. Periode yang dihitung milik seorang siswa tidak boleh tumpang tindih. Server memeriksanya di dalam transaksi (§16).
 2. Siswa S aktif pada tanggal T bila ada periode yang dihitung dengan `tanggal_mulai ≤ T` dan (`tanggal_selesai` kosong atau `tanggal_selesai ≥ T`) (BR-KAL-05 syarat 4).
 3. Penonaktifan biasa mengisi `tanggal_selesai` dengan tanggal antara `tanggal_mulai` dan hari ini.
-4. Periode dibatalkan bila ditutup dengan alasan `salah_input`, atau bila periode itu belum dimulai saat siswa dinonaktifkan, misalnya siswa hasil import sebelum tahun ajaran dimulai. Admin tidak mengisi tanggal terakhir aktif; `tanggal_selesai` diisi sama dengan `tanggal_mulai`, dan `dibatalkan` bernilai 1. Siswa tidak memiliki status pada tanggal mana pun dalam periode itu, dan status tanggal tersebut dihitung ulang. (RECOMMENDATION)
+4. Periode dibatalkan bila ditutup dengan alasan `salah_input`, atau bila periode itu belum dimulai saat siswa dinonaktifkan, misalnya siswa hasil import sebelum tahun ajaran dimulai. Admin tidak mengisi tanggal terakhir aktif; `tanggal_selesai` diisi sama dengan `tanggal_mulai`, dan `dibatalkan` bernilai 1. Siswa tidak memiliki status pada tanggal mana pun dalam periode itu, dan status tanggal tersebut dihitung ulang. (DECISION, Session 6)
 5. Status siswa yang ditampilkan di daftar siswa adalah "aktif" bila siswa aktif pada hari ini. Siswa dengan periode yang baru dimulai di tanggal ke depan ditampilkan "akan aktif". (RECOMMENDATION)
 
 ### 6.7 `penempatan`
@@ -511,10 +526,10 @@ Satu baris per akun stasiun, diperbarui setiap kontak (FS-KIO-04 butir 7, FS-KIO
 | `sinkron_terakhir_at` | DATETIME | Ya | Waktu kiriman scan terakhir yang diterima. |
 | `belum_sinkron` | INT | Ya | Jumlah scan belum tersinkron yang terakhir dilaporkan. |
 | `belum_sinkron_dilaporkan_at` | DATETIME | Ya | Waktu laporan itu. Dipakai untuk definisi tersinkron di BR-WA-02 syarat 3. |
-| `selisih_jam_detik` | INT (bertanda) | Ya | Selisih jam laptop terhadap jam server pada pengukuran terakhir. |
+| `selisih_jam_detik` | INT (bertanda) | Ya | Selisih jam laptop terhadap jam server pada pengukuran terakhir. Diukur server dari jam laptop yang dikirim kiosk di setiap kontak (`07` ARS-27). |
 | `selisih_diukur_at` | DATETIME | Ya | |
 | `data_dimuat_at` | DATETIME | Ya | Waktu data kiosk terakhir dimuat (FS-KIO-01). |
-| `versi_data` | VARCHAR(40) | Ya | Versi data yang terakhir dimuat. Formatnya ditetapkan di Session 6. |
+| `versi_data` | VARCHAR(40) | Ya | Versi data yang terakhir dimuat: 40 karakter heksadesimal, yaitu hash SHA-1 data kiosk (`07` ARS-23). |
 | `updated_at` | DATETIME | | |
 
 Jumlah scan hari ini dihitung dari `scan` dengan index (`stasiun_id`, `tanggal`).
@@ -525,12 +540,12 @@ Catatan setiap scan yang diterima server. Baris hanya ditambah, tidak pernah dih
 
 - **Isi scan** berasal dari kiosk dan tidak pernah diubah.
 - **Penilaian saat diterima** diisi sekali saat baris dibuat, lalu tidak diubah. Kelompok ini memuat tanda yang hanya bermakna pada saat diterima.
-- **Hasil** adalah kolom turunan yang dihitung ulang setiap kali sumbernya berubah (§11.4), termasuk tanda yang bergantung pada aturan jam dan kalender. Kolom ini bukan isi scan, sehingga perubahannya tidak melanggar BR-SCN-06.
+- **Hasil** adalah kolom turunan yang diisi saat scan diterima, lalu dihitung ulang setiap kali sumbernya berubah (§11.4), termasuk tanda yang bergantung pada aturan jam dan kalender. Kolom ini bukan isi scan, sehingga perubahannya tidak melanggar BR-SCN-06.
 
 | Kolom | Tipe | Null | Kelompok | Keterangan |
 |---|---|---|---|---|
 | `id` | BIGINT | | — | Primary key. |
-| `uuid` | CHAR(36) | | Isi | ID unik dari kiosk (BR-SCN-05). Unik. Formatnya ditetapkan di Session 8 (`10`). |
+| `uuid` | CHAR(36) | | Isi | ID unik dari kiosk (BR-SCN-05): UUID versi 4, 36 karakter huruf kecil (`07` ARS-24). Unik. |
 | `stasiun_id` | INT | | Isi | Akun stasiun pengirim. |
 | `nisn` | CHAR(10) | | Isi | NISN seperti yang dibaca kiosk. |
 | `jenis_kiosk` | VARCHAR(6) | | Isi | `masuk` atau `pulang` menurut kiosk. |
@@ -542,7 +557,7 @@ Catatan setiap scan yang diterima server. Baris hanya ditambah, tidak pernah dih
 | `siswa_id` | INT | Ya | Penilaian | Siswa pemilik NISN saat diterima. Kosong bila NISN tidak dikenal. |
 | `diterima_at` | DATETIME | | Penilaian | Waktu server menerima scan. |
 | `tanda_jam_maju` | TINYINT(1) | | Penilaian | Jam scan lebih dari toleransi di depan jam server saat diterima. |
-| `tanda_selisih_berubah` | TINYINT(1) | | Penilaian | Selisih berubah lebih dari toleransi dari pengukuran sebelumnya stasiun itu. |
+| `tanda_selisih_berubah` | TINYINT(1) | | Penilaian | `selisih_detik` berbeda lebih dari toleransi dari selisih yang diukur server saat kiriman diterima (`07` ARS-27). |
 | `tanda_sinkron_terlambat` | TINYINT(1) | | Penilaian | Diterima lebih lambat dari batas mundur setelah tanggal scan. |
 | `tanda_luar_aturan` | TINYINT(1) | | Hasil | Menurut aturan jam dan kalender yang berlaku sekarang, scan berada di luar jendela atau tanggalnya bukan hari sekolah bagi siswa. Dinilai pertama kali saat diterima (BR-SCN-08), lalu dinilai ulang setiap kali aturan tanggal itu berubah (BR-JAM-11). |
 | `perlu_tinjauan` | TINYINT(1) | | Hasil | 1 bila salah satu tanda bernilai 1 (BR-SCN-08). |
@@ -648,7 +663,7 @@ Satu baris per periode. Mode darurat dapat diaktifkan lagi pada hari yang sama (
 
 Kunci dan index: unik (`aktif_kunci`), sehingga paling banyak satu periode aktif; index (`tanggal`).
 
-Periode yang masih terbuka setelah pukul 23.59 pada tanggalnya dianggap berakhir pukul 23.59.00, dan ditutup dengan `berakhir_otomatis = 1` serta pelaku sistem. Penutupan ini ditulis saat pertama kali dibaca atau oleh proses terjadwal (Session 6). Data ini dipakai BR-DRT-06 dan BR-DRT-07.
+Periode yang masih terbuka setelah pukul 23.59 pada tanggalnya dianggap berakhir pukul 23.59.00, dan ditutup dengan `berakhir_otomatis = 1` serta pelaku sistem. Penutupan ini ditulis oleh cron atau saat status pertama kali dibaca (`07` ARS-38). Data ini dipakai BR-DRT-06 dan BR-DRT-07.
 
 ## 10. Izin, sakit, dan dispensasi
 
@@ -728,7 +743,7 @@ Kunci dan index: index (`izin_id`); index (`izin_kelompok_id`). Tepat satu dari 
 
 Aturan:
 
-1. Paling banyak 3 lampiran per data izin (DECISION, Session 5), dan 3 lampiran bersama per kelompok (RECOMMENDATION). Server memeriksanya saat unggah.
+1. Paling banyak 3 lampiran per data izin (DECISION, Session 5), dan 3 lampiran bersama per kelompok (DECISION, Session 6). Server memeriksanya saat unggah.
 2. Lampiran sebuah data izin adalah lampiran miliknya sendiri, ditambah lampiran kelompoknya bila ada. Hak membuka mengikuti BR-IZN-12.
 3. Format dan ukuran file ditetapkan di Session 9 (`04` §4.9). Pencatatan pembukaan lampiran mengikuti OQ-17.
 
@@ -790,7 +805,7 @@ Contoh query rekap per rombel ada di `13` §3.
 
 ### 11.4 Pemicu hitung ulang
 
-Tabel ini memetakan pemicu di `04` §4.5 ke baris yang dihitung ulang. Mekanismenya, misalnya langsung di dalam transaksi atau lewat antrean, ditetapkan di Session 6.
+Tabel ini memetakan pemicu di `04` §4.5 ke baris yang dihitung ulang. Setiap perubahan sumber menulis antrean (§11.5) dalam transaksi yang sama, lalu antrean diproses (DECISION, Session 6). Mekanismenya dirinci di `07` §7.
 
 | Perubahan sumber | Baris yang dihitung ulang |
 |---|---|
@@ -801,7 +816,7 @@ Tabel ini memetakan pemicu di `04` §4.5 ke baris yang dihitung ulang. Mekanisme
 | Versi pola mingguan mulai berlaku hari ini | Semua siswa pada hari ini. |
 | Jadwal khusus dibuat, diubah, atau dihapus | Semua siswa pada setiap tanggal ≤ hari ini dalam rentang lama dan baru. Baris dibuat atau dihapus bila hari sekolah berubah (BR-KAL-04). |
 | Jadwal hari ini diubah atau dikembalikan | Semua siswa pada hari ini, termasuk hasil scan. |
-| Libur dibuat, diubah, atau dihapus | Siswa dalam cakupan lama dan baru, pada setiap tanggal ≤ hari ini dalam rentang. Baris dihapus atau dibuat. |
+| Libur dibuat, diubah, atau dihapus | Siswa dalam cakupan lama dan baru, pada setiap tanggal ≤ hari ini dalam rentang. Baris dihapus atau dibuat. Antrean boleh mencakup semua siswa (`07` ARS-35). |
 | Tanggal semester diubah | Semua siswa pada tanggal yang masuk atau keluar dari semester. |
 | Masa aktif atau penempatan berubah | Siswa itu pada tanggal yang terdampak. Baris dibuat, dihapus, atau `rombel_id`-nya diubah. |
 | Mode darurat diaktifkan atau diakhiri | Kolom `tanpa_pulang` semua siswa pada tanggal itu. |
@@ -812,13 +827,34 @@ Setiap hitung ulang baris (siswa, tanggal) lebih dulu menghitung ulang kolom has
 
 Pembuatan baris per tanggal:
 
-1. `pengaturan.status_dibangun_sampai` menyimpan tanggal terakhir yang barisnya sudah dibuat untuk semua siswa. Bila kosong, pembuatan dimulai dari tanggal mulai tahun ajaran aktif.
-2. Sebelum status dibaca, dan juga oleh proses terjadwal bila tersedia (Session 6), sistem membuat baris untuk setiap tanggal setelah `status_dibangun_sampai` sampai hari ini, untuk semua siswa yang hari sekolahnya tanggal itu. Setelah itu `status_dibangun_sampai` diperbarui.
+1. `pengaturan.status_dibangun_sampai` menyimpan tanggal terakhir yang barisnya sudah dibuat untuk semua siswa. Bila kosong, pembuatan dimulai dari hari ini, sehingga aplikasi yang mulai dipakai di tengah tahun ajaran tidak membuat Alpa untuk tanggal sebelumnya (`07` ARS-37).
+2. Sebelum status dibaca, dan juga oleh cron setiap menit (`07` ARS-37, ARS-56), sistem membuat baris untuk setiap tanggal setelah `status_dibangun_sampai` sampai hari ini, untuk semua siswa yang hari sekolahnya tanggal itu. Setelah itu `status_dibangun_sampai` diperbarui.
 3. Dengan cara ini, tanggal yang tidak dibuka siapa pun tetap memiliki baris lengkap, sehingga siswa yang tidak hadir tetap menjadi Alpa.
 4. Hitung ulang untuk satu siswa, misalnya karena scan masuk, hanya membuat atau memperbarui baris siswa itu. Hitung ulang itu tidak dihitung sebagai pembuatan tanggal.
 5. Kunci unik (`siswa_id`, `tanggal`) mencegah baris ganda bila dua proses membuat baris yang sama bersamaan.
 
-Perintah CLI untuk membangun ulang `status_harian` per rentang tanggal disediakan untuk pemulihan dan pengujian (Session 6).
+Perintah CLI `status:bangun` membangun ulang `status_harian` per rentang tanggal untuk pemulihan dan pengujian, dan dapat memeriksa salinan tanpa menulis (`07` ARS-39).
+
+### 11.5 `antrean_hitung_ulang`
+
+Antrean hitung ulang status (DECISION, Session 6). Satu baris ditulis untuk setiap perubahan sumber di §11.4, dalam transaksi yang sama dengan perubahan itu. Cara pemrosesannya ada di `07` ARS-35 s.d. ARS-37.
+
+| Kolom | Tipe | Null | Keterangan |
+|---|---|---|---|
+| `id` | BIGINT | | Primary key. |
+| `siswa_id` | INT | Ya | Siswa yang dihitung ulang. Kosong berarti semua siswa. |
+| `tanggal_mulai` | DATE | | Awal rentang. |
+| `tanggal_selesai` | DATE | | Akhir rentang. Sama dengan `tanggal_mulai` untuk satu tanggal. Tanggal setelah hari ini tidak diproses (BR-STS-08). |
+| `sumber` | VARCHAR(40) | | Asal perubahan untuk penelusuran, berupa nama tabel dan ID, misalnya `koreksi_status:12`. |
+| `percobaan` | TINYINT | | Jumlah pemrosesan yang gagal. Galat sementara, seperti deadlock, tidak dihitung (`07` ARS-36). |
+| `galat` | VARCHAR(255) | Ya | Galat terakhir. |
+| `gagal_at` | DATETIME | Ya | Diisi setelah 5 kali gagal. Antrean ini tidak diproses lagi sampai dicoba ulang lewat perintah CLI. |
+| `selesai_at` | DATETIME | Ya | Kosong berarti belum selesai. |
+| `created_at`, `updated_at` | DATETIME | | DB-02. |
+
+Kunci dan index: index (`selesai_at`, `gagal_at`, `id`) untuk mengambil antrean yang menunggu; index (`created_at`).
+
+Tabel ini berisi data teknis, bukan data transaksi atau log (DB-09, DB-13). Baris yang sudah selesai dihapus setelah 7 hari (`07` ARS-36).
 
 ## 12. Log
 
@@ -891,17 +927,17 @@ Kode `jenis`: `siswa_dibuat` (dari formulir atau import), `data_diubah` (nama, a
 
 ## 13. Integrasi dengan kiosk
 
-Kiosk menyimpan data di browser (`00` §5). Struktur penyimpanan browser ditetapkan di Session 6. Data yang dimuat kiosk dari server (FS-KIO-01) dibaca dari tabel berikut:
+Kiosk menyimpan data di browser (`00` §5). Struktur penyimpanan browser ada di `07` ARS-21. Data yang dimuat kiosk dari server (FS-KIO-01, `07` ARS-23) dibaca dari tabel berikut:
 
 | Data kiosk | Sumber |
 |---|---|
 | Siswa aktif: NISN, nama, rombel, tingkat, dan foto | `siswa`, `masa_aktif`, `penempatan`, `rombel` |
-| Aturan jam dan hari sekolah untuk N hari ke depan | `pola_mingguan`, `pola_mingguan_hari`, `jadwal_khusus`, `jadwal_hari_ini`, `semester` |
+| Aturan jam dan hari sekolah untuk hari ini dan 14 hari ke depan | `pola_mingguan`, `pola_mingguan_hari`, `jadwal_khusus`, `jadwal_hari_ini`, `semester` |
 | Libur beserta cakupan | `libur`, `libur_cakupan` |
 | Identitas sekolah dan nama stasiun | `pengaturan`, `akun.nama` |
 | Jam server dan versi data | Server; `status_stasiun.versi_data` |
 
-Penerimaan sinkron menulis `scan` dan `status_stasiun`, lalu memicu hitung ulang (§11.4).
+Penerimaan sinkron menulis `scan`, `status_stasiun`, dan `antrean_hitung_ulang` dalam satu transaksi, lalu antrean diproses (§11.4, §11.5).
 
 ## 14. Rilis berikutnya
 
@@ -1012,12 +1048,14 @@ Volume ini ringan untuk MySQL 8. Partisi tabel tidak diperlukan di R1. (RECOMMEN
 |---|---|
 | NISN unik, username unik, satu tahun ajaran aktif, satu tinjauan per scan | Kunci unik. |
 | Satu presensi manual aktif per jenis, satu koreksi aktif, satu periode aktif terbuka, satu mode darurat aktif | Kunci unik dengan kolom turunan (DB-10). |
-| Scan tidak tercatat dua kali | Kunci unik `uuid`; penyimpanan memakai `INSERT IGNORE` atau pemeriksaan sebelumnya (DB-16). |
+| Scan tidak tercatat dua kali | Kunci unik `uuid`; penyimpanan memakai `INSERT ... ON DUPLICATE KEY UPDATE` tanpa perubahan, bukan `INSERT IGNORE` yang juga menyembunyikan galat lain (DB-16, `07` ARS-29). |
 | Masa aktif, penempatan, dan izin seorang siswa tidak tumpang tindih | Diperiksa server di dalam transaksi, setelah mengunci baris `siswa` dengan `SELECT ... FOR UPDATE`, sehingga dua permintaan bersamaan tidak lolos bersama. |
-| Jadwal khusus tidak tumpang tindih, dan rentang tahun ajaran tidak tumpang tindih | Diperiksa server di dalam transaksi dengan kunci tingkat aplikasi (Session 6). |
+| Jadwal khusus tidak tumpang tindih, dan rentang tahun ajaran tidak tumpang tindih | Diperiksa server di dalam transaksi, dengan kunci bernama MySQL (`GET_LOCK`, `07` ARS-42). |
+| Selalu ada admin aktif (`02` §4 butir 6) | Diperiksa server di dalam transaksi, dengan kunci bernama (`07` ARS-42). |
+| Data belum diubah orang lain (`04` §4.6) | Token `updated_at` di klausa `WHERE` (DB-11). |
 | Perubahan data dan entri log | Ditulis dalam satu transaksi. Bila salah satunya gagal, keduanya batal. |
 | Import siswa dan penempatan massal | Semua baris valid disimpan dalam satu transaksi (FS-MD-06 butir 4). |
-| Hitung ulang status | Dijalankan setelah perubahan sumber tersimpan. Cara menjamin hitung ulang tidak terlewat ditetapkan di Session 6. |
+| Hitung ulang status | Antrean ditulis dalam transaksi yang sama dengan perubahan sumber, lalu diproses setelah commit. Antrean yang tersisa dilanjutkan permintaan berikutnya, cron, atau perintah CLI, sehingga tidak ada yang terlewat (§11.5, `07` ARS-35 s.d. ARS-37). |
 
 ## 17. Traceability
 
@@ -1062,7 +1100,7 @@ Volume ini ringan untuk MySQL 8. Partisi tabel tidak diperlukan di R1. (RECOMMEN
 | FS-KIO-04 | `scan`, `status_stasiun`, `status_harian` |
 | FS-KIO-06 | `scan_tinjauan`, `scan`, `status_harian`, `log_presensi` |
 | FS-PRS-01 s.d. FS-PRS-04 | `pola_mingguan`, `pola_mingguan_hari`, `jadwal_khusus`, `libur`, `libur_cakupan`, `jadwal_hari_ini`, `status_harian`, `log_presensi` |
-| FS-PRS-05 | `status_harian`, `scan` (hasil) |
+| FS-PRS-05 | `status_harian`, `scan` (hasil), `antrean_hitung_ulang` |
 | FS-PRS-06, FS-PRS-09 | `presensi_manual`, `status_harian`, `log_presensi` |
 | FS-PRS-07 | `koreksi_status`, `status_harian`, `log_presensi` |
 | FS-PRS-08 | `mode_darurat`, `status_harian`, `log_presensi` |
@@ -1071,9 +1109,11 @@ Volume ini ringan untuk MySQL 8. Partisi tabel tidak diperlukan di R1. (RECOMMEN
 | FS-LAP-01 s.d. FS-LAP-04 | Hanya membaca, terutama `status_harian` |
 | FS-WA-01 s.d. FS-WA-03 (R2) | `wa_template`, `wa_outbox`, `wa_penahanan`, `pengaturan` |
 
+Fitur yang mengubah sumber status di §11.4 juga menulis `antrean_hitung_ulang` (§11.5).
+
 ## 18. Perubahan pada dokumen lain
 
-Perubahan karena keputusan Session 5, termasuk keputusan di `13`:
+Perubahan karena keputusan Session 5, termasuk keputusan di `13`. Perubahan karena keputusan Session 6 dicatat di `07` §18.
 
 | Dokumen | Versi | Perubahan |
 |---|---|---|
@@ -1086,18 +1126,18 @@ Perubahan karena keputusan Session 5, termasuk keputusan di `13`:
 
 ## 19. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ.
+Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ. Session 6 menetapkan empat hal pertama di tabel ini (`07`).
 
 | Hal | Dampak ke desain | Dipastikan di |
 |---|---|---|
-| Mekanisme hitung ulang dan pembuatan baris hari ini | §11.4 | Session 6 |
-| Penyimpanan sesi CI4 dan pembatasan percobaan login | §5.4 | Session 6 dan 9 |
-| Format `uuid` scan dan versi data kiosk | §8.1, §8.2 | Session 6 dan 8 |
-| Kunci tingkat aplikasi untuk pemeriksaan tumpang tindih global | §16 | Session 6 |
+| Mekanisme hitung ulang dan pembuatan baris hari ini | §11.4, §11.5 | Ditetapkan di Session 6 (`07` §7) |
+| Penyimpanan sesi CI4 dan pembatasan percobaan login | §5.4 | Sesi: ditetapkan di Session 6 (`07` ARS-47). Pembatasan percobaan login: Session 9 |
+| Format `uuid` scan dan versi data kiosk | §8.1, §8.2 | Ditetapkan di Session 6 sebagai RECOMMENDATION (`07` ARS-23, ARS-24). Bentuk API: Session 8 |
+| Kunci bernama untuk pemeriksaan tumpang tindih global | §16 | Ditetapkan di Session 6 sebagai RECOMMENDATION (`07` ARS-42) |
 | Isi dan jenis `log_aktivitas` | §5.3 | Session 9 |
 | Kebijakan retensi data | DB-13 | Session 9 |
 | Panjang maksimal alasan dan catatan | Panjang kolom di dokumen ini | Session 9 |
-| Tempat kredensial gateway WA dan kolom `id_provider` | §6.1, §14.1 | Sebelum R2 (OQ-10) |
+| Tempat kredensial gateway WA dan kolom `id_provider` | §6.1, §14.1 | Kredensial: Session 9. Kolom `id_provider`: sebelum R2 (OQ-10) |
 | Pencatatan pembukaan lampiran | Mungkin tabel baru | Session 9 (OQ-17) |
 
 ## Riwayat perubahan
@@ -1105,3 +1145,4 @@ Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ.
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 5: konvensi, 31 tabel R1 dan 3 tabel R2, aturan baca status harian, pemicu hitung ulang, index, integritas, dan keputusan Session 5. |
+| 0.2 | 2026-10-04 | Keputusan Session 6 (§2.4, `07`). Tabel `antrean_hitung_ulang` (§11.5) ditambahkan, sehingga tabel R1 menjadi 32. DB-11 menjadi DECISION. Kepala dokumen, §1, DB-03, §4.1, §4.2, §5.4, §6.1, §8.1, §8.2, §9.3, §11.4, §13, §16, §17.2, §18, dan §19 diperbarui. Di antaranya, `tanda_selisih_berubah` membandingkan selisih scan dengan selisih yang diukur server saat kiriman diterima, dan pembuatan baris status dimulai dari hari ini bila `status_dibangun_sampai` kosong. Kunci `cron_terakhir_at` ditambahkan di §6.1. Usulan di §4.1, §6.4, §6.6, dan §10.4 menjadi DECISION. |

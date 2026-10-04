@@ -1,0 +1,51 @@
+# Catatan lokal
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Environment: berisi password database dan kunci enkripsi aplikasi
+.env
+.env.*
+
+# Isi runtime writable/
+/writable/cache/*
+!/writable/cache/index.html
+/writable/logs/*
+!/writable/logs/index.html
+/writable/session/*
+!/writable/session/index.html
+/writable/uploads/*
+!/writable/uploads/index.html
+/writable/debugbar/*
+!/writable/debugbar/index.html
+php_errors.log
+
+# Dump database: berisi data siswa (R-17)
+*.sql
+*.sql.gz
+
+# Dependensi
+/vendor/
+node_modules/
+composer.phar
+
+# Pengujian
+/phpunit.xml
+/.phpunit.cache/
+/.phpunit.result.cache
+/tests/coverage*
+/build/
+
+# Editor dan sistem operasi
+.idea/
+.vscode/
+*.iml
+/nbproject/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*~

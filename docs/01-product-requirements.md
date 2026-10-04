@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.5 (draft) |
+| Versi | 0.6 (draft) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan) Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), dan Session 5 (database, `06`; laporan, import, dan export, `13`). |
+| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan), Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), Session 5 (database, `06`; laporan, import, dan export, `13`), dan Session 6 (arsitektur sistem, `07`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), asumsi (`A-xx`), dan pertanyaan terbuka (`OQ-xx`) |
 
 ## 1. Cara membaca dokumen ini
@@ -161,30 +161,30 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 |---|---|---|---|---|
 | NFR-01 | Kinerja | Umpan balik scan di kiosk muncul paling lama 1 detik setelah QR terbaca, tanpa bergantung pada jaringan. | RECOMMENDATION | R-03 |
 | NFR-02 | Kinerja | Antrean pagi 500–1.000 siswa dilayani oleh beberapa stasiun scan di gerbang utama, yang dipakai untuk scan masuk dan pulang. Jumlah stasiun mengikuti OQ-08. | DECISION (skala, lokasi) | R-03 |
-| NFR-03 | Keandalan | Scan yang sudah tercatat di laptop tidak hilang karena internet putus, browser ditutup, atau laptop restart. Kiosk meminta persistent storage ke browser. | RECOMMENDATION | R-06, R-08 |
+| NFR-03 | Keandalan | Scan yang sudah tercatat di laptop tidak hilang karena internet putus, browser ditutup, atau laptop restart. Kiosk meminta penyimpanan permanen (persistent storage) ke browser (`07` ARS-21). | RECOMMENDATION | R-06, R-08 |
 | NFR-04 | Keandalan | Sinkron bersifat idempotent: kiriman ulang tidak menggandakan data. | RECOMMENDATION | R-09 |
 | NFR-05 | Keandalan | Kegagalan gateway WhatsApp tidak memengaruhi pencatatan presensi. | RECOMMENDATION | R-16 |
 | NFR-06 | Keamanan | Seluruh aplikasi diakses lewat HTTPS, baik lokal maupun production. Ini wajib karena webcam hanya berjalan di HTTPS. | CONFIRMED (syarat browser) | R-01 |
 | NFR-07 | Keamanan | Semua area kecuali halaman publik wajib login. Endpoint sinkron hanya untuk akun stasiun dan dilindungi CSRF. Semua input divalidasi di server, tidak hanya di JavaScript. | RECOMMENDATION | R-10 |
 | NFR-08 | Keamanan | Percobaan login dibatasi (rate limit), karena aplikasi terbuka ke internet. | RECOMMENDATION | — |
-| NFR-09 | Waktu | Jam presensi memakai WIB (`Asia/Jakarta`, UTC+7). Zona waktu aplikasi dan database diset eksplisit. Jam laptop dikoreksi dengan selisih jam server dan divalidasi saat sinkron (`05` BR-JAM-12, BR-SCN-07, BR-SCN-08). | DECISION (WIB, OQ-05); RECOMMENDATION (cara koreksi jam) | R-05, R-11 |
+| NFR-09 | Waktu | Jam presensi memakai WIB (`Asia/Jakarta`, UTC+7). Zona waktu aplikasi dan database diset eksplisit. Jam laptop dikoreksi dengan selisih jam server dan divalidasi saat sinkron (`05` BR-JAM-12, BR-SCN-07, BR-SCN-08). Caranya di `07` ARS-27, ARS-28, dan ARS-44 s.d. ARS-46. | DECISION (WIB, OQ-05; kiosk yang dibuka offline, Session 6); RECOMMENDATION (cara koreksi jam) | R-05, R-11 |
 | NFR-10 | Privasi | Data siswa adalah data anak, dan surat sakit adalah data kesehatan (UU 27/2022 PDP). File unggahan disimpan di luar `public/`. Halaman publik tidak menampilkan data individu. Stasiun scan memakai laptop dan profil browser khusus. | RECOMMENDATION | R-07, R-17 |
 | NFR-11 | Kompatibilitas | Kiosk berjalan di Chrome atau Edge versi terbaru di Windows (A-04). Panel staf/admin dan portal siswa dapat dipakai di desktop maupun ponsel. | ASSUMPTION (kiosk); RECOMMENDATION (responsif) | R-04 |
 | NFR-12 | Volume | Sistem menangani ±1.000 siswa aktif dan ±400 ribu catatan scan per tahun tanpa penurunan kinerja yang terasa. | RECOMMENDATION | R-20 |
 | NFR-13 | Volume | Outbox WA menangani ±500–1.000 pesan scan masuk setiap pagi. Target waktu habis antrean ditetapkan setelah provider dipilih (OQ-10). | DECISION (default scan masuk); RECOMMENDATION (target) | R-16 |
 | NFR-14 | Data | NISN disimpan sebagai teks 10 digit. Penempatan siswa ke rombel dicatat dengan tanggal mulai dan selesai per tahun ajaran (`06` §6.7). | DECISION (penempatan per tanggal, Session 5); RECOMMENDATION (NISN sebagai teks) | R-12, R-14 |
 | NFR-15 | Maintainability | Kode mengikuti struktur standar CodeIgniter 4 (controller, model, view, filter, migration, seeder, command). Tidak memakai framework frontend; kiosk ditulis dengan Vanilla JavaScript. | CONFIRMED (stack); RECOMMENDATION (struktur) | — |
-| NFR-16 | Dependensi | Library tambahan hanya dipakai bila perlu, dan alasannya dicatat. Daftar kandidat ada di bawah tabel. | RECOMMENDATION | R-04, R-18, R-19 |
+| NFR-16 | Dependensi | Library tambahan hanya dipakai bila perlu, dan alasannya dicatat. Daftarnya ada di bawah tabel, dan rinciannya di `07` ARS-10. | RECOMMENDATION; DECISION (pembaca QR dan PDF, Session 6) | R-04, R-18, R-19 |
 
-Kandidat library yang sudah terlihat (NFR-16):
+Library yang dipakai (NFR-16). Versi, lisensi, dan alasannya ada di `07` ARS-10.
 
-| Library | Kegunaan | Rilis |
-|---|---|---|
-| Library JS pembaca QR | Membaca QR di kiosk (wajib) | R1 |
-| PhpSpreadsheet | Import .xlsx (R1) dan export (R2) | R1, R2 |
-| Dompdf | Export PDF | R2 |
-| Library JS pembuat gambar | Flyer kehadiran, bila perlu | R2 |
-| Library QR | Cetak kartu | R3 |
+| Library | Kegunaan | Rilis | Status |
+|---|---|---|---|
+| zxing-wasm (JavaScript) | Membaca QR di kiosk (wajib) | R1 | DECISION (Session 6) |
+| PhpSpreadsheet | Import .xlsx (R1) dan export XLSX (R2) | R1, R2 | RECOMMENDATION |
+| mPDF | Export PDF | R2 | DECISION (Session 6) |
+| Library JS pembuat gambar | Flyer kehadiran, bila perlu | R2 | DECISION (ditunda ke Session 7) |
+| chillerlan/php-qrcode | QR di kartu | R3 | RECOMMENDATION (dipastikan bersama OQ-13) |
 
 ## 5. Batasan
 
@@ -192,10 +192,10 @@ Kandidat library yang sudah terlihat (NFR-16):
 |---|---|---|
 | C-01 | Stack: CodeIgniter 4, MySQL (MySQLi), HTML/CSS/Vanilla JavaScript, pola server-rendered. Tanpa React, Vue, Angular, Vite, atau SPA. | CONFIRMED |
 | C-02 | Pengembangan lokal di Windows + Laragon + Nginx. Panduan teknis ditulis untuk environment ini. | CONFIRMED |
-| C-03 | Production di hosting online, dengan jenis hosting mengikuti OQ-09. Document root harus dapat diarahkan ke `public/`, dan cron harus tersedia untuk R2. | DECISION (hosting online); RECOMMENDATION (syarat) |
+| C-03 | Production di VPS (OQ-09, `07` ARS-01). Document root diarahkan ke `public/`, dan cron tersedia sejak R1. | DECISION (hosting online; VPS, Session 6) |
 | C-04 | Format QR kartu tidak dapat diubah: NISN polos. | CONFIRMED |
 | C-05 | Gateway WhatsApp adalah layanan pihak ketiga tidak resmi. Risiko nomor diblokir diterima. | DECISION |
-| C-06 | Import .xlsx di R1 membutuhkan PhpSpreadsheet yang dipasang lewat Composer. Karena itu keputusan instalasi framework (OQ-09) harus selesai sebelum fase implementasi pertama. | RECOMMENDATION |
+| C-06 | Import .xlsx di R1 membutuhkan PhpSpreadsheet yang dipasang lewat Composer. Karena itu repository dipindah ke Composer appstarter di fase implementasi pertama (OQ-09, `07` ARS-07). | DECISION (Composer appstarter, Session 6); RECOMMENDATION (waktu migrasi) |
 
 ## 6. Kriteria keberhasilan v1
 
@@ -281,12 +281,11 @@ Then pengunjung melihat pengumuman dan jumlah kehadiran per rombel hari ini
 
 ## 8. Pertanyaan terbuka yang memengaruhi requirement
 
-Daftar lengkap ada di `00` §8.2. OQ-01, OQ-02, dan OQ-14 terjawab di Session 3. OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4 (`05`). OQ-11 dan OQ-12 terjawab di Session 5 (`13`).
+Daftar lengkap ada di `00` §8.2. OQ-01, OQ-02, dan OQ-14 terjawab di Session 3. OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4 (`05`). OQ-11 dan OQ-12 terjawab di Session 5 (`13`). OQ-09 terjawab di Session 6 (`07`).
 
 | OQ | Pertanyaan singkat | Requirement terdampak |
 |---|---|---|
 | OQ-08 | Jumlah stasiun scan (lokasi sudah diputuskan) | NFR-02 |
-| OQ-09 | Jenis hosting dan instalasi Composer | C-03, C-06 |
 | OQ-10 | Provider gateway WhatsApp | FR-WA-01, NFR-13 |
 | OQ-13 | Desain kartu siswa baru | FR-KRT-01 |
 | OQ-17 | Pencatatan pembukaan lampiran surat oleh staf | FR-IZN-05 |
@@ -299,6 +298,7 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 |---|---|
 | Aturan bisnis | `05` |
 | Tabel database | `06` (§17.2 memetakan fitur ke tabel) |
+| Arsitektur dan mekanisme teknis | `07` (§17 memetakan risiko, NFR, dan fitur ke aturan arsitektur) |
 | Route dan API | `09`, `10` |
 | Halaman | `08`, `09` |
 | Fase implementasi | `15` |
@@ -313,3 +313,4 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | 0.3 | 2026-10-03 | Keputusan Session 4 (`05`). Modul IZN mencakup dispensasi. FR-AKN-06 (mekanisme slip disetujui), FR-KIO-04, FR-KIO-05, FR-KIO-10 s.d. FR-KIO-12, FR-PRS-02 s.d. FR-PRS-08, FR-IZN-01 s.d. FR-IZN-05, FR-LAP-01, FR-LAP-02, FR-WA-02, FR-WA-07, dan NFR-09 diperbarui. FR-PRS-09 s.d. FR-PRS-11, FR-IZN-06, FR-IZN-07, dan FR-WA-08 ditambahkan. Kriteria keberhasilan 5 dan AC-03 disesuaikan dengan dispensasi dan mode darurat. OQ-17 ditambahkan. |
 | 0.4 | 2026-10-03 | Keputusan Session 4b (`04` §2). FR-MD-03 dan FR-MD-05 (nomor WA opsional), FR-PRS-06 (pembatalan presensi manual), FR-PRS-07 (hapus koreksi, koreksi saat ada izin), FR-IZN-06 dan FR-IZN-07 (dispensasi per kelompok, siswa bentrok dilewati), FR-LAP-01 (penanda), dan FR-LAP-03 (isi riwayat di portal siswa) diperbarui. §1, §7, dan §9 merujuk `04`. |
 | 0.5 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). FR-MD-03 (atribut opsional dan masa aktif), FR-MD-04 (penempatan massal), FR-MD-05 (NISN yang sudah ada dilewati), FR-MD-07 (format nama file foto), FR-IZN-05 (paling banyak 3 lampiran), FR-LAP-04 (matriks laporan), FR-LAP-05 (isi flyer), dan NFR-14 diperbarui. FR-MD-10 (atribut tambahan siswa) ditambahkan. OQ-11 dan OQ-12 dihapus dari §8 karena terjawab. |
+| 0.6 | 2026-10-04 | Keputusan Session 6 (`07`). C-03 (VPS) dan C-06 (Composer appstarter) menjadi DECISION. NFR-03, NFR-09, dan NFR-16 diperbarui, dan daftar library memuat zxing-wasm dan mPDF, dengan flyer ditunda ke Session 7. OQ-09 dihapus dari §8 karena terjawab. §9 merujuk `07`. |
