@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.6 (draft) |
+| Versi | 0.7 (draft) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan), Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), Session 5 (database, `06`; laporan, import, dan export, `13`), dan Session 6 (arsitektur sistem, `07`). |
+| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan), Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), Session 5 (database, `06`; laporan, import, dan export, `13`), Session 6 (arsitektur sistem, `07`), dan Session 7 (UI/UX dan sistem desain, `08`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), asumsi (`A-xx`), dan pertanyaan terbuka (`OQ-xx`) |
 
 ## 1. Cara membaca dokumen ini
@@ -152,7 +152,7 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 
 | ID | Kebutuhan | Aktor | Kategori | Rilis | Status |
 |---|---|---|---|---|---|
-| FR-KRT-01 | Admin mencetak kartu untuk siswa baru dari data siswa. Kartu memuat foto, nama, NISN, dan QR berisi NISN polos dengan format yang sama dengan kartu lama. Desain kartu mengikuti OQ-13. | Admin | Optional | R3 | DECISION |
+| FR-KRT-01 | Admin mencetak kartu untuk siswa baru dari data siswa. Kartu memuat foto, nama, NISN, dan QR berisi NISN polos dengan format yang sama dengan kartu lama. Tata letak kartu mengikuti kartu OSIS lama, dan kartu dicetak sebagai PDF A4 berisi 10 kartu (OQ-13, `08` UI-62, UI-63). | Admin | Optional | R3 | DECISION (tata letak kartu lama dan PDF A4, Session 7) |
 | FR-KRT-02 | Admin dapat mencetak ulang kartu untuk siswa yang kehilangan kartu. QR tetap sama, sehingga kartu lama tidak dapat diblokir (R-02). | Admin | Optional | R3 | RECOMMENDATION |
 
 ## 4. Kebutuhan non-fungsional
@@ -169,7 +169,7 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 | NFR-08 | Keamanan | Percobaan login dibatasi (rate limit), karena aplikasi terbuka ke internet. | RECOMMENDATION | — |
 | NFR-09 | Waktu | Jam presensi memakai WIB (`Asia/Jakarta`, UTC+7). Zona waktu aplikasi dan database diset eksplisit. Jam laptop dikoreksi dengan selisih jam server dan divalidasi saat sinkron (`05` BR-JAM-12, BR-SCN-07, BR-SCN-08). Caranya di `07` ARS-27, ARS-28, dan ARS-44 s.d. ARS-46. | DECISION (WIB, OQ-05; kiosk yang dibuka offline, Session 6); RECOMMENDATION (cara koreksi jam) | R-05, R-11 |
 | NFR-10 | Privasi | Data siswa adalah data anak, dan surat sakit adalah data kesehatan (UU 27/2022 PDP). File unggahan disimpan di luar `public/`. Halaman publik tidak menampilkan data individu. Stasiun scan memakai laptop dan profil browser khusus. | RECOMMENDATION | R-07, R-17 |
-| NFR-11 | Kompatibilitas | Kiosk berjalan di Chrome atau Edge versi terbaru di Windows (A-04). Panel staf/admin dan portal siswa dapat dipakai di desktop maupun ponsel. | ASSUMPTION (kiosk); RECOMMENDATION (responsif) | R-04 |
+| NFR-11 | Kompatibilitas | Kiosk berjalan di Chrome atau Edge versi terbaru di Windows (A-04). Panel staf/admin dan portal siswa dapat dipakai di desktop maupun ponsel. Dukungan browser dan ukuran tampilan ada di `08` UI-18 dan UI-70. | ASSUMPTION (kiosk); RECOMMENDATION (responsif) | R-04 |
 | NFR-12 | Volume | Sistem menangani ±1.000 siswa aktif dan ±400 ribu catatan scan per tahun tanpa penurunan kinerja yang terasa. | RECOMMENDATION | R-20 |
 | NFR-13 | Volume | Outbox WA menangani ±500–1.000 pesan scan masuk setiap pagi. Target waktu habis antrean ditetapkan setelah provider dipilih (OQ-10). | DECISION (default scan masuk); RECOMMENDATION (target) | R-16 |
 | NFR-14 | Data | NISN disimpan sebagai teks 10 digit. Penempatan siswa ke rombel dicatat dengan tanggal mulai dan selesai per tahun ajaran (`06` §6.7). | DECISION (penempatan per tanggal, Session 5); RECOMMENDATION (NISN sebagai teks) | R-12, R-14 |
@@ -183,8 +183,10 @@ Library yang dipakai (NFR-16). Versi, lisensi, dan alasannya ada di `07` ARS-10.
 | zxing-wasm (JavaScript) | Membaca QR di kiosk (wajib) | R1 | DECISION (Session 6) |
 | PhpSpreadsheet | Import .xlsx (R1) dan export XLSX (R2) | R1, R2 | RECOMMENDATION |
 | mPDF | Export PDF | R2 | DECISION (Session 6) |
-| Library JS pembuat gambar | Flyer kehadiran, bila perlu | R2 | DECISION (ditunda ke Session 7) |
-| chillerlan/php-qrcode | QR di kartu | R3 | RECOMMENDATION (dipastikan bersama OQ-13) |
+| Canvas API, tanpa library | Flyer kehadiran | R2 | DECISION (Session 7) |
+| chillerlan/php-qrcode | QR di kartu | R3 | DECISION (Session 7) |
+| Plus Jakarta Sans (font, SIL OFL) | Huruf aplikasi, flyer, dan PDF | R1 | DECISION (Session 7) |
+| Lucide (ikon, ISC) | Subset ikon dalam satu file SVG | R1 | DECISION (Session 7) |
 
 ## 5. Batasan
 
@@ -281,13 +283,13 @@ Then pengunjung melihat pengumuman dan jumlah kehadiran per rombel hari ini
 
 ## 8. Pertanyaan terbuka yang memengaruhi requirement
 
-Daftar lengkap ada di `00` §8.2. OQ-01, OQ-02, dan OQ-14 terjawab di Session 3. OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4 (`05`). OQ-11 dan OQ-12 terjawab di Session 5 (`13`). OQ-09 terjawab di Session 6 (`07`).
+Daftar lengkap ada di `00` §8.2. OQ-01, OQ-02, dan OQ-14 terjawab di Session 3. OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4 (`05`). OQ-11 dan OQ-12 terjawab di Session 5 (`13`). OQ-09 terjawab di Session 6 (`07`). OQ-13 terjawab sebagian di Session 7 (`08`).
 
 | OQ | Pertanyaan singkat | Requirement terdampak |
 |---|---|---|
 | OQ-08 | Jumlah stasiun scan (lokasi sudah diputuskan) | NFR-02 |
 | OQ-10 | Provider gateway WhatsApp | FR-WA-01, NFR-13 |
-| OQ-13 | Desain kartu siswa baru | FR-KRT-01 |
+| OQ-13 | Contoh kartu OSIS lama untuk desain kartu rinci (terjawab sebagian) | FR-KRT-01 |
 | OQ-17 | Pencatatan pembukaan lampiran surat oleh staf | FR-IZN-05 |
 
 ## 9. Traceability
@@ -300,7 +302,8 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | Tabel database | `06` (§17.2 memetakan fitur ke tabel) |
 | Arsitektur dan mekanisme teknis | `07` (§17 memetakan risiko, NFR, dan fitur ke aturan arsitektur) |
 | Route dan API | `09`, `10` |
-| Halaman | `08`, `09` |
+| Tampilan dan sistem desain | `08` |
+| Halaman | `09` |
 | Fase implementasi | `15` |
 | Spesifikasi fitur dan acceptance criteria rinci | `04` (§12.1 memetakan setiap FR ke fitur) |
 
@@ -314,3 +317,4 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | 0.4 | 2026-10-03 | Keputusan Session 4b (`04` §2). FR-MD-03 dan FR-MD-05 (nomor WA opsional), FR-PRS-06 (pembatalan presensi manual), FR-PRS-07 (hapus koreksi, koreksi saat ada izin), FR-IZN-06 dan FR-IZN-07 (dispensasi per kelompok, siswa bentrok dilewati), FR-LAP-01 (penanda), dan FR-LAP-03 (isi riwayat di portal siswa) diperbarui. §1, §7, dan §9 merujuk `04`. |
 | 0.5 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). FR-MD-03 (atribut opsional dan masa aktif), FR-MD-04 (penempatan massal), FR-MD-05 (NISN yang sudah ada dilewati), FR-MD-07 (format nama file foto), FR-IZN-05 (paling banyak 3 lampiran), FR-LAP-04 (matriks laporan), FR-LAP-05 (isi flyer), dan NFR-14 diperbarui. FR-MD-10 (atribut tambahan siswa) ditambahkan. OQ-11 dan OQ-12 dihapus dari §8 karena terjawab. |
 | 0.6 | 2026-10-04 | Keputusan Session 6 (`07`). C-03 (VPS) dan C-06 (Composer appstarter) menjadi DECISION. NFR-03, NFR-09, dan NFR-16 diperbarui, dan daftar library memuat zxing-wasm dan mPDF, dengan flyer ditunda ke Session 7. OQ-09 dihapus dari §8 karena terjawab. §9 merujuk `07`. |
+| 0.7 | 2026-10-04 | Keputusan Session 7 (`08`). FR-KRT-01 dan NFR-11 diperbarui. Daftar library memuat flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide sebagai DECISION. OQ-13 di §8 terjawab sebagian. §9 merujuk `08`. |

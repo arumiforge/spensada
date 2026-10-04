@@ -2,11 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.3 (draft, menunggu review) |
+| Versi | 0.4 (draft, menunggu review) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 4b (Feature Specification). Diperbarui dengan keputusan Session 5 (§2.4) dan Session 6 (§2.5). |
+| Sumber | Discovery Session 4b (Feature Specification). Diperbarui dengan keputusan Session 5 (§2.4), Session 6 (§2.5), dan Session 7 (§2.6). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan acceptance criteria tingkat tinggi (AC-01 s.d. AC-05). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). |
-| Dokumen terkait | [06-database-design.md](06-database-design.md): tabel yang ditulis dan dibaca setiap fitur. [07-system-architecture.md](07-system-architecture.md): mekanisme teknis, termasuk kiosk dan hitung ulang. [13-reporting-import-export.md](13-reporting-import-export.md): laporan, template import, dan format file. |
+| Dokumen terkait | [06-database-design.md](06-database-design.md): tabel yang ditulis dan dibaca setiap fitur. [07-system-architecture.md](07-system-architecture.md): mekanisme teknis, termasuk kiosk dan hitung ulang. [13-reporting-import-export.md](13-reporting-import-export.md): laporan, template import, dan format file. [08-ui-ux-design-system.md](08-ui-ux-design-system.md): tampilan, teks layar, dan label. |
 
 Dokumen ini merinci setiap fitur R1 sampai siap dirancang di Session 5–8 dan diimplementasikan. Setiap fitur memuat:
 
@@ -40,7 +40,7 @@ Dokumen ini juga mencatat keputusan Session 4b atas usulan di `05` (§2). Dokume
 | Data dan log | Data yang dibaca dan ditulis, serta yang dicatat di log. Bagian ini menjadi masukan Session 5. |
 | Parameter dan default | Nilai yang dapat diatur atau masih usulan, siapa yang mengaturnya, dan kapan nilainya dipastikan. |
 | Di luar cakupan | Hal yang sengaja tidak dilakukan fitur ini. |
-| Catatan antarmuka awal | Petunjuk awal tampilan. Bagian ini bukan keputusan; tampilan final ditetapkan di Session 7. |
+| Catatan antarmuka awal | Petunjuk awal tampilan. Bagian ini bukan keputusan; tampilan final ada di `08`, dan `08` §16.2 memetakan setiap catatan. |
 | Acceptance criteria | Skenario Given/When/Then beserta rujukannya. |
 
 - **Contoh jam dan tanggal.** Kecuali disebut lain, contoh memakai:
@@ -50,7 +50,7 @@ Dokumen ini juga mencatat keputusan Session 4b atas usulan di `05` (§2). Dokume
 
   Semua jam memakai WIB.
 - **Acceptance criteria.** Ditulis dalam format Given/When/Then seperti `01` §7. Sebuah fitur dianggap selesai bila semua acceptance criteria-nya lulus, dan dokumen fase di Session 11 merujuk ID ini. (RECOMMENDATION)
-- **Nama teknis.** Tabel, kolom, route, dan teks layar ditetapkan di Session 5–8. Nama tabel dan kolom ada di `06`, dan mekanisme teknis di `07`. Contoh pesan di dokumen ini bukan teks final.
+- **Nama teknis.** Tabel, kolom, route, dan teks layar ditetapkan di Session 5–8. Nama tabel dan kolom ada di `06`, mekanisme teknis di `07`, serta teks layar dan label di `08`. Contoh pesan di dokumen ini bukan teks final, kecuali teks kiosk yang difinalkan di `08` §7.3. Dokumen ini tetap memakai istilah "rombel", yang tampil sebagai "Kelas" di layar (`08` UI-51).
 
 ## 2. Keputusan Session 4b
 
@@ -120,6 +120,21 @@ Keputusan Session 6 yang berdampak ke fitur. Rinciannya ada di `07` §2.
 | Perubahan bersamaan | `updated_at` dipakai sebagai token versi (`07` ARS-40). | §4.6 | DECISION |
 | Pembaruan dashboard | Polling fragmen HTML setiap 30 detik (`07` ARS-50). | FS-LAP-01, FS-KIO-05 | DECISION |
 | Tinjauan usulan Session 5 | Periode aktif yang dibatalkan tidak dihitung, tingkat rombel dikunci setelah ada penempatan, dan lampiran bersama satu kelompok paling banyak 3 file (`07` §2.2). | FS-MD-03, FS-MD-04, FS-IZN-03 | DECISION |
+
+### 2.6 Keputusan Session 7
+
+Keputusan Session 7 yang berdampak ke fitur. Rinciannya ada di `08` §2.
+
+| Topik | Keputusan | Fitur | Status |
+|---|---|---|---|
+| Label rombel | Rombel tampil sebagai "Kelas", dan tingkat sebagai "Tingkat" (`08` UI-51). | FS-MD-03, semua fitur | DECISION |
+| Warna dan ikon status | Palet A, selalu dengan ikon, huruf singkat, dan teks (`08` UI-12). | FS-PRS-05 | DECISION |
+| Kiosk | Kamera kiri dan hasil kanan. Bunyi berhasil, peringatan, dan galat dari Web Audio API. Hasil tampil 3 detik (tercatat dan scan ganda) atau 6 detik (ditolak) (`08` UI-39, UI-41, UI-45). | FS-KIO-01, FS-KIO-02 | DECISION |
+| Foto | Foto kecil 120×160 px untuk daftar, dan ukuran tampil di `08` §4.6. | FS-MD-07, FS-KIO-01, FS-LAP-02, FS-PRS-09 | DECISION |
+| Format waktu | "13 Okt 2026", "Selasa, 13 Oktober 2026", dan "07.00" (`08` UI-53). | §4.8 | DECISION |
+| Rentang default | Bulan berjalan untuk rekap per rombel dan riwayat siswa. | FS-LAP-03, FS-LAP-04 | DECISION |
+| Slip akun | 8 slip per halaman A4 (`08` UI-58). | FS-AKN-05 | DECISION |
+| PDF, flyer, dan kartu | PDF memakai kop dan tanda tangan dengan NIP. Flyer dibuat dengan Canvas API, potret 1080×1350 px. Kartu mengikuti kartu OSIS lama dan dicetak sebagai PDF A4 berisi 10 kartu (`08` §10, §11). | FS-LAP-05, FS-LAP-06, FS-KRT-01 | DECISION |
 
 ## 3. Daftar fitur
 
@@ -257,7 +272,7 @@ Tindakan massal, tindakan yang membuat password baru, dan tindakan yang mengubah
 
 1. Semua waktu memakai WIB. "Hari ini" adalah tanggal WIB menurut jam server (BR-JAM-12).
 2. Jam dibandingkan sampai detik sesuai BR-JAM-03 s.d. BR-JAM-05. Contohnya, dengan batas terlambat 07.00, pukul 07.00.59 masih Hadir.
-3. Jam ditampilkan dengan format JJ.MM. Format final tanggal dan jam ditetapkan di Session 7.
+3. Tanggal dan jam ditampilkan dengan format `08` UI-53, misalnya "13 Okt 2026" dan "07.00" (DECISION, Session 7).
 
 ### 4.9 File unggahan
 
@@ -817,7 +832,7 @@ C. Reset password satu siswa:
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
-| Jumlah slip per halaman A4 | Belum ditetapkan | Sistem | Session 7 |
+| Jumlah slip per halaman A4 | 8 (ukuran A7, `08` UI-58) | Sistem | Session 7 (DECISION) |
 | Panjang password awal | Belum ditetapkan | Sistem | Session 9 |
 
 **Di luar cakupan**
@@ -1126,7 +1141,7 @@ Then penyimpanan ditolak
 
 **Catatan antarmuka awal**
 
-- Label "rombel" di antarmuka ditetapkan di Session 7 (`00` §9).
+- Rombel tampil sebagai "Kelas", dan tingkat sebagai "Tingkat" (DECISION, Session 7, `08` UI-51).
 
 **Acceptance criteria**
 
@@ -1594,7 +1609,9 @@ Then baris itu gagal dengan alasan "NISN sudah terdaftar atas nama Budi"
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
-| Ukuran foto standar | Paling besar 600×800 px, JPEG (`07` ARS-53) | Sistem | Session 6 (DECISION); ukuran tampil di Session 7 |
+| Ukuran foto standar | Paling besar 600×800 px, JPEG (`07` ARS-53) | Sistem | Session 6 (DECISION) |
+| Foto kecil untuk daftar | 120×160 px, JPEG, dibuat dari foto standar (`07` ARS-53) | Sistem | Session 7 (DECISION) |
+| Ukuran tampil foto | `08` UI-23 | Sistem | Session 7 (DECISION) |
 
 **Di luar cakupan**
 
@@ -1889,7 +1906,8 @@ Tidak ada isian. Pemicunya adalah membuka kiosk, menekan tombol "Muat ulang data
 |---|---|---|---|
 | N hari aturan jam dan libur yang dimuat ke depan | 14 hari | Sistem | Session 6 (DECISION) |
 | Batas umur data sebelum peringatan | 3 hari atau 72 jam (UF-09 E1) | Sistem | Session 6 (DECISION) |
-| Ukuran foto kiosk | 300×400 px, JPEG (`07` ARS-53) | Sistem | Session 6 (DECISION); ukuran tampil di Session 7 |
+| Ukuran foto kiosk | 300×400 px, JPEG (`07` ARS-53) | Sistem | Session 6 (DECISION) |
+| Ukuran tampil foto di kiosk | Tinggi ±50% layar, paling besar 300×400 px (`08` UI-23) | Sistem | Session 7 (DECISION) |
 
 **Di luar cakupan**
 
@@ -2005,7 +2023,7 @@ Then tindakan ditolak dengan pesan bahwa masih ada 3 scan belum tersinkron
 
 **Keadaan kosong dan error**
 
-Pesan di bawah mengikuti contoh di `05` §4.2. Teks finalnya ditetapkan di Session 7.
+Pesan di bawah mengikuti contoh di `05` §4.2. Teks finalnya ada di `08` §7.3.
 
 | Kode | Keadaan | Respons |
 |---|---|---|
@@ -2015,7 +2033,7 @@ Pesan di bawah mengikuti contoh di `05` §4.2. Teks finalnya ditetapkan di Sessi
 | E4 | Setelah sesi masuk ditutup dan sebelum jendela pulang. | "Sesi masuk sudah ditutup. Temui guru piket." Scan tidak dicatat (BR-JAM-08). |
 | E5 | Setelah sesi pulang ditutup. | "Sesi pulang sudah ditutup." Scan tidak dicatat. |
 | E6 | Hari ini bukan hari sekolah, atau ada libur untuk semua siswa. | "Hari ini bukan hari sekolah." Bila libur, pesan menyebut keterangannya. |
-| E7 | Siswa sedang libur karena libur tingkat atau rombel. | Pesan dengan keterangan libur, misalnya "Kelas 9 libur hari ini." Scan tidak dicatat. |
+| E7 | Siswa sedang libur karena libur tingkat atau rombel. | Pesan dengan keterangan libur, misalnya "Tingkat 9 libur hari ini." Scan tidak dicatat. |
 | E8 | Scan gagal disimpan di laptop. | "Scan tidak tersimpan. Panggil petugas." Bunyi galat. Hasil tidak ditampilkan sebagai berhasil. |
 | E9 | Siswa sudah tercatat untuk jenis yang sama di laptop ini. | "Sudah tercatat masuk pukul 06.52." Bunyi berbeda. Scan tidak dicatat ulang (BR-SCN-03). |
 | E10 | Kamera tidak tersedia atau izin kamera ditolak. | Pesan untuk petugas. Scanner USB tetap dapat dipakai. |
@@ -2030,8 +2048,8 @@ Pesan di bawah mengikuti contoh di `05` §4.2. Teks finalnya ditetapkan di Sessi
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
 | Jeda pengabaian NISN yang sama | 5 detik | Sistem | Session 6 (DECISION) |
-| Lama hasil scan tampil | Belum ditetapkan (UF-10 langkah 7) | Sistem | Session 7 |
-| Jenis bunyi: berhasil, peringatan, dan galat | Belum ditetapkan | Sistem | Session 7 |
+| Lama hasil scan tampil | 3 detik untuk scan tercatat dan scan ganda, 6 detik untuk scan ditolak (UF-10 langkah 7, `08` UI-41) | Sistem | Session 7 (DECISION) |
+| Jenis bunyi: berhasil, peringatan, dan galat | Nada Web Audio API. Scan tercatat, termasuk Terlambat dan pulang lebih awal, berbunyi berhasil; scan ganda peringatan; scan ditolak galat (`08` UI-45) | Sistem | Session 7 (DECISION) |
 
 **Di luar cakupan**
 
@@ -3089,7 +3107,7 @@ Tidak ada. Nilai jam berasal dari aturan jam.
 
 **Catatan antarmuka awal**
 
-- Warna dan ikon untuk setiap status dan penanda ditetapkan di Session 7, dan dipakai sama di semua halaman.
+- Palet A dengan ikon, huruf singkat, dan teks dipakai sama di semua halaman (DECISION, Session 7, `08` UI-12). Nilai warna dan ikon ada di `08` §4.2 (RECOMMENDATION).
 
 **Acceptance criteria**
 
@@ -4948,7 +4966,7 @@ Then baris siswa B menunjukkan Terlambat, jam 08.10, sumber "manual", dan alasan
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
-| Rentang default | Bulan berjalan | Sistem | Session 7 |
+| Rentang default | Bulan berjalan | Sistem | Session 7 (DECISION) |
 | Pembulatan persentase | Bilangan bulat (DECISION, Session 5), dengan nilai tepat setengah dibulatkan ke atas (RECOMMENDATION) (`13` IE-04) | Sistem | — |
 
 **Di luar cakupan**
@@ -5074,7 +5092,7 @@ Then permintaan ditolak
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
-| Periode default | Bulan berjalan | Sistem | Session 7 |
+| Periode default | Bulan berjalan | Sistem | Session 7 (DECISION) |
 
 **Di luar cakupan**
 
@@ -5141,14 +5159,14 @@ Fitur di bagian ini baru dicatat sebagai kerangka (DECISION, Session 4b). ID-nya
 | ID | Fitur | Rilis | Tujuan | Rujukan | Menunggu |
 |---|---|---|---|---|---|
 | FS-LAP-05 | Export rekap | R2 | Laporan diekspor ke XLSX, CSV, dan PDF sesuai matriks `13` §4, termasuk rekap semua rombel (LP-02) dan rekap rapor semester (LP-03). | FR-LAP-04, `HA-LAP-05`, UF-22, BR-REK-01 s.d. BR-REK-05, NFR-16, `13` | Tidak ada. OQ-09 terjawab di Session 6 (`07` ARS-07, ARS-10), dan OQ-11 di Session 5. |
-| FS-LAP-06 | Flyer kehadiran | R2 | Staf membuat flyer PNG per rombel atau total, berisi angka saja, lalu mengunduhnya (`13` LP-08). | FR-LAP-05, `HA-LAP-06`, UF-24, R-17, R-19 | Desain template dan cara pembuatan PNG (Session 7). OQ-11 terjawab di Session 5. |
+| FS-LAP-06 | Flyer kehadiran | R2 | Staf membuat flyer PNG per rombel atau total, berisi angka saja, lalu mengunduhnya (`13` LP-08). | FR-LAP-05, `HA-LAP-06`, UF-24, R-17, R-19 | Tidak ada. Cara pembuatan (Canvas API) dan format (potret 1080×1350 px) ditetapkan di Session 7 (`08` §11). OQ-11 terjawab di Session 5. |
 | FS-WA-01 | Pengaturan notifikasi WhatsApp | R2 | Admin mengatur koneksi gateway, jenis kejadian yang aktif, template pesan, waktu tunda, dan ambang pengaman. | FR-WA-01, FR-WA-02, FR-WA-05, FR-WA-07, `HA-WA-01`, BR-WA-02, BR-WA-03 | OQ-10 (sebelum R2) |
 | FS-WA-02 | Pembuatan pesan dan outbox WA | R2 | Kejadian presensi menghasilkan pesan di outbox, yang dikirim bertahap. Admin memantau dan mengirim ulang pesan yang gagal. | FR-WA-03, FR-WA-04, FR-WA-06, `HA-WA-02`, UF-23, BR-WA-01, BR-WA-04, BR-WA-06, BR-WA-07, NFR-05, NFR-13 | OQ-10 |
 | FS-WA-03 | Pesan "tidak hadir" dan "tidak scan pulang" beserta penahanannya | R2 | Pesan dibuat setelah waktu tunda bila semua syarat terpenuhi, dan ditahan bila di bawah ambang. Guru piket atau admin melepas atau membatalkan pesan yang ditahan. | FR-WA-07, FR-WA-08, `HA-WA-03`, UF-13, UF-23, BR-WA-02, BR-WA-03, BR-WA-05, BR-DRT-06, FS-KIO-05 | OQ-10 |
 | FS-INF-01 | Mata pelajaran dan jadwal pelajaran | R3 | Admin mengelola mata pelajaran dan jadwal pelajaran per rombel. Siswa dan staf melihat jadwal sebagai informasi. | FR-INF-01, FR-INF-02, `HA-INF-01`, `HA-INF-02` | — |
 | FS-INF-02 | Pengumuman | R3 | Admin membuat pengumuman dengan sasaran publik atau siswa. | FR-INF-03, `HA-INF-03`, `HA-INF-04`, UF-25 | — |
 | FS-INF-03 | Halaman publik | R3 | Pengunjung tanpa login melihat info sekolah, pengumuman publik, dan rekap agregat hari ini tanpa data individu. | FR-INF-04, FR-INF-05, AC-05, UF-25, NFR-10 | — |
-| FS-KRT-01 | Cetak kartu | R3 | Admin mencetak kartu siswa baru dan kartu pengganti dengan QR berisi NISN polos. | FR-KRT-01, FR-KRT-02, `HA-KRT-01`, UF-26, C-04, R-02 | OQ-13 (Session 7) |
+| FS-KRT-01 | Cetak kartu | R3 | Admin mencetak kartu siswa baru dan kartu pengganti dengan QR berisi NISN polos. | FR-KRT-01, FR-KRT-02, `HA-KRT-01`, UF-26, C-04, R-02 | Contoh kartu OSIS lama dari sekolah (OQ-13, terjawab sebagian di Session 7: tata letak kartu lama dan PDF A4 berisi 10 kartu, `08` §10.4) |
 
 Fitur R1 yang perlu diperhatikan agar R2 tidak memerlukan perubahan besar:
 
@@ -5312,13 +5330,13 @@ Fitur R1 yang perlu diperhatikan agar R2 tidak memerlukan perubahan besar:
 | `03-user-flow.md` | 0.3 | UF-02, UF-28, UF-12, UF-14, UF-15, UF-16, UF-17, UF-18, UF-19, UF-22, UF-27, dan UF-29 diperbarui sesuai keputusan Session 4b. Rujukan ke `04` ditambahkan. |
 | `05-business-rules.md` | 0.2 | BR-STS-07, BR-SCN-10, BR-KOR-08, BR-KOR-09, BR-IZN-07, BR-IZN-10, BR-IZN-11, BR-DRT-06, BR-DRT-07, dan BR-KAL-03 menjadi DECISION. BR-KOR-11 diganti dengan pembatalan presensi manual. BR-KOR-10, BR-IZN-05, BR-IZN-09, BR-JAM-10 (jadwal hari ini sebagai lapisan tersendiri), dan BR-REK-04 (hari yang belum final tidak dihitung) diperbarui. Kebutuhan data di §14 dilengkapi. |
 
-Perubahan dokumen karena keputusan Session 5 dicatat di `06` §18, dan karena keputusan Session 6 di `07` §18.
+Perubahan dokumen karena keputusan Session 5 dicatat di `06` §18, karena keputusan Session 6 di `07` §18, dan karena keputusan Session 7 di `08` §14.
 
 ## 14. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
 ### 14.1 Pertanyaan terbuka
 
-Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan Session 6 menjawab OQ-09 (`07`). Daftar lengkapnya ada di `00` §8.2.
+Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), Session 6 menjawab OQ-09 (`07`), dan Session 7 menjawab sebagian OQ-13 (`08`). Daftar lengkapnya ada di `00` §8.2.
 
 | OQ | Pertanyaan singkat | Fitur terdampak | Jadwal |
 |---|---|---|---|
@@ -5327,7 +5345,7 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 | OQ-10 | Provider gateway WhatsApp | FS-WA-01 s.d. FS-WA-03 | Sebelum R2 |
 | OQ-11 | Matriks laporan × format; isi flyer | FS-LAP-03, FS-LAP-05, FS-LAP-06 | Terjawab di Session 5 (`13` §4, LP-08) |
 | OQ-12 | Format nama file foto | FS-MD-08 | Terjawab di Session 5 (`13` IM-03) |
-| OQ-13 | Desain kartu siswa baru | FS-KRT-01 | Session 7 |
+| OQ-13 | Desain kartu siswa baru | FS-KRT-01 | Terjawab sebagian di Session 7: mengikuti kartu lama. Contoh kartu diserahkan sebelum R3. |
 | OQ-17 | Pencatatan pembukaan lampiran | FS-IZN-04, FS-IZN-06 | Session 9 |
 
 ### 14.2 Nilai yang dipastikan nanti
@@ -5345,10 +5363,10 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 | Batas waktu tanpa kontak sebelum stasiun disorot | Ditetapkan: 10 menit | FS-KIO-05 | Session 6 (DECISION) |
 | Jeda pengabaian NISN yang sama di kiosk | Ditetapkan: 5 detik | FS-KIO-02 | Session 6 (DECISION) |
 | Interval pembaruan dashboard | Ditetapkan: 30 detik | FS-LAP-01 | Session 6 (DECISION) |
-| Ukuran foto standar dan foto kiosk | Ditetapkan: 600×800 px dan 300×400 px | FS-MD-07, FS-KIO-01 | Session 6 (DECISION); ukuran tampil di Session 7 |
+| Ukuran foto standar, foto kiosk, dan foto kecil | Ditetapkan: 600×800 px, 300×400 px, dan 120×160 px; ukuran tampil di `08` UI-23 | FS-MD-07, FS-KIO-01 | Session 6 dan Session 7 (DECISION) |
 | Masa berlaku login akun stasiun | Ditetapkan: 90 hari sejak kontak terakhir | FS-AKN-01, FS-AKN-04 | Session 6 (DECISION) |
-| Lama hasil scan tampil dan jenis bunyi | — | FS-KIO-02 | Session 7 |
-| Jumlah slip per halaman A4 | — | FS-AKN-05 | Session 7 |
+| Lama hasil scan tampil dan jenis bunyi | Ditetapkan: 3 dan 6 detik; bunyi Web Audio API (`08` UI-41, UI-45) | FS-KIO-02 | Session 7 (DECISION) |
+| Jumlah slip per halaman A4 | Ditetapkan: 8 | FS-AKN-05 | Session 7 (DECISION) |
 | Aturan password, username, dan panjang password awal | — | FS-AKN-02, FS-AKN-03 | Session 9 |
 | Batas percobaan login dan masa berlaku sesi staf dan siswa | — | FS-AKN-01 | Session 9 |
 | Format dan ukuran file unggahan | — | §4.9 | Session 9 |
@@ -5361,3 +5379,4 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 | 0.1 | 2026-10-03 | Draft awal dari Session 4b: 40 fitur R1 dirinci beserta acceptance criteria, 9 fitur R2/R3 sebagai kerangka, ketentuan umum, traceability, dan keputusan Session 4b. |
 | 0.2 | 2026-10-04 | Keputusan Session 5 (§2.4). FS-MD-09 (atribut tambahan siswa) ditambahkan beserta AC-MD-09-01 s.d. AC-MD-09-03. FS-MD-03 (tingkat tidak dapat diubah setelah ada penempatan), FS-MD-04, FS-MD-05, FS-MD-06, dan FS-MD-08 diperbarui, dengan AC-MD-04-07, AC-MD-05-04, AC-MD-06-05, dan AC-MD-08-03 ditambahkan. FS-KIO-04 (tanda di luar aturan dinilai ulang), FS-PRS-05 (definisi koreksi), FS-PRS-11, FS-IZN-01 s.d. FS-IZN-03 (paling banyak 3 lampiran), FS-IZN-06, FS-LAP-01, FS-LAP-03 (pembulatan bilangan bulat, AC-LAP-03-01), §4.4, §4.5, §11, §12, dan §14 diperbarui. |
 | 0.3 | 2026-10-04 | Keputusan Session 6 (§2.5, `07`). §4.5 dan §4.6 merujuk mekanisme di `07`. Nilai parameter FS-AKN-01, FS-AKN-04, FS-MD-07, FS-KIO-01 s.d. FS-KIO-05, dan FS-LAP-01 ditetapkan, dan FS-MD-08 memuat usulan batas unggah serta pemrosesan foto bertahap. Masa berlaku akun stasiun disebut masa login, bukan sesi (FS-AKN-01, FS-AKN-04, FS-KIO-01, FS-KIO-03, FS-KIO-04). Selisih jam diukur server dari jam laptop di setiap kiriman (FS-KIO-03, FS-KIO-04). FS-AKN-03, FS-MD-03, FS-MD-04, FS-IZN-03, pengantar §7, §11, §13, §14.1, dan §14.2 diperbarui. OQ-09 terjawab. |
+| 0.4 | 2026-10-04 | Keputusan Session 7 (§2.6, `08`). §1 dan pengantar catatan antarmuka awal merujuk `08`. §4.8, FS-AKN-05, FS-MD-03, FS-MD-07, FS-KIO-01, FS-KIO-02, FS-KIO-02 E7, FS-PRS-05, FS-LAP-03, FS-LAP-04, §11, §13, §14.1, dan §14.2 diperbarui. OQ-13 terjawab sebagian. |

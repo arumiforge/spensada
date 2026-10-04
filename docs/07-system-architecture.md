@@ -2,15 +2,15 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
+| Versi | 0.2 (draft, menunggu review) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 6 (System Architecture) |
+| Sumber | Discovery Session 6 (System Architecture). Diperbarui dengan keputusan Session 7 (UI/UX & Design System, §2.4). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan batasan (`C-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [03-user-flow.md](03-user-flow.md): alur pengguna (`UF-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan ketentuan umum (§4). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). [06-database-design.md](06-database-design.md): tabel dan aturan data (`DB-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export. |
-| Dokumen terkait | `08-ui-ux-design-system.md` (Session 7), `09-page-and-route-specification.md` dan `10-api-specification.md` (Session 8), serta `12-security.md` (Session 9). Keempatnya belum dibuat. |
+| Dokumen terkait | [08-ui-ux-design-system.md](08-ui-ux-design-system.md): tampilan, aset CSS, font, dan ikon. `09-page-and-route-specification.md` dan `10-api-specification.md` (Session 8), serta `12-security.md` (Session 9). Ketiganya belum dibuat. |
 
 Dokumen ini menetapkan arsitektur sistem Spensada: hosting dan instalasi, library, struktur aplikasi CodeIgniter 4, arsitektur kiosk, mekanisme hitung ulang status, konkurensi, waktu, sesi dan login, pembaruan halaman, penyimpanan file, proses terjadwal, pengujian, serta panduan lokal dan production. Dokumen ini menjawab OQ-09.
 
-Route dan bentuk API ditetapkan di Session 8, tampilan di Session 7, dan rincian keamanan di Session 9. Dokumen ini hanya menetapkan mekanisme yang dibutuhkan dokumen tersebut.
+Route dan bentuk API ditetapkan di Session 8, tampilan di `08` (Session 7), dan rincian keamanan di Session 9. Dokumen ini hanya menetapkan mekanisme yang dibutuhkan dokumen tersebut.
 
 ## 1. Cara membaca dokumen ini
 
@@ -33,7 +33,7 @@ Route dan bentuk API ditetapkan di Session 8, tampilan di Session 7, dan rincian
 | `.gitignore` | Dibuat di PR Session 6, sebelum commit kode pertama. | R-18, ARS-09 | DECISION |
 | Pembaca QR | zxing-wasm. File JavaScript dan WASM-nya disajikan dari server sendiri dan disimpan di cache kiosk. | R-04, NFR-16, ARS-10 | DECISION |
 | Export PDF | mPDF. | `13` IE-12, ARS-10 | DECISION |
-| Flyer PNG | Cara pembuatan dipilih bersama desain template di Session 7. | R-19, `13` LP-08 | DECISION (ditunda ke Session 7) |
+| Flyer PNG | Ditetapkan di Session 7: Canvas API tanpa library (§2.4). | R-19, `13` LP-08 | DECISION |
 | Foto massal | Admin mengunggah satu file ZIP, atau beberapa file sekaligus. ZIP diekstrak di server. | FS-MD-08, `13` IM-13, ARS-54 | DECISION |
 | Hitung ulang status | Antrean di database. Catatan antrean ditulis dalam transaksi yang sama dengan perubahan sumber, lalu diproses segera setelah commit di permintaan yang sama. Sisanya dilanjutkan permintaan berikutnya, cron, atau perintah CLI. | `06` §11.4, §16, ARS-35, ARS-36 | DECISION |
 | Perubahan bersamaan | `updated_at` dipakai sebagai token versi, dan dibandingkan di klausa `WHERE` saat menyimpan. | DB-11, `04` §4.6, ARS-40 | DECISION |
@@ -69,10 +69,22 @@ Tabel ini memuat nilai dari `04` §14.2 dan `05` §16 yang dijadwalkan di Sessio
 | Interval kontak berkala | 60 detik | FS-KIO-03 |
 | Toleransi selisih jam laptop | 2 menit | FS-KIO-04, BR-SCN-08 |
 | Batas tanpa kontak sebelum stasiun disorot | 10 menit | FS-KIO-05 |
-| Jeda pengabaian NISN yang sama | 5 detik. Lama hasil scan tampil tetap ditetapkan di Session 7. | FS-KIO-02 |
+| Jeda pengabaian NISN yang sama | 5 detik. Lama hasil scan tampil ditetapkan di Session 7 (`08` UI-41). | FS-KIO-02 |
 | Interval pembaruan dashboard | 30 detik, juga untuk status stasiun | FS-LAP-01, FS-KIO-05 |
-| Ukuran foto | Foto standar paling besar 600×800 px, dan foto kiosk 300×400 px, dalam JPEG. Ukuran tampil ditetapkan di Session 7. | FS-MD-07, FS-KIO-01 |
+| Ukuran foto | Foto standar paling besar 600×800 px, dan foto kiosk 300×400 px, dalam JPEG. Foto kecil 120×160 px dan ukuran tampil ditetapkan di Session 7 (§2.4, `08` UI-22, UI-23). | FS-MD-07, FS-KIO-01 |
 | Masa berlaku login akun stasiun | 90 hari sejak kontak terakhir. Masa sesi staf dan siswa tetap ditetapkan di Session 9. | FS-AKN-01, FS-AKN-04 |
+
+### 2.4 Keputusan Session 7
+
+Keputusan Session 7 yang berdampak ke arsitektur. Rinciannya ada di `08` §2.
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| Flyer PNG | Canvas API tanpa library, canvas 1080×1350 px, dengan pratinjau dari canvas yang sama. | R-19, ARS-10, `08` UI-65 | DECISION |
+| Tampilan | CSS sendiri dengan token, tanpa library dan tanpa build. Ikon dari subset Lucide dalam satu file SVG. | ARS-10, ARS-19, `08` UI-08, UI-20 | DECISION |
+| Huruf | Plus Jakarta Sans, disalin ke server dan dipakai di aplikasi, flyer, dan PDF (mPDF). | ARS-10, ARS-22, `08` UI-13 | DECISION |
+| Foto kecil | Ukuran ketiga 120×160 px untuk daftar. | ARS-51, ARS-53 | DECISION |
+| QR kartu | chillerlan/php-qrcode 6 untuk kartu R3, yang dicetak sebagai PDF A4 berisi 10 kartu. | ARS-10, OQ-13, `08` UI-63 | DECISION |
 
 ## 3. Gambaran sistem
 
@@ -274,8 +286,10 @@ $RECYCLE.BIN/
 | `phpoffice/phpspreadsheet` | ^5.10 | MIT | Membaca XLSX import (FS-MD-06, `13` IM-01, IM-02) dan membuat template import (R1); export XLSX (R2) | R1 | Composer | RECOMMENDATION |
 | `mpdf/mpdf` | ^8.3 | GPL-2.0-only | Export PDF (`13` IE-10, IE-12) | R2 | Composer | DECISION |
 | `zxing-wasm`, bagian reader | 3.1.4, dikunci | MIT | Membaca QR dari webcam di kiosk (R-04) | R1 | Disalin ke `public/aset/vendor/` dengan susunan folder `dist/` paket dan LICENSE-nya | DECISION |
-| `chillerlan/php-qrcode` | ^6.0 | MIT atau Apache-2.0 | QR berisi NISN di kartu, keluaran SVG (FS-KRT-01) | R3 | Composer | RECOMMENDATION (dipastikan bersama OQ-13) |
-| Flyer PNG | — | — | Canvas API tanpa library, atau template HTML dengan library kecil seperti snapdom | R2 | — | DECISION (ditunda ke Session 7) |
+| `chillerlan/php-qrcode` | ^6.0 (saat ini 6.0.1) | MIT atau Apache-2.0 | QR berisi NISN di kartu PDF (FS-KRT-01, `08` UI-63) | R3 | Composer | DECISION (Session 7) |
+| Flyer PNG | — | — | Canvas API tanpa library (`08` §11) | R2 | — | DECISION (Session 7) |
+| Plus Jakarta Sans | 2.071 | SIL OFL 1.1 | Huruf aplikasi, flyer, dan PDF (`08` UI-13 s.d. UI-15). WOFF2 untuk browser, TTF statis untuk mPDF. | R1 | WOFF2 disalin ke `public/aset/vendor/plus-jakarta-sans/2.071/`, TTF ke luar `public/` | DECISION (font); RECOMMENDATION (versi dan lokasi) |
+| Lucide (ikon) | 1.52.0 | ISC | Subset ikon dalam satu sprite SVG (`08` UI-20) | R1 | Disalin ke `public/aset/ikon/` beserta LICENSE | DECISION (subset Lucide); RECOMMENDATION (versi dan lokasi) |
 | `phpunit/phpunit`, `fakerphp/faker`, `mikey179/vfsstream` | Mengikuti appstarter | BSD-3-Clause, MIT, BSD-3-Clause | Pengujian dan data contoh (`require-dev`) | R1 | Composer | RECOMMENDATION |
 | Node.js | LTS, versi 22.7 atau lebih baru | MIT | Uji modul JavaScript kiosk dengan `node --test`, tanpa paket npm (ARS-59). Versi 22.7 mengenali modul ES tanpa `package.json`. | R1 | Dipasang di laptop pengembang | DECISION |
 
@@ -386,8 +400,10 @@ public/
   kiosk-pemindai.js      Web Worker pembaca QR (ARS-22)
   aset/
     css/  js/            aset panel, portal, dan halaman publik
-    kiosk/               modul JavaScript, CSS, bunyi, ikon, dan manifest kiosk
+    ikon/                sprite ikon Lucide (`08` UI-20)
+    kiosk/               modul JavaScript, CSS, dan manifest kiosk; bunyi dibuat Web Audio (`08` UI-45)
     vendor/zxing-wasm/3.1.4/
+    vendor/plus-jakarta-sans/2.071/   font WOFF2 (`08` UI-13)
 tests/
   kasus/                 kasus uji JSON bersama (ARS-59)
   js/                    uji modul kiosk dengan node --test
@@ -401,7 +417,7 @@ writable/
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-18 | **Migration dan seeder.** Migration mengikuti `06`: satu file per tabel, atau per tabel induk beserta anaknya, dengan urutan sesuai foreign key. Kolom turunan (DB-10) dan `CHECK` ditulis dengan SQL langsung. Setiap migration memiliki langkah `down`, agar rilis dapat dikembalikan (ARS-08). Migration tabel R2 ditulis saat R2 (`06` §14.1). Seeder `PengaturanAwal` mengisi kunci `pengaturan` dengan default di `06` §6.1 dan dijalankan di setiap instalasi. Seeder `DataContoh` mengisi data fiktif untuk lokal dan pengujian, dan menolak berjalan di production. | RECOMMENDATION |
-| ARS-19 | **Tampilan dan JavaScript di luar kiosk.** Panel, portal, dan halaman publik memakai View Layouts CI4 per area. JavaScript ditulis sebagai modul ES kecil per halaman di `public/aset/js/`, tanpa framework dan tanpa build (C-01). Formulir tetap bekerja tanpa JavaScript, kecuali fitur yang memang membutuhkannya: pembaruan berkala (ARS-50), pratinjau unggahan, dan flyer (R2). Desain tampilan ditetapkan di Session 7. | RECOMMENDATION |
+| ARS-19 | **Tampilan dan JavaScript di luar kiosk.** Panel, portal, dan halaman publik memakai View Layouts CI4 per area. JavaScript ditulis sebagai modul ES kecil per halaman di `public/aset/js/`, tanpa framework dan tanpa build (C-01). Formulir tetap bekerja tanpa JavaScript, kecuali fitur yang memang membutuhkannya: pembaruan berkala (ARS-50), pratinjau unggahan, dan flyer (R2). Tampilan memakai CSS sendiri tanpa library dan tanpa build, dengan aturan di `08` (DECISION, Session 7). | DECISION (CSS sendiri, Session 7); RECOMMENDATION (rincian) |
 
 ## 6. Kiosk
 
@@ -480,7 +496,7 @@ sequenceDiagram
 
 1. `public/sw-kiosk.js` didaftarkan dengan cakupan `/kiosk`, sehingga hanya halaman kiosk yang dikendalikan. Panel, portal, dan halaman publik tidak memakai Service Worker. Cakupan dicocokkan sebagai awalan alamat.
 2. Web Worker pembaca QR dikendalikan Service Worker menurut alamat skripnya, bukan menurut halaman yang membukanya. Karena itu skripnya ditaruh di `public/kiosk-pemindai.js`, yang alamatnya diawali `/kiosk`. Folder fisik `public/kiosk/` tidak dibuat, karena Nginx akan melayani folder itu, dan route CI4 `/kiosk` tidak pernah tercapai.
-3. Saat dipasang, Service Worker menyimpan kerangka halaman `/kiosk`, skrip worker, aset kiosk, dan file zxing-wasm (ARS-10) di satu cache yang namanya memuat versi aplikasi. Setiap file diambil dengan `{ cache: 'reload' }`, agar tidak berasal dari cache HTTP browser. Pemasangan gagal bila ada respons pengalihan atau respons selain 2xx, misalnya karena login sudah berakhir, lalu diulang saat kiosk dibuka berikutnya.
+3. Saat dipasang, Service Worker menyimpan kerangka halaman `/kiosk`, skrip worker, aset kiosk, file font dan sprite ikon (`08` UI-14, UI-20), dan file zxing-wasm (ARS-10) di satu cache yang namanya memuat versi aplikasi. Setiap file diambil dengan `{ cache: 'reload' }`, agar tidak berasal dari cache HTTP browser. Pemasangan gagal bila ada respons pengalihan atau respons selain 2xx, misalnya karena login sudah berakhir, lalu diulang saat kiosk dibuka berikutnya.
 4. Navigasi ke `/kiosk`, termasuk `/kiosk/` dan `/kiosk?…`, dijawab dengan kerangka dari cache versi yang aktif, dengan kunci tetap `/kiosk`. Kerangka dari jaringan hanya dipakai bila cache belum ada. Dengan begitu kerangka dan asetnya selalu berasal dari versi yang sama, dan kiosk tetap terbuka tanpa internet (R-08, FR-KIO-09).
 5. Aset kiosk, skrip worker, dan file zxing-wasm juga diambil dari cache versi yang aktif. Alamat aset tidak perlu memuat versi, karena setiap versi memiliki cache sendiri. Cara ini juga cocok dengan impor relatif antarmodul, yang tidak membawa query versi.
 6. API `/kiosk/api/…` selalu lewat jaringan dan tidak disimpan Service Worker. Data kiosk tersimpan di IndexedDB. Karena kerangka diambil dari cache, status login diketahui dari jawaban API (ARS-13): jawaban `login_ulang` membuka halaman login (ARS-31), dan jawaban `ditolak` membuka halaman awal area akun yang sedang login (AC-AKN-01-05). Logout dari kiosk lebih dulu mengosongkan penanda login di `meta`, sehingga kerangka dari cache tidak menampilkan data setelah logout.
@@ -725,7 +741,7 @@ Server-Sent Events dan WebSocket tidak dipakai, karena setiap koneksi terbuka me
 |---|---|---|
 | ARS-51 | **Lokasi dan nama file.** Semua file disimpan di `writable/uploads/` (DB-15) dengan nama acak 32 karakter heksadesimal, di folder pada tabel di bawah. | RECOMMENDATION |
 | ARS-52 | **Penyajian file.** File hanya disajikan lewat controller setelah hak diperiksa (`04` §4.9, R-17). Foto disajikan bagi pemegang hak lihat profil siswa (`HA-MD-05`) dan bagi akun stasiun. Lampiran disajikan bagi pemegang `HA-IZN-05`. Tipe file ditentukan server dengan `finfo` saat diunggah, dan dibatasi daftar format yang diizinkan (Session 9). Lampiran dikirim sebagai unduhan (`Content-Disposition: attachment`), kecuali gambar dan PDF yang boleh tampil di browser. Respons memakai tipe yang tersimpan, `X-Content-Type-Options: nosniff`, `Content-Security-Policy: sandbox`, dan `Cache-Control: no-store`. Dengan begitu, file tidak dapat menjalankan skrip dari domain aplikasi, dan foto serta lampiran tidak tertinggal di cache browser perangkat bersama atau laptop stasiun (R-07, R-17). Logo disajikan tanpa login dan boleh disimpan di cache (`04` §4.9 butir 2). Pencatatan pembukaan lampiran mengikuti OQ-17. | RECOMMENDATION |
-| ARS-53 | **Foto.** Foto diproses di server dengan library Image CI4 (GD), dengan urutan di bawah tabel. Hasilnya muat dalam 600×800 px untuk foto standar dan 300×400 px untuk foto kiosk, tanpa dipotong, dalam JPEG. Penyimpanan ulang membuang metadata EXIF, termasuk lokasi. File asli tidak disimpan. Foto lama dihapus setelah penggantian tersimpan, dan penggantiannya dicatat di log data siswa (FR-MD-09). Ukuran tampil ditetapkan di Session 7, dan format serta ukuran unggahan di Session 9. | DECISION (ukuran); RECOMMENDATION (rincian) |
+| ARS-53 | **Foto.** Foto diproses di server dengan library Image CI4 (GD), dengan urutan di bawah tabel. Hasilnya muat dalam 600×800 px untuk foto standar, 300×400 px untuk foto kiosk, dan 120×160 px untuk foto kecil, tanpa dipotong, dalam JPEG. Penyimpanan ulang membuang metadata EXIF, termasuk lokasi. File asli tidak disimpan. Foto lama dihapus setelah penggantian tersimpan, dan penggantiannya dicatat di log data siswa (FR-MD-09). Ukuran tampil ada di `08` UI-23, dan format serta ukuran unggahan di Session 9. | DECISION (ukuran; foto kecil, Session 7); RECOMMENDATION (rincian) |
 | ARS-54 | **Foto massal.** Admin mengunggah satu file ZIP, atau beberapa file gambar sekaligus (FS-MD-08). Rincian pemeriksaannya di butir di bawah tabel. | DECISION (ZIP dan beberapa file); RECOMMENDATION (rincian) |
 | ARS-55 | **File sementara.** Import siswa, import penempatan, dan foto massal memakai dua langkah: pratinjau, lalu konfirmasi (FS-MD-06, FS-MD-08, `13` IM-11). File yang diunggah disimpan di `tmp/<token>/` bersama hasil pratinjaunya, dan token itu dibawa formulir konfirmasi. Folder dihapus setelah konfirmasi atau pembatalan. Sisa folder yang lebih tua dari 24 jam dihapus tugas harian (ARS-56). | RECOMMENDATION |
 
@@ -733,6 +749,7 @@ Server-Sent Events dan WebSocket tidak dipakai, karena setiap koneksi terbuka me
 |---|---|
 | `foto/` | Foto standar siswa. `siswa.foto_file` menyimpan path relatifnya. |
 | `foto/kiosk/` | Foto kiosk, dengan nama file yang sama dengan foto standar. |
+| `foto/kecil/` | Foto kecil 120×160 px untuk daftar, dengan nama file yang sama dengan foto standar (Session 7, `08` UI-22). |
 | `lampiran/<tahun>/<bulan>/` | Lampiran izin (`06` §10.4). |
 | `logo/` | Logo sekolah. |
 | `tmp/<token>/` | File import dan foto massal di antara pratinjau dan konfirmasi (ARS-55). |
@@ -744,7 +761,7 @@ Urutan pemrosesan foto (ARS-53):
 3. Gambar dengan transparansi, misalnya PNG, diberi latar putih dengan `flatten(255, 255, 255)`.
 4. Foto diperkecil dengan `resize(lebar, tinggi, true)` hanya bila lebih besar dari ukuran tujuan, agar foto kecil tidak diperbesar.
 5. Hasil diubah ke JPEG dengan `convert(IMAGETYPE_JPEG)`, lalu disimpan dengan kualitas 85. Tanpa `convert()`, CI4 menyimpan format asal walaupun nama file berakhiran `.jpg`.
-6. Foto kiosk dibuat dari foto standar hasil langkah 5.
+6. Foto kiosk dan foto kecil dibuat dari foto standar hasil langkah 5.
 
 Pemeriksaan foto massal (ARS-54):
 
@@ -901,7 +918,7 @@ Kiosk memasang versi baru di latar belakang. Versi itu aktif setelah petugas men
 | R-16 | Cron setiap menit sudah tersedia untuk outbox WA di R2: ARS-56. |
 | R-17 | File di luar `public/` yang disajikan setelah hak diperiksa: ARS-51, ARS-52. Backup: ARS-06. |
 | R-18 | Composer appstarter dan `.gitignore`: ARS-07, ARS-09. |
-| R-19 | Ditunda ke Session 7 (§2.1). |
+| R-19 | Canvas API tanpa library (§2.4, `08` UI-65). |
 | R-20 | Hitung ulang per tanggal secara kelompok, dan index di `06` §15: ARS-34. |
 
 ### 17.2 Kebutuhan non-fungsional → arsitektur
@@ -970,12 +987,10 @@ File `.gitignore` di akar repository juga dibuat di Session 6 (ARS-09).
 
 ## 19. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 6 menjawab OQ-09, dan tidak menambah OQ baru.
+Session 6 menjawab OQ-09, dan tidak menambah OQ baru. Hal yang dijadwalkan di Session 7 sudah ditetapkan di `08` §2.
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
-| Cara pembuatan flyer PNG | R-19, `13` LP-08 | Session 7 |
-| Ukuran tampil foto, lama hasil scan tampil, dan bunyi | ARS-53, FS-KIO-02 | Session 7 |
 | Route dan bentuk API, termasuk sinkron kiosk | ARS-12, ARS-23, ARS-29 | Session 8 |
 | Pengaturan CSRF, cookie, header keamanan termasuk kebijakan keamanan konten, PIN petugas, masa sesi staf dan siswa, serta pembatasan percobaan login | ARS-11, ARS-13, ARS-29, ARS-30, ARS-47 | Session 9 |
 | Format dan ukuran file unggahan, batas piksel foto, serta batas ZIP | ARS-04, ARS-53, ARS-54 | Session 9 |
@@ -983,7 +998,7 @@ Session 6 menjawab OQ-09, dan tidak menambah OQ baru.
 | Tempat kredensial gateway WA | `06` §6.1 | Session 9, sebelum R2 (OQ-10) |
 | Nilai awal `status_dibangun_sampai` saat go-live | ARS-37 | Session 10 |
 | Lisensi proyek di `LICENSE` dan README, termasuk kecocokan dengan lisensi mPDF | ARS-07 langkah 5, ARS-10 | Pemilik proyek, sebelum migrasi appstarter |
-| Library QR untuk kartu | ARS-10 | Sebelum R3 (OQ-13) |
+| Contoh kartu OSIS lama untuk desain kartu rinci | ARS-10, OQ-13 | Sekolah, sebelum R3 |
 | Resolusi kamera, jeda antartombol scanner, dan target 1 detik di laptop sekolah | ARS-25, ARS-26 | Uji di laptop sekolah, sebelum uji coba R1 (OQ-08) |
 | Jumlah proses PHP-FPM dan batas waktu pemrosesan antrean | ARS-04, ARS-36 | Uji beban sebelum uji coba R1 |
 | Jumlah stasiun | NFR-02 | Sebelum uji coba R1 (OQ-08) |
@@ -993,3 +1008,4 @@ Session 6 menjawab OQ-09, dan tidak menambah OQ baru.
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 6: keputusan arsitektur, hosting dan instalasi, library, struktur aplikasi, kiosk, hitung ulang lewat antrean, konkurensi, waktu, sesi, pembaruan halaman, file unggahan, cron dan perintah CLI, pengujian, panduan lokal dan production, serta traceability. OQ-09 terjawab. |
+| 0.2 | 2026-10-04 | Keputusan Session 7 (§2.4, `08`). ARS-10 (flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide), ARS-19, ARS-22, ARS-51, ARS-53 (foto kecil), §2.1, §2.3, §5.3, §17.1, dan §19 diperbarui. |
