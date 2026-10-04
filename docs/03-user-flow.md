@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.4 (draft) |
+| Versi | 0.5 (draft) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), dan Session 5 (Database Architecture). |
-| Bergantung pada | [00-project-overview.md](00-project-overview.md), [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md) |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), Session 5 (Database Architecture), dan Session 6 (System Architecture). |
+| Bergantung pada | [00-project-overview.md](00-project-overview.md), [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [07-system-architecture.md](07-system-architecture.md) |
 
 ## 1. Cara membaca dokumen ini
 
@@ -73,7 +73,7 @@ Bila semua stasiun tidak dapat dipakai, guru piket mengaktifkan mode darurat (UF
 ### UF-01 — Penyiapan awal sistem
 
 - **Aktor:** admin.
-- **Prasyarat:** aplikasi terpasang dan akun admin pertama tersedia (Session 6).
+- **Prasyarat:** aplikasi terpasang, dan akun admin pertama sudah dibuat lewat perintah CLI (`07` ARS-49).
 - **Rujukan:** FR-MD-01 s.d. FR-MD-08, FR-PRS-02, FR-PRS-03, FR-PRS-11, FR-AKN-02, FR-AKN-03.
 
 Alur utama:
@@ -196,9 +196,10 @@ Alur pemasangan:
 1. Admin membuat akun stasiun, misalnya "Gerbang 1".
 2. Admin menyiapkan laptop:
    - akun Windows non-admin (R-05);
-   - profil browser khusus kiosk (R-07).
+   - profil browser khusus kiosk (R-07);
+   - sinkron waktu otomatis Windows aktif, dan laptop tidak tidur selama jam sekolah (`07` ARS-32).
 3. Admin membuka alamat kiosk lewat HTTPS (R-01), lalu login dengan akun stasiun.
-4. Admin mengizinkan akses kamera dan penyimpanan permanen di browser (NFR-03).
+4. Admin memasang kiosk sebagai aplikasi di browser, lalu mengizinkan akses kamera. Kiosk memastikan penyimpanan permanen aktif (NFR-03, `07` ARS-21).
 5. Kiosk memuat data siswa aktif beserta fotonya, lalu siap dipakai.
 6. Laptop ditempatkan di gerbang utama.
 
@@ -273,7 +274,7 @@ Alur utama:
 
 Pengecualian:
 
-- **E1** — Tidak ada internet: kiosk tetap dapat dipakai dengan data terakhir dimuat (FR-KIO-09), dan menampilkan kapan data itu dimuat. Batas umur data yang masih dianggap aman ditetapkan di Session 6.
+- **E1** — Tidak ada internet: kiosk tetap dapat dipakai dengan data terakhir dimuat (FR-KIO-09), dan menampilkan kapan data itu dimuat. Bila data lebih tua dari 3 hari, kiosk menampilkan peringatan untuk memuat ulang data saat online (DECISION, Session 6, `04` FS-KIO-01).
 - **E2** — Kiosk belum pernah memuat data: scan belum dapat dilakukan. Laptop harus online sekali.
 - **E3** — Akun stasiun dinonaktifkan atau sesinya berakhir: kiosk meminta login ulang, dan petugas menghubungi admin.
 - **E4** — Hari ini bukan hari sekolah menurut kalender: kiosk menampilkan keterangannya dan menolak semua scan (`05` BR-JAM-06).
@@ -440,7 +441,7 @@ Alur utama:
    - wali kelas: rombelnya sendiri;
    - staf tanpa tugas khusus: hanya angka.
 4. Daftar nama menandai siswa berstatus Izin, Sakit, atau Dispensasi yang ternyata memiliki presensi masuk, dan siswa yang memiliki presensi pulang tanpa presensi masuk. Penanda yang sama tampil di daftar presensi rombel per tanggal dan di riwayat siswa, termasuk untuk tanggal lampau (DECISION, Session 4b, `05` BR-STS-07).
-5. Data diperbarui seiring sinkron dari stasiun. Cara penyegarannya ditetapkan di Session 6 dan 7.
+5. Data diperbarui seiring sinkron dari stasiun. Dashboard memperbarui dirinya setiap 30 detik tanpa memuat ulang halaman (DECISION, Session 6, `07` ARS-50).
 
 ### UF-16 — Koreksi status presensi
 
@@ -659,7 +660,7 @@ Staf:
 
 Pengecualian:
 
-- **E1** — Satu-satunya admin lupa password: password dipulihkan lewat perintah di server (CLI CodeIgniter `spark`). Perintah ini dirancang di Session 6 (RECOMMENDATION).
+- **E1** — Satu-satunya admin lupa password: password dipulihkan lewat perintah `php spark admin:pulihkan` di server (DECISION, Session 6, `07` ARS-49).
 
 ## 8. Laporan
 
@@ -739,3 +740,4 @@ OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4. Alur yang terdampak su
 | 0.2 | 2026-10-03 | Keputusan Session 4 (`05`). Status mekanisme slip di UF-05 menjadi DECISION. Garis waktu, UF-01, UF-09 s.d. UF-19, dan UF-23 disesuaikan: jendela scan, penutupan sesi otomatis, scan ganda, prioritas status, koreksi, batas mundur, dan dispensasi. UF-27 (mode darurat), UF-28 (ubah jadwal hari ini), dan UF-29 (ubah keputusan izin/sakit/dispensasi) ditambahkan. |
 | 0.3 | 2026-10-03 | Keputusan Session 4b (`04` §2). UF-02 (nomor WA opsional), UF-12 E6 (pembatalan presensi manual), UF-14 E3–E4, UF-15 (penanda), UF-16 E3–E4, UF-17 E3, UF-18 E2, UF-19 E2–E3, UF-22 (isi riwayat di portal siswa), UF-27 (langkah 7, E4, E5), UF-28 langkah 3 (jadwal hari ini), dan UF-29 E3 (perubahan per kelompok) diperbarui. §1 merujuk `04`. |
 | 0.4 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). UF-02 (kolom template, E2 NISN yang sudah ada dilewati), UF-03 (format nama file foto), UF-07 (pindah rombel), UF-08 langkah 2 (penempatan massal), UF-22 (matriks laporan), dan UF-24 (isi flyer) diperbarui. OQ-11 dan OQ-12 dihapus dari §10 karena terjawab. |
+| 0.5 | 2026-10-04 | Keputusan Session 6 (`07`). UF-01 (admin pertama), UF-06 langkah 2 dan 4 (penyiapan laptop dan pemasangan kiosk), UF-09 E1 (batas umur data), UF-15 langkah 5 (pembaruan dashboard), dan UF-21 E1 (pemulihan admin) diperbarui. |

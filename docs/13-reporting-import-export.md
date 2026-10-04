@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
+| Versi | 0.2 (draft, menunggu review) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 5 (Database Architecture) |
-| Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): FR-MD-05, FR-MD-07, FR-LAP-02 s.d. FR-LAP-05. [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [04-feature-specification.md](04-feature-specification.md): FS-MD-05, FS-MD-06, FS-MD-08, FS-LAP-01 s.d. FS-LAP-06. [05-business-rules.md](05-business-rules.md): aturan rekap (§12). [06-database-design.md](06-database-design.md): tabel dan aturan baca status harian (§11). |
+| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, `07`). |
+| Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): FR-MD-05, FR-MD-07, FR-LAP-02 s.d. FR-LAP-05. [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [04-feature-specification.md](04-feature-specification.md): FS-MD-05, FS-MD-06, FS-MD-08, FS-LAP-01 s.d. FS-LAP-06. [05-business-rules.md](05-business-rules.md): aturan rekap (§12). [06-database-design.md](06-database-design.md): tabel dan aturan baca status harian (§11). [07-system-architecture.md](07-system-architecture.md): library, penyimpanan file, dan foto. |
 
 Dokumen ini menetapkan laporan dan formatnya, isi flyer kehadiran, template import siswa, import penempatan, dan format nama file foto untuk upload massal. Dokumen ini menjawab OQ-11 dan OQ-12.
 
@@ -35,12 +35,14 @@ Laporan di layar termasuk R1 dan dirinci di `04`, kecuali tampilan rekap semua r
 | Penempatan massal | Dua cara: per rombel asal ke rombel tujuan (FS-MD-05), dan lewat file import penempatan untuk pengacakan rombel (IM-02). | — | DECISION |
 | Pembulatan persentase | Persentase kehadiran ditampilkan sebagai bilangan bulat (IE-04). | — | DECISION |
 
+Keputusan Session 6 yang berdampak ke dokumen ini: pengecualian rekap rapor semester disetujui (IE-02, LP-03), PDF dibuat dengan mPDF (IE-12), dan foto massal dapat diunggah dalam satu ZIP atau beberapa file sekaligus (§8). Rinciannya ada di `07` §2.
+
 ## 3. Ketentuan umum
 
 | ID | Ketentuan | Status |
 |---|---|---|
 | IE-01 | **Satu sumber angka.** Semua laporan kehadiran (LP-01 s.d. LP-05 dan LP-08), di layar maupun file, membaca `status_harian` dengan aturan baca `06` §11.3. Tidak ada laporan yang menghitung status dengan cara lain, sehingga angka di layar, file, dan flyer selalu sama. | RECOMMENDATION |
-| IE-02 | **Rombel per tanggal.** Laporan per rombel memakai rombel siswa pada setiap tanggal (BR-REK-05), kecuali rekap rapor semester (LP-03). | DECISION (BR-REK-05); RECOMMENDATION (pengecualian LP-03) |
+| IE-02 | **Rombel per tanggal.** Laporan per rombel memakai rombel siswa pada setiap tanggal (BR-REK-05), kecuali rekap rapor semester (LP-03). | DECISION (BR-REK-05; pengecualian LP-03, Session 6) |
 | IE-03 | **Hari ini belum final.** Laporan yang mencakup hari ini mengikuti BR-REK-04. File dan flyer memuat tanda "Data hari ini belum final, dibuat pukul JJ.MM". | DECISION (BR-REK-04); RECOMMENDATION (tanda di file dan flyer) |
 | IE-04 | **Pembulatan.** Persentase kehadiran dihitung dari jumlah hari, lalu dibulatkan ke bilangan bulat terdekat. Nilai tepat setengah dibulatkan ke atas, misalnya 87,5% menjadi 88% dan 87,4% menjadi 87%. Persentase baris total dihitung dari jumlah total, bukan dari rata-rata persentase baris. Pembulatan hanya dilakukan saat ditampilkan atau ditulis ke file. | DECISION (bilangan bulat); RECOMMENDATION (setengah ke atas) |
 | IE-05 | **Hak dan cakupan.** Export mengikuti hak dan cakupan laporan yang sama di layar, ditambah `HA-LAP-05` (§4). Isi file sama dengan yang boleh dilihat pengguna di layar. | RECOMMENDATION |
@@ -50,7 +52,7 @@ Laporan di layar termasuk R1 dan dirinci di `04`, kecuali tampilan rekap semua r
 | IE-09 | **CSV.** UTF-8 dengan BOM, pemisah koma, dan tanda kutip ganda untuk teks. Judul kolom memakai `snake_case`. Tanggal `YYYY-MM-DD`, jam `HH:MM:SS`, dan status memakai kode di `06`. CSV ditujukan untuk diolah aplikasi lain. Untuk dibuka di Excel, pengguna memakai XLSX. | RECOMMENDATION |
 | IE-10 | **PDF.** Ukuran A4. Rekap dan daftar memakai orientasi lanskap bila kolomnya banyak. Rekap per rombel (LP-01) dan rekap rapor (LP-03) memuat tempat tanda tangan wali kelas. | RECOMMENDATION |
 | IE-11 | **Rentang.** Rentang laporan mengikuti layar asalnya. Rentang rekap (LP-01 s.d. LP-03) berada di dalam satu tahun ajaran dan tidak melewati hari ini, sama dengan FS-LAP-03. | RECOMMENDATION |
-| IE-12 | **Library.** XLSX dibuat dan dibaca dengan PhpSpreadsheet, dan PDF dibuat dengan library PHP yang dipilih di Session 6. Keduanya bergantung pada OQ-09 (C-06, NFR-16). Flyer dibuat di browser (R-19). | RECOMMENDATION |
+| IE-12 | **Library.** XLSX dibuat dan dibaca dengan PhpSpreadsheet, dan PDF dibuat dengan mPDF. Keduanya dipasang lewat Composer (OQ-09, C-06, `07` ARS-07 dan ARS-10). CSV dibaca dan ditulis dengan fungsi bawaan PHP. Flyer dibuat di browser, dengan cara yang dipilih di Session 7 (R-19). | DECISION (mPDF dan Composer, Session 6); RECOMMENDATION (PhpSpreadsheet dan CSV) |
 | IE-13 | **Catatan export.** Export laporan berisi nama siswa (LP-01, LP-03 s.d. LP-07) dicatat di `log_aktivitas`. Rinciannya ditetapkan bersama kebijakan data pribadi di Session 9 (R-17). | RECOMMENDATION |
 
 Contoh query rekap per rombel (LP-01) dengan aturan baca `06` §11.3. Daftar siswa diambil dari penempatan, sehingga siswa yang ditempatkan tetapi tidak memiliki hari sekolah dalam rentang tetap tampil dengan angka 0. Nilai `:final_hari_ini` dan `:pulang_ditutup` dihitung sekali di PHP dari aturan jam dan mode darurat hari ini. `:ta_selesai` adalah tanggal selesai tahun ajaran rombel itu.
@@ -141,7 +143,7 @@ Catatan:
 | Baris | Siswa yang ditempatkan di rombel itu pada tanggal terakhir rentang. Urut nama. |
 | Kolom | No, NISN, NIS, Nama, Sakit, Izin, Tanpa keterangan (Alpa), Hari sekolah, Dispensasi, dan Kehadiran (%). |
 | Hitungan | Semua hari sekolah siswa dalam semester dihitung, termasuk hari ketika siswa berada di rombel lain. Ini berbeda dari IE-02, karena rapor menggambarkan kehadiran siswa, bukan kehadiran di satu rombel. Siswa yang pindah masuk diberi keterangan "pindah dari <rombel>". |
-| Status | DECISION (laporan dan format); RECOMMENDATION (cara menghitung siswa pindah) |
+| Status | DECISION (laporan dan format; cara menghitung siswa pindah, Session 6) |
 
 ### LP-04 — Daftar presensi rombel per tanggal
 
@@ -249,20 +251,20 @@ Rincian format nama file untuk FS-MD-08 (OQ-12).
 |---|---|---|
 | IM-03 | **Format nama file.** Nama file diawali tepat 10 digit NISN. Setelah 10 digit itu, nama file langsung diikuti titik ekstensi, atau dipisah dengan garis bawah, spasi, atau tanda hubung, lalu sisanya diabaikan. Huruf besar dan kecil pada ekstensi tidak dibedakan. | DECISION |
 | IM-12 | **Contoh.** Cocok: `0012345678.jpg`, `0012345678_Budi Santoso.JPG`, `0012345678 - 7A.png`. Tidak sesuai format: `012345678.jpg` (9 digit), `00123456789.jpg` (11 digit), `Budi_0012345678.jpg` (NISN tidak di awal), `0012345678Budi.jpg` (tanpa pemisah). | DECISION |
-| IM-13 | **Folder di dalam ZIP.** Bila foto diunggah dalam ZIP, nama folder diabaikan; yang dicocokkan hanya nama file. | RECOMMENDATION |
+| IM-13 | **Folder di dalam ZIP.** Foto dapat diunggah dalam ZIP (`07` ARS-54). Nama folder di dalam ZIP diabaikan; yang dicocokkan hanya nama file. | DECISION (ZIP, Session 6); RECOMMENDATION (folder diabaikan) |
 | IM-14 | **Siswa yang dicocokkan.** Foto dicocokkan dengan semua siswa, aktif maupun nonaktif. Pratinjau menampilkan status siswa, dan foto siswa nonaktif tetap dapat disimpan. | RECOMMENDATION |
 | IM-15 | **Foto lama sekolah.** Karena nama file foto yang ada belum seragam (CONFIRMED, OQ-12), admin perlu menambahkan NISN di depan nama file sebelum upload massal. Foto yang tidak cocok dilaporkan di pratinjau, dan dapat diunggah satu per satu (FS-MD-07). | DECISION |
 
-Format gambar yang diterima dan ukuran maksimal ditetapkan di Session 9. Ukuran foto setelah diperkecil ditetapkan di Session 6 dan 7.
+Format gambar yang diterima dan ukuran maksimal ditetapkan di Session 9. Foto diperkecil menjadi paling besar 600×800 px untuk foto standar dan 300×400 px untuk foto kiosk (DECISION, Session 6, `07` ARS-53). Ukuran tampil ditetapkan di Session 7.
 
 ## 9. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06` §18.
+Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06` §18, dan perubahan karena keputusan Session 6 di `07` §18.
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
-| Library XLSX dan PDF, serta instalasi lewat Composer | IE-12, OQ-09 | Session 6 |
-| Desain template PDF dan flyer | IE-10, LP-08 | Session 7 |
+| Library XLSX dan PDF, serta instalasi lewat Composer | IE-12, OQ-09 | Ditetapkan di Session 6: PhpSpreadsheet dan mPDF lewat Composer (`07` ARS-10) |
+| Desain template PDF dan flyer, serta cara pembuatan flyer PNG | IE-10, IE-12, LP-08 | Session 7 |
 | Ukuran file dan jumlah baris maksimal import | IM-01, IM-02 | Session 9 |
 | Format gambar dan ukuran maksimal foto | IM-03 | Session 9 |
 | Pencatatan export berisi nama siswa | IE-13 | Session 9 |
@@ -272,3 +274,4 @@ Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 5: matriks laporan × format, rincian tujuh laporan dan flyer, template import siswa, import penempatan, format nama file foto, dan ketentuan umum. OQ-11 dan OQ-12 terjawab. |
+| 0.2 | 2026-10-04 | Keputusan Session 6 (`07`). IE-02 dan LP-03 (pengecualian rekap rapor) menjadi DECISION. IE-12 memuat mPDF dan Composer. IM-13 dan §8 memuat dukungan ZIP dan ukuran foto. §2 dan §9 diperbarui. |

@@ -2,11 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.3 (draft) |
+| Versi | 0.4 (draft) |
 | Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 4 (Business Rules). Diperbarui dengan keputusan Session 4b (Feature Specification, `04` §2) dan Session 5 (Database Architecture, §2.4). |
+| Sumber | Discovery Session 4 (Business Rules). Diperbarui dengan keputusan Session 4b (Feature Specification, `04` §2), Session 5 (Database Architecture, §2.4), dan Session 6 (System Architecture, §2.5). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): ID requirement (`FR-*`, `NFR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). |
-| Dokumen terkait | [04-feature-specification.md](04-feature-specification.md): spesifikasi fitur (`FS-*`) yang menerapkan aturan ini. [06-database-design.md](06-database-design.md): desain data yang menyimpan aturan ini. [13-reporting-import-export.md](13-reporting-import-export.md): laporan dan rekap. |
+| Dokumen terkait | [04-feature-specification.md](04-feature-specification.md): spesifikasi fitur (`FS-*`) yang menerapkan aturan ini. [06-database-design.md](06-database-design.md): desain data yang menyimpan aturan ini. [07-system-architecture.md](07-system-architecture.md): mekanisme teknis yang menjalankan aturan ini. [13-reporting-import-export.md](13-reporting-import-export.md): laporan dan rekap. |
 
 Dokumen ini menetapkan aturan bisnis presensi: kalender, aturan jam dan sesi, scan, status harian, presensi manual dan koreksi, izin/sakit/dispensasi, batas mundur, mode darurat, notifikasi WhatsApp, dan rekap. Dokumen ini menjawab OQ-03, OQ-04, OQ-05, OQ-06, OQ-07, OQ-15, dan OQ-16, serta meninjau usulan Session 3 di `02` dan `03`.
 
@@ -15,7 +15,7 @@ Dokumen ini menetapkan aturan bisnis presensi: kalender, aturan jam dan sesi, sc
 - **ID.** Setiap aturan memakai ID `BR-<TOPIK>-<NN>`. ID tidak pernah dinomori ulang. Aturan yang batal ditandai `DEPRECATED`, bukan dihapus.
 - **Status.** Label status mengikuti `00`. Bila satu aturan memuat keputusan dan usulan sekaligus, keduanya disebut.
 - **Jam.** Semua jam memakai WIB. Nilai jam di dokumen ini adalah contoh. Nilai sebenarnya diisi admin saat penyiapan (UF-01).
-- **Nama teknis.** Tabel dan kolom ditetapkan di `06`, dan route di Session 8. §14 merangkum kebutuhan data dari aturan ini, yang sudah dipenuhi di `06`.
+- **Nama teknis.** Tabel dan kolom ditetapkan di `06`, mekanisme teknis di `07`, dan route di Session 8. §14 merangkum kebutuhan data dari aturan ini, yang sudah dipenuhi di `06`.
 
 | Kode topik | Topik | Bagian | Modul `01` |
 |---|---|---|---|
@@ -93,6 +93,17 @@ Usulan di dokumen ini yang berdampak ke data ditinjau di Session 5. Rinciannya a
 | BR-REK-03 | Ditambah: persentase ditampilkan sebagai bilangan bulat. |
 | BR-REK-04, BR-REK-05 | Disetujui. |
 
+### 2.5 Keputusan Session 6
+
+Usulan di dokumen ini yang berdampak ke arsitektur ditinjau di Session 6. Rinciannya ada di `07` §2.
+
+| Aturan | Hasil |
+|---|---|
+| BR-KAL-06 | Disetujui: periode aktif yang dibatalkan tidak dihitung. BR-KAL-06 menjadi DECISION sepenuhnya. |
+| BR-REK-05 | Disetujui: rekap rapor semester menghitung semua hari sekolah siswa dalam semester. BR-REK-05 menjadi DECISION sepenuhnya. |
+| BR-SCN-07 | Cara kiosk menjaga jam ditetapkan di `07` ARS-27. Kiosk yang dibuka offline memakai selisih jam terakhir dan menampilkan peringatan (DECISION, `07` ARS-28). |
+| BR-SCN-08 | Toleransi selisih jam ditetapkan 2 menit (DECISION). |
+
 ## 3. Kalender dan hari sekolah (KAL)
 
 | ID | Aturan | Status |
@@ -102,7 +113,7 @@ Usulan di dokumen ini yang berdampak ke data ditinjau di Session 5. Rinciannya a
 | BR-KAL-03 | **Jadwal khusus.** Admin membuat jadwal khusus untuk satu tanggal atau rentang tanggal, berisi aturan jam lengkap (§4.1). Contohnya Ramadan, pekan ujian, atau rapat guru. Jadwal khusus mengalahkan pola mingguan hanya pada tanggal yang dicakupnya, dan berlaku untuk semua siswa. Bila jam berbeda per tingkat, admin memakai jam masuk yang paling lambat dan jam pulang yang paling awal. | DECISION (jadwal khusus: Session 4; berlaku untuk semua siswa: Session 4b) |
 | BR-KAL-04 | **Hari sekolah pengganti.** Jadwal khusus yang dipasang pada hari yang menurut pola mingguan bukan hari sekolah menjadikan tanggal itu hari sekolah, misalnya hari Minggu sebagai pengganti. | RECOMMENDATION |
 | BR-KAL-05 | **Hari sekolah bagi siswa.** Status harian hanya dihitung pada hari sekolah bagi siswa (syaratnya di bawah tabel). Di luar hari tersebut siswa tidak memiliki status, sehingga juga tidak Alpa. | DECISION (libur tidak dihitung Alpa; syarat 4, Session 5); RECOMMENDATION (syarat 1) |
-| BR-KAL-06 | **Masa aktif siswa.** Sistem mengetahui sejak dan sampai tanggal berapa siswa aktif, dan rombel siswa pada setiap tanggal. Siswa baru tidak menjadi Alpa sebelum tanggal mulai aktifnya. Siswa yang dinonaktifkan tetap memiliki riwayat sampai tanggal nonaktifnya. Seorang siswa dapat memiliki lebih dari satu periode aktif, misalnya setelah diaktifkan kembali. Periode aktif yang dibatalkan, yaitu ditutup dengan alasan salah input atau sebelum dimulai, tidak dihitung. Rinciannya di `06` §6.6 dan §6.7. | DECISION (Session 5); RECOMMENDATION (periode yang dibatalkan tidak dihitung) |
+| BR-KAL-06 | **Masa aktif siswa.** Sistem mengetahui sejak dan sampai tanggal berapa siswa aktif, dan rombel siswa pada setiap tanggal. Siswa baru tidak menjadi Alpa sebelum tanggal mulai aktifnya. Siswa yang dinonaktifkan tetap memiliki riwayat sampai tanggal nonaktifnya. Seorang siswa dapat memiliki lebih dari satu periode aktif, misalnya setelah diaktifkan kembali. Periode aktif yang dibatalkan, yaitu ditutup dengan alasan salah input atau sebelum dimulai, tidak dihitung. Rinciannya di `06` §6.6 dan §6.7. | DECISION (Session 5; periode yang dibatalkan tidak dihitung, Session 6) |
 | BR-KAL-07 | **Perubahan kalender.** Perubahan libur atau jadwal khusus berlaku untuk tanggal yang dicakupnya, termasuk tanggal lampau, dan status tanggal itu dihitung ulang. Perubahan pola mingguan berlaku mulai tanggal yang dipilih admin, dan tidak berlaku surut. Semua perubahan dicatat. | RECOMMENDATION |
 
 Syarat BR-KAL-05. Tanggal T adalah hari sekolah bagi siswa S bila keempat syarat terpenuhi:
@@ -183,8 +194,8 @@ Contoh pesan kiosk untuk BR-JAM-06 dan BR-SCN-03 (teks final ditetapkan di Sessi
 | BR-SCN-04 | **Satu presensi per jenis.** Setiap siswa memiliki paling banyak satu presensi masuk dan satu presensi pulang per tanggal. Presensi masuk adalah yang paling awal dari scan masuk dan presensi manual masuk. Aturan yang sama berlaku untuk presensi pulang. | DECISION (scan pertama berlaku); RECOMMENDATION (berlaku antarsumber) |
 | BR-SCN-05 | **Kiriman ulang.** Setiap scan membawa ID unik dari kiosk. Server tidak membuat catatan baru untuk ID yang sudah diterima. | RECOMMENDATION (FR-KIO-10, NFR-04) |
 | BR-SCN-06 | **Catatan scan tidak diubah.** Server menyimpan setiap scan yang diterima apa adanya, termasuk scan ganda dan scan yang ditolak server. Presensi manual dan koreksi disimpan terpisah, dan tidak mengubah catatan scan. | RECOMMENDATION |
-| BR-SCN-07 | **Jam scan.** Jam scan adalah jam laptop ditambah selisihnya terhadap jam server. Selisih diukur setiap kali kiosk memuat data dan setiap kali sinkron. Kiosk mengubah jam ke WIB dengan selisih tetap +07.00, tanpa bergantung pada pengaturan zona waktu Windows. Cara kiosk tetap memakai jam yang benar bila jam Windows berubah saat kiosk berjalan ditetapkan di Session 6. | RECOMMENDATION (R-05) |
-| BR-SCN-08 | **Scan ditandai.** Server menandai scan untuk ditinjau (`HA-KIO-03`) dalam empat keadaan (tabel di bawah). Peninjau menerima atau menolak scan bertanda. Scan yang ditolak tidak dipakai, dan status dihitung ulang. | RECOMMENDATION |
+| BR-SCN-07 | **Jam scan.** Jam scan adalah jam laptop ditambah selisihnya terhadap jam server. Selisih diukur setiap kali kiosk memuat data dan setiap kali sinkron. Kiosk mengubah jam ke WIB dengan selisih tetap +07.00, tanpa bergantung pada pengaturan zona waktu Windows. Sejak selisih diukur, kiosk menghitung jam dengan jam monoton browser, sehingga jam tetap benar bila jam Windows berubah saat kiosk berjalan (`07` ARS-27). Bila kiosk dibuka tanpa internet, kiosk memakai selisih terakhir dan menampilkan peringatan (`07` ARS-28). | RECOMMENDATION (R-05); DECISION (kiosk yang dibuka offline, Session 6) |
+| BR-SCN-08 | **Scan ditandai.** Server menandai scan untuk ditinjau (`HA-KIO-03`) dalam empat keadaan (tabel di bawah). Peninjau menerima atau menolak scan bertanda. Scan yang ditolak tidak dipakai, dan status dihitung ulang. | RECOMMENDATION; DECISION (toleransi 2 menit, Session 6) |
 | BR-SCN-09 | **Risiko kartu (OQ-06).** Risiko QR palsu, foto kartu, kartu titipan, dan kartu hilang yang tidak dapat diblokir diterima. Pengamannya adalah petugas yang mencocokkan foto di layar dengan wajah siswa. Tidak ada pemblokiran kartu atau tanda khusus di kiosk. Dugaan kartu titipan ditangani lewat koreksi status (BR-KOR-06). | DECISION |
 | BR-SCN-10 | **Pulang tanpa masuk.** Scan pulang dari siswa yang tidak memiliki presensi masuk tetap dicatat, tetapi tidak membuat siswa Hadir. Keadaan ini ditandai (BR-STS-07). Kiosk menampilkan umpan balik pulang seperti biasa, karena kiosk tidak tahu presensi masuk dari stasiun lain atau presensi manual. | DECISION (Session 4b) |
 
@@ -197,7 +208,7 @@ Keadaan untuk BR-SCN-08:
 | Menurut aturan jam di server, scan berada di luar jendela, atau tanggalnya bukan hari sekolah bagi siswa | Kiosk offline memakai aturan lama | Tidak dipakai |
 | Scan diterima lebih lambat dari batas mundur setelah tanggal scan | Laptop offline lebih dari seminggu | Dipakai |
 
-Angka 2 menit adalah usulan, dan ditetapkan di Session 6.
+Angka 2 menit ditetapkan di Session 6 (DECISION, `07` §2.3).
 
 ## 6. Status harian (STS)
 
@@ -325,7 +336,7 @@ Definisi untuk ambang:
 | BR-REK-02 | **Ketidakhadiran.** Ketidakhadiran adalah Sakit, Izin, dan Alpa, sama dengan kolom ketidakhadiran di rapor. Dispensasi bukan ketidakhadiran. | DECISION |
 | BR-REK-03 | **Persentase kehadiran.** (Hadir + Terlambat + Dispensasi) ÷ jumlah hari sekolah bagi siswa × 100%. Hari libur, termasuk libur tingkat atau rombel, tidak dihitung. Persentase ditampilkan sebagai bilangan bulat, dengan nilai tepat setengah dibulatkan ke atas (`13` IE-04). | DECISION (rumus: Session 4; bilangan bulat: Session 5); RECOMMENDATION (setengah ke atas) |
 | BR-REK-04 | **Hari berjalan.** Pada hari ini, siswa "belum hadir" tidak dihitung Alpa sampai sesi masuk ditutup dan mode darurat berakhir. Hari itu juga belum dihitung sebagai hari sekolah siswa tersebut, sehingga persentasenya tidak turun sementara. Rekap yang mencakup hari ini diberi tanda bahwa data hari ini belum final. | DECISION (Session 5) |
-| BR-REK-05 | **Rombel per tanggal.** Rekap per rombel memakai rombel tempat siswa ditempatkan pada setiap tanggal. Siswa yang pindah rombel tercatat di rombel lama untuk tanggal sebelum pindah. Pengecualiannya rekap rapor semester (`13` LP-03), yang menghitung semua hari sekolah siswa dalam semester itu. | DECISION (Session 5, R-14); RECOMMENDATION (pengecualian rekap rapor) |
+| BR-REK-05 | **Rombel per tanggal.** Rekap per rombel memakai rombel tempat siswa ditempatkan pada setiap tanggal. Siswa yang pindah rombel tercatat di rombel lama untuk tanggal sebelum pindah. Pengecualiannya rekap rapor semester (`13` LP-03), yang menghitung semua hari sekolah siswa dalam semester itu. | DECISION (Session 5, R-14; pengecualian rekap rapor, Session 6) |
 
 ## 13. Contoh penerapan
 
@@ -374,7 +385,7 @@ Status: RECOMMENDATION. Kebutuhan ini dipenuhi oleh desain di `06`. Pemetaan keb
 
 Catatan waktu (R-11):
 
-- Zona waktu aplikasi diset `Asia/Jakarta` (`appTimezone` di `app/Config/App.php`, saat ini masih `UTC`), dan zona waktu sesi MySQL `+07:00`. Kolom tanggal-waktu berisi jam WIB, dan tanggal presensi adalah tanggal WIB.
+- Zona waktu aplikasi diset `Asia/Jakarta` (`appTimezone` di `app/Config/App.php`, saat ini masih `UTC`), dan zona waktu sesi MySQL `+07:00`. Caranya ada di `07` ARS-44 dan ARS-45. Kolom tanggal-waktu berisi jam WIB, dan tanggal presensi adalah tanggal WIB.
 - Indonesia tidak memakai daylight saving time, sehingga selisih +07:00 tetap sepanjang tahun.
 
 ## 15. Perubahan pada dokumen lain
@@ -386,7 +397,7 @@ Catatan waktu (R-11):
 | `02-user-roles-and-permissions.md` | 0.2 | `HA-PRS-05` menjadi DEPRECATED. `HA-PRS-07` s.d. `HA-PRS-09`, `HA-IZN-06`, dan `HA-WA-03` ditambahkan. Pimpinan dapat membuka lampiran (`HA-IZN-05`). Batas mundur ditetapkan. Usulan yang disetujui menjadi DECISION. |
 | `03-user-flow.md` | 0.2 | Status UF-05 menjadi DECISION. Alur hari sekolah dan izin disesuaikan dengan aturan ini. UF-27 (mode darurat), UF-28 (ubah jadwal hari ini), dan UF-29 (ubah keputusan izin/sakit/dispensasi) ditambahkan. |
 
-Perubahan dokumen karena keputusan Session 4b dicatat di `04` §13, dan karena keputusan Session 5 di `06` §18.
+Perubahan dokumen karena keputusan Session 4b dicatat di `04` §13, karena keputusan Session 5 di `06` §18, dan karena keputusan Session 6 di `07` §18.
 
 ## 16. Pertanyaan terbuka
 
@@ -398,7 +409,7 @@ Nilai usulan yang perlu dipastikan saat implementasi:
 
 | Nilai | Usulan | Aturan | Dipastikan di |
 |---|---|---|---|
-| Toleransi selisih jam laptop | 2 menit | BR-SCN-08 | Session 6 |
+| Toleransi selisih jam laptop | Ditetapkan: 2 menit | BR-SCN-08 | Session 6 (DECISION) |
 | Waktu tunda pesan "tidak hadir" | 60 menit, diatur admin | BR-WA-02 | Sebelum R2 |
 
 ## Riwayat perubahan
@@ -408,3 +419,4 @@ Nilai usulan yang perlu dipastikan saat implementasi:
 | 0.1 | 2026-10-03 | Draft awal dari Session 4. |
 | 0.2 | 2026-10-03 | Keputusan Session 4b (`04` §2). BR-KAL-03, BR-SCN-10, BR-STS-07, BR-KOR-08, BR-KOR-09, BR-IZN-07, BR-IZN-10, BR-IZN-11, BR-DRT-06, dan BR-DRT-07 menjadi DECISION; BR-STS-07 diperluas. BR-KOR-11 diganti dengan pembatalan presensi manual. BR-KOR-10, BR-IZN-05, BR-IZN-09, BR-JAM-10, dan BR-REK-04 diperbarui. §2.3 ditambahkan, dan kebutuhan data di §14 dilengkapi. |
 | 0.3 | 2026-10-04 | Keputusan Session 5 (§2.4). BR-KAL-06, BR-SCN-03, BR-STS-06, BR-KOR-10, BR-REK-04, dan BR-REK-05 menjadi DECISION, begitu juga syarat 4 BR-KAL-05. BR-IZN-12 memuat batas 3 lampiran. BR-REK-03 memuat pembulatan bilangan bulat. BR-REK-05 memuat pengecualian rekap rapor. BR-REK-01 dan §14 merujuk `06` dan `13`. |
+| 0.4 | 2026-10-04 | Keputusan Session 6 (§2.5, `07`). BR-KAL-06 dan BR-REK-05 menjadi DECISION sepenuhnya. BR-SCN-07 merujuk mekanisme jam kiosk di `07`, dan toleransi 2 menit di BR-SCN-08 ditetapkan. §1, §14, §15, dan §16 diperbarui. |
