@@ -204,7 +204,7 @@ Rincian template untuk FS-MD-06. Alur pratinjau dan penyimpanan tetap mengikuti 
 
 | Judul kolom | Wajib | Format | Validasi |
 |---|---|---|---|
-| NISN | Ya | Teks 10 digit | Tepat 10 digit angka. NISN 9 digit dari sel angka yang kehilangan nol di depan dinyatakan gagal dengan petunjuk (FS-MD-06). Tidak boleh ganda di dalam file. NISN yang sudah ada di database, aktif maupun nonaktif, dinyatakan gagal dengan alasan "NISN sudah terdaftar atas nama <nama>" (DECISION, Session 5). |
+| NISN | Ya | Teks 10 digit | Tepat 10 digit angka. NISN 8 atau 9 digit dari sel angka yang kehilangan nol di depan dinyatakan gagal dengan petunjuk (FS-MD-06). Tidak boleh ganda di dalam file. NISN yang sudah ada di database, aktif maupun nonaktif, dinyatakan gagal dengan alasan "NISN sudah terdaftar atas nama <nama>" (DECISION, Session 5). |
 | Nama Lengkap | Ya | Teks | Paling banyak 100 karakter. |
 | Kelas | Ya | Teks | Sama dengan nama rombel di tahun ajaran tujuan, tanpa membedakan huruf besar dan kecil. Judul kolom "Rombel" juga diterima. |
 | NIS | Tidak | Teks | Paling banyak 20 karakter. Tidak boleh ganda di dalam file maupun dengan data yang sudah ada. |

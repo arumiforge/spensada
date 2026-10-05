@@ -271,7 +271,7 @@ Alasan baris gagal ditulis di kolom alasan file baris gagal (`13` IM-07) dan di 
 
 | Kolom | Alasan |
 |---|---|
-| NISN | "NISN kosong." · "NISN harus 10 digit angka." · "NISN 9 digit. Kemungkinan nol di depan hilang. Format kolom NISN sebagai teks, lalu ketik ulang." · "NISN ganda di file ini (baris [n])." · "NISN sudah terdaftar atas nama [nama]." |
+| NISN | "NISN kosong." · "NISN harus 10 digit angka." · Untuk NISN 8 atau 9 digit dari sel angka: "NISN harus 10 digit angka. Kemungkinan nol di depan hilang. Format kolom NISN sebagai teks, lalu ketik ulang." · "NISN ganda di file ini (baris [n])." · "NISN sudah terdaftar atas nama [nama]." |
 | Nama Lengkap | "Nama kosong." · Pesan VAL-15. |
 | Kelas | "Kelas kosong." · "Kelas [nilai] tidak ada di tahun ajaran [nama]." |
 | NIS | Pesan VAL-19. · "NIS ganda di file ini (baris [n])." |
