@@ -266,7 +266,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-29 | **Kerangka panel.** Layar ≥1024 px memakai menu samping selebar ±220 px berlatar warna utama. Di bawah 1024 px, menu samping disembunyikan dan dibuka dengan tombol `menu` di bilah atas, sebagai menu lipat yang menutupi isi. Tanpa JavaScript, tombol itu menuju halaman daftar menu. Bilah atas memuat tahun ajaran dan semester aktif (FS-MD-02), nama pengguna, role, dan menu akun (ganti password, logout). | DECISION (menu samping dan menu lipat); RECOMMENDATION (rincian) |
+| UI-29 | **Kerangka panel.** Layar ≥1024 px memakai menu samping selebar ±220 px berlatar warna utama. Di bawah 1024 px, menu samping disembunyikan dan dibuka dengan tombol `menu` di bilah atas, sebagai menu lipat yang menutupi isi. Tanpa JavaScript, menu lipat memakai elemen `<details>`, sehingga tetap dapat dibuka tanpa halaman tambahan. Bilah atas memuat tahun ajaran dan semester aktif (FS-MD-02), nama pengguna, role, dan menu akun (ganti password, logout). | DECISION (menu samping dan menu lipat); RECOMMENDATION (rincian) |
 | UI-30 | **Tanda mode darurat.** Selama mode darurat aktif, bilah merah tampil di bawah bilah atas di semua halaman panel: "Mode darurat aktif sejak 06.30. Siswa tanpa presensi tetap belum hadir, dan Alpa tidak terbentuk." Bilah itu memuat tautan ke presensi per kelas bagi pemegang `HA-PRS-03` (FS-PRS-08). | RECOMMENDATION |
 | UI-31 | **Kelompok menu.** Menu dikelompokkan seperti tabel di bawah. Menu hanya memuat halaman yang boleh dibuka role pengguna (`04` §4.1), dan kelompok tanpa isi disembunyikan. Isi menu final, termasuk kelompok R2 dan R3, ada di `09` §4.1. | DECISION (dikelompokkan dan hanya halaman yang boleh dibuka; "Kelas saya" bagi wali kelas, Session 8); RECOMMENDATION (isi kelompok) |
 | UI-32 | **Dashboard hari ini.** Urutan dari atas: kepala dashboard, peringatan sesuai hak, ubin ringkasan, lalu tabel per kelas (FS-LAP-01). Rombel wali kelas tampil paling atas dengan tanda "Kelas Anda". Rombel yang libur tampil sebagai baris dengan keterangan liburnya. Di ponsel, tabel memakai huruf singkat (H, T, I, S, D, dan – atau A). | RECOMMENDATION |
@@ -295,7 +295,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-38 | **Login, ganti password, dan galat.** Halaman login berada di tengah layar dan memuat logo, nama resmi sekolah, serta nama produk "Spensada" (FS-MD-01). Isinya satu isian "NISN atau username", isian password dengan tombol tampilkan atau sembunyikan, dan teks bantuan: "Siswa yang lupa password menghubungi wali kelas. Staf menghubungi admin." (FS-AKN-01, FS-AKN-02). Halaman galat 403, 404, dan 500 memakai kerangka area pengguna, dengan pesan di §9.4 dan tautan ke halaman awal. Halaman publik (R3) memakai kerangka portal tanpa menu bawah, dan dirinci menjelang R3. | RECOMMENDATION |
+| UI-38 | **Login, ganti password, dan galat.** Halaman login berada di tengah layar dan memuat logo, nama resmi sekolah, serta nama produk "Spensada" (FS-MD-01). Isinya satu isian "NISN atau username", isian password dengan tombol tampilkan atau sembunyikan, dan teks bantuan: "Siswa yang lupa password menghubungi wali kelas. Staf menghubungi admin." (FS-AKN-01, FS-AKN-02). Halaman galat 403 dan 404 memakai kerangka area pengguna, sedangkan halaman 500 memakai kerangka tanpa menu area (`09` RT-19), dengan pesan di §9.4 dan tautan ke halaman awal. Halaman publik (R3) memakai kerangka portal tanpa menu bawah, dan dirinci menjelang R3. | RECOMMENDATION |
 
 ## 7. Kiosk
 
@@ -377,6 +377,7 @@ Sebelum jam buka scan masuk dan di antara jendela masuk dan jendela pulang, blok
 | Bunyi belum aktif | Klik di mana saja untuk mengaktifkan bunyi. | — | UI-45 |
 | Versi baru siap | Versi baru kiosk siap. | Muat versi baru | ARS-22 butir 7 |
 | Pemuatan data gagal | Gagal memuat data. Data sebelumnya tetap dipakai. | Coba lagi | FS-KIO-01 E4 |
+| Versi API tidak dilayani | Kiosk perlu diperbarui. Tutup semua jendela kiosk, lalu buka lagi. | — | `10` API-10 |
 
 ### 7.5 Bunyi dan perilaku lain
 
@@ -446,7 +447,7 @@ Judul kolom file export dan template import di `13` ikut memakai label ini, misa
 | `akun.status` | `belum_aktif` Belum aktif · `aktif` Aktif · `nonaktif` Nonaktif |
 | `akun_role.role` | `admin` Admin · `guru_piket` Guru piket · `guru_bk` Guru BK · `pimpinan` Pimpinan |
 | `semester.jenis` | `ganjil` Ganjil · `genap` Genap |
-| `libur_cakupan.cakupan` | `semua` Semua siswa · `tingkat` Tingkat · `rombel` Kelas |
+| `libur.cakupan` | `semua` Semua siswa · `tingkat` Tingkat · `rombel` Kelas |
 | `atribut_siswa.tipe` | `teks` Teks · `angka` Angka · `tanggal` Tanggal · `pilihan` Pilihan |
 
 Label log, outbox WA, dan kode lain yang hanya tampil di halaman admin dan halaman staf tertentu ada di `09` §14, dengan pola yang sama: huruf awal kapital dan garis bawah menjadi spasi. Label `log_aktivitas.jenis` ditetapkan di Session 9.
@@ -670,4 +671,4 @@ Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru. Session 8 menetapk
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 7: keputusan tampilan, prinsip, warna dan status, huruf, ikon, foto, komponen, tata letak panel dan portal, kiosk, gaya bahasa, label dan format, dokumen cetak, flyer, aksesibilitas, aset, dan traceability. R-19 terjawab, dan OQ-13 terjawab sebagian. |
-| 0.2 | 2026-10-05 | Keputusan Session 8 (§2.4, `09`, `10`). UI-28 (komponen pencarian siswa), UI-31 (menu final di `09` §4.1, termasuk "Kelas saya"), tanda stasiun disorot di §4.2, §9.2 (label kode di `09` §14), ikon "Kelas saya" di §4.5, kepala dokumen, §14, §15, dan §16.2 diperbarui. Contoh menu di `08-contoh-tampilan.html` memuat "Kelas saya". |
+| 0.2 | 2026-10-05 | Keputusan Session 8 (§2.4, `09`, `10`). UI-28 (komponen pencarian siswa), UI-31 (menu final di `09` §4.1, termasuk "Kelas saya"), tanda stasiun disorot di §4.2, §9.2 (label kode di `09` §14), ikon "Kelas saya" di §4.5, UI-29 (menu lipat tanpa JavaScript), UI-38 (halaman 500), UI-44 (pita versi kiosk), kolom `libur.cakupan` di §9.2, kepala dokumen, §14, §15, dan §16.2 diperbarui. Contoh menu di `08-contoh-tampilan.html` memuat "Kelas saya". |

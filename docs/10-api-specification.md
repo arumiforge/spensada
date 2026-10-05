@@ -74,7 +74,7 @@ Kode galat (API-03):
 |---|---|---|---|
 | `login_ulang` | 401 | Tidak ada login yang sah: sesi dan cookie login stasiun tidak ada, kedaluwarsa, atau tidak sah, misalnya karena kredensial diganti (`07` ARS-30). | Kiosk menampilkan layar login stasiun berakhir dan menyimpan data serta scan (ARS-31). Halaman panel dan portal menghentikan polling dan menampilkan "Sesi berakhir" (`08` UI-28). |
 | `nonaktif` | 403 | Akun yang login berstatus nonaktif. Kode ini hanya dikirim bila `akun.status` bernilai `nonaktif`, karena kiosk menghapus data lokal saat menerimanya. | Kiosk menghapus database IndexedDB dan menampilkan bahwa akun dinonaktifkan (ARS-31). Halaman panel dan portal dimuat ulang, sehingga pengguna sampai di halaman login. |
-| `ditolak` | 403 | Jenis akun atau hak tidak sesuai, atau data di luar cakupan. | Kiosk membuka `/`, yang mengalihkan akun itu ke halaman awalnya (`09` RT-18). Halaman menampilkan pesan di luar hak (`08` UI-56). |
+| `ditolak` | 403 | Jenis akun atau hak tidak sesuai, atau data di luar cakupan. | Kiosk membuka `/login`, yang mengalihkan pengguna yang sudah login ke halaman awalnya (`09` RT-18 butir 4). Halaman menampilkan pesan di luar hak (`08` UI-56). |
 | `csrf` | 403 | Token CSRF tidak ada atau tidak cocok. Badan memuat token baru di isian `csrf` (API-04). | Ulang permintaan sekali dengan token baru. |
 | `permintaan_rusak` | 400 | Badan bukan JSON yang sah, atau isian tingkat atas tidak ada atau salah tipe. Untuk fragmen, parameter wajib tidak ada atau tidak valid. | Tidak diulang otomatis. Kiosk mencatatnya sebagai galat kode. |
 | `tidak_ditemukan` | 404 | Alamat, data, atau berkas tidak ada. | Kiosk memakai gambar pengganti untuk foto (`08` UI-24). |
@@ -83,6 +83,8 @@ Kode galat (API-03):
 | `terlalu_besar` | 413 | Kiriman melebihi batas (API-09). | Kirim ulang dalam potongan yang lebih kecil. |
 | `terlalu_sering` | 429 | Pembatasan laju (Session 9). Jawaban memuat header `Retry-After`. | Tunggu sesuai `Retry-After`. |
 | `galat_server` | 500 | Galat yang tidak tertangani di server. | Ulang dengan jeda bertingkat (ARS-29 butir 3). |
+
+Jawaban 401 memuat header `WWW-Authenticate: Spensada` sesuai RFC 9110, karena login tidak memakai skema HTTP standar. Filter `csrf` global berjalan sebelum filter kelompok `sesi`, `area`, dan `hak` (`07` ARS-13). Karena itu, permintaan tulis dengan token CSRF yang kedaluwarsa dari pengguna yang loginnya juga berakhir lebih dulu dijawab 403 `csrf`. Klien mengulang dengan token baru (API-04 butir 4), lalu menerima 401 `login_ulang`. Klien wajib menangani urutan itu.
 
 Jawaban 502, 503, dan 504 dari Nginx, putus koneksi, waktu habis, dan jawaban yang bukan JSON diperlakukan sama dengan `galat_server`. Jawaban 413 dari Nginx diperlakukan sama dengan `terlalu_besar`. Agar galat yang tidak tertangani di API tetap berbentuk JSON dengan kode, handler pengecualian aplikasi (`Config\Exceptions::handler()`) membuat badan `galat_server` untuk alamat `/kiosk/api/…`. Bawaan CI4 di production untuk permintaan yang tidak menerima `text/html` hanya mengirim status, tanpa kode atau keterangan galat.
 
@@ -97,7 +99,7 @@ Jawaban 502, 503, dan 504 dari Nginx, putus koneksi, waktu habis, dan jawaban ya
 Butir API-04:
 
 1. Semua permintaan selain GET membawa token CSRF di header `X-CSRF-TOKEN`, sesuai `Config\Security::$headerName` (`07` ARS-29 butir 5).
-2. Jawaban JSON EP-KIO-01, EP-KIO-03, EP-KIO-04, dan EP-MD-02 memuat isian `csrf` berisi `header` dan `token`. Klien selalu memakai token dari jawaban terakhir, karena token dapat diganti setiap kali dipakai (`Config\Security::$regenerate`).
+2. Jawaban JSON EP-KIO-01, EP-KIO-03, dan EP-MD-02 memuat isian `csrf` berisi `header` dan `token`. Klien selalu memakai token dari jawaban terakhir, karena token dapat diganti setiap kali dipakai (`Config\Security::$regenerate`).
 3. Halaman panel dan portal menulis token dan nama headernya di elemen `<meta>`, untuk dibaca modul JavaScript halaman.
 4. Bila token ditolak, server menjawab 403 `csrf` dengan token baru. Klien mengulang permintaan sekali. Bila ditolak lagi, klien melaporkan galat.
 5. Filter CSRF bawaan CI4 di production mengalihkan permintaan yang gagal, dan melempar pengecualian untuk permintaan dengan `X-Requested-With`. Karena itu filter CSRF aplikasi menjawab permintaan latar belakang dengan kode `csrf` di atas (`07` ARS-13).
@@ -116,9 +118,9 @@ Butir API-05:
 | ID | Aturan | Status |
 |---|---|---|
 | API-07 | **Cache dan kompresi.** Semua jawaban API dan fragmen memakai `Cache-Control: no-store`. Service Worker tidak menyimpan jawaban API (`07` ARS-22 butir 6). Nginx mengompresi JSON dengan gzip, sehingga `gzip_types` harus memuat `application/json`; bawaan Nginx hanya mengompresi `text/html`. Data kiosk untuk ±1.000 siswa berukuran sekitar 120 KB sebelum kompresi. | RECOMMENDATION |
-| API-08 | **Sesi.** API kiosk, fragmen, dan pencarian hanya membaca sesi, sehingga menutup sesi segera setelah identitas dibaca (`07` ARS-48). Sinkron menutup sesi sebelum memproses antrean hitung ulang (ARS-36 butir 3). Perpanjangan cookie login stasiun (ARS-30 butir 4) ditulis filter `sesi` sebelum sesi ditutup. Token CSRF disimpan di cookie (`Config\Security::$csrfProtection = 'cookie'`), sehingga regenerasinya tidak membutuhkan sesi yang terbuka. Bila Session 9 memindahkan token ke sesi, sesi ditutup setelah token diganti. | RECOMMENDATION |
-| API-09 | **Batas ukuran.** Satu kiriman sinkron memuat paling banyak 100 scan (`07` §2.3) dan berukuran paling besar 256 KB. Kiriman yang melebihinya dijawab 413 `terlalu_besar`. Parameter `q` pencarian paling panjang 50 karakter. | RECOMMENDATION |
-| API-10 | **Versi.** Lihat butir di bawah tabel. | DECISION (versi di alamat, Session 8); RECOMMENDATION (aturan perubahan) |
+| API-08 | **Sesi.** EP-KIO-01, EP-KIO-02, fragmen, dan pencarian hanya membaca sesi, sehingga menutup sesi segera setelah identitas dibaca (`07` ARS-48). Sinkron menutup sesi setelah transaksinya selesai dan sebelum memproses antrean hitung ulang (ARS-36 butir 3). Logout (EP-KIO-04) mengakhiri sesi. Perpanjangan cookie login stasiun (ARS-30 butir 4) ditulis filter `sesi` sebelum sesi ditutup. Token CSRF disimpan di cookie (`Config\Security::$csrfProtection = 'cookie'`), sehingga regenerasinya tidak membutuhkan sesi yang terbuka. Bila Session 9 memindahkan token ke sesi, sesi ditutup setelah token diganti. | RECOMMENDATION |
+| API-09 | **Batas ukuran.** Satu kiriman sinkron memuat paling banyak 100 scan (`07` §2.3) dan berukuran paling besar 256 KB. Kiriman yang melebihinya dijawab 413 `terlalu_besar`. Parameter `cari` pencarian paling panjang 50 karakter. | RECOMMENDATION |
+| API-10 | **Versi.** Lihat butir di bawah tabel. | DECISION (versi di alamat, versi baru untuk perubahan yang tidak kompatibel, dan versi lama tetap dilayani, Session 8); RECOMMENDATION (butir 2, 4, 5, dan 6) |
 | API-11 | **Idempotensi dan urutan.** Lihat butir di bawah tabel. | RECOMMENDATION |
 | API-12 | **Uji kontrak.** Contoh JSON di dokumen ini disimpan sebagai berkas uji di `tests/kasus/api/`. Berkas itu dipakai uji PHPUnit untuk controller API, dan uji `node --test` untuk modul `data.js` dan `sinkron.js` kiosk (`07` ARS-59). Perubahan bentuk API memperbarui dokumen ini lebih dulu, lalu berkas uji. | RECOMMENDATION |
 
@@ -171,11 +173,11 @@ Keadaan khusus dan perilaku kiosk:
 |---|---|---|
 | Login stasiun berakhir | 401 `login_ulang` | Layar "Login stasiun berakhir" (`08` UI-43). Data dan scan tetap tersimpan. Tombol login membuka `/login`. |
 | Akun stasiun dinonaktifkan | 403 `nonaktif` | Database `spensada-kiosk` dihapus, lalu layar "Akun stasiun ini dinonaktifkan" (UI-43, ARS-31). |
-| Akun yang login bukan akun stasiun | 403 `ditolak` | Membuka `/`, yang mengalihkan ke halaman awal akun itu (AC-AKN-01-05). |
+| Akun yang login bukan akun stasiun | 403 `ditolak` | Membuka `/login`, yang mengalihkan ke halaman awal akun itu (`09` RT-18 butir 4, AC-AKN-01-05). |
 | Token CSRF ditolak | 403 `csrf` | Mengulang permintaan sekali dengan token baru. |
 | Versi API tidak dilayani | 410 `versi_usang` | Pita "Kiosk perlu diperbarui. Tutup semua jendela kiosk, lalu buka lagi." Scan tetap berjalan. |
 | Galat server atau jaringan | 5xx, putus koneksi, waktu habis | Indikator koneksi berubah. Sinkron dicoba lagi dengan jeda 5, 10, 20, 40, lalu 60 detik (ARS-29 butir 3). |
-| Data di jawaban rusak | JSON tidak sah, isian wajib tidak ada, atau `versi_format` lebih baru | Data lama tetap dipakai, dengan pita "Gagal memuat data" (`08` UI-44). |
+| Data di jawaban rusak | JSON tidak sah, atau isian wajib tidak ada. `versi_format` yang lebih baru mengikuti §5.2 butir 4. | Data lama tetap dipakai, dengan pita "Gagal memuat data" (`08` UI-44). |
 
 ### EP-KIO-01 — Muat data kiosk
 
@@ -184,7 +186,7 @@ Keadaan khusus dan perilaku kiosk:
 | Alamat | `GET /kiosk/api/v1/data` |
 | Fitur | FS-KIO-01, `07` ARS-23 |
 | Permintaan | Tanpa parameter. Header API-02. |
-| Jawaban | 200 JSON (tabel di bawah). Galat: 401, 403, 410, 500 (API-03). |
+| Jawaban | 200 JSON (tabel di bawah). Galat: 401, 403, 410, 429, 500 (API-03). |
 | Efek di server | Memperbarui `kontak_terakhir_at`. Data yang dibangun disimpan di cache CI4 selama 60 detik (ARS-23). Waktu data dimuat tidak ditulis di sini, tetapi dilaporkan kiosk lewat EP-KIO-03 setelah data tersimpan. |
 
 Isian tingkat atas:
@@ -194,7 +196,7 @@ Isian tingkat atas:
 | `versi_format` | int | Versi struktur data. Di `v1` bernilai 1 (API-10). | Ya |
 | `versi_data` | string | 40 karakter heksadesimal: SHA-1 dari isi data (butir di bawah tabel). | — |
 | `dibangun_at` | int (ms) | Waktu data dibangun. | Tidak |
-| `sekolah` | object | `nama` (string atau null) dan `versi_logo` (string atau null). | Ya |
+| `sekolah` | object | `nama` (string atau null) dan `versi_logo` (string atau null): nama file logo tanpa ekstensi, yaitu 32 karakter heksadesimal yang berganti setiap logo diganti (`07` ARS-51). Null bila belum ada logo. | Ya |
 | `parameter` | object | Parameter kiosk (tabel parameter). | Ya |
 | `siswa` | array | Siswa aktif dan ditempatkan di rombel pada hari ini, urut NISN. | Ya |
 | `aturan` | array | Hari ini dan 14 hari ke depan, urut tanggal. | Ya |
@@ -273,14 +275,14 @@ Isi `parameter` (`07` ARS-33):
 
 Parameter ARS-33 yang hanya dipakai server, yaitu batas sorotan stasiun, ukuran foto kiosk, cache data kiosk, dan masa login stasiun, tidak dikirim.
 
-Contoh jawaban, dengan satu siswa, dua tanggal aturan, dan tanpa libur. Data dibangun pukul 05.58.12 WIB, dan permintaan diterima pukul 06.05.00,120 WIB:
+Contoh jawaban, dengan satu siswa, dua tanggal aturan, dan tanpa libur. Data dibangun pukul 06.04.31 WIB, masih dalam masa cache 60 detik, dan permintaan diterima pukul 06.05.00,120 WIB:
 
 ```json
 {
   "versi_format": 1,
   "versi_data": "8f2b6c1d9e0a4b7c3d5e6f708192a3b4c5d6e7f8",
-  "dibangun_at": 1791845892000,
-  "sekolah": { "nama": "SMP Negeri 1 Contoh", "versi_logo": "1790823600000" },
+  "dibangun_at": 1791846271000,
+  "sekolah": { "nama": "SMP Negeri 1 Contoh", "versi_logo": "3f9a1c7e5b2d4f6a8c0e1b3d5f7a9c2e" },
   "parameter": {
     "muat_hari": 14,
     "batas_umur_data_jam": 72,
@@ -516,8 +518,8 @@ Dari contoh ini, server menyimpan `belum_sinkron` = 3 − 2 − 1 = 0 dan `scan_
 | Alamat | `POST /kiosk/api/v1/logout` |
 | Fitur | FS-KIO-01 butir 8, FS-AKN-01 butir 8, `07` ARS-30 butir 5 |
 | Permintaan | Badan `{}`, dengan header API-02 dan `X-CSRF-TOKEN`. |
-| Jawaban | 200 `{ "keluar": true, "jam": … }`. Galat: 401 berarti sudah tidak login (API-11), selain itu 403 dan 500. |
-| Efek di server | Mengakhiri sesi, lalu menghapus cookie sesi dan cookie login stasiun dengan `Set-Cookie` berjalur sama (`Path=/kiosk`) dan `Max-Age=0`. |
+| Jawaban | 200 `{ "keluar": true, "jam": … }`. Galat: 401 berarti sudah tidak login (API-11), selain itu 403, 410, 429, dan 500. |
+| Efek di server | Mengakhiri sesi dengan `session()->destroy()`, yang menghapus cookie sesi dengan jalur cookie aplikasi (`Config\Cookie::$path`, `/`). Cookie login stasiun dihapus dengan `Set-Cookie` berjalur sama dengan saat dibuat (`Path=/kiosk`) dan `Max-Age=0`. |
 
 Sebelum memanggil endpoint ini, kiosk meminta konfirmasi petugas, termasuk PIN bila ditetapkan di Session 9 (`08` UI-48), lalu mengosongkan penanda login di `meta` IndexedDB (ARS-22 butir 6). Setelah jawaban diterima, kiosk membuka `/login`. Scan yang belum tersinkron tetap tersimpan, dan dikirim setelah akun stasiun yang sama login kembali (FS-KIO-01 butir 8).
 
@@ -526,7 +528,7 @@ Sebelum memanggil endpoint ini, kiosk meminta konfirmasi petugas, termasuk PIN b
 ### 6.1 Ketentuan bersama
 
 1. Fragmen adalah potongan HTML tanpa layout, dibuat dari view komponen yang sama dengan halamannya (`08` UI-75, `07` ARS-50). Hak dan cakupannya sama dengan halamannya (`09` RT-15).
-2. JavaScript mengganti isi wadah hanya bila jawaban berstatus 200 dan berjenis `text/html`. Selain itu isi lama dibiarkan, dan halaman menampilkan keadaan sesuai `08` UI-28: gagal memperbarui, atau sesi berakhir untuk 401.
+2. JavaScript mengganti isi wadah hanya bila jawaban berstatus 200 dan berjenis `text/html`. Selain itu isi lama dibiarkan, dan halaman mengikuti API-03 dan `08` UI-28: sesi berakhir untuk 401, halaman dimuat ulang untuk 403 `nonaktif`, pesan di luar hak untuk 403 `ditolak`, dan gagal memperbarui untuk keadaan lain.
 3. Fragmen berkala diminta setiap 30 detik, dan berhenti saat tab tidak terlihat (ARS-50).
 4. Bantuan formulir yang dipicu ketikan dikirim 300 milidetik setelah ketikan terakhir. Permintaan sebelumnya yang belum selesai dibatalkan dengan `AbortController`.
 5. Parameter wajib yang tidak ada atau tidak valid dijawab 400 `permintaan_rusak`.
@@ -556,11 +558,11 @@ Sebelum memanggil endpoint ini, kiosk meminta konfirmasi petugas, termasuk PIN b
 | Halaman | `09` RT-14, dipakai HAL-MD-04, HAL-PRS-07, HAL-IZN-08, HAL-IZN-09, dan HAL-LAP-06 |
 | Parameter | Tabel di bawah. |
 | Jawaban | Daftar paling banyak 20 siswa: foto kecil, nama, NISN, kelas, status siswa, dan tautan atau kotak centang sesuai `untuk`. Bila hasil lebih dari 20, daftar menyebut jumlahnya dan meminta pencarian dipersempit. Bila kosong: "Tidak ada siswa yang cocok." |
-| Galat | 403 `ditolak` bila pengguna tidak memegang hak untuk `untuk`. 400 `permintaan_rusak` bila `q` atau `untuk` tidak valid. |
+| Galat | 403 `ditolak` bila pengguna tidak memegang hak untuk `untuk`. 400 `permintaan_rusak` bila `cari` atau `untuk` tidak valid. |
 
 | Parameter | Wajib | Isi |
 |---|---|---|
-| `q` | Ya | 2–50 karakter. Dicocokkan dengan bagian nama, atau awal NISN bila berisi angka saja. |
+| `cari` | Ya | 2–50 karakter. Namanya sama dengan parameter pencarian tanpa JavaScript (`09` RT-14 butir 2). Dicocokkan dengan bagian nama, atau awal NISN bila berisi angka saja. |
 | `untuk` | Ya | Tujuan dan hak pencarian (tabel di bawah). |
 | `tanggal` | Tidak | Dibawa ke tautan presensi manual dan input izin. |
 | `kembali` | Tidak | Dibawa ke tautan (`09` RT-10). |
@@ -602,7 +604,7 @@ Cakupan mengikuti hak tujuan pencarian, sehingga siswa di luar cakupan tidak mun
 | Halaman | `09` HAL-MD-15, `07` ARS-54 butir 6 |
 | Permintaan | Tanpa badan, dengan header API-02 dan `X-CSRF-TOKEN`. |
 | Jawaban | 200 JSON (contoh di bawah). Tanpa header permintaan latar belakang, jawabannya 303 ke halaman token (`09` RT-15). |
-| Galat | 404 `tidak_ditemukan` bila token tidak ada, milik akun lain, atau sudah selesai. 409 `sedang_diproses` bila potongan lain untuk token yang sama sedang berjalan. |
+| Galat | 404 `tidak_ditemukan` bila token tidak ada atau milik akun lain. Token yang sudah selesai dijawab 200 dengan `selesai: true` dan ringkasan terakhir, agar permintaan ulang aman (API-11 butir 4). 409 `sedang_diproses` bila potongan lain untuk token yang sama sedang berjalan. |
 | Efek di server | Memproses paling banyak 20 foto berikutnya, lalu mencatat hasilnya di `tmp/<token>/`. Sesi ditutup sebelum foto diproses (`09` RT-17). |
 
 ```json
@@ -616,7 +618,7 @@ Cakupan mengikuti hak tujuan pencarian, sehingga siswa di luar cakupan tidak mun
 }
 ```
 
-Modul halaman memanggil endpoint ini berulang sampai `selesai` bernilai `true`, lalu memuat ulang halaman token untuk menampilkan ringkasan.
+Isian `diproses`, `berhasil`, dan `gagal` adalah jumlah kumulatif sejak awal, dan `total` adalah jumlah foto di token itu. Modul halaman memanggil endpoint ini berulang sampai `selesai` bernilai `true`, lalu memuat ulang halaman token untuk menampilkan ringkasan.
 
 ### EP-LAP-02 — Data flyer (R2)
 
