@@ -422,7 +422,7 @@ Langkah di server:
    1. menyimpan scan yang valid dengan `INSERT … ON DUPLICATE KEY UPDATE id = id` berdasarkan `uuid`, lalu mengisi penilaian dan nilai awal kolom hasil untuk scan baru (`PenilaiScan`, ARS-16);
    2. memperbarui `status_stasiun` (tabel di bawah);
    3. menulis antrean hitung ulang untuk scan baru dengan siswa yang dikenal;
-   4. menulis log aktivitas `scan_ditolak_server` untuk setiap scan yang ditolak: stasiun, alasan, UUID, NISN, jam scan, dan data mentah paling besar 1 KB. Scan yang sama yang dikirim ulang tidak menulis log baru, berdasarkan stasiun dan hash SHA-1 data mentah (`12` SEC-24).
+   4. menulis log aktivitas `scan_ditolak_server` untuk setiap scan yang ditolak: stasiun, alasan, UUID, NISN, jam scan, dan data mentah paling besar 1 KB. Scan yang sama yang dikirim ulang tidak menulis log baru, berdasarkan stasiun dan hash SHA-1 data mentah lengkap yang disimpan di log (`12` SEC-24).
 4. Setelah commit, membaca `uuid` yang tersimpan untuk mengisi `diterima` (ARS-29 butir 7).
 5. Menutup sesi, lalu memproses antrean paling lama 2 detik tanpa menunggu kunci (ARS-36).
 6. Mengirim jawaban.
