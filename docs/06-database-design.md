@@ -2,11 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.3 (draft, menunggu review) |
-| Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, §2.4) dan Session 7 (UI/UX & Design System, §2.5). |
+| Versi | 0.4 (draft, menunggu review) |
+| Tanggal | 2026-10-05 |
+| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, §2.4), Session 7 (UI/UX & Design System, §2.5), dan Session 8 (Routes / Pages / API, §2.6). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`), bagian "Data dan log", dan ketentuan umum (§4). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`) dan kebutuhan data (§14). |
-| Dokumen terkait | [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export yang membaca dan menulis tabel di dokumen ini. [07-system-architecture.md](07-system-architecture.md): mekanisme hitung ulang, penguncian, sesi, dan kiosk yang memakai tabel di dokumen ini. |
+| Dokumen terkait | [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export yang membaca dan menulis tabel di dokumen ini. [07-system-architecture.md](07-system-architecture.md): mekanisme hitung ulang, penguncian, sesi, dan kiosk yang memakai tabel di dokumen ini. [10-api-specification.md](10-api-specification.md): API kiosk yang membaca dan menulis tabel di dokumen ini. |
 
 Dokumen ini menetapkan desain database Spensada: konvensi, daftar tabel, kolom, tipe, relasi, kunci unik, dan index. Dokumen ini juga memutuskan cara menyimpan status harian (BR-STS-06), dan mencatat keputusan Session 5 atas usulan di `05` yang berdampak ke data.
 
@@ -72,6 +72,17 @@ Keputusan Session 7 yang berdampak ke desain data. Rinciannya ada di `08` §2.
 | NIP di akun staf | Kolom opsional `akun.nip` untuk blok tanda tangan PDF, ditambahkan bersama export PDF di R2. | §5.1, `08` UI-61 | DECISION |
 | Kota sekolah | Kunci `pengaturan.sekolah_kota` untuk tempat di blok tanda tangan PDF, ditambahkan di R2. | §6.1, `08` UI-61 | DECISION |
 | Foto kecil | Foto ketiga berukuran 120×160 px disimpan dengan nama file yang sama dengan foto standar. Tidak ada kolom baru. | §6.5, `07` ARS-53 | DECISION |
+
+### 2.6 Keputusan Session 8
+
+Keputusan Session 8 yang berdampak ke desain data. Rinciannya ada di `09` §2 dan `10` §2.
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| Versi kode kiosk dan penyimpanan permanen | Kolom `status_stasiun.versi_kiosk` dan `status_stasiun.penyimpanan_permanen`, diisi dari laporan kiosk di setiap kontak, dan ditampilkan di status stasiun. | §8.1, `09` HAL-KIO-02, `10` EP-KIO-03 | DECISION |
+| Scan galat | Kolom `status_stasiun.scan_galat` menyimpan jumlah scan yang ditolak server dan masih tersimpan di laptop (`04` FS-KIO-03 E4). | §8.1, `10` EP-KIO-03 | RECOMMENDATION |
+| Waktu data dimuat | `status_stasiun.data_dimuat_at` diisi dari laporan kiosk di setiap kontak. | §8.1, `10` EP-KIO-03 | RECOMMENDATION |
+| Akun pencatat scan | Setiap scan di kiriman membawa akun stasiun pencatatnya, yang disimpan di `scan.stasiun_id`. Scan yang dicatat akun lain ditolak. Tidak ada kolom baru. | §8.2, `10` EP-KIO-03 | RECOMMENDATION |
 
 ## 3. Konvensi
 
@@ -538,10 +549,13 @@ Satu baris per akun stasiun, diperbarui setiap kontak (FS-KIO-04 butir 7, FS-KIO
 | `sinkron_terakhir_at` | DATETIME | Ya | Waktu kiriman scan terakhir yang diterima. |
 | `belum_sinkron` | INT | Ya | Jumlah scan belum tersinkron yang terakhir dilaporkan. |
 | `belum_sinkron_dilaporkan_at` | DATETIME | Ya | Waktu laporan itu. Dipakai untuk definisi tersinkron di BR-WA-02 syarat 3. |
+| `scan_galat` | INT | Ya | Jumlah scan galat yang terakhir dilaporkan, yaitu scan yang ditolak server dan masih tersimpan di laptop (`04` FS-KIO-03 E4). Tidak termasuk dalam `belum_sinkron`. Cara mengisinya di `10` EP-KIO-03. |
 | `selisih_jam_detik` | INT (bertanda) | Ya | Selisih jam laptop terhadap jam server pada pengukuran terakhir. Diukur server dari jam laptop yang dikirim kiosk di setiap kontak (`07` ARS-27). |
 | `selisih_diukur_at` | DATETIME | Ya | |
-| `data_dimuat_at` | DATETIME | Ya | Waktu data kiosk terakhir dimuat (FS-KIO-01). |
+| `data_dimuat_at` | DATETIME | Ya | Waktu data kiosk terakhir dimuat (FS-KIO-01), dari laporan kiosk di setiap kontak. |
 | `versi_data` | VARCHAR(40) | Ya | Versi data yang terakhir dimuat: 40 karakter heksadesimal, yaitu hash SHA-1 data kiosk (`07` ARS-23). |
+| `versi_kiosk` | VARCHAR(20) | Ya | Versi kode kiosk yang terakhir dilaporkan, misalnya `1.0.0` (`10` API-10). |
+| `penyimpanan_permanen` | TINYINT(1) | Ya | Keadaan penyimpanan permanen yang terakhir dilaporkan: 1 aktif, 0 belum aktif. NULL bila kiosk tidak dapat memeriksanya atau belum melapor (`07` ARS-21). |
 | `updated_at` | DATETIME | | |
 
 Jumlah scan hari ini dihitung dari `scan` dengan index (`stasiun_id`, `tanggal`).
@@ -558,7 +572,7 @@ Catatan setiap scan yang diterima server. Baris hanya ditambah, tidak pernah dih
 |---|---|---|---|---|
 | `id` | BIGINT | | — | Primary key. |
 | `uuid` | CHAR(36) | | Isi | ID unik dari kiosk (BR-SCN-05): UUID versi 4, 36 karakter huruf kecil (`07` ARS-24). Unik. |
-| `stasiun_id` | INT | | Isi | Akun stasiun pengirim. |
+| `stasiun_id` | INT | | Isi | Akun stasiun pengirim, yang harus sama dengan akun pencatat scan (`10` EP-KIO-03). |
 | `nisn` | CHAR(10) | | Isi | NISN seperti yang dibaca kiosk. |
 | `jenis_kiosk` | VARCHAR(6) | | Isi | `masuk` atau `pulang` menurut kiosk. |
 | `status_kiosk` | VARCHAR(12) | | Isi | `hadir`, `terlambat`, `pulang`, atau `pulang_awal` menurut kiosk. |
@@ -949,7 +963,7 @@ Kiosk menyimpan data di browser (`00` §5). Struktur penyimpanan browser ada di 
 | Identitas sekolah dan nama stasiun | `pengaturan`, `akun.nama` |
 | Jam server dan versi data | Server; `status_stasiun.versi_data` |
 
-Penerimaan sinkron menulis `scan`, `status_stasiun`, dan `antrean_hitung_ulang` dalam satu transaksi, lalu antrean diproses (§11.4, §11.5).
+Penerimaan sinkron menulis `scan`, `status_stasiun`, dan `antrean_hitung_ulang` dalam satu transaksi, lalu antrean diproses (§11.4, §11.5). Laporan keadaan kiosk di setiap kontak mengisi kolom `status_stasiun`, termasuk `scan_galat`, `versi_kiosk`, dan `penyimpanan_permanen`. Bentuk permintaan dan jawabannya ada di `10` §5.
 
 ## 14. Rilis berikutnya
 
@@ -1125,7 +1139,7 @@ Fitur yang mengubah sumber status di §11.4 juga menulis `antrean_hitung_ulang` 
 
 ## 18. Perubahan pada dokumen lain
 
-Perubahan karena keputusan Session 5, termasuk keputusan di `13`. Perubahan karena keputusan Session 6 dicatat di `07` §18, dan karena keputusan Session 7 di `08` §14.
+Perubahan karena keputusan Session 5, termasuk keputusan di `13`. Perubahan karena keputusan Session 6 dicatat di `07` §18, karena keputusan Session 7 di `08` §14, dan karena keputusan Session 8 di `09` §16.
 
 | Dokumen | Versi | Perubahan |
 |---|---|---|
@@ -1138,19 +1152,20 @@ Perubahan karena keputusan Session 5, termasuk keputusan di `13`. Perubahan kare
 
 ## 19. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ. Session 6 menetapkan empat hal pertama di tabel ini (`07`).
+Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ. Session 6 menetapkan empat hal pertama di tabel ini (`07`), dan Session 8 menetapkan bentuk API kiosk (`10`).
 
 | Hal | Dampak ke desain | Dipastikan di |
 |---|---|---|
 | Mekanisme hitung ulang dan pembuatan baris hari ini | §11.4, §11.5 | Ditetapkan di Session 6 (`07` §7) |
 | Penyimpanan sesi CI4 dan pembatasan percobaan login | §5.4 | Sesi: ditetapkan di Session 6 (`07` ARS-47). Pembatasan percobaan login: Session 9 |
-| Format `uuid` scan dan versi data kiosk | §8.1, §8.2 | Ditetapkan di Session 6 sebagai RECOMMENDATION (`07` ARS-23, ARS-24). Bentuk API: Session 8 |
+| Format `uuid` scan dan versi data kiosk | §8.1, §8.2 | Ditetapkan di Session 6 sebagai RECOMMENDATION (`07` ARS-23, ARS-24). Bentuk API: ditetapkan di Session 8 (`10` §5) |
 | Kunci bernama untuk pemeriksaan tumpang tindih global | §16 | Ditetapkan di Session 6 sebagai RECOMMENDATION (`07` ARS-42) |
 | Isi dan jenis `log_aktivitas` | §5.3 | Session 9 |
 | Kebijakan retensi data | DB-13 | Session 9 |
 | Panjang maksimal alasan dan catatan | Panjang kolom di dokumen ini | Session 9 |
 | Tempat kredensial gateway WA dan kolom `id_provider` | §6.1, §14.1 | Kredensial: Session 9. Kolom `id_provider`: sebelum R2 (OQ-10) |
 | Pencatatan pembukaan lampiran | Mungkin tabel baru | Session 9 (OQ-17) |
+| Penanganan scan galat yang tetap ditolak setelah dikirim ulang | `status_stasiun.scan_galat` | Session 9 (`10` §9) |
 
 ## Riwayat perubahan
 
@@ -1159,3 +1174,4 @@ Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ. Session 6 
 | 0.1 | 2026-10-04 | Draft awal dari Session 5: konvensi, 31 tabel R1 dan 3 tabel R2, aturan baca status harian, pemicu hitung ulang, index, integritas, dan keputusan Session 5. |
 | 0.2 | 2026-10-04 | Keputusan Session 6 (§2.4, `07`). Tabel `antrean_hitung_ulang` (§11.5) ditambahkan, sehingga tabel R1 menjadi 32. DB-11 menjadi DECISION. Kepala dokumen, §1, DB-03, §4.1, §4.2, §5.4, §6.1, §8.1, §8.2, §9.3, §11.4, §13, §16, §17.2, §18, dan §19 diperbarui. Di antaranya, `tanda_selisih_berubah` membandingkan selisih scan dengan selisih yang diukur server saat kiriman diterima, dan pembuatan baris status dimulai dari hari ini bila `status_dibangun_sampai` kosong. Kunci `cron_terakhir_at` ditambahkan di §6.1. Usulan di §4.1, §6.4, §6.6, dan §10.4 menjadi DECISION. |
 | 0.3 | 2026-10-04 | Keputusan Session 7 (§2.5, `08`). Kolom `akun.nip` (R2) dan kunci `pengaturan.sekolah_kota` (R2) ditambahkan. §2.5 ditambahkan. Keterangan `siswa.foto_file` memuat foto kecil. §1, §14.1, dan §18 merujuk `08`. |
+| 0.4 | 2026-10-05 | Keputusan Session 8 (§2.6, `09`, `10`). Kolom `scan_galat`, `versi_kiosk`, dan `penyimpanan_permanen` ditambahkan di `status_stasiun` (§8.1), dan keterangan `data_dimuat_at` serta `scan.stasiun_id` (§8.2) diperbarui. Kepala dokumen, §13, §18, dan §19 diperbarui. |

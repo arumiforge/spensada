@@ -2,15 +2,15 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
-| Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 7 (UI/UX & Design System) |
+| Versi | 0.2 (draft, menunggu review) |
+| Tanggal | 2026-10-05 |
+| Sumber | Discovery Session 7 (UI/UX & Design System). Diperbarui dengan keputusan Session 8 (Routes / Pages / API, §2.4). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan batasan (`C-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`), area, dan halaman awal. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`), ketentuan umum (§4), dan catatan antarmuka awal. [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). [06-database-design.md](06-database-design.md): kode nilai. [07-system-architecture.md](07-system-architecture.md): library, aset, kiosk, foto, dan pembaruan halaman (`ARS-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, PDF, dan flyer. |
-| Dokumen terkait | `08-contoh-tampilan.html` (contoh visual dokumen ini, di folder yang sama). `09-page-and-route-specification.md` (Session 8), serta `11-validation-and-error-handling.md` dan `12-security.md` (Session 9). Ketiganya belum dibuat. |
+| Dokumen terkait | `08-contoh-tampilan.html` (contoh visual dokumen ini, di folder yang sama). [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman, route, menu, dan label kode di halaman admin. [10-api-specification.md](10-api-specification.md): fragmen dan bantuan formulir. `11-validation-and-error-handling.md` dan `12-security.md` (Session 9), keduanya belum dibuat. |
 
 Dokumen ini menetapkan sistem desain Spensada: prinsip, warna, huruf, ikon, foto, komponen, tata letak panel staf, portal siswa, dan kiosk, teks layar dan label, format tanggal dan angka, dokumen cetak, flyer, serta aksesibilitas dan dukungan perangkat. Dokumen ini menjawab R-19 dan sebagian OQ-13.
 
-Daftar halaman dan route ditetapkan di Session 8 (`09`), dan teks validasi serta pesan galat rinci di Session 9 (`11`). Dokumen ini hanya menetapkan pola tampilan dan teks yang dibutuhkan dokumen tersebut.
+Daftar halaman, route, dan menu ada di `09`, dan teks validasi serta pesan galat rinci ditetapkan di Session 9 (`11`). Dokumen ini hanya menetapkan pola tampilan dan teks yang dibutuhkan dokumen tersebut.
 
 ## 1. Cara membaca dokumen ini
 
@@ -73,6 +73,18 @@ Tabel ini memuat nilai dari `04` §14.2, `07` §19, dan `13` §9 yang dijadwalka
 ### 2.3 Catatan antarmuka awal di `04`
 
 Setiap fitur di `04` memuat catatan antarmuka awal yang belum menjadi keputusan. Catatan itu diterapkan di dokumen ini sebagai RECOMMENDATION, kecuali bagian yang sudah diputuskan di §2.1. Pemetaannya ada di §16.2.
+
+### 2.4 Keputusan Session 8
+
+Keputusan Session 8 yang berdampak ke tampilan. Rinciannya ada di `09` §2.
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| Menu panel dan portal | Isi menu final ada di `09` §4, termasuk menu "Kelas saya" di bawah Dashboard bagi wali kelas, yang membuka daftar presensi rombelnya hari ini. | UI-31, `09` §4, HAL-LAP-03 | DECISION ("Kelas saya"); RECOMMENDATION (isi menu lain) |
+| Pencarian siswa | Formulir cari biasa, ditambah hasil langsung saat mengetik bila JavaScript aktif. | UI-28, `09` RT-14, `10` EP-MD-01 | DECISION |
+| Status stasiun | Halaman status stasiun menampilkan versi kode kiosk dan keadaan penyimpanan permanen. Stasiun juga disorot bila memiliki scan galat atau penyimpanan permanennya belum aktif. | §4.2, `09` HAL-KIO-02 | DECISION (kolom); RECOMMENDATION (sorotan) |
+| Kata di alamat | Alamat memakai kata `kelas`, sama dengan label layar. | UI-51, `09` RT-03 | DECISION |
+| Label kode di halaman admin | Label kode yang belum ada di §9.2 ditetapkan di `09` §14. | §9.2 | RECOMMENDATION |
 
 ## 3. Prinsip
 
@@ -143,7 +155,7 @@ Tanda lain:
 | Dikoreksi | Chip bergaris netral dengan ikon `pencil`: "Dikoreksi". Di portal siswa diikuti alasan koreksi. | FS-LAP-04 |
 | Status data izin/sakit/dispensasi | Chip bergaris, bukan chip berisi, agar tidak tertukar dengan status harian: Menunggu (oranye), Disetujui (hijau), Ditolak (merah), Dibatalkan (abu-abu). | FS-IZN-06 |
 | Status akun siswa | Teks dengan titik warna: Belum aktif (abu-abu), Aktif (hijau), Nonaktif (merah). | `02` §7.2 |
-| Stasiun disorot | Baris berlatar oranye muda dengan ikon `wifi-off` dan alasannya (FS-KIO-05 butir 2). | FS-KIO-05 |
+| Stasiun disorot | Baris berlatar oranye muda dengan ikon dan alasannya (FS-KIO-05 butir 2, label di `09` §14): `wifi-off` untuk tanpa kontak, `cloud-upload` untuk scan belum tersinkron, dan `circle-alert` untuk selisih jam, scan galat, dan penyimpanan permanen belum aktif. Versi kode kiosk yang lama diberi chip netral "Versi lama" tanpa sorotan (`09` HAL-KIO-02). | FS-KIO-05 |
 | Belum final | Chip netral "Belum final", atau di file "Data hari ini belum final, dibuat pukul 07.32" (`13` IE-03). | BR-REK-04 |
 | Sedang diperbarui | Teks redup "Sedang diperbarui" di dekat judul tabel (ARS-36 butir 5). | ARS-37 |
 | Mode darurat | Bilah merah di bawah bilah atas semua halaman panel (UI-30). | FS-PRS-08 |
@@ -189,7 +201,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 | Makna | Ikon | Makna | Ikon |
 |---|---|---|---|
 | Dashboard | `house` | Menu lipat | `menu` |
-| Daftar presensi | `clipboard-list` | Siswa | `users` |
+| Daftar presensi, Kelas saya | `clipboard-list` | Siswa | `users` |
 | Presensi manual, koreksi | `pencil` | Riwayat, profil | `user` |
 | Jadwal hari ini | `clock-3` | Sekolah dan pengaturan | `school`, `settings` |
 | Mode darurat | `siren` | Laporan | `chart-column` |
@@ -244,6 +256,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 | Diperbarui berkala | Fragmen yang diperbarui setiap 30 detik (ARS-50) menampilkan "Diperbarui 07.32". Bila permintaan gagal, tampil "Gagal memperbarui. Mencoba lagi." Bila sesi berakhir, polling berhenti dan tampil "Sesi berakhir. Muat ulang halaman untuk login lagi." Pembaruan berkala tidak diumumkan pembaca layar, kecuali keadaan gagal. |
 | Tab | Untuk membagi satu isi, misalnya baris valid dan baris gagal di pratinjau import (FS-MD-06). Tanpa JavaScript, setiap tab adalah tautan dengan parameter. |
 | Pemilih tanggal | Isian tanggal dengan tombol hari sebelumnya dan berikutnya (FS-LAP-02). Tombol berikutnya nonaktif di hari ini. |
+| Pencarian siswa | Isian "Nama atau NISN" dengan ikon `search` dan tombol Cari. Tanpa JavaScript, hasil tampil setelah halaman dimuat ulang. Dengan JavaScript, hasil yang sama tampil saat mengetik, mulai 2 karakter: paling banyak 20 siswa dengan foto kecil, nama, NISN, kelas, dan status siswa. Hasil berupa daftar tautan biasa di bawah isian, sehingga dapat dipilih dengan Tab dan Enter, dan jumlahnya diumumkan pembaca layar lewat `aria-live="polite"`. Mode pilih banyak memakai kotak centang (`09` RT-14, `10` EP-MD-01). |
 | Foto siswa | Bingkai 3:4 dengan pengganti (UI-24). |
 | Kepala halaman | Judul halaman, konteks (misalnya tanggal dan rombel), dan tombol tindakan utama di kanan. Di ponsel, tombol pindah ke bawah judul. |
 
@@ -255,20 +268,20 @@ Ikon yang dipakai (selain ikon status di §4.2):
 |---|---|---|
 | UI-29 | **Kerangka panel.** Layar ≥1024 px memakai menu samping selebar ±220 px berlatar warna utama. Di bawah 1024 px, menu samping disembunyikan dan dibuka dengan tombol `menu` di bilah atas, sebagai menu lipat yang menutupi isi. Tanpa JavaScript, tombol itu menuju halaman daftar menu. Bilah atas memuat tahun ajaran dan semester aktif (FS-MD-02), nama pengguna, role, dan menu akun (ganti password, logout). | DECISION (menu samping dan menu lipat); RECOMMENDATION (rincian) |
 | UI-30 | **Tanda mode darurat.** Selama mode darurat aktif, bilah merah tampil di bawah bilah atas di semua halaman panel: "Mode darurat aktif sejak 06.30. Siswa tanpa presensi tetap belum hadir, dan Alpa tidak terbentuk." Bilah itu memuat tautan ke presensi per kelas bagi pemegang `HA-PRS-03` (FS-PRS-08). | RECOMMENDATION |
-| UI-31 | **Kelompok menu.** Menu dikelompokkan seperti tabel di bawah. Menu hanya memuat halaman yang boleh dibuka role pengguna (`04` §4.1), dan kelompok tanpa isi disembunyikan. Daftar halaman final ditetapkan di `09`. | DECISION (dikelompokkan dan hanya halaman yang boleh dibuka); RECOMMENDATION (isi kelompok) |
+| UI-31 | **Kelompok menu.** Menu dikelompokkan seperti tabel di bawah. Menu hanya memuat halaman yang boleh dibuka role pengguna (`04` §4.1), dan kelompok tanpa isi disembunyikan. Isi menu final, termasuk kelompok R2 dan R3, ada di `09` §4.1. | DECISION (dikelompokkan dan hanya halaman yang boleh dibuka; "Kelas saya" bagi wali kelas, Session 8); RECOMMENDATION (isi kelompok) |
 | UI-32 | **Dashboard hari ini.** Urutan dari atas: kepala dashboard, peringatan sesuai hak, ubin ringkasan, lalu tabel per kelas (FS-LAP-01). Rombel wali kelas tampil paling atas dengan tanda "Kelas Anda". Rombel yang libur tampil sebagai baris dengan keterangan liburnya. Di ponsel, tabel memakai huruf singkat (H, T, I, S, D, dan – atau A). | RECOMMENDATION |
 | UI-33 | **Daftar presensi kelas.** Siswa berpenanda dan siswa yang belum hadir tampil paling atas. Setiap baris memuat foto kecil, nama, NISN, chip status, presensi masuk dan pulang beserta sumbernya ("Scan, Gerbang 1", "Manual", atau "Darurat"), kejadian, izin, koreksi, penanda, dan tombol tindakan sesuai hak (FS-LAP-02). Di ponsel, setiap siswa tampil sebagai kartu. | RECOMMENDATION |
 | UI-34 | **Presensi manual.** Setelah siswa dipilih, foto 240×320 px tampil di samping formulir untuk dicocokkan dengan wajah siswa. Formulir menampilkan pratinjau status, misalnya "Akan tercatat: Terlambat" (FS-PRS-06 butir 2). Tanpa JavaScript, pratinjau tampil setelah tombol "Periksa". | RECOMMENDATION |
 
 | Kelompok | Isi (contoh) | Hak |
 |---|---|---|
-| — | Dashboard hari ini | `HA-LAP-01` |
+| — | Dashboard hari ini; "Kelas saya" bagi wali kelas | `HA-LAP-01`, `HA-LAP-02` |
 | Presensi | Daftar presensi kelas, presensi manual, jadwal hari ini, mode darurat, scan bertanda, log perubahan presensi | `HA-LAP-02`, `HA-LAP-03`, `HA-PRS-03`, `HA-PRS-07`, `HA-PRS-08`, `HA-KIO-03`, `HA-PRS-06` |
 | Izin | Pengajuan menunggu, daftar izin/sakit/dispensasi, input izin, dispensasi massal | `HA-IZN-02` s.d. `HA-IZN-04` |
-| Laporan | Rekap per kelas, riwayat siswa; di R2 rekap semua kelas dan flyer | `HA-LAP-03` s.d. `HA-LAP-06` |
+| Laporan | Rekap per kelas, riwayat siswa; di R2 rekap semua kelas, rekap rapor, dan flyer | `HA-LAP-03` s.d. `HA-LAP-06` |
 | Siswa | Data siswa, import, foto massal, penempatan, akun siswa dan slip, atribut tambahan | `HA-MD-03` s.d. `HA-MD-05`, `HA-MD-08`, `HA-MD-11`, `HA-AKN-05`, `HA-AKN-06` |
 | Sekolah | Identitas sekolah, tahun ajaran, kelas dan wali kelas, pola mingguan, jadwal khusus, libur, batas mundur | `HA-MD-01`, `HA-MD-02`, `HA-MD-09`, `HA-PRS-01`, `HA-PRS-02`, `HA-PRS-09` |
-| Akun dan stasiun | Akun staf, akun dan status stasiun, pemeriksaan sistem | `HA-AKN-02`, `HA-AKN-03`, `HA-KIO-02` |
+| Akun dan stasiun | Akun staf, akun dan status stasiun, pemeriksaan sistem | `HA-AKN-02`, `HA-AKN-03`, `HA-AKN-07`, `HA-KIO-02` |
 
 ### 6.2 Portal siswa
 
@@ -436,7 +449,7 @@ Judul kolom file export dan template import di `13` ikut memakai label ini, misa
 | `libur_cakupan.cakupan` | `semua` Semua siswa · `tingkat` Tingkat · `rombel` Kelas |
 | `atribut_siswa.tipe` | `teks` Teks · `angka` Angka · `tanggal` Tanggal · `pilihan` Pilihan |
 
-Label log, outbox WA, dan kode lain yang hanya tampil di halaman admin ditetapkan bersama halamannya di `09`, dengan pola yang sama: huruf awal kapital dan garis bawah menjadi spasi.
+Label log, outbox WA, dan kode lain yang hanya tampil di halaman admin dan halaman staf tertentu ada di `09` §14, dengan pola yang sama: huruf awal kapital dan garis bawah menjadi spasi. Label `log_aktivitas.jenis` ditetapkan di Session 9.
 
 ### 9.3 Format
 
@@ -574,14 +587,16 @@ Perubahan karena keputusan Session 7:
 
 File `docs/08-contoh-tampilan.html` juga dibuat di Session 7 (UI-77). `02` tidak berubah.
 
+Perubahan karena keputusan Session 8 dicatat di `09` §16.
+
 ## 15. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru.
+Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru. Session 8 menetapkan daftar halaman, route, dan menu (`09`).
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
 | Contoh kartu OSIS lama dan desain kartu rinci | OQ-13, UI-62 | Sekolah, sebelum R3 |
-| Daftar halaman, route, dan isi menu final | UI-31 | Session 8 (`09`) |
+| Daftar halaman, route, dan isi menu final | UI-31 | Ditetapkan di Session 8 (`09` §4 s.d. §13) |
 | Teks validasi per isian dan pesan galat rinci | UI-56 | Session 9 (`11`) |
 | PIN petugas untuk tindakan berisiko di kiosk | UI-48 | Session 9 |
 | Cache browser untuk foto kecil, yang saat ini tidak disimpan (ARS-52) | UI-22 | Session 9 |
@@ -625,26 +640,26 @@ Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru.
 | FS-AKN-01 | Satu kolom "NISN atau username", identitas sekolah, teks bantuan | UI-38 |
 | FS-AKN-02 | Aturan password di formulir, tombol tampilkan password | UI-38 |
 | FS-AKN-03 | Password awal tampil sekali dengan tombol salin dan cetak | UI-59 (pola peringatan yang sama) |
-| FS-AKN-04 | Daftar akun stasiun digabung dengan status stasiun | UI-31 |
+| FS-AKN-04 | Daftar akun stasiun digabung dengan status stasiun | UI-31, `09` HAL-KIO-02 |
 | FS-AKN-05 | Peringatan sebelum slip dibuat, halaman slip ramah cetak | UI-57 s.d. UI-59, §5 (konfirmasi) |
 | FS-MD-01, FS-MD-07 | Pratinjau logo dan foto | §5 (unggah file) |
 | FS-MD-02 | Tahun ajaran aktif ditandai jelas | UI-29 |
 | FS-MD-03 | Label "rombel" | UI-51 |
 | FS-MD-04 | Tanda tanpa nomor WA dan tanpa foto, nomor WA mudah dibaca | UI-24, UI-54 |
-| FS-MD-05, FS-MD-09 | Riwayat penempatan dan atribut tambahan di profil | `09` (halaman profil) |
+| FS-MD-05, FS-MD-09 | Riwayat penempatan dan atribut tambahan di profil | `09` HAL-MD-06 |
 | FS-MD-06, FS-MD-08 | Pratinjau dengan tab, pratinjau tabel | §5 (tab, tabel) |
 | FS-KIO-01 s.d. FS-KIO-03 | Bilah status, tombol petugas, hasil besar, foto besar, kamera selalu tampak, penghitung mencolok | UI-39 s.d. UI-44 |
 | FS-KIO-05 | Daftar stasiun diperbarui berkala | §5 (diperbarui berkala), §4.2 |
-| FS-KIO-06 | Dikelompokkan per stasiun dan alasan | `09` (halaman tinjauan) |
-| FS-PRS-01 s.d. FS-PRS-04 | Tabel pola mingguan, kalender jadwal dan libur, aturan berlaku di samping isian | UI-27, `09` |
+| FS-KIO-06 | Dikelompokkan per stasiun dan alasan | `09` HAL-KIO-03 |
+| FS-PRS-01 s.d. FS-PRS-04 | Tabel pola mingguan, kalender jadwal dan libur, aturan berlaku di samping isian | UI-27, `09` HAL-PRS-01 s.d. HAL-PRS-04 |
 | FS-PRS-05 | Warna dan ikon status | UI-12 |
 | FS-PRS-06 | Pintasan presensi manual, foto besar | UI-33, UI-34 |
 | FS-PRS-07 | Pengingat alasan dapat dibaca siswa | §5 (isian formulir) |
 | FS-PRS-08 | Tanda mode darurat di semua halaman | UI-30 |
-| FS-PRS-09 | Daftar centang dengan foto kecil dan centang semua | UI-23, `09` |
-| FS-PRS-10, FS-PRS-11 | Contoh rentang tanggal, data lama dan baru berdampingan | §5 (tanggal), `09` |
+| FS-PRS-09 | Daftar centang dengan foto kecil dan centang semua | UI-23, `09` HAL-PRS-06 |
+| FS-PRS-10, FS-PRS-11 | Contoh rentang tanggal, data lama dan baru berdampingan | §5 (tanggal), `09` HAL-PRS-09, HAL-PRS-10 |
 | FS-IZN-01 | Formulir sederhana untuk ponsel | UI-37 |
-| FS-IZN-02 s.d. FS-IZN-06 | Pintasan input izin, pratinjau dispensasi, lampiran tampil langsung, riwayat keputusan, saringan cepat | §5, `09` |
+| FS-IZN-02 s.d. FS-IZN-06 | Pintasan input izin, pratinjau dispensasi, lampiran tampil langsung, riwayat keputusan, saringan cepat | §5, `09` HAL-IZN-04 s.d. HAL-IZN-09 |
 | FS-LAP-01 | Rombel wali kelas di atas, belum hadir disorot, dapat dipakai di ponsel | UI-32 |
 | FS-LAP-02 | Siswa berpenanda di atas, pemilih tanggal | UI-33, §5 |
 | FS-LAP-03 | Kolom persentase dapat diurutkan | §5 (tabel) |
@@ -655,3 +670,4 @@ Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru.
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 7: keputusan tampilan, prinsip, warna dan status, huruf, ikon, foto, komponen, tata letak panel dan portal, kiosk, gaya bahasa, label dan format, dokumen cetak, flyer, aksesibilitas, aset, dan traceability. R-19 terjawab, dan OQ-13 terjawab sebagian. |
+| 0.2 | 2026-10-05 | Keputusan Session 8 (§2.4, `09`, `10`). UI-28 (komponen pencarian siswa), UI-31 (menu final di `09` §4.1, termasuk "Kelas saya"), tanda stasiun disorot di §4.2, §9.2 (label kode di `09` §14), ikon "Kelas saya" di §4.5, kepala dokumen, §14, §15, dan §16.2 diperbarui. Contoh menu di `08-contoh-tampilan.html` memuat "Kelas saya". |

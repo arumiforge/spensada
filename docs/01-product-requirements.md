@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.7 (draft) |
-| Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan), Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), Session 5 (database, `06`; laporan, import, dan export, `13`), Session 6 (arsitektur sistem, `07`), dan Session 7 (UI/UX dan sistem desain, `08`). |
+| Versi | 0.8 (draft) |
+| Tanggal | 2026-10-05 |
+| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan), Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), Session 5 (database, `06`; laporan, import, dan export, `13`), Session 6 (arsitektur sistem, `07`), Session 7 (UI/UX dan sistem desain, `08`), dan Session 8 (route, halaman, dan API, `09` dan `10`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), asumsi (`A-xx`), dan pertanyaan terbuka (`OQ-xx`) |
 
 ## 1. Cara membaca dokumen ini
@@ -85,7 +85,7 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 | FR-KIO-09 | Kiosk tetap dapat dipakai untuk scan saat internet putus, termasuk setelah halaman atau laptop dibuka ulang tanpa internet. | Petugas | Core | R1 | DECISION (scan saat offline); RECOMMENDATION (dibuka ulang saat offline) |
 | FR-KIO-10 | Server menerima data sinkron secara idempotent: kiriman ulang tidak menggandakan data. Scan dari beberapa stasiun digabung: scan paling awal yang berlaku (`05` BR-SCN-03). | Sistem | Core | R1 | RECOMMENDATION (idempotent); DECISION (penggabungan, Session 4) |
 | FR-KIO-11 | Saat sinkron, server memvalidasi jam scan: tanggal harus sesuai, jam tidak boleh di masa depan, dan selisih jam yang ekstrem ditandai untuk diperiksa staf (`05` BR-SCN-08). | Sistem | Core | R1 | RECOMMENDATION |
-| FR-KIO-12 | Panel staf menampilkan status setiap stasiun scan: waktu sinkron terakhir, dan jumlah scan belum tersinkron yang dilaporkan stasiun. Status ini dipakai untuk memantau sinkron, sebelum mencabut akun stasiun, dan sebagai syarat pembuatan pesan "tidak hadir" (FR-WA-07). | Admin, guru piket | Supporting | R1 | DECISION (Session 4) |
+| FR-KIO-12 | Panel staf menampilkan status setiap stasiun scan: waktu sinkron terakhir, dan jumlah scan belum tersinkron yang dilaporkan stasiun. Status ini dipakai untuk memantau sinkron, sebelum mencabut akun stasiun, dan sebagai syarat pembuatan pesan "tidak hadir" (FR-WA-07). Stasiun juga melaporkan versi kode kiosk, keadaan penyimpanan permanen, dan jumlah scan yang ditolak server (`09` HAL-KIO-02, `10` EP-KIO-03). | Admin, guru piket | Supporting | R1 | DECISION (Session 4; versi kode kiosk dan penyimpanan permanen, Session 8); RECOMMENDATION (jumlah scan yang ditolak server) |
 
 ### 3.4 PRS — Presensi dan aturan
 
@@ -318,3 +318,4 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | 0.5 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). FR-MD-03 (atribut opsional dan masa aktif), FR-MD-04 (penempatan massal), FR-MD-05 (NISN yang sudah ada dilewati), FR-MD-07 (format nama file foto), FR-IZN-05 (paling banyak 3 lampiran), FR-LAP-04 (matriks laporan), FR-LAP-05 (isi flyer), dan NFR-14 diperbarui. FR-MD-10 (atribut tambahan siswa) ditambahkan. OQ-11 dan OQ-12 dihapus dari §8 karena terjawab. |
 | 0.6 | 2026-10-04 | Keputusan Session 6 (`07`). C-03 (VPS) dan C-06 (Composer appstarter) menjadi DECISION. NFR-03, NFR-09, dan NFR-16 diperbarui, dan daftar library memuat zxing-wasm dan mPDF, dengan flyer ditunda ke Session 7. OQ-09 dihapus dari §8 karena terjawab. §9 merujuk `07`. |
 | 0.7 | 2026-10-04 | Keputusan Session 7 (`08`). FR-KRT-01 dan NFR-11 diperbarui. Daftar library memuat flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide sebagai DECISION. OQ-13 di §8 terjawab sebagian. §9 merujuk `08`. |
+| 0.8 | 2026-10-05 | Keputusan Session 8 (`09`, `10`). FR-KIO-12 memuat versi kode kiosk, penyimpanan permanen, dan scan yang ditolak server. |

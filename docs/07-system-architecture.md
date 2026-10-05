@@ -2,21 +2,21 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.2 (draft, menunggu review) |
-| Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 6 (System Architecture). Diperbarui dengan keputusan Session 7 (UI/UX & Design System, §2.4). |
+| Versi | 0.3 (draft, menunggu review) |
+| Tanggal | 2026-10-05 |
+| Sumber | Discovery Session 6 (System Architecture). Diperbarui dengan keputusan Session 7 (UI/UX & Design System, §2.4) dan Session 8 (Routes / Pages / API, §2.5). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan batasan (`C-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [03-user-flow.md](03-user-flow.md): alur pengguna (`UF-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan ketentuan umum (§4). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). [06-database-design.md](06-database-design.md): tabel dan aturan data (`DB-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export. |
-| Dokumen terkait | [08-ui-ux-design-system.md](08-ui-ux-design-system.md): tampilan, aset CSS, font, dan ikon. `09-page-and-route-specification.md` dan `10-api-specification.md` (Session 8), serta `12-security.md` (Session 9). Ketiganya belum dibuat. |
+| Dokumen terkait | [08-ui-ux-design-system.md](08-ui-ux-design-system.md): tampilan, aset CSS, font, dan ikon. [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman, route, dan menu. [10-api-specification.md](10-api-specification.md): API kiosk, fragmen, dan bantuan formulir. `12-security.md` (Session 9) belum dibuat. |
 
 Dokumen ini menetapkan arsitektur sistem Spensada: hosting dan instalasi, library, struktur aplikasi CodeIgniter 4, arsitektur kiosk, mekanisme hitung ulang status, konkurensi, waktu, sesi dan login, pembaruan halaman, penyimpanan file, proses terjadwal, pengujian, serta panduan lokal dan production. Dokumen ini menjawab OQ-09.
 
-Route dan bentuk API ditetapkan di Session 8, tampilan di `08` (Session 7), dan rincian keamanan di Session 9. Dokumen ini hanya menetapkan mekanisme yang dibutuhkan dokumen tersebut.
+Route ditetapkan di `09` dan bentuk API di `10` (Session 8), tampilan di `08` (Session 7), dan rincian keamanan di Session 9. Dokumen ini hanya menetapkan mekanisme yang dibutuhkan dokumen tersebut.
 
 ## 1. Cara membaca dokumen ini
 
 - **ID.** Aturan arsitektur memakai ID `ARS-<NN>`. ID tidak pernah dinomori ulang. Aturan yang batal ditandai `DEPRECATED`.
 - **Status.** Label status mengikuti `00`. Keputusan dari ronde diskusi Session 6 berstatus DECISION. Rincian teknis yang tidak dibahas di ronde berstatus RECOMMENDATION, dan menjadi arah kerja Session 7–11 serta implementasi sampai dikonfirmasi atau diganti.
-- **Nama teknis.** Nama kelas, folder, filter, perintah CLI, dan penyimpanan browser di dokumen ini adalah usulan (RECOMMENDATION). Nama tabel dan kolom tetap mengikuti `06`. Route dan bentuk API ditetapkan di Session 8 (`09`, `10`).
+- **Nama teknis.** Nama kelas, folder, filter, perintah CLI, dan penyimpanan browser di dokumen ini adalah usulan (RECOMMENDATION). Nama tabel dan kolom tetap mengikuti `06`. Route ada di `09`, dan bentuk API di `10`.
 - **Lokal dan production.** Langkah lokal (Windows, Laragon, Nginx) ada di §15, dan langkah production (VPS) ada di §16. Keduanya dipisah sesuai `00` §11 butir 11.
 - **Nilai.** Angka yang dapat diubah tanpa mengubah kode disimpan sebagai parameter (ARS-17). Nilai di dokumen ini adalah nilai awal.
 - **Contoh.** Contoh tanggal dan jam mengikuti `04` §1.
@@ -85,6 +85,19 @@ Keputusan Session 7 yang berdampak ke arsitektur. Rinciannya ada di `08` §2.
 | Huruf | Plus Jakarta Sans, disalin ke server dan dipakai di aplikasi, flyer, dan PDF (mPDF). | ARS-10, ARS-22, `08` UI-13 | DECISION |
 | Foto kecil | Ukuran ketiga 120×160 px untuk daftar. | ARS-51, ARS-53 | DECISION |
 | QR kartu | chillerlan/php-qrcode 6 untuk kartu R3, yang dicetak sebagai PDF A4 berisi 10 kartu. | ARS-10, OQ-13, `08` UI-63 | DECISION |
+
+### 2.5 Keputusan Session 8
+
+Keputusan Session 8 yang berdampak ke arsitektur. Rinciannya ada di `09` §2 dan `10` §2.
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| Alamat | Kata `kelas` untuk rombel di alamat. Nama controller, view, tabel, isian JSON, dan nama route tetap memakai "rombel". | ARS-12, `09` RT-03, RT-20 | DECISION |
+| Metode HTTP | Gaya REST. Formulir HTML mengirim PUT, PATCH, dan DELETE lewat isian `_method`, yang diterapkan CI4 sebelum filter dan routing berjalan. | ARS-12, ARS-13, `09` RT-05 | DECISION |
+| Versi API kiosk | Versi di alamat, `/kiosk/api/v1/…`, dengan controller di `App\Controllers\Kiosk\Api\V1`. | ARS-12, ARS-20, `10` API-10 | DECISION |
+| Laporan kiosk | Kiosk melaporkan versi kodenya dan keadaan penyimpanan permanen di setiap kontak, dan keduanya tampil di status stasiun. | ARS-21, ARS-29, `10` EP-KIO-03 | DECISION |
+| Hak pemeriksaan sistem | Halaman pemeriksaan sistem memakai hak baru `HA-AKN-07`, hanya untuk admin. | ARS-57, `09` HAL-AKN-07 | DECISION |
+| Akun pencatat, scan galat, dan logout kiosk | Setiap scan membawa akun stasiun pencatatnya, dan server menolak scan yang dicatat akun lain. Kiosk juga melaporkan jumlah scan galat dan waktu data dimuat. Logout kiosk memakai `POST /kiosk/api/v1/logout`, karena cookie login stasiun hanya dikirim ke alamat berawalan `/kiosk`. | ARS-29 s.d. ARS-31, `10` EP-KIO-03, EP-KIO-04 | RECOMMENDATION |
 
 ## 3. Gambaran sistem
 
@@ -192,6 +205,7 @@ Pengaturan PHP, PHP-FPM, MySQL, dan Nginx (ARS-04):
 | `opcache.enable` | 1 di production | Kinerja. |
 | `display_errors` | Off di production | Rinciannya di Session 9. |
 | Nginx `mime.types` | Memuat `application/wasm` untuk `.wasm` | Pembaca QR (ARS-10). Sudah ada sejak Nginx 1.21. Bila belum ada, baris itu ditambahkan ke `mime.types`, bukan lewat blok `types` di server block, karena blok itu menggantikan seluruh daftar tipe, termasuk `.js` dan `.css`. |
+| Nginx `gzip` dan `gzip_types` | `gzip on`, dengan `gzip_types` memuat `application/json`, `text/css`, `application/javascript`, dan `image/svg+xml` | Data kiosk, jawaban sinkron, dan aset dikompresi (`10` API-07). Bawaan Nginx hanya mengompresi `text/html`. |
 
 ### 4.2 Instalasi framework dan deploy
 
@@ -307,31 +321,31 @@ Alasan dan alternatif (NFR-16):
 
 | ID | Aturan | Status |
 |---|---|---|
-| ARS-12 | **Area dan prefiks URL.** Setiap area memiliki prefiks URL dan kelompok route sendiri (tabel di bawah). Route setiap area ditulis di file terpisah yang didaftarkan di `Config\Routing::$routeFiles`. Auto routing tetap mati, sesuai bawaan CI4 4.7. Sebelum R3, alamat `/` mengarah ke halaman login (`02` §8). Daftar route rinci ditetapkan di Session 8 (`09`). | RECOMMENDATION |
+| ARS-12 | **Area dan prefiks URL.** Setiap area memiliki prefiks URL dan kelompok route sendiri (tabel di bawah). Route setiap area ditulis di file terpisah yang didaftarkan di `Config\Routing::$routeFiles`. Auto routing tetap mati, sesuai bawaan CI4 4.7. Sebelum R3, alamat `/` mengarah ke halaman login (`02` §8). File route per area, konvensi alamat dan metode, serta daftar route rinci ada di `09` §3 s.d. §13. | RECOMMENDATION |
 | ARS-13 | **Filter.** Login, pemisahan area, dan hak diperiksa oleh filter CI4 (tabel di bawah). Filter area dipasang per kelompok route. Hak tingkat halaman dipasang per method controller dengan atribut `#[Filter(by: 'hak', having: ['HA-PRS-03'])]`, fitur CI4 4.7. Cakupan data diperiksa di service (ARS-15). Permintaan dari JavaScript dijawab dengan kode JSON, bukan pengalihan (butir di bawah tabel). | RECOMMENDATION |
 
 | Area | Prefiks URL | Jenis akun | Filter kelompok | Namespace controller |
 |---|---|---|---|---|
-| Kiosk | `/kiosk` untuk halaman, `/kiosk/api/…` untuk JSON | Stasiun | `sesi`, `area:stasiun` | `App\Controllers\Kiosk` |
+| Kiosk | `/kiosk` untuk halaman, `/kiosk/api/v1/…` untuk JSON (`10` API-10) | Stasiun | `sesi`, `area:stasiun` | `App\Controllers\Kiosk` |
 | Panel staf/admin | `/panel/…` | Staf | `sesi`, `area:staf`, `wajib-ganti` | `App\Controllers\Panel` |
 | Portal siswa | `/portal/…` | Siswa | `sesi`, `area:siswa`, `wajib-ganti` | `App\Controllers\Portal` |
-| Akun | `/login`, `/logout`, dan ganti password | Semua | `sesi` untuk logout dan ganti password | `App\Controllers\Akun` |
-| Publik | `/` (R3), serta alamat logo sekolah | Tanpa login | — | `App\Controllers\Publik` |
+| Akun | `/login`, `/logout`, dan `/akun/…` untuk ganti password | Staf dan siswa; akun stasiun hanya login | `sesi` dan `area:staf,siswa` untuk logout dan ganti password (`09` RT-01) | `App\Controllers\Akun` |
+| Publik | `/` dan `/logo`; `/` menjadi halaman publik di R3 | Tanpa login | — | `App\Controllers\Publik` |
 
 | Filter | Tugas | Rujukan |
 |---|---|---|
 | `sesi` | Memastikan pengguna login, lalu memuat akun dari database di setiap permintaan (ARS-47). Untuk akun stasiun, membuat ulang sesi dari cookie login stasiun bila sesi CI4 sudah habis (ARS-30). | FS-AKN-01 butir 9, FS-AKN-02 butir 4 |
-| `area:<jenis>` | Memastikan jenis akun sesuai area. Bila tidak, pengguna diarahkan ke halaman awal areanya. | `02` §4 butir 4, FS-AKN-01 E5 |
+| `area:<jenis>` | Memastikan jenis akun sesuai area. Beberapa jenis dapat ditulis dengan pemisah koma. Bila tidak sesuai, pengguna diarahkan ke halaman awal areanya. | `02` §4 butir 4, FS-AKN-01 E5 |
 | `wajib-ganti` | Selama akun wajib mengganti password, hanya halaman ganti password dan logout yang terbuka. | `02` §2 butir 1 |
-| `hak:<ID>` | Memeriksa bahwa salah satu role akun memiliki hak itu (ARS-15). | `04` §4.1 |
-| `csrf` | Bawaan CI4, diaktifkan global di `Config\Filters::$globals['before']` untuk semua permintaan yang mengubah data. Kiosk mengirim token lewat header (ARS-29). | NFR-07 |
+| `hak:<ID>,…` | Memeriksa bahwa salah satu role akun memiliki salah satu hak yang disebut (ARS-15). Beberapa atribut pada satu method berarti semua hak itu wajib (`09` RT-02). | `04` §4.1 |
+| `csrf` | Turunan filter CSRF bawaan CI4, diaktifkan global di `Config\Filters::$globals['before']`. Pemeriksaan token tetap memakai `Security::verify()` bawaan untuk POST, PUT, PATCH, dan DELETE. Permintaan latar belakang yang tokennya ditolak dijawab 403 berkode `csrf` beserta token baru (`10` API-04). Kiosk mengirim token lewat header (ARS-29). | NFR-07 |
 | Pembatasan login | Membatasi percobaan login per identitas dan per alamat IP. Rinciannya di Session 9. | NFR-08 |
 
 Permintaan latar belakang (ARS-13):
 
-1. Permintaan dari JavaScript, yaitu API kiosk dan polling fragmen, mengirim header `X-Requested-With: XMLHttpRequest`. API kiosk juga mengirim `Accept: application/json`.
-2. Untuk permintaan seperti itu, filter `sesi`, `area`, `hak`, dan `csrf` tidak mengalihkan halaman. Filter menjawab status 401 atau 403 dengan kode JSON: `login_ulang`, `nonaktif`, `ditolak`, atau `csrf`.
-3. Alasannya, CI4 di production menjawab kegagalan CSRF dengan pengalihan ke halaman sebelumnya (`Config\Security::$redirect`). `fetch` mengikuti pengalihan itu dan menerima halaman HTML, sehingga kiosk tidak tahu tokennya ditolak. Polling juga akan menyisipkan halaman login ke dashboard.
+1. Permintaan dari JavaScript, yaitu API kiosk, fragmen, dan bantuan formulir, mengirim header `X-Requested-With: XMLHttpRequest`. Permintaan ke endpoint JSON juga mengirim `Accept: application/json`, dan permintaan fragmen mengirim `Accept: text/html` (`10` API-02).
+2. Untuk permintaan seperti itu, filter `sesi`, `area`, `hak`, dan `csrf` tidak mengalihkan halaman. Filter menjawab status 401 atau 403 dengan kode JSON: `login_ulang`, `nonaktif`, `ditolak`, atau `csrf` (`10` API-03).
+3. Alasannya, filter bawaan CI4 tidak menjawab dengan kode JSON. Di production, filter CSRF bawaan mengalihkan permintaan biasa ke halaman sebelumnya (`Config\Security::$redirect`), dan melempar pengecualian untuk permintaan dengan `X-Requested-With`, sehingga kiosk tidak menerima token baru. Pengalihan ke halaman login juga membuat `fetch` menerima halaman HTML, sehingga kiosk tidak tahu loginnya berakhir, dan polling menyisipkan halaman login ke dashboard.
 4. Header itu juga mencegah CI4 mencatat alamat fragmen sebagai halaman sebelumnya (`previous_url()`).
 
 ### 5.2 Lapisan kode
@@ -443,7 +457,7 @@ Kiosk adalah satu-satunya bagian yang berjalan sebagai aplikasi client (`00` §5
 | `sinkron.js` | Sinkron dan kontak berkala (ARS-29). |
 | `app.js` | Layar hasil scan, bunyi, bilah status, dan tindakan petugas. |
 | zxing-wasm | File JavaScript dan WASM di `public/aset/vendor/zxing-wasm/3.1.4/`, dengan susunan folder `dist/` paket yang sama (ARS-10). |
-| API `/kiosk/api/…` | Muat data, unduh foto, dan sinkron (Session 8). |
+| API `/kiosk/api/v1/…` | Muat data, unduh foto, sinkron, dan logout (`10` EP-KIO-01 s.d. EP-KIO-04). |
 
 ```mermaid
 sequenceDiagram
@@ -471,7 +485,7 @@ sequenceDiagram
 | ARS-21 | **IndexedDB dan penyimpanan permanen.** Lihat butir di bawah tabel. | RECOMMENDATION |
 
 1. Data kiosk dan scan disimpan di IndexedDB, dalam satu database `spensada-kiosk` dengan nomor versi skema (tabel di bawah). `localStorage` tidak dipakai untuk data, karena kapasitasnya kecil dan tidak transaksional.
-2. Kiosk meminta penyimpanan permanen dengan `navigator.storage.persist()` (NFR-03). Chrome dan Edge tidak menampilkan dialog untuk permintaan ini, tetapi memutuskannya sendiri dari penilaian browser, misalnya apakah situs dipasang sebagai aplikasi. Karena itu, saat pemasangan stasiun (UF-06), admin memasang kiosk sebagai aplikasi di profil browser kiosk, lalu memastikan penyimpanan permanen aktif lewat bilah status kiosk. Bila tetap ditolak, kiosk menampilkan peringatan (FS-KIO-01 butir 9).
+2. Kiosk meminta penyimpanan permanen dengan `navigator.storage.persist()` (NFR-03). Chrome dan Edge tidak menampilkan dialog untuk permintaan ini, tetapi memutuskannya sendiri dari penilaian browser, misalnya apakah situs dipasang sebagai aplikasi. Karena itu, saat pemasangan stasiun (UF-06), admin memasang kiosk sebagai aplikasi di profil browser kiosk, lalu memastikan penyimpanan permanen aktif lewat bilah status kiosk. Bila tetap ditolak, kiosk menampilkan peringatan (FS-KIO-01 butir 9). Keadaannya juga dilaporkan di setiap kontak dan tampil di status stasiun (`10` EP-KIO-03, `09` HAL-KIO-02).
 3. Kiosk memantau kuota dengan `navigator.storage.estimate()` dan memperingatkan petugas bila hampir penuh (FS-KIO-01 E5).
 4. Data baru menggantikan data lama dalam satu transaksi IndexedDB, setelah seluruh data kiosk selesai diunduh dan diperiksa. Kegagalan di tengah jalan tidak merusak data lama (FS-KIO-01 butir 4).
 5. Scan tersinkron dihapus setelah tanggalnya lewat. Scan belum tersinkron tidak pernah dihapus otomatis (FS-KIO-03 butir 7).
@@ -480,7 +494,7 @@ sequenceDiagram
 
 | Penyimpanan | Kunci | Isi |
 |---|---|---|
-| `meta` | Nama butir | Versi format dan versi data, waktu data dimuat, akun stasiun, identitas sekolah, parameter (ARS-17), selisih jam terakhir, serta waktu kontak dan scan terakhir. |
+| `meta` | Nama butir | Versi format dan versi data, waktu data dimuat, akun stasiun, identitas sekolah beserta logo (`10` EP-KIO-01), parameter (ARS-17), selisih jam terakhir, serta waktu kontak dan scan terakhir. |
 | `siswa` | NISN | ID siswa, nama, rombel, tingkat, dan versi foto. |
 | `foto` | ID siswa | Foto kiosk (Blob JPEG) dan versinya. |
 | `aturan` | Tanggal | Hari sekolah, aturan jam, sumbernya, dan keterangan, untuk hari ini dan 14 hari ke depan. |
@@ -557,7 +571,7 @@ Langkah ARS-27:
 |---|---|---|
 | ARS-29 | **Sinkron dan kontak berkala.** Lihat butir di bawah tabel. | DECISION (interval dan ukuran kiriman); RECOMMENDATION (mekanisme) |
 
-1. Satu jenis permintaan melayani dua hal: mengirim scan belum tersinkron, paling banyak 100 per kiriman, dan melaporkan keadaan kiosk, yaitu jumlah scan belum tersinkron, jam laptop saat kiriman dibuat (ARS-27 langkah 6), dan versi data. Kiriman tanpa scan adalah kontak berkala (FS-KIO-03 butir 2).
+1. Satu jenis permintaan melayani dua hal: mengirim scan belum tersinkron, paling banyak 100 per kiriman, dan melaporkan keadaan kiosk, yaitu jumlah scan belum tersinkron dan scan galat, jam laptop saat kiriman dibuat (ARS-27 langkah 6), versi data beserta waktu dimuatnya, versi kode kiosk, dan keadaan penyimpanan permanen. Kiriman tanpa scan adalah kontak berkala (FS-KIO-03 butir 2). Bentuk permintaan dan jawabannya ada di `10` EP-KIO-03.
 2. Selama ada scan belum tersinkron, kiosk mengirim setiap 5 detik. Bila tidak ada, kiosk tetap menghubungi server setiap 60 detik.
 3. Hanya satu permintaan sinkron yang berjalan pada satu waktu. Bila gagal, kiosk mencoba lagi dengan jeda 5, 10, 20, 40, lalu 60 detik, dan langsung mencoba saat browser kembali online (FS-KIO-03 butir 6).
 4. Respons memuat ID scan yang diterima, termasuk yang sudah diterima sebelumnya, ID yang ditolak beserta alasannya, jam server, versi data, status dan nama akun stasiun, serta token CSRF untuk permintaan berikutnya (FS-KIO-04 butir 8).
@@ -570,7 +584,7 @@ Langkah ARS-27:
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-30 | **Login stasiun 90 hari.** Lihat butir di bawah tabel. | DECISION (90 hari sejak kontak terakhir); RECOMMENDATION (mekanisme) |
-| ARS-31 | **Akun nonaktif dan data lokal.** Server menjawab permintaan dari akun stasiun nonaktif dengan status "nonaktif". Kiosk lalu menghapus database IndexedDB beserta data siswa, foto, dan scan di dalamnya, menampilkan bahwa akun tidak aktif, dan menghentikan scan (FS-AKN-04 butir 4, AC-AKN-04-03). Bila login stasiun berakhir, yaitu cookie login kedaluwarsa atau tidak sah, kredensial diganti, atau petugas logout, server menjawab "login ulang". Kiosk meminta login, sedangkan data dan scan tetap tersimpan (FS-KIO-01 E2). Scan belum tersinkron hanya dikirim dengan akun stasiun yang mencatatnya. Bila akun stasiun lain login di laptop yang sama, kiosk menahan scan itu dan meminta petugas login kembali dengan akun semula. | RECOMMENDATION |
+| ARS-31 | **Akun nonaktif dan data lokal.** Server menjawab permintaan dari akun stasiun nonaktif dengan status "nonaktif". Kiosk lalu menghapus database IndexedDB beserta data siswa, foto, dan scan di dalamnya, menampilkan bahwa akun tidak aktif, dan menghentikan scan (FS-AKN-04 butir 4, AC-AKN-04-03). Bila login stasiun berakhir, yaitu cookie login kedaluwarsa atau tidak sah, kredensial diganti, atau petugas logout, server menjawab "login ulang". Kiosk meminta login, sedangkan data dan scan tetap tersimpan (FS-KIO-01 E2). Scan belum tersinkron hanya dikirim dengan akun stasiun yang mencatatnya. Bila akun stasiun lain login di laptop yang sama, kiosk menahan scan itu dan meminta petugas login kembali dengan akun semula. Setiap scan di kiriman membawa ID akun pencatatnya, dan server menolak scan yang akunnya berbeda dengan akun yang login (`akun_berbeda`, `10` EP-KIO-03), sebagai pengaman bila kode kiosk keliru. | RECOMMENDATION |
 | ARS-32 | **Laptop stasiun.** Laptop stasiun memakai Chrome atau Edge terbaru (A-04) dengan profil browser khusus kiosk (R-07), akun Windows non-admin (R-05), sinkronisasi jam otomatis Windows, dan pengaturan daya yang mencegah laptop tidur selama jam sekolah. Kiosk dipasang sebagai aplikasi dari browser (ARS-21), lalu izin kamera diberikan. Langkah ini masuk ke UF-06. | RECOMMENDATION |
 
 Butir ARS-30:
@@ -579,13 +593,13 @@ Butir ARS-30:
 2. Cap kredensial diturunkan dari hash password akun, sehingga cookie langsung tidak berlaku saat admin mengganti kredensial (FS-AKN-04 butir 2). Cara ini tidak membutuhkan tabel baru.
 3. Bila sesi CI4 habis, filter `sesi` membuat sesi baru dari cookie yang sah, selama akun masih aktif.
 4. Masa berlaku cookie 90 hari. Masa itu diperpanjang paling banyak sekali sehari saat kiosk menghubungi server, sehingga stasiun yang dipakai rutin tidak pernah diminta login ulang, termasuk setelah libur semester.
-5. Logout menghapus cookie dan sesi. Rincian keamanannya, termasuk PIN petugas untuk logout, ditetapkan di Session 9.
+5. Logout dari kiosk memakai `POST /kiosk/api/v1/logout` (`10` EP-KIO-04), karena cookie login stasiun hanya dikirim ke alamat berawalan `/kiosk`. Logout menghapus cookie dan sesi. Rincian keamanannya, termasuk PIN petugas untuk logout, ditetapkan di Session 9.
 
 ### 6.9 Parameter kiosk
 
 | ID | Aturan | Status |
 |---|---|---|
-| ARS-33 | **Parameter kiosk.** Nilai di tabel di bawah disimpan di `Config\Spensada` dan dikirim ke kiosk di data kiosk (ARS-17). | Lihat kolom Status di tabel |
+| ARS-33 | **Parameter kiosk.** Nilai di tabel di bawah disimpan di `Config\Spensada`. Nilai yang dipakai kiosk dikirim di data kiosk (ARS-17), dengan nama isian di `10` EP-KIO-01. Batas sorotan stasiun, ukuran foto kiosk, cache data kiosk, dan masa login stasiun hanya dipakai server. | Lihat kolom Status di tabel |
 
 | Parameter | Nilai | Status |
 |---|---|---|
@@ -598,6 +612,8 @@ Butir ARS-30:
 | Toleransi selisih jam | 2 menit | DECISION |
 | Jeda pengabaian NISN yang sama | 5 detik | DECISION |
 | Jeda antartombol scanner USB | Paling lama 50 milidetik | RECOMMENDATION |
+| Lama hasil scan tampil | 3 detik untuk tercatat dan scan ganda, 6 detik untuk ditolak (`08` UI-41) | DECISION |
+| Unduhan foto bersamaan | Paling banyak 4 | RECOMMENDATION |
 | Stasiun disorot di panel | Tanpa kontak lebih dari 10 menit selama jendela scan | DECISION |
 | Foto kiosk | 300×400 px, JPEG | DECISION |
 | Cache data kiosk di server | 60 detik | RECOMMENDATION |
@@ -777,7 +793,7 @@ Pemeriksaan foto massal (ARS-54):
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-56 | **Cron di R1.** Cron di VPS menjalankan dua perintah (tabel di bawah). Aplikasi tetap benar tanpa cron, karena langkah ARS-37 juga berjalan sebelum status dibaca. Setiap perintah memakai kunci bernamanya sendiri (ARS-42), sehingga perintah yang sama tidak berjalan ganda bila putaran sebelumnya belum selesai. Kedua perintah boleh berjalan bersamaan. Waktu terakhir cron berjalan disimpan di `pengaturan.cron_terakhir_at`, bukan di cache, agar tidak hilang saat cache dibersihkan (§16.2). Dashboard admin menampilkan peringatan bila cron tidak berjalan lebih dari 5 menit. | DECISION (cron sebagai pelengkap, setiap menit dan setiap hari); RECOMMENDATION (isi dan peringatan) |
-| ARS-57 | **Perintah aplikasi.** Perintah `spark` milik aplikasi ada di tabel kedua di bawah. Perintah bawaan CI4 yang dipakai: `migrate`, `migrate:status`, `migrate:rollback`, `db:seed`, `db:create`, `key:generate`, `cache:clear`, dan `routes`. Perintah `phpini:check` tidak dipakai, karena memeriksa `php.ini` milik CLI dan menyarankan `date.timezone = UTC`. Hasil `aplikasi:cek` juga ditampilkan di halaman pemeriksaan sistem untuk admin. Halaman itu berjalan di PHP-FPM, sehingga memeriksa pengaturan yang benar-benar dipakai web, misalnya batas unggah, `memory_limit`, ekstensi, dan opcache. Halamannya dirinci di Session 8. | RECOMMENDATION |
+| ARS-57 | **Perintah aplikasi.** Perintah `spark` milik aplikasi ada di tabel kedua di bawah. Perintah bawaan CI4 yang dipakai: `migrate`, `migrate:status`, `migrate:rollback`, `db:seed`, `db:create`, `key:generate`, `cache:clear`, dan `routes`. Perintah `phpini:check` tidak dipakai, karena memeriksa `php.ini` milik CLI dan menyarankan `date.timezone = UTC`. Hasil `aplikasi:cek` juga ditampilkan di halaman pemeriksaan sistem (`/panel/sistem`), yang memakai hak `HA-AKN-07` dan hanya dimiliki admin. Halaman itu berjalan di PHP-FPM, sehingga memeriksa pengaturan yang benar-benar dipakai web, misalnya batas unggah, `memory_limit`, ekstensi, dan opcache. Halamannya dirinci di `09` HAL-AKN-07. | RECOMMENDATION; DECISION (hak `HA-AKN-07`, Session 8) |
 
 | Jadwal | Perintah | Isi |
 |---|---|---|
@@ -957,16 +973,18 @@ NFR-13 menunggu provider WA (OQ-10), dan NFR-14 ditangani di `06`.
 | FS-KIO-02 | ARS-24 s.d. ARS-28 |
 | FS-KIO-03 | ARS-29 |
 | FS-KIO-04 | ARS-29, ARS-35, ARS-36 |
-| FS-KIO-05 | ARS-33, ARS-50 |
+| FS-KIO-05 | ARS-21, ARS-29, ARS-33, ARS-50 |
 | FS-KIO-06 | ARS-41 |
 | FS-PRS-05 | ARS-34 s.d. ARS-39 |
 | FS-PRS-08 | ARS-38 |
 | FS-IZN-01 s.d. FS-IZN-03 | ARS-43, ARS-51, ARS-52 |
 | FS-IZN-06 | ARS-52 |
-| FS-LAP-01 | ARS-50 |
+| FS-LAP-01 | ARS-36, ARS-50, ARS-56 |
 | `04` §4.5 (hitung ulang) | ARS-35 s.d. ARS-37 |
 | `04` §4.6 (perubahan bersamaan) | ARS-40, ARS-41 |
 | `06` §16 (integritas dan transaksi) | ARS-40 s.d. ARS-43 |
+
+Halaman dan API setiap fitur ada di `09` §15.1 dan `10` §7.1.
 
 ## 18. Perubahan pada dokumen lain
 
@@ -985,15 +1003,18 @@ Perubahan karena keputusan Session 6:
 
 File `.gitignore` di akar repository juga dibuat di Session 6 (ARS-09).
 
+Perubahan karena keputusan Session 7 dicatat di `08` §14, dan karena keputusan Session 8 di `09` §16.
+
 ## 19. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 6 menjawab OQ-09, dan tidak menambah OQ baru. Hal yang dijadwalkan di Session 7 sudah ditetapkan di `08` §2.
+Session 6 menjawab OQ-09, dan tidak menambah OQ baru. Hal yang dijadwalkan di Session 7 sudah ditetapkan di `08` §2, dan hal yang dijadwalkan di Session 8 sudah ditetapkan di `09` dan `10`.
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
-| Route dan bentuk API, termasuk sinkron kiosk | ARS-12, ARS-23, ARS-29 | Session 8 |
+| Route dan bentuk API, termasuk sinkron kiosk | ARS-12, ARS-23, ARS-29 | Ditetapkan di Session 8 (`09`, `10`) |
 | Pengaturan CSRF, cookie, header keamanan termasuk kebijakan keamanan konten, PIN petugas, masa sesi staf dan siswa, serta pembatasan percobaan login | ARS-11, ARS-13, ARS-29, ARS-30, ARS-47 | Session 9 |
 | Format dan ukuran file unggahan, batas piksel foto, serta batas ZIP | ARS-04, ARS-53, ARS-54 | Session 9 |
+| Penanganan scan galat yang tetap ditolak setelah dikirim ulang, termasuk saat data lokal akan dihapus | ARS-21, ARS-29, ARS-31 | Session 9 (`10` §9) |
 | Pengamanan server, serta retensi backup dan log | ARS-01, ARS-06, ARS-56 | Session 9 |
 | Tempat kredensial gateway WA | `06` §6.1 | Session 9, sebelum R2 (OQ-10) |
 | Nilai awal `status_dibangun_sampai` saat go-live | ARS-37 | Session 10 |
@@ -1009,3 +1030,4 @@ Session 6 menjawab OQ-09, dan tidak menambah OQ baru. Hal yang dijadwalkan di Se
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 6: keputusan arsitektur, hosting dan instalasi, library, struktur aplikasi, kiosk, hitung ulang lewat antrean, konkurensi, waktu, sesi, pembaruan halaman, file unggahan, cron dan perintah CLI, pengujian, panduan lokal dan production, serta traceability. OQ-09 terjawab. |
 | 0.2 | 2026-10-04 | Keputusan Session 7 (§2.4, `08`). ARS-10 (flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide), ARS-19, ARS-22, ARS-51, ARS-53 (foto kecil), §2.1, §2.3, §5.3, §17.1, dan §19 diperbarui. |
+| 0.3 | 2026-10-05 | Keputusan Session 8 (§2.5, `09`, `10`). ARS-04 (kompresi JSON), ARS-12 (alamat area dan API v1), ARS-13 (filter `hak` dan `area` dengan beberapa nilai, filter CSRF aplikasi, header permintaan latar belakang), ARS-20, ARS-21 (laporan penyimpanan permanen dan logo), ARS-29 (isi laporan kiosk), ARS-30 (logout kiosk), ARS-31 (akun pencatat), ARS-33 (parameter yang dikirim ke kiosk), ARS-57 (hak `HA-AKN-07`), kepala dokumen, §1, §17.3, §18, dan §19 diperbarui. |
