@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.4 (draft, menunggu review) |
+| Versi | 0.5 (draft, menunggu review) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, `07`), Session 7 (UI/UX & Design System, `08`), dan Session 8 (Routes / Pages / API, `09`). |
-| Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): FR-MD-05, FR-MD-07, FR-LAP-02 s.d. FR-LAP-05. [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [04-feature-specification.md](04-feature-specification.md): FS-MD-05, FS-MD-06, FS-MD-08, FS-LAP-01 s.d. FS-LAP-06. [05-business-rules.md](05-business-rules.md): aturan rekap (§12). [06-database-design.md](06-database-design.md): tabel dan aturan baca status harian (§11). [07-system-architecture.md](07-system-architecture.md): library, penyimpanan file, dan foto. [08-ui-ux-design-system.md](08-ui-ux-design-system.md): label, format, PDF, dan flyer. |
+| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, `07`), Session 7 (UI/UX & Design System, `08`), Session 8 (Routes / Pages / API, `09`), dan Session 9 (Validation, Error Handling & Security, `11` dan `12`). |
+| Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): FR-MD-05, FR-MD-07, FR-LAP-02 s.d. FR-LAP-05. [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [04-feature-specification.md](04-feature-specification.md): FS-MD-05, FS-MD-06, FS-MD-08, FS-LAP-01 s.d. FS-LAP-06. [05-business-rules.md](05-business-rules.md): aturan rekap (§12). [06-database-design.md](06-database-design.md): tabel dan aturan baca status harian (§11). [07-system-architecture.md](07-system-architecture.md): library, penyimpanan file, dan foto. [08-ui-ux-design-system.md](08-ui-ux-design-system.md): label, format, PDF, dan flyer. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): pesan baris import dan foto massal (§5.7, §5.8). [12-security.md](12-security.md): batas unggahan, pencegahan rumus di spreadsheet, dan log export (`SEC-*`). |
 | Dokumen terkait | [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman laporan dan import, alamat unduhan template dan file hasil, serta alamat export (R2). |
 
 Dokumen ini menetapkan laporan dan formatnya, isi flyer kehadiran, template import siswa, import penempatan, dan format nama file foto untuk upload massal. Dokumen ini menjawab OQ-11 dan OQ-12.
@@ -49,12 +49,12 @@ Keputusan Session 6 yang berdampak ke dokumen ini: pengecualian rekap rapor seme
 | IE-05 | **Hak dan cakupan.** Export mengikuti hak dan cakupan laporan yang sama di layar, ditambah `HA-LAP-05` (§4). Isi file sama dengan yang boleh dilihat pengguna di layar. | RECOMMENDATION |
 | IE-06 | **Identitas file.** XLSX dan PDF memuat nama sekolah (FS-MD-01), judul laporan, cakupan (rombel atau sekolah), rentang tanggal, waktu dibuat, dan nama pembuat. PDF juga memuat logo sekolah dan nomor halaman. CSV hanya berisi satu baris judul kolom dan baris data. Kop, kaki halaman, dan blok tanda tangan PDF mengikuti `08` UI-60 dan UI-61. | RECOMMENDATION; DECISION (kop dan tanda tangan, Session 7) |
 | IE-07 | **Nama file.** Pola: `spensada_<laporan>_<cakupan>_<mulai>_<selesai>.<ext>`, dengan tanggal `YYYYMMDD` dan huruf ASCII. Contoh: `spensada_rekap-kelas_7A_20261001_20261013.xlsx`. Nama file tidak memuat nama siswa. Riwayat siswa memakai NISN sebagai cakupan. | RECOMMENDATION |
-| IE-08 | **XLSX.** NISN dan NIS ditulis sebagai sel teks, sehingga nol di depan tetap utuh (R-12). Tanggal ditulis sebagai sel tanggal, dan jumlah sebagai sel angka. Persentase ditulis sebagai angka bulat. Setiap file memiliki lembar "Keterangan" berisi arti kode dan filter yang dipakai. | RECOMMENDATION |
-| IE-09 | **CSV.** UTF-8 dengan BOM, pemisah koma, dan tanda kutip ganda untuk teks. Judul kolom memakai `snake_case`. Tanggal `YYYY-MM-DD`, jam `HH:MM:SS`, dan status memakai kode di `06`. CSV ditujukan untuk diolah aplikasi lain. Untuk dibuka di Excel, pengguna memakai XLSX. | RECOMMENDATION |
+| IE-08 | **XLSX.** NISN dan NIS ditulis sebagai sel teks, sehingga nol di depan tetap utuh (R-12). Tanggal ditulis sebagai sel tanggal, dan jumlah sebagai sel angka. Persentase ditulis sebagai angka bulat. Setiap file memiliki lembar "Keterangan" berisi arti kode dan filter yang dipakai. Sel teks yang diawali `=`, `+`, `-`, `@`, tab, atau carriage return diberi awalan petik tunggal, agar tidak dijalankan sebagai rumus saat dibuka di Excel (`12` SEC-46). | RECOMMENDATION |
+| IE-09 | **CSV.** UTF-8 dengan BOM, pemisah koma, dan tanda kutip ganda untuk teks. Judul kolom memakai `snake_case`. Tanggal `YYYY-MM-DD`, jam `HH:MM:SS`, dan status memakai kode di `06`. CSV ditujukan untuk diolah aplikasi lain. Untuk dibuka di Excel, pengguna memakai XLSX. Karena CSV tetap dapat dibuka di Excel, teks yang diawali `=`, `+`, `-`, `@`, tab, atau carriage return juga diberi awalan petik tunggal seperti IE-08 (`12` SEC-46). | RECOMMENDATION |
 | IE-10 | **PDF.** Ukuran A4. Rekap dan daftar memakai orientasi lanskap bila kolomnya banyak. Rekap per rombel (LP-01) dan rekap rapor (LP-03) memuat blok tanda tangan wali kelas beserta NIP (`08` UI-61). | RECOMMENDATION; DECISION (tanda tangan dan NIP, Session 7) |
 | IE-11 | **Rentang.** Rentang laporan mengikuti layar asalnya. Rentang rekap (LP-01 s.d. LP-03) berada di dalam satu tahun ajaran dan tidak melewati hari ini, sama dengan FS-LAP-03. | RECOMMENDATION |
 | IE-12 | **Library.** XLSX dibuat dan dibaca dengan PhpSpreadsheet, dan PDF dibuat dengan mPDF. Keduanya dipasang lewat Composer (OQ-09, C-06, `07` ARS-07 dan ARS-10). CSV dibaca dan ditulis dengan fungsi bawaan PHP. Flyer dibuat di browser dengan Canvas API tanpa library (R-19, `08` UI-65). | DECISION (mPDF dan Composer, Session 6; Canvas API, Session 7); RECOMMENDATION (PhpSpreadsheet dan CSV) |
-| IE-13 | **Catatan export.** Export laporan berisi nama siswa (LP-01, LP-03 s.d. LP-07) dicatat di `log_aktivitas`. Rinciannya ditetapkan bersama kebijakan data pribadi di Session 9 (R-17). | RECOMMENDATION |
+| IE-13 | **Catatan export.** Export laporan berisi nama siswa (LP-01, LP-03 s.d. LP-07) dicatat di `log_aktivitas` dengan jenis `ekspor` (`12` SEC-59, R-17). Isian `data` memuat laporan, format, cakupan, rentang, dan jumlah baris, dan `rombel_id` diisi bila export mencakup satu rombel. Isi file tidak dicatat. Admin melihat catatan ini di halaman log aktivitas (`09` HAL-AKN-09). | RECOMMENDATION |
 
 Contoh query rekap per rombel (LP-01) dengan aturan baca `06` §11.3. Daftar siswa diambil dari penempatan, sehingga siswa yang ditempatkan tetapi tidak memiliki hari sekolah dalam rentang tetap tampil dengan angka 0. Nilai `:final_hari_ini` dan `:pulang_ditutup` dihitung sekali di PHP dari aturan jam dan mode darurat hari ini. `:ta_selesai` adalah tanggal selesai tahun ajaran rombel itu.
 
@@ -217,6 +217,8 @@ Rincian template untuk FS-MD-06. Alur pratinjau dan penyimpanan tetap mengikuti 
 
 Status: DECISION (isi kolom dan perlakuan NISN yang sudah ada, Session 5); RECOMMENDATION (judul, format, dan panjang kolom).
 
+Aturan validasi setiap kolom mengikuti `11` §4, dan teks alasan baris gagal ada di `11` §5.7.
+
 ### 6.2 Aturan file
 
 | ID | Aturan | Status |
@@ -225,9 +227,16 @@ Status: DECISION (isi kolom dan perlakuan NISN yang sudah ada, Session 5); RECOM
 | IM-04 | **Pencocokan kolom.** Kolom dikenali dari judulnya, tanpa membedakan huruf besar dan kecil dan tanpa spasi di awal dan akhir. Urutan kolom bebas. Kolom opsional boleh tidak ada. File ditolak sebelum validasi baris bila kolom wajib tidak ada, ada judul kolom yang tidak dikenal, atau ada judul kolom ganda (FS-MD-06 E2). | RECOMMENDATION |
 | IM-05 | **CSV.** File CSV memakai UTF-8, dengan atau tanpa BOM. Pemisahnya koma atau titik koma, dikenali dari baris judul, karena Excel berbahasa Indonesia menyimpan CSV dengan titik koma. | RECOMMENDATION |
 | IM-06 | **Isi sel.** Spasi di awal dan akhir dibuang. Baris yang semua selnya kosong diabaikan. Sel kosong pada kolom opsional berarti tidak diisi. | RECOMMENDATION |
-| IM-07 | **Daftar baris gagal.** File CSV baris gagal (FS-MD-06 butir 3) berisi nomor baris di file asli, semua kolom asli, dan kolom alasan. Satu baris dapat memiliki beberapa alasan. | RECOMMENDATION |
+| IM-07 | **Daftar baris gagal.** File CSV baris gagal (FS-MD-06 butir 3) berisi nomor baris di file asli, semua kolom asli, dan kolom alasan. Satu baris dapat memiliki beberapa alasan, dipisah titik koma, dengan teks di `11` §5.7. Teks yang diawali tanda rumus diberi awalan petik tunggal seperti IE-08 (`12` SEC-46). | RECOMMENDATION |
+| IM-16 | **Batas file.** Lihat butir di bawah tabel. | DECISION (5 MB, Session 9); RECOMMENDATION (batas lain) |
 
-Ukuran file dan jumlah baris maksimal ditetapkan di Session 9.
+Butir IM-16 (`12` SEC-46, SEC-49, `11` VAL-28):
+
+1. File import siswa dan import penempatan berformat XLSX atau CSV, paling besar 5 MB.
+2. Satu file berisi paling banyak 2.000 baris data, tanpa baris judul dan baris kosong.
+3. Isi XLSX setelah diekstrak paling besar 50 MB. Hanya lembar pertama yang dibaca. Template memakai lembar "Siswa" sebagai lembar pertama (IM-01).
+4. Sel XLSX yang berisi rumus ditolak sebagai baris gagal dengan alasan "Sel berisi rumus. Salin sebagai nilai, lalu unggah lagi." (`11` §5.7). Teks biasa yang diawali tanda rumus diterima sebagai teks.
+5. File yang melewati batas 1 s.d. 3 ditolak sebelum validasi baris, dengan pesan di `11` VAL-28.
 
 ## 7. Penempatan massal (IM-02)
 
@@ -256,19 +265,20 @@ Rincian format nama file untuk FS-MD-08 (OQ-12).
 | IM-14 | **Siswa yang dicocokkan.** Foto dicocokkan dengan semua siswa, aktif maupun nonaktif. Pratinjau menampilkan status siswa, dan foto siswa nonaktif tetap dapat disimpan. | RECOMMENDATION |
 | IM-15 | **Foto lama sekolah.** Karena nama file foto yang ada belum seragam (CONFIRMED, OQ-12), admin perlu menambahkan NISN di depan nama file sebelum upload massal. Foto yang tidak cocok dilaporkan di pratinjau, dan dapat diunggah satu per satu (FS-MD-07). | DECISION |
 
-Format gambar yang diterima dan ukuran maksimal ditetapkan di Session 9. Foto diperkecil menjadi paling besar 600×800 px untuk foto standar dan 300×400 px untuk foto kiosk (DECISION, Session 6, `07` ARS-53). Foto kecil 120×160 px dan ukuran tampil ditetapkan di Session 7 (`08` UI-22, UI-23).
+Foto massal menerima JPG, PNG, dan WebP, beberapa file sekaligus atau satu ZIP, paling besar 100 MB per unggahan dan paling banyak 100 file per unggahan. ZIP berisi paling banyak 2.000 entri, dengan isi setelah diekstrak paling besar 500 MB. Setiap foto paling besar 10 MB dan 24 megapiksel. HEIC tidak diterima (DECISION Paket 10 MB, Session 9, `12` SEC-49). Bila ada beberapa file untuk satu NISN, semua file untuk NISN itu dilewati, dan pratinjau meminta admin menyisakan satu file. Keterangan per file di pratinjau ada di `11` §5.8. Foto diperkecil menjadi paling besar 600×800 px untuk foto standar dan 300×400 px untuk foto kiosk (DECISION, Session 6, `07` ARS-53). Foto kecil 120×160 px dan ukuran tampil ditetapkan di Session 7 (`08` UI-22, UI-23).
 
 ## 9. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06` §18, perubahan karena keputusan Session 6 di `07` §18, karena keputusan Session 7 di `08` §14, dan karena keputusan Session 8 di `09` §16.
+Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06` §18, perubahan karena keputusan Session 6 di `07` §18, karena keputusan Session 7 di `08` §14, karena keputusan Session 8 di `09` §16, dan karena keputusan Session 9 di `12` §20.
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
 | Library XLSX dan PDF, serta instalasi lewat Composer | IE-12, OQ-09 | Session 6: mPDF dan instalasi lewat Composer berstatus DECISION, dan PhpSpreadsheet berstatus RECOMMENDATION (`07` ARS-10) |
 | Desain template PDF dan flyer, serta cara pembuatan flyer PNG | IE-10, IE-12, LP-08 | Ditetapkan di Session 7 (`08` §10.3, §11) |
-| Ukuran file dan jumlah baris maksimal import | IM-01, IM-02 | Session 9 |
-| Format gambar dan ukuran maksimal foto | IM-03 | Session 9 |
-| Pencatatan export berisi nama siswa | IE-13 | Session 9 |
+| Ukuran file dan jumlah baris maksimal import | IM-01, IM-02, IM-16 | Ditetapkan di Session 9: 5 MB dan 2.000 baris data (`12` SEC-49) |
+| Format gambar dan ukuran maksimal foto | IM-03, §8 | Ditetapkan di Session 9: JPG, PNG, atau WebP, 10 MB per foto, dan 100 MB per unggahan (`12` SEC-49) |
+| Pencatatan export berisi nama siswa | IE-13 | Ditetapkan di Session 9: log `ekspor` (`12` SEC-59) |
+| Batas jumlah baris import setelah uji beban | IM-16 | Uji beban sebelum uji coba R1 (`11` §11) |
 
 ## Riwayat perubahan
 
@@ -278,3 +288,4 @@ Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06
 | 0.2 | 2026-10-04 | Keputusan Session 6 (`07`). IE-02 dan LP-03 (pengecualian rekap rapor) menjadi DECISION. IE-12 memuat mPDF dan Composer. IM-13 dan §8 memuat dukungan ZIP dan ukuran foto. §2, termasuk judulnya, dan §9 diperbarui. |
 | 0.3 | 2026-10-04 | Keputusan Session 7 (`08`). Judul kolom yang memuat "Rombel" diganti "Kelas", termasuk nama file contoh di IE-07. IM-01 menerima judul kolom lama "Rombel". IE-06, IE-10, IE-12, LP-08, §1, §8, dan §9 merujuk `08`. |
 | 0.4 | 2026-10-05 | Keputusan Session 8 (`09`). Kepala dokumen, pengantar, dan IM-01 merujuk halaman, alamat unduhan, dan alamat export di `09`. §9 diperbarui. |
+| 0.5 | 2026-10-05 | Keputusan Session 9 (`11`, `12`). IE-13 (log `ekspor`), IE-08 dan IE-09 (pencegahan rumus), IM-07 (teks alasan dan pencegahan rumus), IM-16 baru (ukuran file, jumlah baris, dan sel berumus), §6.1 (rujukan aturan validasi), §8 (format dan ukuran foto massal serta file ganda per NISN), kepala dokumen, dan §9 diperbarui. |

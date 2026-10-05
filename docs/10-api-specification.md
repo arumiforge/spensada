@@ -2,11 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
+| Versi | 0.2 (draft, menunggu review) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 8 (Routes / Pages / API) |
+| Sumber | Discovery Session 8 (Routes / Pages / API). Diperbarui dengan keputusan Session 9 (Validation, Error Handling & Security). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, dan risiko (`R-xx`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [04-feature-specification.md](04-feature-specification.md): fitur kiosk (`FS-KIO-*`) dan fitur yang memakai bantuan formulir. [05-business-rules.md](05-business-rules.md): aturan scan dan jam (`BR-*`). [06-database-design.md](06-database-design.md): tabel `scan`, `status_stasiun`, dan kode nilai. [07-system-architecture.md](07-system-architecture.md): kiosk, jam, sinkron, sesi, dan filter (`ARS-*`). [09-page-and-route-specification.md](09-page-and-route-specification.md): route, halaman, dan konvensi (`RT-*`). |
-| Dokumen terkait | [08-ui-ux-design-system.md](08-ui-ux-design-system.md): teks dan keadaan kiosk. `11-validation-and-error-handling.md` dan `12-security.md` (Session 9), keduanya belum dibuat. |
+| Dokumen terkait | [08-ui-ux-design-system.md](08-ui-ux-design-system.md): teks dan keadaan kiosk. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): validasi API kiosk dan penanganan galat di modul JavaScript (`VAL-14`, `GAL-14`, `GAL-15`). [12-security.md](12-security.md): CSRF, PIN petugas, satu login aktif per akun stasiun, pembatasan laju, dan log scan yang ditolak (`SEC-*`). |
 
 Dokumen ini menetapkan API Spensada: API kiosk untuk memuat data, mengunduh foto, sinkron, dan logout; fragmen HTML yang diperbarui berkala; serta bantuan formulir di panel dan portal. Untuk setiap endpoint, dokumen ini menetapkan alamat, permintaan, jawaban, kode galat, dan efeknya di server. Dokumen ini juga menetapkan aturan bersama: format, CSRF, jam server, cache, sesi, batas ukuran, dan versi.
 
@@ -72,7 +72,7 @@ Kode galat (API-03):
 
 | Kode | Status | Arti | Tindakan klien |
 |---|---|---|---|
-| `login_ulang` | 401 | Tidak ada login yang sah: sesi dan cookie login stasiun tidak ada, kedaluwarsa, atau tidak sah, misalnya karena kredensial diganti (`07` ARS-30). | Kiosk menampilkan layar login stasiun berakhir dan menyimpan data serta scan (ARS-31). Halaman panel dan portal menghentikan polling dan menampilkan "Sesi berakhir" (`08` UI-28). |
+| `login_ulang` | 401 | Tidak ada login yang sah: sesi dan cookie login stasiun tidak ada, kedaluwarsa, atau tidak sah, misalnya karena kredensial diganti (`07` ARS-30), atau ID login stasiun tidak cocok dengan `akun.login_stasiun_id` karena akun stasiun sudah login di laptop lain (`12` SEC-19). Untuk keadaan terakhir, badan memuat `"alasan": "login_berpindah"`. | Kiosk menampilkan layar login stasiun berakhir, atau pesan login di laptop lain bila `alasan` bernilai `login_berpindah` (`11` §5.3), dan menyimpan data serta scan (ARS-31). Halaman panel dan portal menghentikan polling dan menampilkan "Sesi berakhir" (`08` UI-28). |
 | `nonaktif` | 403 | Akun yang login berstatus nonaktif. Kode ini hanya dikirim bila `akun.status` bernilai `nonaktif`, karena kiosk menghapus data lokal saat menerimanya. | Kiosk menghapus database IndexedDB dan menampilkan bahwa akun dinonaktifkan (ARS-31). Halaman panel dan portal dimuat ulang, sehingga pengguna sampai di halaman login. |
 | `ditolak` | 403 | Jenis akun atau hak tidak sesuai, atau data di luar cakupan. | Kiosk membuka `/login`, yang mengalihkan pengguna yang sudah login ke halaman awalnya (`09` RT-18 butir 4). Halaman menampilkan pesan di luar hak (`08` UI-56). |
 | `csrf` | 403 | Token CSRF tidak ada atau tidak cocok. Badan memuat token baru di isian `csrf` (API-04). | Ulang permintaan sekali dengan token baru. |
@@ -81,12 +81,12 @@ Kode galat (API-03):
 | `sedang_diproses` | 409 | Proses yang sama sedang berjalan di permintaan lain, misalnya potongan foto massal. | Tunggu 2 detik, lalu ulang. |
 | `versi_usang` | 410 | Versi API di alamat sudah tidak dilayani (API-10). | Kiosk meminta petugas menutup semua jendela kiosk lalu membukanya lagi, agar versi kode baru aktif (ARS-22 butir 7). |
 | `terlalu_besar` | 413 | Kiriman melebihi batas (API-09). | Kirim ulang dalam potongan yang lebih kecil. |
-| `terlalu_sering` | 429 | Pembatasan laju (Session 9). Jawaban memuat header `Retry-After`. | Tunggu sesuai `Retry-After`. |
+| `terlalu_sering` | 429 | Pembatasan laju per akun (`12` SEC-54, SEC-55). Per akun stasiun: muat data dan sinkron (EP-KIO-01, EP-KIO-03) 120 per menit digabung, logout (EP-KIO-04) 10 per menit, dan unduh foto (EP-KIO-02) tidak dibatasi. Bantuan formulir panel, misalnya pencarian siswa (EP-MD-01), 120 per menit per akun. Jawaban memuat header `Retry-After` dalam detik. | Tunggu sesuai `Retry-After`. Kiosk tetap menyimpan scan, dan menampilkan pita bila pembatasan berlangsung lebih dari 5 menit (`11` §5.3). |
 | `galat_server` | 500 | Galat yang tidak tertangani di server. | Ulang dengan jeda bertingkat (ARS-29 butir 3). |
 
 Jawaban 401 memuat header `WWW-Authenticate: Spensada` sesuai RFC 9110, karena login tidak memakai skema HTTP standar. Filter `csrf` global berjalan sebelum filter kelompok `sesi`, `area`, dan `hak` (`07` ARS-13). Karena itu, permintaan tulis dengan token CSRF yang kedaluwarsa dari pengguna yang loginnya juga berakhir lebih dulu dijawab 403 `csrf`. Klien mengulang dengan token baru (API-04 butir 4), lalu menerima 401 `login_ulang`. Klien wajib menangani urutan itu.
 
-Jawaban 502, 503, dan 504 dari Nginx, putus koneksi, waktu habis, dan jawaban yang bukan JSON diperlakukan sama dengan `galat_server`. Jawaban 413 dari Nginx diperlakukan sama dengan `terlalu_besar`. Agar galat yang tidak tertangani di API tetap berbentuk JSON dengan kode, handler pengecualian aplikasi (`Config\Exceptions::handler()`) membuat badan `galat_server` untuk alamat `/kiosk/api/…`. Bawaan CI4 di production untuk permintaan yang tidak menerima `text/html` hanya mengirim status, tanpa kode atau keterangan galat.
+Jawaban 502, 503, dan 504 dari Nginx, putus koneksi, waktu habis, dan jawaban yang bukan JSON diperlakukan sama dengan `galat_server`. Jawaban 503 saat pemeliharaan (`12` SEC-78) memuat `Retry-After: 300` (`11` GAL-17), dan kiosk menunggu paling sedikit selama itu sebelum mengulang. Batas laju Nginx hanya berlaku untuk `POST /login` (`12` SEC-56), sehingga API tidak menerima 429 dari Nginx. Jawaban 413 dari Nginx diperlakukan sama dengan `terlalu_besar`. Agar galat yang tidak tertangani di API tetap berbentuk JSON dengan kode, handler pengecualian aplikasi (`Config\Exceptions::handler()`) membuat badan `galat_server` untuk alamat `/kiosk/api/…`. Bawaan CI4 di production untuk permintaan yang tidak menerima `text/html` hanya mengirim status, tanpa kode atau keterangan galat.
 
 ### 4.2 Keamanan permintaan dan waktu
 
@@ -99,11 +99,11 @@ Jawaban 502, 503, dan 504 dari Nginx, putus koneksi, waktu habis, dan jawaban ya
 Butir API-04:
 
 1. Semua permintaan selain GET membawa token CSRF di header `X-CSRF-TOKEN`, sesuai `Config\Security::$headerName` (`07` ARS-29 butir 5).
-2. Jawaban JSON EP-KIO-01, EP-KIO-03, dan EP-MD-02 memuat isian `csrf` berisi `header` dan `token`. Klien selalu memakai token dari jawaban terakhir, karena token dapat diganti setiap kali dipakai (`Config\Security::$regenerate`).
+2. Jawaban JSON EP-KIO-01, EP-KIO-03, dan EP-MD-02 memuat isian `csrf` berisi `header` dan `token`. Dengan `regenerate` `false`, token tidak berganti setelah setiap permintaan. Nilai token di setiap jawaban tetap berbeda, karena diacak (`tokenRandomize`, `12` SEC-28 butir 2). Klien tetap memakai token dari jawaban terakhir, sehingga token baru setelah login atau dari jawaban 403 `csrf` langsung dipakai.
 3. Halaman panel dan portal menulis token dan nama headernya di elemen `<meta>`, untuk dibaca modul JavaScript halaman.
 4. Bila token ditolak, server menjawab 403 `csrf` dengan token baru. Klien mengulang permintaan sekali. Bila ditolak lagi, klien melaporkan galat.
 5. Filter CSRF bawaan CI4 di production mengalihkan permintaan yang gagal, dan melempar pengecualian untuk permintaan dengan `X-Requested-With`. Karena itu filter CSRF aplikasi menjawab permintaan latar belakang dengan kode `csrf` di atas (`07` ARS-13).
-6. Masa berlaku token, regenerasi, dan nama isiannya ditetapkan di Session 9.
+6. Konfigurasi CSRF mengikuti `12` SEC-28: isian formulir `_csrf`, header `X-CSRF-TOKEN`, dan cookie `__Host-spensada_csrf` yang berlaku sampai browser ditutup (`expires` 0), tanpa regenerasi per kiriman. Token baru dibuat saat login dan logout (`12` SEC-29).
 
 Butir API-05:
 
@@ -118,7 +118,7 @@ Butir API-05:
 | ID | Aturan | Status |
 |---|---|---|
 | API-07 | **Cache dan kompresi.** Semua jawaban API dan fragmen memakai `Cache-Control: no-store`. Service Worker tidak menyimpan jawaban API (`07` ARS-22 butir 6). Nginx mengompresi JSON dengan gzip, sehingga `gzip_types` harus memuat `application/json`; bawaan Nginx hanya mengompresi `text/html`. Data kiosk untuk ±1.000 siswa berukuran sekitar 120 KB sebelum kompresi. | RECOMMENDATION |
-| API-08 | **Sesi.** EP-KIO-01, EP-KIO-02, fragmen, dan pencarian hanya membaca sesi, sehingga menutup sesi segera setelah identitas dibaca (`07` ARS-48). Sinkron menutup sesi setelah transaksinya selesai dan sebelum memproses antrean hitung ulang (ARS-36 butir 3). Logout (EP-KIO-04) mengakhiri sesi. Perpanjangan cookie login stasiun (ARS-30 butir 4) ditulis filter `sesi` sebelum sesi ditutup. Token CSRF disimpan di cookie (`Config\Security::$csrfProtection = 'cookie'`), sehingga regenerasinya tidak membutuhkan sesi yang terbuka. Bila Session 9 memindahkan token ke sesi, sesi ditutup setelah token diganti. | RECOMMENDATION |
+| API-08 | **Sesi.** EP-KIO-01, EP-KIO-02, fragmen, dan pencarian hanya membaca sesi, sehingga menutup sesi segera setelah identitas dibaca (`07` ARS-48). Sinkron menutup sesi setelah transaksinya selesai dan sebelum memproses antrean hitung ulang (ARS-36 butir 3). Logout (EP-KIO-04) mengakhiri sesi. Perpanjangan cookie login stasiun (ARS-30 butir 4) ditulis filter `sesi` sebelum sesi ditutup. Token CSRF disimpan di cookie (`Config\Security::$csrfProtection = 'cookie'`), sehingga regenerasinya tidak membutuhkan sesi yang terbuka. Token tetap disimpan di cookie (`12` SEC-28 butir 1). | RECOMMENDATION |
 | API-09 | **Batas ukuran.** Satu kiriman sinkron memuat paling banyak 100 scan (`07` §2.3) dan berukuran paling besar 256 KB. Kiriman yang melebihinya dijawab 413 `terlalu_besar`. Parameter `cari` pencarian paling panjang 50 karakter. | RECOMMENDATION |
 | API-10 | **Versi.** Lihat butir di bawah tabel. | DECISION (versi di alamat, versi baru untuk perubahan yang tidak kompatibel, dan versi lama tetap dilayani, Session 8); RECOMMENDATION (butir 2, 4, 5, dan 6) |
 | API-11 | **Idempotensi dan urutan.** Lihat butir di bawah tabel. | RECOMMENDATION |
@@ -172,9 +172,11 @@ Keadaan khusus dan perilaku kiosk:
 | Keadaan | Jawaban | Perilaku kiosk |
 |---|---|---|
 | Login stasiun berakhir | 401 `login_ulang` | Layar "Login stasiun berakhir" (`08` UI-43). Data dan scan tetap tersimpan. Tombol login membuka `/login`. |
+| Akun stasiun login di laptop lain | 401 `login_ulang` dengan `alasan` `login_berpindah` | Layar "Akun stasiun ini sudah login di laptop lain. Scan yang belum tersinkron tetap tersimpan. Login lagi untuk memakai laptop ini." (`11` §5.3, `12` SEC-19). Data dan scan tetap tersimpan. |
 | Akun stasiun dinonaktifkan | 403 `nonaktif` | Database `spensada-kiosk` dihapus, lalu layar "Akun stasiun ini dinonaktifkan" (UI-43, ARS-31). |
 | Akun yang login bukan akun stasiun | 403 `ditolak` | Membuka `/login`, yang mengalihkan ke halaman awal akun itu (`09` RT-18 butir 4, AC-AKN-01-05). |
 | Token CSRF ditolak | 403 `csrf` | Mengulang permintaan sekali dengan token baru. |
+| Terlalu sering | 429 `terlalu_sering` | Menunggu sesuai `Retry-After`, lalu mengirim lagi. Scan tetap tersimpan (`12` SEC-55). |
 | Versi API tidak dilayani | 410 `versi_usang` | Pita "Kiosk perlu diperbarui. Tutup semua jendela kiosk, lalu buka lagi." Scan tetap berjalan. |
 | Galat server atau jaringan | 5xx, putus koneksi, waktu habis | Indikator koneksi berubah. Sinkron dicoba lagi dengan jeda 5, 10, 20, 40, lalu 60 detik (ARS-29 butir 3). |
 | Data di jawaban rusak | JSON tidak sah, atau isian wajib tidak ada. `versi_format` yang lebih baru mengikuti §5.2 butir 4. | Data lama tetap dipakai, dengan pita "Gagal memuat data" (`08` UI-44). |
@@ -202,11 +204,12 @@ Isian tingkat atas:
 | `aturan` | array | Hari ini dan 14 hari ke depan, urut tanggal. | Ya |
 | `libur` | array | Libur yang mencakup sebagian rentang aturan, urut `id`. | Ya |
 | `pola` | object atau null | Pola mingguan yang berlaku pada tanggal terakhir rentang. Null bila belum ada pola mingguan. | Ya |
+| `pin` | object atau null | Hash PIN petugas dari `pengaturan.kiosk_pin` (`12` SEC-21): `garam` (string, base64 dari 16 byte), `iterasi` (int, 100000), dan `hash` (string, base64 dari 32 byte hasil PBKDF2-SHA256). Null bila PIN belum diatur. | Ya |
 | `stasiun` | object | `id`, `nama`, `username`, dan `status` akun stasiun yang login. | Tidak |
 | `jam` | object | `diterima` dan `dikirim` (API-06). | Tidak |
 | `csrf` | object | `header` dan `token` (API-04). | Tidak |
 
-`versi_data` dihitung dari string JSON objek berisi `versi_format`, `sekolah`, `parameter`, `siswa`, `aturan`, `libur`, dan `pola`, dengan urutan isian dan urutan array seperti tabel di atas. String itu dibuat dengan `json_encode()` memakai `JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES`. Dengan begitu, data yang sama selalu menghasilkan versi yang sama.
+`versi_data` dihitung dari string JSON objek berisi `versi_format`, `sekolah`, `parameter`, `siswa`, `aturan`, `libur`, `pola`, dan `pin`, dengan urutan isian dan urutan array seperti tabel di atas. String itu dibuat dengan `json_encode()` memakai `JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES`. Dengan begitu, data yang sama selalu menghasilkan versi yang sama. Karena `pin` ikut dihitung, perubahan PIN mengubah `versi_data`, sehingga kiosk memuat ulang data dan memakai PIN baru (`12` SEC-21 butir 2).
 
 Isi `siswa`:
 
@@ -254,6 +257,8 @@ Isi `libur`:
 | `cakupan` | string | `semua`, `tingkat`, atau `rombel`. |
 | `tingkat` | array of int | Tingkat yang diliburkan. Kosong bila cakupan bukan `tingkat`. |
 | `rombel_id` | array of int | Rombel yang diliburkan. Kosong bila cakupan bukan `rombel`. |
+
+Isi `pin`: kiosk memeriksa PIN yang diketik petugas dengan `crypto.subtle.deriveBits()` PBKDF2-SHA256 memakai `garam` dan `iterasi`, lalu membandingkan hasilnya dengan `hash`. Pemeriksaan berjalan di laptop, sehingga tetap dapat dipakai saat offline (`08` UI-48). Bila `pin` null, tindakan berisiko cukup memakai konfirmasi, dan menu petugas menampilkan "PIN petugas belum diatur. Hubungi admin." (`11` §5.3). PIN tidak pernah dikirim ke server.
 
 Isi `pola`: `berlaku_mulai` (string) dan `hari`, berupa array tujuh objek `{hari, hari_sekolah, jam}` dengan `hari` 1 (Senin) sampai 7 (Minggu). Kiosk memakai `pola` untuk tanggal di luar rentang `aturan`, disertai peringatan (FS-KIO-01 butir 7). Server tetap menilai ulang scan itu dengan aturan lengkap (FS-KIO-04).
 
@@ -334,6 +339,7 @@ Contoh jawaban, dengan satu siswa, dua tanggal aturan, dan tanpa libur. Data dib
       { "hari": 7, "hari_sekolah": false, "jam": null }
     ]
   },
+  "pin": { "garam": "wmhMt8Mu/9N3ySb0XcFuuQ==", "iterasi": 100000, "hash": "7kgrGHzPliK6BJcjvQ3mw2PRLff2ifg1IgIiqezdEUY=" },
   "stasiun": { "id": 5, "nama": "Gerbang 1", "username": "gerbang1", "status": "aktif" },
   "jam": { "diterima": 1791846300120, "dikirim": 1791846300165 },
   "csrf": { "header": "X-CSRF-TOKEN", "token": "9c1f4e2a7b3d5c8e0f6a1b2c3d4e5f60" }
@@ -350,7 +356,7 @@ Logo sekolah diunduh kiosk dari `GET /logo?v=<versi_logo>` (`09` §13) setiap ka
 |---|---|
 | Alamat | `GET /kiosk/api/v1/foto/{id}`, dengan `{id}` = `siswa.id`. Parameter `v` berisi `versi_foto` boleh ditambahkan untuk penelusuran log, dan tidak dipakai server. |
 | Fitur | FS-KIO-01, `07` §6.4 |
-| Jawaban | 200 `image/jpeg` berisi foto kiosk 300×400 px (`07` ARS-53), dengan header ARS-52: `Cache-Control: no-store`, `X-Content-Type-Options: nosniff`, dan `Content-Security-Policy: sandbox`. |
+| Jawaban | 200 `image/jpeg` berisi foto kiosk 300×400 px (`07` ARS-53), dengan header berkas `12` SEC-52: `Cache-Control: no-store` dan `Content-Security-Policy: sandbox; default-src 'none'; frame-ancestors 'none'`, ditambah `X-Content-Type-Options: nosniff` dari Nginx (`12` SEC-34). |
 | Galat | 404 `tidak_ditemukan` bila siswa tidak termasuk data kiosk hari ini, yaitu tidak aktif atau tidak ditempatkan di rombel, atau tidak memiliki foto. Selain itu 401, 403, 410, dan 500. |
 | Efek di server | Tidak ada. Sesi ditutup segera (API-08). |
 
@@ -363,7 +369,7 @@ Kiosk mengunduh foto hanya bila `versi_foto` berbeda dengan yang tersimpan, pali
 | Alamat | `POST /kiosk/api/v1/sinkron` |
 | Fitur | FS-KIO-03, FS-KIO-04, `07` ARS-27, ARS-29 |
 | Permintaan | JSON (tabel di bawah), dengan header API-02 dan `X-CSRF-TOKEN`. Kiriman tanpa scan adalah kontak berkala (ARS-29 butir 1). |
-| Jawaban | 200 JSON, termasuk bila sebagian scan ditolak. Galat: 400, 401, 403, 410, 413, 429, 500 (API-03). |
+| Jawaban | 200 JSON, termasuk bila sebagian scan ditolak. Galat: 400, 401, 403, 410, 413, 429, 500 (API-03). 401 juga dikirim bila akun stasiun sudah login di laptop lain (`12` SEC-19). 429 dikirim bila EP-KIO-01 dan EP-KIO-03 melewati 120 permintaan per menit (`12` SEC-54). |
 | Efek di server | Menyimpan scan, memperbarui `status_stasiun`, dan menulis antrean hitung ulang dalam satu transaksi, lalu memproses antrean (butir di bawah tabel). |
 
 Isian permintaan:
@@ -415,7 +421,8 @@ Langkah di server:
 3. Dalam satu transaksi (ARS-29 butir 6):
    1. menyimpan scan yang valid dengan `INSERT … ON DUPLICATE KEY UPDATE id = id` berdasarkan `uuid`, lalu mengisi penilaian dan nilai awal kolom hasil untuk scan baru (`PenilaiScan`, ARS-16);
    2. memperbarui `status_stasiun` (tabel di bawah);
-   3. menulis antrean hitung ulang untuk scan baru dengan siswa yang dikenal.
+   3. menulis antrean hitung ulang untuk scan baru dengan siswa yang dikenal;
+   4. menulis log aktivitas `scan_ditolak_server` untuk setiap scan yang ditolak: stasiun, alasan, UUID, NISN, jam scan, dan data mentah paling besar 1 KB. Scan yang sama yang dikirim ulang tidak menulis log baru, berdasarkan stasiun dan hash SHA-1 data mentah (`12` SEC-24).
 4. Setelah commit, membaca `uuid` yang tersimpan untuk mengisi `diterima` (ARS-29 butir 7).
 5. Menutup sesi, lalu memproses antrean paling lama 2 detik tanpa menunggu kunci (ARS-36).
 6. Mengirim jawaban.
@@ -443,7 +450,7 @@ Isian jawaban:
 | `jam` | object | API-06. |
 | `csrf` | object | API-04. |
 
-Setelah jawaban diterima, kiosk menandai scan di `diterima` sebagai tersinkron, menandai scan di `ditolak` sebagai galat, menyimpan token CSRF baru, dan memperbarui selisih jam (ARS-27). Bila `versi_data` berbeda dengan miliknya, kiosk memuat ulang data di latar belakang (FS-KIO-01 butir 1). Scan galat tidak dikirim ulang otomatis, kecuali sekali setiap kali versi kode kiosk berubah, karena penyebabnya biasanya galat kode yang sudah diperbaiki. Selama dikirim ulang, scan itu kembali dihitung sebagai belum tersinkron.
+Setelah jawaban diterima, kiosk menandai scan di `diterima` sebagai tersinkron, menandai scan di `ditolak` sebagai galat, menyimpan token CSRF baru, dan memperbarui selisih jam (ARS-27). Bila `versi_data` berbeda dengan miliknya, kiosk memuat ulang data di latar belakang (FS-KIO-01 butir 1). Scan galat tidak dikirim ulang otomatis, kecuali sekali setiap kali versi kode kiosk berubah, karena penyebabnya biasanya galat kode yang sudah diperbaiki. Selama dikirim ulang, scan itu kembali dihitung sebagai belum tersinkron. Scan galat yang tetap ditolak disimpan kiosk sampai data lokal dihapus. Penghapusan itu aman, karena salinannya sudah tercatat di log aktivitas server, dan admin melihatnya di halaman log aktivitas (`12` SEC-24, `09` HAL-AKN-09).
 
 Contoh permintaan pukul 07.05.35 WIB dari laptop yang jamnya 3 detik terlambat, berisi dua scan baru dan satu scan rusak:
 
@@ -518,10 +525,10 @@ Dari contoh ini, server menyimpan `belum_sinkron` = 3 − 2 − 1 = 0 dan `scan_
 | Alamat | `POST /kiosk/api/v1/logout` |
 | Fitur | FS-KIO-01 butir 8, FS-AKN-01 butir 8, `07` ARS-30 butir 5 |
 | Permintaan | Badan `{}`, dengan header API-02 dan `X-CSRF-TOKEN`. |
-| Jawaban | 200 `{ "keluar": true, "jam": … }`. Galat: 401 berarti sudah tidak login (API-11), selain itu 403, 410, 429, dan 500. |
-| Efek di server | Mengakhiri sesi dengan `session()->destroy()`, yang menghapus cookie sesi dengan jalur cookie aplikasi (`Config\Cookie::$path`, `/`). Cookie login stasiun dihapus dengan `Set-Cookie` berjalur sama dengan saat dibuat (`Path=/kiosk`) dan `Max-Age=0`. |
+| Jawaban | 200 `{ "keluar": true, "jam": … }`. Galat: 401 berarti sudah tidak login (API-11), selain itu 403, 410, 429 (lebih dari 10 per menit, `12` SEC-54), dan 500. |
+| Efek di server | Mengosongkan `akun.login_stasiun_id` (`12` SEC-19 butir 4). Mengakhiri sesi dengan `session()->destroy()`, yang menghapus cookie sesi dengan jalur cookie aplikasi (`Config\Cookie::$path`, `/`). Cookie login stasiun dihapus dengan `Set-Cookie` berjalur sama dengan saat dibuat (`Path=/kiosk`) dan `Max-Age=0`. |
 
-Sebelum memanggil endpoint ini, kiosk meminta konfirmasi petugas, termasuk PIN bila ditetapkan di Session 9 (`08` UI-48), lalu mengosongkan penanda login di `meta` IndexedDB (ARS-22 butir 6). Setelah jawaban diterima, kiosk membuka `/login`. Scan yang belum tersinkron tetap tersimpan, dan dikirim setelah akun stasiun yang sama login kembali (FS-KIO-01 butir 8).
+Sebelum memanggil endpoint ini, kiosk meminta PIN petugas dan memeriksanya di laptop dengan `pin` dari EP-KIO-01 (`12` SEC-21, SEC-22, `08` UI-48). Bila PIN belum diatur, kiosk cukup meminta konfirmasi. Server tidak memeriksa PIN. Setelah PIN benar, kiosk mengosongkan penanda login di `meta` IndexedDB (ARS-22 butir 6). Setelah jawaban diterima, kiosk membuka `/login`. Scan yang belum tersinkron tetap tersimpan, dan dikirim setelah akun stasiun yang sama login kembali (FS-KIO-01 butir 8).
 
 ## 6. Fragmen dan bantuan formulir
 
@@ -657,6 +664,12 @@ Kerangka. Dirinci menjelang R2 bersama FS-LAP-06.
 | `07` ARS-33 | EP-KIO-01 (`parameter`) |
 | `07` ARS-48 | API-08 |
 | `07` ARS-50 | §6.1, EP-LAP-01, EP-KIO-05 |
+| `12` SEC-18, SEC-19 | API-03 (`login_ulang`), §5.2, EP-KIO-03, EP-KIO-04 |
+| `12` SEC-21, SEC-22 | EP-KIO-01 (`pin`), EP-KIO-04 |
+| `12` SEC-24 | EP-KIO-03 (log `scan_ditolak_server`) |
+| `12` SEC-28 s.d. SEC-30 | API-04, API-08 |
+| `12` SEC-54, SEC-55 | API-03 (`terlalu_sering`), §5.2 |
+| `12` SEC-78 | API-03 (503 pemeliharaan) |
 
 ### 7.2 Risiko → API
 
@@ -664,24 +677,21 @@ Kerangka. Dirinci menjelang R2 bersama FS-LAP-06.
 |---|---|
 | R-05 | API-05, API-06, EP-KIO-03 (selisih jam) |
 | R-06 | EP-KIO-03 (`penyimpanan_permanen`, `belum_sinkron`, `scan_galat`) |
-| R-07 | EP-KIO-01 (data minimal), EP-KIO-02 (`no-store`), kode `nonaktif` |
+| R-07 | EP-KIO-01 (data minimal, `pin`), EP-KIO-02 (`no-store`), EP-KIO-04 (PIN petugas), kode `nonaktif` |
 | R-09 | API-11, EP-KIO-03 |
-| R-10 | API-03, API-04, §5.2, EP-KIO-03 (`akun_berbeda`) |
+| R-10 | API-03 (`terlalu_sering`, `12` SEC-54), API-04, §5.2, EP-KIO-03 (`akun_berbeda`, satu login aktif per akun stasiun `12` SEC-19, log `scan_ditolak_server` `12` SEC-24) |
 
 ## 8. Perubahan pada dokumen lain
 
-Perubahan karena keputusan Session 8, termasuk yang ditulis di dokumen ini, dicatat di `09` §16.
+Perubahan karena keputusan Session 8, termasuk yang ditulis di dokumen ini, dicatat di `09` §16. Perubahan karena keputusan Session 9 dicatat di `12` §20.
 
 ## 9. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 8 tidak menjawab dan tidak menambah OQ.
+Session 8 tidak menjawab dan tidak menambah OQ. Session 9 menetapkan pengaturan CSRF (API-04), pembatasan laju (API-03), PIN petugas (EP-KIO-01, EP-KIO-04), dan penanganan scan galat yang tetap ditolak (EP-KIO-03), di `12` SEC-21, SEC-24, SEC-28, dan SEC-54.
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
-| Masa berlaku token CSRF, regenerasi, dan nama isiannya | API-04 | Session 9 |
-| Pembatasan laju API kiosk dan halaman login | API-03 (`terlalu_sering`) | Session 9 |
-| PIN petugas sebelum logout kiosk | EP-KIO-04 | Session 9 |
-| Penanganan scan galat yang tetap ditolak setelah dikirim ulang, termasuk saat data lokal akan dihapus | EP-KIO-03 | Session 9 |
+| Batas laju API kiosk setelah uji beban | API-03 (`terlalu_sering`), `12` SEC-54 | Uji beban sebelum uji coba R1 |
 | Batas ukuran badan sinkron dan batas waktu pemrosesan antrean | API-09, ARS-36 | Uji beban sebelum uji coba R1 |
 | Rincian data flyer | EP-LAP-02 | Menjelang R2 |
 
@@ -690,3 +700,4 @@ Session 8 tidak menjawab dan tidak menambah OQ.
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-05 | Draft awal dari Session 8: ruang lingkup API, aturan umum `API-01` s.d. `API-12` (format, header, kode galat, CSRF, waktu, jam server, cache, sesi, ukuran, versi, idempotensi, dan uji kontrak), API kiosk v1 (EP-KIO-01 s.d. EP-KIO-04) beserta contoh JSON, fragmen dan bantuan formulir (EP-KIO-05, EP-LAP-01, EP-MD-01, EP-MD-02, EP-PRS-01, EP-IZN-01), kerangka data flyer R2 (EP-LAP-02), dan traceability. |
+| 0.2 | 2026-10-05 | Keputusan Session 9 (`11`, `12`). API-03 (`login_ulang` untuk login di laptop lain, `terlalu_sering`, dan 503 pemeliharaan), API-04 butir 2 dan 6, API-08, §5.2, EP-KIO-01 (isian `pin`), EP-KIO-02 (header berkas), EP-KIO-03 (log `scan_ditolak_server`, login berpindah, dan pembatasan laju), EP-KIO-04 (PIN petugas dan `login_stasiun_id`), kepala dokumen, §7, §8, dan §9 diperbarui. |
