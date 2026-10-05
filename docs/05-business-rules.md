@@ -2,11 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.6 (draft) |
+| Versi | 0.7 (draft) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 4 (Business Rules). Diperbarui dengan keputusan Session 4b (Feature Specification, `04` §2), Session 5 (Database Architecture, §2.4), Session 6 (System Architecture, §2.5), Session 7 (UI/UX & Design System, `08`), dan Session 8 (Routes / Pages / API, `09`). |
+| Sumber | Discovery Session 4 (Business Rules). Diperbarui dengan keputusan Session 4b (Feature Specification, `04` §2), Session 5 (Database Architecture, §2.4), Session 6 (System Architecture, §2.5), Session 7 (UI/UX & Design System, `08`), Session 8 (Routes / Pages / API, `09`), dan Session 9 (Validation, Error Handling & Security, `11`, `12`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): ID requirement (`FR-*`, `NFR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). |
-| Dokumen terkait | [04-feature-specification.md](04-feature-specification.md): spesifikasi fitur (`FS-*`) yang menerapkan aturan ini. [06-database-design.md](06-database-design.md): desain data yang menyimpan aturan ini. [07-system-architecture.md](07-system-architecture.md): mekanisme teknis yang menjalankan aturan ini. [13-reporting-import-export.md](13-reporting-import-export.md): laporan dan rekap. |
+| Dokumen terkait | [04-feature-specification.md](04-feature-specification.md): spesifikasi fitur (`FS-*`) yang menerapkan aturan ini. [06-database-design.md](06-database-design.md): desain data yang menyimpan aturan ini. [07-system-architecture.md](07-system-architecture.md): mekanisme teknis yang menjalankan aturan ini. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): validasi isian dan teks pesan. [12-security.md](12-security.md): keamanan, log aktivitas, dan data pribadi. [13-reporting-import-export.md](13-reporting-import-export.md): laporan dan rekap. |
 
 Dokumen ini menetapkan aturan bisnis presensi: kalender, aturan jam dan sesi, scan, status harian, presensi manual dan koreksi, izin/sakit/dispensasi, batas mundur, mode darurat, notifikasi WhatsApp, dan rekap. Dokumen ini menjawab OQ-03, OQ-04, OQ-05, OQ-06, OQ-07, OQ-15, dan OQ-16, serta meninjau usulan Session 3 di `02` dan `03`.
 
@@ -15,7 +15,7 @@ Dokumen ini menetapkan aturan bisnis presensi: kalender, aturan jam dan sesi, sc
 - **ID.** Setiap aturan memakai ID `BR-<TOPIK>-<NN>`. ID tidak pernah dinomori ulang. Aturan yang batal ditandai `DEPRECATED`, bukan dihapus.
 - **Status.** Label status mengikuti `00`. Bila satu aturan memuat keputusan dan usulan sekaligus, keduanya disebut.
 - **Jam.** Semua jam memakai WIB. Nilai jam di dokumen ini adalah contoh. Nilai sebenarnya diisi admin saat penyiapan (UF-01).
-- **Nama teknis.** Tabel dan kolom ditetapkan di `06`, mekanisme teknis di `07`, dan route di `09`. §14 merangkum kebutuhan data dari aturan ini, yang sudah dipenuhi di `06`.
+- **Nama teknis.** Tabel dan kolom ditetapkan di `06`, mekanisme teknis di `07`, route di `09`, validasi isian dan teks pesan di `11`, dan keamanan di `12`. §14 merangkum kebutuhan data dari aturan ini, yang sudah dipenuhi di `06`.
 
 | Kode topik | Topik | Bagian | Modul `01` |
 |---|---|---|---|
@@ -277,7 +277,7 @@ Contoh, dengan batas terlambat 07.00 dan jam tutup sesi masuk 08.00:
 | BR-IZN-09 | **Ubah keputusan.** Staf yang berhak memverifikasi (`HA-IZN-06`) dapat membatalkan data yang sudah disetujui, memendekkan rentangnya, atau mengubah penolakan menjadi persetujuan. Alasan wajib diisi. Perubahan dicatat, status dihitung ulang, dan siswa melihat keputusan terbaru. Untuk data dari dispensasi massal, pembatalan dan pemendekan dapat diterapkan sekaligus ke semua data dalam kelompok dengan satu alasan, dan setiap data tetap tercatat di log. Untuk memperpanjang rentang atau mengganti jenis, staf membatalkan data lalu membuat data baru. | DECISION (ubah keputusan; perubahan per kelompok, Session 4b); RECOMMENDATION (perpanjang dan ganti jenis lewat data baru) |
 | BR-IZN-10 | **Batas mundur saat verifikasi.** Pengajuan yang dibuat dalam batas mundur tetap dapat diverifikasi walaupun tanggalnya sudah melewati batas mundur saat diverifikasi. Untuk perubahan keputusan (BR-IZN-09), batas mundur berlaku pada tanggal yang terdampak perubahan. | DECISION (Session 4b) |
 | BR-IZN-11 | **Tanggal ke depan.** Izin, sakit, dan dispensasi boleh dicatat untuk tanggal ke depan selama masih di tahun ajaran aktif. | DECISION (Session 4b) |
-| BR-IZN-12 | **Lampiran.** Lampiran surat bersifat opsional, paling banyak 3 file per data. Lampiran dapat dibuka oleh siswa pemiliknya, staf yang berhak memverifikasi sesuai cakupannya, dan pimpinan untuk semua siswa (`HA-IZN-05`). Perlu tidaknya mencatat setiap pembukaan lampiran ditinjau di Session 9 (OQ-17). | DECISION (akses pimpinan; paling banyak 3 file, Session 5); RECOMMENDATION (lampiran opsional) |
+| BR-IZN-12 | **Lampiran.** Lampiran surat bersifat opsional, paling banyak 3 file per data. Lampiran dapat dibuka oleh siswa pemiliknya, staf yang berhak memverifikasi sesuai cakupannya, dan pimpinan untuk semua siswa (`HA-IZN-05`). Setiap pembukaan dan unduhan lampiran oleh staf dicatat, sedangkan siswa yang membuka lampirannya sendiri tidak dicatat (OQ-17, `12` SEC-60). Format dan ukuran file mengikuti `12` SEC-49. | DECISION (akses pimpinan; paling banyak 3 file, Session 5; pencatatan akses, Session 9); RECOMMENDATION (lampiran opsional) |
 
 ## 9. Batas mundur (MUN)
 
@@ -397,13 +397,15 @@ Catatan waktu (R-11):
 | `02-user-roles-and-permissions.md` | 0.2 | `HA-PRS-05` menjadi DEPRECATED. `HA-PRS-07` s.d. `HA-PRS-09`, `HA-IZN-06`, dan `HA-WA-03` ditambahkan. Pimpinan dapat membuka lampiran (`HA-IZN-05`). Batas mundur ditetapkan. Usulan yang disetujui menjadi DECISION. |
 | `03-user-flow.md` | 0.2 | Status UF-05 menjadi DECISION. Alur hari sekolah dan izin disesuaikan dengan aturan ini. UF-27 (mode darurat), UF-28 (ubah jadwal hari ini), dan UF-29 (ubah keputusan izin/sakit/dispensasi) ditambahkan. |
 
-Perubahan dokumen karena keputusan Session 4b dicatat di `04` §13, karena keputusan Session 5 di `06` §18, karena keputusan Session 6 di `07` §18, dan karena keputusan Session 7 di `08` §14.
+Perubahan dokumen karena keputusan Session 4b dicatat di `04` §13, karena keputusan Session 5 di `06` §18, karena keputusan Session 6 di `07` §18, karena keputusan Session 7 di `08` §14, dan karena keputusan Session 9 di `12` §20.
 
 ## 16. Pertanyaan terbuka
 
+OQ-17 terjawab di Session 9 (BR-IZN-12).
+
 | OQ | Pertanyaan | Dibahas di |
 |---|---|---|
-| OQ-17 | Apakah setiap pembukaan lampiran surat oleh staf perlu dicatat (siapa dan kapan)? | Session 9 |
+| OQ-18 | Kebijakan data sekolah, termasuk masa simpan data presensi, izin, dan lampiran (`12` SEC-66). | Sebelum uji coba R1, oleh sekolah |
 
 Nilai usulan yang perlu dipastikan saat implementasi:
 
@@ -422,3 +424,4 @@ Nilai usulan yang perlu dipastikan saat implementasi:
 | 0.4 | 2026-10-04 | Keputusan Session 6 (§2.5, `07`). BR-KAL-06 dan BR-REK-05 menjadi DECISION sepenuhnya. BR-SCN-07 merujuk mekanisme jam kiosk di `07`, dan toleransi 2 menit di BR-SCN-08 ditetapkan. Keadaan kedua BR-SCN-08 memakai selisih yang diukur server saat scan diterima. §1, §14, §15, dan §16 diperbarui. |
 | 0.5 | 2026-10-04 | Keputusan Session 7 (`08`). Contoh pesan kiosk di §4.2 merujuk teks final di `08` §7.3, dan contoh libur memakai "Tingkat". Kepala dokumen dan §15 diperbarui. |
 | 0.6 | 2026-10-05 | Keputusan Session 8 (`09`). Pengantar merujuk route di `09`. Kepala dokumen diperbarui. |
+| 0.7 | 2026-10-05 | Keputusan Session 9 (`11`, `12`). BR-IZN-12 memuat jawaban OQ-17 dan format lampiran. Di §16, OQ-17 dihapus karena terjawab, dan OQ-18 ditambahkan. §1 dan kepala dokumen merujuk `11` dan `12`. |

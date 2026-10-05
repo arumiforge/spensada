@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.8 (draft) |
+| Versi | 0.9 (draft) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan), Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), Session 5 (database, `06`; laporan, import, dan export, `13`), Session 6 (arsitektur sistem, `07`), Session 7 (UI/UX dan sistem desain, `08`), dan Session 8 (route, halaman, dan API, `09` dan `10`). |
+| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan), Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), Session 5 (database, `06`; laporan, import, dan export, `13`), Session 6 (arsitektur sistem, `07`), Session 7 (UI/UX dan sistem desain, `08`), Session 8 (route, halaman, dan API, `09` dan `10`), dan Session 9 (validasi, penanganan galat, dan keamanan, `11` dan `12`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), asumsi (`A-xx`), dan pertanyaan terbuka (`OQ-xx`) |
 
 ## 1. Cara membaca dokumen ini
@@ -111,7 +111,7 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 | FR-IZN-02 | Admin, wali kelas (rombelnya), guru piket, dan guru BK menginput izin, sakit, atau dispensasi langsung atas nama siswa, misalnya berdasarkan surat atau pesan orang tua. Data yang diinput staf langsung berstatus disetujui. | Admin, wali kelas, guru piket, guru BK | Core | R1 | CONFIRMED; DECISION (pelaku, Session 3; langsung disetujui, Session 4) |
 | FR-IZN-03 | Admin, wali kelas (rombelnya), guru piket, dan guru BK memverifikasi pengajuan siswa (setujui atau tolak) dengan catatan. Hanya izin/sakit/dispensasi yang disetujui yang memengaruhi status presensi, dan yang disetujui menang atas presensi masuk (`05` BR-STS-03). | Admin, wali kelas, guru piket, guru BK | Core | R1 | CONFIRMED (verifikasi); DECISION (pelaku, Session 3; hanya yang disetujui berlaku dan menang atas presensi, Session 4) |
 | FR-IZN-04 | Siswa melihat status pengajuannya (menunggu, disetujui, ditolak, atau dibatalkan), termasuk keputusan terbaru bila staf mengubahnya. | Siswa | Core | R1 | RECOMMENDATION |
-| FR-IZN-05 | Lampiran surat, paling banyak 3 file per data, disimpan di luar folder publik dan hanya dapat dibuka oleh siswa pemiliknya, staf yang berhak memverifikasi, dan pimpinan (`02`, `HA-IZN-05`). Pencatatan pembukaan lampiran mengikuti OQ-17. | Sistem | Core | R1 | DECISION (akses pimpinan, Session 4; paling banyak 3 file, Session 5); RECOMMENDATION (penyimpanan di luar folder publik) |
+| FR-IZN-05 | Lampiran surat, paling banyak 3 file per data, disimpan di luar folder publik dan hanya dapat dibuka oleh siswa pemiliknya, staf yang berhak memverifikasi, dan pimpinan (`02`, `HA-IZN-05`). Setiap pembukaan dan unduhan lampiran oleh staf dicatat (OQ-17, `12` SEC-60). Format dan ukurannya di `12` SEC-49. | Sistem | Core | R1 | DECISION (akses pimpinan, Session 4; paling banyak 3 file, Session 5; pencatatan akses dan format file, Session 9); RECOMMENDATION (penyimpanan di luar folder publik) |
 | FR-IZN-06 | Staf yang berhak memverifikasi dapat mengubah keputusan: membatalkan data yang disetujui, memendekkan rentangnya, atau mengubah penolakan menjadi persetujuan. Alasan wajib diisi, perubahan dicatat, dan status presensi dihitung ulang (`05` BR-IZN-09). Untuk dispensasi massal, perubahan dapat diterapkan ke satu siswa atau sekaligus ke satu kelompok. | Admin, wali kelas, guru piket, guru BK | Core | R1 | DECISION (Session 4; per kelompok, Session 4b) |
 | FR-IZN-07 | Dispensasi adalah jenis ketiga di samping izin dan sakit, untuk tugas atau kegiatan resmi sekolah. Dispensasi hanya diinput staf, dan dapat diinput untuk banyak siswa sekaligus (siswa terpilih, satu rombel, atau satu tingkat). Pada input massal, siswa yang sudah memiliki data izin/sakit/dispensasi pada tanggal yang sama dilewati dan dilaporkan (`05` BR-IZN-07). Dispensasi bukan ketidakhadiran (`05` BR-IZN-05, BR-REK-02). | Admin, wali kelas, guru piket, guru BK | Core | R1 | DECISION (Session 4; siswa bentrok dilewati, Session 4b); RECOMMENDATION (cara memilih siswa) |
 
@@ -164,11 +164,11 @@ Kiosk bekerja *local-first* (DECISION). Scan divalidasi dan dicatat di laptop le
 | NFR-03 | Keandalan | Scan yang sudah tercatat di laptop tidak hilang karena internet putus, browser ditutup, atau laptop restart. Kiosk meminta penyimpanan permanen (persistent storage) ke browser (`07` ARS-21). | RECOMMENDATION | R-06, R-08 |
 | NFR-04 | Keandalan | Sinkron bersifat idempotent: kiriman ulang tidak menggandakan data. | RECOMMENDATION | R-09 |
 | NFR-05 | Keandalan | Kegagalan gateway WhatsApp tidak memengaruhi pencatatan presensi. | RECOMMENDATION | R-16 |
-| NFR-06 | Keamanan | Seluruh aplikasi diakses lewat HTTPS, baik lokal maupun production. Ini wajib karena webcam hanya berjalan di HTTPS. | CONFIRMED (syarat browser) | R-01 |
-| NFR-07 | Keamanan | Semua area kecuali halaman publik wajib login. Endpoint sinkron hanya untuk akun stasiun dan dilindungi CSRF. Semua input divalidasi di server, tidak hanya di JavaScript. | RECOMMENDATION | R-10 |
-| NFR-08 | Keamanan | Percobaan login dibatasi (rate limit), karena aplikasi terbuka ke internet. | RECOMMENDATION | — |
+| NFR-06 | Keamanan | Seluruh aplikasi diakses lewat HTTPS, baik lokal maupun production. Ini wajib karena webcam hanya berjalan di HTTPS. HSTS, cookie, dan header keamanan ada di `12` §10. | CONFIRMED (syarat browser) | R-01 |
+| NFR-07 | Keamanan | Semua area kecuali halaman publik wajib login. Endpoint sinkron hanya untuk akun stasiun dan dilindungi CSRF. Semua input divalidasi di server, tidak hanya di JavaScript. Aturan validasi ada di `11`, dan sesi, CSRF, serta otorisasi di `12` §6, §8, dan §9. | RECOMMENDATION | R-10 |
+| NFR-08 | Keamanan | Percobaan login dibatasi (rate limit), karena aplikasi terbuka ke internet. Lima kali gagal untuk satu username dalam 15 menit mengunci login sekitar 15 menit, dan 20 kali dalam 24 jam menguncinya sekitar 24 jam. Admin, atau wali kelas untuk siswa rombelnya, dapat membuka kunci. Satu alamat IP dibatasi 100 kali gagal dalam 15 menit (`12` SEC-08 s.d. SEC-11). | DECISION (Session 9) | — |
 | NFR-09 | Waktu | Jam presensi memakai WIB (`Asia/Jakarta`, UTC+7). Zona waktu aplikasi dan database diset eksplisit. Jam laptop dikoreksi dengan selisih jam server dan divalidasi saat sinkron (`05` BR-JAM-12, BR-SCN-07, BR-SCN-08). Caranya di `07` ARS-27, ARS-28, dan ARS-44 s.d. ARS-46. | DECISION (WIB, OQ-05; kiosk yang dibuka offline, Session 6); RECOMMENDATION (cara koreksi jam) | R-05, R-11 |
-| NFR-10 | Privasi | Data siswa adalah data anak, dan surat sakit adalah data kesehatan (UU 27/2022 PDP). File unggahan disimpan di luar `public/`. Halaman publik tidak menampilkan data individu. Stasiun scan memakai laptop dan profil browser khusus. | RECOMMENDATION | R-07, R-17 |
+| NFR-10 | Privasi | Data siswa adalah data anak, dan surat sakit adalah data kesehatan (UU 27/2022 PDP). File unggahan disimpan di luar `public/`. Halaman publik tidak menampilkan data individu. Stasiun scan memakai laptop dan profil browser khusus. Akses lampiran oleh staf dicatat, dan data belum dihapus sampai sekolah menetapkan kebijakan datanya (OQ-18). Ketentuannya di `12` §12 dan §15. | RECOMMENDATION | R-07, R-17 |
 | NFR-11 | Kompatibilitas | Kiosk berjalan di Chrome atau Edge versi terbaru di Windows (A-04). Panel staf/admin dan portal siswa dapat dipakai di desktop maupun ponsel. Dukungan browser dan ukuran tampilan ada di `08` UI-18 dan UI-70. | ASSUMPTION (kiosk); RECOMMENDATION (responsif) | R-04 |
 | NFR-12 | Volume | Sistem menangani ±1.000 siswa aktif dan ±400 ribu catatan scan per tahun tanpa penurunan kinerja yang terasa. | RECOMMENDATION | R-20 |
 | NFR-13 | Volume | Outbox WA menangani ±500–1.000 pesan scan masuk setiap pagi. Target waktu habis antrean ditetapkan setelah provider dipilih (OQ-10). | DECISION (default scan masuk); RECOMMENDATION (target) | R-16 |
@@ -283,14 +283,14 @@ Then pengunjung melihat pengumuman dan jumlah kehadiran per rombel hari ini
 
 ## 8. Pertanyaan terbuka yang memengaruhi requirement
 
-Daftar lengkap ada di `00` §8.2. OQ-01, OQ-02, dan OQ-14 terjawab di Session 3. OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4 (`05`). OQ-11 dan OQ-12 terjawab di Session 5 (`13`). OQ-09 terjawab di Session 6 (`07`). OQ-13 terjawab sebagian di Session 7 (`08`).
+Daftar lengkap ada di `00` §8.2. OQ-01, OQ-02, dan OQ-14 terjawab di Session 3. OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4 (`05`). OQ-11 dan OQ-12 terjawab di Session 5 (`13`). OQ-09 terjawab di Session 6 (`07`). OQ-13 terjawab sebagian di Session 7 (`08`). OQ-17 terjawab di Session 9 (`12`).
 
 | OQ | Pertanyaan singkat | Requirement terdampak |
 |---|---|---|
 | OQ-08 | Jumlah stasiun scan (lokasi sudah diputuskan) | NFR-02 |
 | OQ-10 | Provider gateway WhatsApp | FR-WA-01, NFR-13 |
 | OQ-13 | Contoh kartu OSIS lama untuk desain kartu rinci (terjawab sebagian) | FR-KRT-01 |
-| OQ-17 | Pencatatan pembukaan lampiran surat oleh staf | FR-IZN-05 |
+| OQ-18 | Kebijakan data sekolah: masa simpan, pemberitahuan privasi, dan persetujuan orang tua/wali | NFR-10 |
 
 ## 9. Traceability
 
@@ -303,6 +303,8 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | Arsitektur dan mekanisme teknis | `07` (§17 memetakan risiko, NFR, dan fitur ke aturan arsitektur) |
 | Route dan API | `09`, `10` |
 | Tampilan dan sistem desain | `08` |
+| Validasi, pesan, dan penanganan galat | `11` |
+| Keamanan dan data pribadi | `12` (§19 memetakan NFR, risiko, dan fitur ke ketentuan keamanan) |
 | Halaman | `09` |
 | Fase implementasi | `15` |
 | Spesifikasi fitur dan acceptance criteria rinci | `04` (§12.1 memetakan setiap FR ke fitur) |
@@ -319,3 +321,4 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | 0.6 | 2026-10-04 | Keputusan Session 6 (`07`). C-03 (VPS) dan C-06 (Composer appstarter) menjadi DECISION. NFR-03, NFR-09, dan NFR-16 diperbarui, dan daftar library memuat zxing-wasm dan mPDF, dengan flyer ditunda ke Session 7. OQ-09 dihapus dari §8 karena terjawab. §9 merujuk `07`. |
 | 0.7 | 2026-10-04 | Keputusan Session 7 (`08`). FR-KRT-01 dan NFR-11 diperbarui. Daftar library memuat flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide sebagai DECISION. OQ-13 di §8 terjawab sebagian. §9 merujuk `08`. |
 | 0.8 | 2026-10-05 | Keputusan Session 8 (`09`, `10`). FR-KIO-12 memuat versi kode kiosk, penyimpanan permanen, dan scan yang ditolak server. |
+| 0.9 | 2026-10-05 | Keputusan Session 9 (`11`, `12`). NFR-06, NFR-07, dan NFR-10 merujuk `11` dan `12`. NFR-08 memuat batas percobaan login dan menjadi DECISION. FR-IZN-05 memuat jawaban OQ-17 dan format lampiran. Di §8, OQ-17 dihapus karena terjawab, dan OQ-18 ditambahkan. §9 merujuk `11` dan `12`. |

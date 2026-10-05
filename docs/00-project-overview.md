@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.8 (draft) |
+| Versi | 0.9 (draft) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, Session 4b, Session 5, Session 6, Session 7, dan Session 8. |
-| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [08-ui-ux-design-system.md](08-ui-ux-design-system.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [10-api-specification.md](10-api-specification.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
+| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, Session 4b, Session 5, Session 6, Session 7, Session 8, dan Session 9. |
+| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [08-ui-ux-design-system.md](08-ui-ux-design-system.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [10-api-specification.md](10-api-specification.md), [11-validation-and-error-handling.md](11-validation-and-error-handling.md), [12-security.md](12-security.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
 
 Dokumen ini adalah titik masuk dokumentasi proyek. Baca dokumen ini sebelum dokumen lain.
 
@@ -152,7 +152,7 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 |---|---|
 | Framework | CodeIgniter 4.7.4, dipasang tanpa Composer: folder `system/` ikut di-commit dan tidak ada `vendor/`. `composer.json` yang ada adalah milik framework, bukan aplikasi. Repository dipindah ke Composer appstarter di fase implementasi pertama (`07` ARS-07). |
 | Kode aplikasi | Belum ada. Hanya `Home::index` dan `app/Views/welcome_message.php` bawaan. |
-| Git | Berisi dokumen `docs/` dari Session 1–8, termasuk contoh visual `docs/08-contoh-tampilan.html`, serta `.gitignore` dari Session 6 (`07` ARS-09). |
+| Git | Berisi dokumen `docs/` dari Session 1–9, termasuk contoh visual `docs/08-contoh-tampilan.html`, serta `.gitignore` dari Session 6 (`07` ARS-09). |
 | Konfigurasi database | `app/Config/Database.php`: MySQLi, `utf8mb4` / `utf8mb4_general_ci`, kredensial kosong. |
 | `baseURL` | Masih `http://localhost:8080/`. |
 | `appTimezone` | Masih `UTC`. Diubah ke `Asia/Jakarta` di fase implementasi pertama (`07` ARS-44). |
@@ -168,17 +168,17 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | R-04 | Chrome dan Edge di Windows tidak memiliki `BarcodeDetector`. Menurut MDN browser-compat-data, fitur ini hanya ada di macOS/ChromeOS. | Library zxing-wasm, disajikan dari server sendiri (`07` ARS-10, ARS-25). | CONFIRMED (risiko); DECISION (zxing-wasm, Session 6) | Session 6 |
 | R-05 | Jam scan berasal dari laptop, sehingga bisa salah atau diubah. | Selisih jam laptop terhadap server diukur saat data dimuat dan setiap kali sinkron. Kiosk menjaga jam dengan jam monoton browser, dan kiosk yang dibuka offline memakai selisih terakhir dengan peringatan. Server menandai scan dengan jam tidak wajar untuk ditinjau (`05` BR-SCN-07, BR-SCN-08; `07` ARS-27, ARS-28). Jam laptop yang sudah dibetulkan sebelum scan terkirim tidak terdeteksi (`07` ARS-27 langkah 7). Laptop kiosk memakai akun Windows non-admin. | RECOMMENDATION; DECISION (kiosk yang dibuka offline, Session 6) | Session 4 (aturan), Session 6 (teknis) |
 | R-06 | Scan yang belum tersinkron bisa hilang bila laptop rusak atau data browser terhapus. | IndexedDB dengan penyimpanan permanen, kiosk dipasang sebagai aplikasi, penghitung "belum tersinkron", dan sinkron otomatis (`07` ARS-21, ARS-29). Kiosk melaporkan jumlah scan belum tersinkron dan keadaan penyimpanan permanen ke status stasiun di panel (`10` EP-KIO-03, `09` HAL-KIO-02). | RECOMMENDATION; DECISION (laporan penyimpanan permanen, Session 8) | Session 6, 8 |
-| R-07 | Data dan foto siswa (data anak) tersimpan di laptop stasiun scan. | Laptop dan profil browser khusus kiosk. Data dihapus saat perangkat tidak lagi dipakai. | RECOMMENDATION | Session 9 |
+| R-07 | Data dan foto siswa (data anak) tersimpan di laptop stasiun scan. | Laptop dan profil browser khusus kiosk, akun Windows non-admin dengan password, dan enkripsi perangkat bila tersedia. Kiosk hanya memuat data minimal. Logout dan hapus data lokal memakai PIN petugas. Data dihapus saat akun stasiun dinonaktifkan dan saat perangkat tidak lagi dipakai (`12` SEC-21 s.d. SEC-23, SEC-69). | RECOMMENDATION; PIN petugas DECISION (Session 9) | Session 9 |
 | R-08 | Halaman kiosk harus bisa dibuka ulang tanpa internet, misalnya setelah laptop restart. | Service Worker untuk halaman dan aset kiosk (`07` ARS-22). | RECOMMENDATION | Session 6 |
 | R-09 | Kiriman sinkron bisa terulang, dan satu siswa bisa scan di beberapa stasiun. | ID unik per scan dari laptop. Scan pertama yang berlaku: server memakai scan paling awal dari semua stasiun (`05` BR-SCN-03). | RECOMMENDATION (ID unik); DECISION (aturan penggabungan, Session 4) | Session 4 |
-| R-10 | Endpoint sinkron bisa disalahgunakan untuk mengirim presensi palsu. | Hanya untuk akun stasiun yang login, dilindungi CSRF, dan divalidasi server. Setiap scan membawa akun stasiun pencatatnya, dan server menolak scan dari akun lain (`10` EP-KIO-03). Rincian pengamanan di Session 9. | RECOMMENDATION | Session 8, 9 |
+| R-10 | Endpoint sinkron bisa disalahgunakan untuk mengirim presensi palsu. | Hanya untuk akun stasiun yang login, dilindungi CSRF, dan divalidasi server. Setiap scan membawa akun stasiun pencatatnya, dan server menolak scan dari akun lain (`10` EP-KIO-03). Satu akun stasiun hanya aktif di satu laptop, laju API kiosk dibatasi, dan scan yang ditolak server dicatat (`12` SEC-18 s.d. SEC-20, SEC-24, SEC-54). | RECOMMENDATION; satu login aktif per akun stasiun DECISION (Session 9) | Session 8, 9 |
 | R-11 | Zona waktu default CodeIgniter adalah `UTC`, dan zona waktu server hosting bisa berbeda dari sekolah. | Zona waktu aplikasi dan database diset eksplisit ke WIB (`Asia/Jakarta`, +07:00). Lihat `05` BR-JAM-12 dan §14. Caranya di `07` ARS-44 s.d. ARS-46. | CONFIRMED (default CI4); DECISION (WIB, OQ-05) | Session 4 (zona), Session 6 (teknis) |
 | R-12 | NISN bisa diawali nol, dan Excel sering membuang nol di depan. | NISN disimpan sebagai teks 10 digit, `id` internal menjadi primary key, dan import divalidasi per baris. Template XLSX memformat kolom NISN sebagai teks (`06` DB-03, `13` IM-01). | RECOMMENDATION | Session 5 |
 | R-13 | Status Alpa salah bila dihitung sebelum semua data masuk. | Status dapat dihitung ulang setiap kali data berubah, sehingga scan yang tersinkron belakangan mengoreksi Alpa. Hasilnya disimpan sebagai salinan yang dapat dibangun ulang (`06` §11). Hitung ulang memakai antrean yang ditulis bersama perubahan data, sehingga tidak ada yang terlewat (`07` §7). Sesi masuk ditutup otomatis. Pesan "tidak hadir" ditunda, menunggu semua stasiun tersinkron, dan ditahan bila jumlah siswa tercatat masuk di bawah ambang (`05` BR-STS-06, BR-WA-02, BR-WA-03). | DECISION (tutup otomatis, tunda, ambang: Session 4; hitung ulang dan salinan: Session 5; antrean: Session 6) | Session 4, 5, 6 |
 | R-14 | Riwayat rekap rusak saat kenaikan kelas bila siswa hanya punya satu kolom kelas. | Penempatan siswa ke rombel dicatat dengan tanggal mulai dan selesai, dan rombel pada setiap tanggal disalin ke status harian (`06` §6.7, §11; `05` BR-REK-05). | DECISION (Session 5) | Session 5 |
 | R-15 | Keterbatasan hosting terkait document root dan cron. | Production memakai VPS, sehingga document root, cron, dan HTTPS dapat diatur sendiri (`07` ARS-01, ARS-02). | DECISION (VPS, Session 6) | Session 6 (OQ-09) |
 | R-16 | Volume WhatsApp tinggi. Default scan masuk berarti ±500–1.000 pesan setiap pagi. Jeda dan kuota provider membatasi kecepatan kirim, dan nomor bisa diblokir. | Pesan dikirim lewat antrean (outbox) dan proses terjadwal, lalu diuji di R2. Risiko nomor diblokir diterima pengguna. | DECISION (risiko blokir diterima); RECOMMENDATION (antrean) | Sebelum R2 (OQ-10) |
-| R-17 | Data siswa termasuk data anak, dan surat sakit termasuk data kesehatan. Keduanya data pribadi spesifik menurut UU 27/2022 tentang Pelindungan Data Pribadi. | File unggahan disimpan di luar `public/` dengan akses terbatas. Halaman publik tanpa data individu. Flyer hanya berisi angka (OQ-11, `13` LP-08). | RECOMMENDATION; isi flyer DECISION (Session 5) | Session 9 |
+| R-17 | Data siswa termasuk data anak, dan surat sakit termasuk data kesehatan. Keduanya data pribadi spesifik menurut UU 27/2022 tentang Pelindungan Data Pribadi. | File unggahan disimpan di luar `public/` dengan akses terbatas. Halaman publik tanpa data individu. Flyer hanya berisi angka (OQ-11, `13` LP-08). Akses lampiran oleh staf dicatat (OQ-17). Data hanya dihapus setelah sekolah menetapkan kebijakan datanya (OQ-18). Ketentuannya di `12` §15. | RECOMMENDATION; isi flyer DECISION (Session 5); pencatatan akses lampiran dan retensi DECISION (Session 9) | Session 9 |
 | R-18 | XLSX, PDF, dan QR membutuhkan library PHP via Composer, padahal framework saat ini dipasang tanpa Composer. Tanpa `.gitignore`, `.env` (password database) dan isi `writable/` bisa ikut ter-push. | Pindah ke Composer appstarter di commit pertama fase implementasi (`07` ARS-07). `.gitignore` dibuat di Session 6 (`07` ARS-09). | DECISION (appstarter dan `.gitignore`, Session 6); RECOMMENDATION (waktu migrasi) | Session 6 |
 | R-19 | Flyer dibuat di browser menjadi PNG. | Flyer digambar dengan Canvas API tanpa library, berukuran 1080×1350 px, dan pratinjaunya memakai canvas yang sama (`08` UI-65, UI-66). | DECISION (Session 7) | Session 7 |
 | R-20 | Volume data ±400 ribu catatan scan per tahun (±1.000 siswa × 2 scan × ±200 hari). | Index yang tepat (`06` §15). Volume ini ringan untuk MySQL, dan data tidak dihapus di R1 (`06` DB-13). | RECOMMENDATION | Session 5 |
@@ -217,7 +217,8 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | OQ-14 | Cara pembuatan akun siswa dan password awal. | Session 3 | Terjawab: lihat `02` §2 dan §7.2. |
 | OQ-15 | Batas mundur (berapa hari ke belakang) untuk koreksi presensi dan input izin/sakit oleh staf; apakah siswa boleh mengajukan izin/sakit untuk tanggal yang sudah lewat. | Session 4 | Terjawab: hari ini dan 7 hari kalender sebelumnya, diatur admin; admin tidak dibatasi; siswa boleh mengajukan untuk tanggal lampau dalam batas ini (`05` §9). |
 | OQ-16 | Prosedur darurat bila semua stasiun scan tidak dapat dipakai, termasuk kemungkinan presensi manual per rombel sekaligus. | Session 4 | Terjawab: mode darurat dan presensi manual per rombel (`05` §10). |
-| OQ-17 | Apakah setiap pembukaan lampiran surat oleh staf perlu dicatat (siapa dan kapan). | Session 9 | Terbuka |
+| OQ-17 | Apakah setiap pembukaan lampiran surat oleh staf perlu dicatat (siapa dan kapan). | Session 9 | Terjawab: setiap pembukaan dan unduhan lampiran oleh akun staf dicatat, dan admin melihatnya di halaman log aktivitas (`12` SEC-60, `HA-AKN-08`). |
+| OQ-18 | Kebijakan data sekolah: masa simpan setiap jenis data, pemberitahuan privasi bagi siswa dan orang tua/wali, dasar pemrosesan data anak termasuk persetujuan orang tua/wali, dan penanggung jawab data di sekolah (`12` SEC-66, SEC-68). | Sebelum uji coba R1, oleh sekolah | Terbuka |
 
 ## 9. Glosarium
 
@@ -248,7 +249,7 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Local-first | Pola kerja kiosk: data siswa dimuat ke laptop lebih dulu, scan divalidasi dan dicatat di laptop, lalu dikirim ke server. |
 | Sinkron | Pengiriman catatan scan dari stasiun scan ke server. Berjalan otomatis saat online dan bisa dipicu manual. |
 | Sesi masuk / sesi pulang | Rentang waktu penerimaan scan masuk dan scan pulang dalam satu hari sekolah, sama dengan jendela masuk dan jendela pulang. Sesi ditutup otomatis pada jam tutup sesi (`05` §4). |
-| Sesi login | Masa seorang pengguna tetap login di satu browser. Berbeda dari sesi masuk dan sesi pulang. Login akun stasiun bertahan lebih lama lewat cookie login stasiun (`07` ARS-30). |
+| Sesi login | Masa seorang pengguna tetap login di satu browser. Berbeda dari sesi masuk dan sesi pulang. Sesi staf dan siswa berakhir setelah 8 jam tanpa aktivitas atau 7 hari sejak login (`12` SEC-12). Login akun stasiun bertahan lebih lama lewat cookie login stasiun (`07` ARS-30). |
 | Aturan jam | Tujuh isian jam untuk satu hari sekolah: jam buka scan masuk, jam masuk, toleransi terlambat, jam tutup sesi masuk, jam buka scan pulang, jam pulang, dan jam tutup sesi pulang. Berasal dari pola mingguan atau jadwal khusus. |
 | Pola mingguan | Aturan jam untuk setiap hari dalam seminggu, termasuk hari mana yang merupakan hari sekolah. Default Senin–Sabtu. |
 | Jadwal khusus | Aturan jam untuk satu tanggal atau rentang tanggal yang mengalahkan pola mingguan, misalnya Ramadan atau rapat guru. Jadwal hari ini adalah jadwal khusus untuk tanggal hari berjalan, yang dapat diubah admin atau guru piket. |
@@ -275,7 +276,11 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Kelompok dispensasi | Sekumpulan data dispensasi yang dibuat dari satu input massal. Keputusannya dapat diubah per siswa atau sekaligus satu kelompok (`05` BR-IZN-05, BR-IZN-09). |
 | Scan bertanda | Scan yang ditandai server saat sinkron untuk ditinjau, misalnya karena jam laptop tidak wajar (`05` BR-SCN-08). |
 | Status stasiun | Keadaan setiap stasiun scan yang tampil di panel: waktu kontak dan sinkron terakhir, jumlah scan belum tersinkron dan scan galat, versi kode kiosk, serta keadaan penyimpanan permanen (`04` FS-KIO-05, `09` HAL-KIO-02). |
-| Scan galat | Scan yang ditolak server karena datanya rusak. Scan itu tetap tersimpan di laptop dengan tanda galat, dan dihitung terpisah dari scan belum tersinkron (`04` FS-KIO-03 E4, `10` EP-KIO-03). |
+| Scan galat | Scan yang ditolak server karena datanya rusak. Scan itu tetap tersimpan di laptop dengan tanda galat, dan dihitung terpisah dari scan belum tersinkron (`04` FS-KIO-03 E4, `10` EP-KIO-03). Server juga mencatatnya di log aktivitas (`12` SEC-24). |
+| Kunci login | Penolakan login sementara untuk satu username atau NISN setelah terlalu banyak percobaan gagal, atau untuk satu alamat IP. Kunci 24 jam dapat dibuka admin, atau wali kelas untuk siswa rombelnya (`12` SEC-08 s.d. SEC-11). |
+| Log aktivitas | Catatan kejadian akun, keamanan, pengaturan, import, akses lampiran, dan scan yang ditolak server: siapa, kapan, dan apa. Hanya dibuka admin (`12` SEC-57 s.d. SEC-62). Berbeda dari log perubahan presensi dan log data siswa. |
+| PIN petugas | PIN 6 digit, satu untuk semua stasiun, diatur admin. Dipakai petugas untuk logout akun stasiun dan menghapus data lokal di kiosk (`12` SEC-21). |
+| Kode laporan | Delapan karakter di halaman galat server yang dilaporkan pengguna ke admin, agar galatnya dapat dicari di log aplikasi (`11` GAL-13, `12` SEC-58). |
 | Data kiosk | Data yang dimuat kiosk dari server: siswa aktif beserta fotonya, aturan jam dan libur untuk hari ini dan 14 hari ke depan, identitas sekolah, dan parameter kiosk. Tidak memuat nomor WA, izin, atau riwayat (`07` ARS-23). |
 | Selisih jam | Selisih jam laptop stasiun terhadap jam server, diukur setiap kali kiosk menghubungi server. Jam scan adalah jam laptop ditambah selisih ini (`05` BR-SCN-07, `07` ARS-27). |
 | Pengajuan izin/sakit | Permohonan izin atau sakit dari siswa lewat portal, yang menunggu verifikasi staf. Siswa tidak dapat mengajukan dispensasi. |
@@ -312,20 +317,20 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 
 | Dokumen | Isi | Sesi | Status |
 |---|---|---|---|
-| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–8 | Draft 0.8 |
-| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–8 | Draft 0.8 |
-| `02-user-roles-and-permissions.md` | Role dan permission | Session 3–8 | Draft 0.6 |
-| `03-user-flow.md` | Alur pengguna | Session 3–8 | Draft 0.7 |
-| `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b–8 | Draft 0.5 |
-| `05-business-rules.md` | Aturan bisnis | Session 4–8 | Draft 0.6 |
-| `06-database-design.md` | Desain database | Session 5–8 | Draft 0.4 |
-| `07-system-architecture.md` | Arsitektur sistem | Session 6–8 | Draft 0.3 |
-| `08-ui-ux-design-system.md` | Sistem desain UI/UX, dengan contoh visual `08-contoh-tampilan.html` | Session 7–8 | Draft 0.2 |
-| `09-page-and-route-specification.md` | Halaman, route, dan menu | Session 8 | Draft 0.1 |
-| `10-api-specification.md` | API, termasuk sinkron kiosk | Session 8 | Draft 0.1 |
-| `11-validation-and-error-handling.md` | Validasi dan penanganan error | Session 9 | Belum dibuat |
-| `12-security.md` | Keamanan | Session 9 | Belum dibuat |
-| `13-reporting-import-export.md` | Laporan, import, dan export | Session 5–8 | Draft 0.4 |
+| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–9 | Draft 0.9 |
+| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–9 | Draft 0.9 |
+| `02-user-roles-and-permissions.md` | Role dan permission | Session 3–9 | Draft 0.7 |
+| `03-user-flow.md` | Alur pengguna | Session 3–9 | Draft 0.8 |
+| `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b–9 | Draft 0.6 |
+| `05-business-rules.md` | Aturan bisnis | Session 4–9 | Draft 0.7 |
+| `06-database-design.md` | Desain database | Session 5–9 | Draft 0.5 |
+| `07-system-architecture.md` | Arsitektur sistem | Session 6–9 | Draft 0.4 |
+| `08-ui-ux-design-system.md` | Sistem desain UI/UX, dengan contoh visual `08-contoh-tampilan.html` | Session 7–9 | Draft 0.3 |
+| `09-page-and-route-specification.md` | Halaman, route, dan menu | Session 8–9 | Draft 0.2 |
+| `10-api-specification.md` | API, termasuk sinkron kiosk | Session 8–9 | Draft 0.2 |
+| `11-validation-and-error-handling.md` | Validasi dan penanganan error | Session 9 | Draft 0.1 |
+| `12-security.md` | Keamanan | Session 9 | Draft 0.1 |
+| `13-reporting-import-export.md` | Laporan, import, dan export | Session 5–9 | Draft 0.5 |
 | `14-development-roadmap.md` | Roadmap pengembangan | Session 10 | Belum dibuat |
 | `15-implementation-phases.md` | Dokumen fase implementasi | Session 11 | Belum dibuat |
 
@@ -341,9 +346,9 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | 5 | Database Architecture (`06`), serta laporan, import, dan export (`13`) | Selesai |
 | 6 | System Architecture (`07`) | Selesai |
 | 7 | UI/UX & Design System (`08`) | Selesai |
-| 8 | Routes / Pages / API (`09`, `10`) | Selesai, menunggu review dokumen |
-| 9 | Security / Validation / Error Handling | Berikutnya |
-| 10 | Development Roadmap | Belum |
+| 8 | Routes / Pages / API (`09`, `10`) | Selesai |
+| 9 | Security / Validation / Error Handling (`11`, `12`) | Selesai, menunggu review dokumen |
+| 10 | Development Roadmap | Berikutnya |
 | 11 | Implementation Phase Documents | Belum |
 
 ## 11. Aturan untuk AI implementer
@@ -374,3 +379,4 @@ Aturan ini berlaku untuk AI atau developer yang mengerjakan kode di repository i
 | 0.6 | 2026-10-04 | Keputusan Session 6 (`07` §2). `07` dibuat. OQ-09 terjawab. R-01, R-04 s.d. R-06, R-08, R-11, R-13, R-15, R-18, dan R-19 diperbarui. Stack (§7.1), environment (§7.2), dan kondisi repository (§7.3) diperbarui. Glosarium ditambah: data kiosk, selisih jam, antrean hitung ulang, dan sesi login. Peta dokumen dan progres sesi diperbarui. |
 | 0.7 | 2026-10-04 | Keputusan Session 7 (`08` §2). `08` dan contoh visualnya dibuat. OQ-13 terjawab sebagian. R-19 diperbarui. Glosarium "Rombel" dan "Tingkat" memuat label layar. Kondisi repository, peta dokumen, dan progres sesi diperbarui. |
 | 0.8 | 2026-10-05 | Keputusan Session 8 (`09` §2). `09` dan `10` dibuat. R-06 dan R-10 diperbarui. Pengantar glosarium merujuk route di `09`, dan glosarium ditambah: fragmen dan scan galat. Entri status stasiun diperbarui. Kondisi repository, peta dokumen, dan progres sesi diperbarui. Tidak ada OQ yang terjawab atau ditambahkan. |
+| 0.9 | 2026-10-05 | Keputusan Session 9 (`12` §2). `11` dan `12` dibuat. OQ-17 terjawab, dan OQ-18 (kebijakan data sekolah) ditambahkan. R-07, R-10, dan R-17 diperbarui. Glosarium ditambah: kunci login, log aktivitas, PIN petugas, dan kode laporan. Entri sesi login dan scan galat diperbarui. Kondisi repository, peta dokumen, dan progres sesi diperbarui. |
