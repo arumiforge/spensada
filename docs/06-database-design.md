@@ -307,7 +307,7 @@ Aturan:
 
 ### 6.1 `pengaturan`
 
-Pasangan kunci dan nilai untuk nilai yang diatur admin, ditambah satu penanda keadaan yang diatur sistem. Nilai teknis lain yang tidak diatur admin, seperti toleransi selisih jam, disimpan di konfigurasi aplikasi (`07` ARS-17).
+Pasangan kunci dan nilai untuk nilai yang diatur admin, ditambah tiga nilai keadaan yang diatur sistem: `status_dibangun_sampai`, `status_mulai`, dan `cron_terakhir_at`. Nilai teknis lain yang tidak diatur admin, seperti toleransi selisih jam, disimpan di konfigurasi aplikasi (`07` ARS-17).
 
 | Kolom | Tipe | Null | Keterangan |
 |---|---|---|---|
@@ -895,7 +895,7 @@ Setiap hitung ulang baris (siswa, tanggal) lebih dulu menghitung ulang kolom has
 Pembuatan baris per tanggal:
 
 1. `pengaturan.status_dibangun_sampai` menyimpan tanggal terakhir yang barisnya sudah dibuat untuk semua siswa. Bila kosong, pembuatan dimulai dari hari ini, sehingga aplikasi yang mulai dipakai di tengah tahun ajaran tidak membuat Alpa untuk tanggal sebelumnya (`07` ARS-37). Nilai awalnya saat go-live adalah H−1, diisi perintah `status:mulai` (`14` GL-08).
-   - `pengaturan.status_mulai` menyimpan tanggal pertama yang memiliki status, yaitu hari go-live. Tidak ada baris untuk tanggal sebelumnya, juga lewat hitung ulang per siswa (butir 4), sehingga perubahan data dan scan sebelum go-live tidak membuat Alpa. Antrean untuk tanggal sebelumnya dilewati. Kosong berarti tanpa batas bawah. Nilai ini diisi sekali dan tidak diubah dari aplikasi. (RECOMMENDATION, Session 10, `14` §2.2)
+   - `pengaturan.status_mulai` menyimpan tanggal pertama yang memiliki status, yaitu hari go-live. Tidak ada baris untuk tanggal sebelumnya, juga lewat hitung ulang per siswa (butir 4), sehingga perubahan data dan scan sebelum go-live tidak membuat Alpa. Antrean untuk tanggal sebelumnya dilewati. Kosong berarti tanpa batas bawah. Nilai ini tidak diubah dari aplikasi. Perintah `status:mulai` boleh mengisinya ulang selama `status_harian` masih kosong. Input presensi dan izin untuk tanggal sebelumnya ditolak (`04` §4.10). (RECOMMENDATION, Session 10, `14` §2.2)
 2. Sebelum status dibaca, dan juga oleh cron setiap menit (`07` ARS-37, ARS-56), sistem membuat baris untuk setiap tanggal setelah `status_dibangun_sampai` sampai hari ini, untuk semua siswa yang hari sekolahnya tanggal itu. Setelah itu `status_dibangun_sampai` diperbarui.
 3. Dengan cara ini, tanggal yang tidak dibuka siapa pun tetap memiliki baris lengkap, sehingga siswa yang tidak hadir tetap menjadi Alpa.
 4. Hitung ulang untuk satu siswa, misalnya karena scan masuk, hanya membuat atau memperbarui baris siswa itu. Hitung ulang itu tidak dihitung sebagai pembuatan tanggal.

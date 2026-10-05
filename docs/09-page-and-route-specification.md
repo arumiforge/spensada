@@ -353,7 +353,7 @@ Rincian halaman:
 - **HAL-AKN-07 — Pemeriksaan sistem** (`07` ARS-57, DECISION hak Session 8). Halaman baca saja dengan bagian:
   - hasil pemeriksaan `aplikasi:cek` yang dijalankan di PHP-FPM: versi PHP dan MySQL, ekstensi, zona waktu PHP dan MySQL, collation dan `sql_mode`, hak tulis `writable/`, `baseURL` HTTPS, serta batas unggah, `memory_limit`, dan opcache;
   - waktu terakhir cron berjalan (`pengaturan.cron_terakhir_at`, ARS-56);
-  - antrean hitung ulang yang menunggu dan yang gagal beserta galat terakhirnya (ARS-36 butir 6), serta `status_dibangun_sampai` (ARS-37);
+  - antrean hitung ulang yang menunggu dan yang gagal beserta galat terakhirnya (ARS-36 butir 6), serta `status_dibangun_sampai` dan `status_mulai` (ARS-37, `14` GL-08);
   - versi aplikasi dan versi kode kiosk terbaru;
   - jumlah baris `critical` dan `error` di log aplikasi hari ini dan kemarin, dengan tanda "Perlu tindakan" bila ada baris `critical`, tanpa menampilkan isi log (`11` GAL-22);
   - nilai `CI_ENVIRONMENT`, yang harus `production` di server (`12` SEC-77).
@@ -936,4 +936,4 @@ Session 8 tidak menjawab dan tidak menambah OQ. Session 9 menjawab OQ-17 (§13, 
 |---|---|---|
 | 0.1 | 2026-10-05 | Draft awal dari Session 8: keputusan route, halaman, dan API; konvensi alamat, metode, formulir, pengalihan, pencarian, fragmen, berkas, login, dan galat (`RT-01` s.d. `RT-22`); menu panel dan portal; route dan rincian setiap halaman R1; kerangka route R2 dan R3; berkas; label kode di halaman; dan traceability. |
 | 0.2 | 2026-10-05 | Keputusan Session 9 (§2.3, `11`, `12`). Halaman baru HAL-AKN-09 (log aktivitas) dengan menu "Log aktivitas". Route buka kunci login (HAL-AKN-04, HAL-AKN-06, HAL-KIO-02) dan PIN petugas (HAL-KIO-02). HAL-AKN-01 (pembatasan login), HAL-AKN-07 (log aplikasi dan `CI_ENVIRONMENT`), HAL-IZN-06, RT-09, RT-10, RT-18, RT-19 (halaman 400, 429, 503, dan kode laporan), §11 (kredensial gateway), §13 (header berkas, unduhan lampiran, dan catatan akses), §14 (label `log_aktivitas.jenis`), kepala dokumen, §15, §16, dan §17 diperbarui. |
-| 0.3 | 2026-10-05 | Keputusan Session 10 (`14`). §17 merujuk urutan pembuatan halaman di `14` §7. Kepala dokumen diperbarui. |
+| 0.3 | 2026-10-05 | Keputusan Session 10 (`14`). HAL-AKN-07 menampilkan `status_mulai`. §17 merujuk urutan pembuatan halaman di `14` §7. Kepala dokumen diperbarui. |

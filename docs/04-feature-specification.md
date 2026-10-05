@@ -314,6 +314,14 @@ Tindakan massal, tindakan yang membuat password baru, dan tindakan yang mengubah
    - Foto massal: paling besar 100 MB per unggahan, paling banyak 100 file, atau satu ZIP berisi paling banyak 2.000 entri.
 4. Tipe file ditentukan dari isinya, dan ekstensinya harus sesuai (`12` SEC-50). Foto, logo, dan lampiran gambar disimpan ulang, sehingga metadata seperti lokasi GPS terbuang. PDF disimpan apa adanya (`12` SEC-51).
 
+### 4.10 Tanggal sebelum sistem dipakai
+
+Tanggal sebelum `pengaturan.status_mulai`, yaitu hari go-live (`14` GL-08), tidak memiliki status (`06` §11.4). Bila `status_mulai` kosong, ketentuan ini tidak berlaku. (RECOMMENDATION, Session 10)
+
+1. Presensi manual, koreksi status, input izin/sakit/dispensasi, pengajuan siswa, dan dispensasi massal untuk tanggal itu ditolak dengan pesan "Tanggal sebelum sistem mulai dipakai (<tanggal go-live>)", walaupun masih dalam batas mundur. Untuk rentang tanggal, hanya tanggal sejak `status_mulai` yang boleh.
+2. Dashboard hari ini, daftar presensi rombel, rekap, dan riwayat untuk tanggal itu menampilkan "Pencatatan kehadiran dimulai <tanggal go-live>", bukan angka nol atau belum hadir.
+3. Scan untuk tanggal itu tetap diterima dan disimpan sebagai catatan scan, misalnya saat gladi bersih (`14` GL-11), tetapi tidak membuat status.
+
 ## 5. Akun dan akses (AKN)
 
 ### FS-AKN-01 — Login dan logout
@@ -5605,4 +5613,4 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 | 0.4 | 2026-10-04 | Keputusan Session 7 (§2.6, `08`). §1 dan pengantar catatan antarmuka awal merujuk `08`. §4.8, FS-AKN-05, FS-MD-03, FS-MD-07, FS-KIO-01, FS-KIO-02, FS-KIO-02 E7, FS-PRS-05, FS-LAP-03, FS-LAP-04, §11, §13, §14.1, dan §14.2 diperbarui. OQ-13 terjawab sebagian. |
 | 0.5 | 2026-10-05 | Keputusan Session 8 (§2.7, `09`, `10`). §1 dan pengantar §7 merujuk `09` dan `10`. FS-KIO-03 (isi laporan kiosk dan scan galat), FS-KIO-04 (akun pencatat, isi respons, dan status stasiun), FS-KIO-05 (kolom dan sorotan baru, AC-KIO-05-03), FS-PRS-06 dan FS-IZN-02 (pencarian siswa), FS-LAP-01 ("Kelas saya" dan peringatan pemeriksaan sistem), §12.3, §13, §14.1, dan §14.2 diperbarui. |
 | 0.6 | 2026-10-05 | Keputusan Session 9 (§2.8, `11`, `12`). Kepala dokumen dan §1 merujuk `11` dan `12`. §4.3 (panjang alasan), §4.4 butir 5 (log aktivitas dan akses lampiran), dan §4.9 (Paket 10 MB dan penyimpanan ulang gambar) diperbarui. FS-AKN-01 (pembatasan login, masa sesi, dan log), FS-AKN-02 (aturan password), FS-AKN-03 s.d. FS-AKN-05 (password awal, username, dan buka kunci login), FS-AKN-04 (satu login aktif per akun stasiun), FS-KIO-01 (PIN petugas), FS-KIO-03 dan FS-KIO-04 (log scan yang ditolak server dan pembatasan laju), FS-MD-01 s.d. FS-MD-03, FS-MD-05 s.d. FS-MD-09 (format dan ukuran unggahan, dan jenis log), FS-PRS-10, FS-PRS-11, FS-IZN-01 s.d. FS-IZN-04, dan FS-IZN-06 (penyajian dan catatan akses lampiran) diperbarui. Acceptance criteria baru: AC-AKN-01-07, AC-AKN-01-08, AC-AKN-02-05, AC-AKN-04-05, AC-KIO-01-07, AC-KIO-04-07, AC-MD-06-06, AC-IZN-01-08, dan AC-IZN-06-04. §12.3, §13, §14.1, dan §14.2 diperbarui. OQ-17 terjawab, dan OQ-18 ditambahkan. |
-| 0.7 | 2026-10-05 | Keputusan Session 10 (`14`). Kepala dokumen dan §1 merujuk definisi selesai (`14` RM-05) dan fase setiap fitur (`14` §16.1). |
+| 0.7 | 2026-10-05 | Keputusan Session 10 (`14`). Kepala dokumen dan §1 merujuk definisi selesai (`14` RM-05) dan fase setiap fitur (`14` §16.1). §4.10 (tanggal sebelum `status_mulai`) ditambahkan. |

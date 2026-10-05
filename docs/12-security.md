@@ -477,10 +477,10 @@ Butir SEC-75:
 
 | ID | Ketentuan | Status |
 |---|---|---|
-| SEC-79 | **Data uji.** Lingkungan pengembangan dan uji memakai data buatan dari seeder, bukan salinan data asli siswa. Bila salinan data asli diperlukan untuk memeriksa masalah, salinan itu disamarkan lebih dulu: nama, NISN, tanggal lahir, alamat, nomor WA, foto, dan lampiran diganti. | RECOMMENDATION |
+| SEC-79 | **Data uji.** Lingkungan pengembangan dan uji, termasuk production selama uji coba R1 (`14` §11), memakai data buatan dari seeder atau file import fiktif, bukan salinan data asli siswa. Bila salinan data asli diperlukan untuk memeriksa masalah, salinan itu disamarkan lebih dulu: nama, NISN, tanggal lahir, alamat, nomor WA, foto, dan lampiran diganti. | RECOMMENDATION |
 | SEC-80 | **Rahasia di repository.** `.env`, dump database, dan isi `writable/` tidak pernah di-commit (`07` ARS-09). Contoh konfigurasi memakai nilai palsu. Fitur secret scanning GitHub dinyalakan untuk repository. | RECOMMENDATION |
 | SEC-81 | **Uji keamanan otomatis.** Uji PHPUnit (`07` ARS-58) mencakup: setiap route di `09` ditolak tanpa login dan oleh jenis akun yang salah, data di luar cakupan dijawab 403, permintaan tulis tanpa token CSRF ditolak, pembatasan login dan pembukaan kuncinya, aturan password, sesi yang berakhir setelah 8 jam dan 7 hari, satu login aktif per akun stasiun, header CSP per area dan header berkas, penolakan file berbahaya (file PHP berganti nama `.jpg`, SVG, PDF palsu, ZIP dengan `..`), dan log `lampiran_dibuka`. Daftar route diambil dari `php spark routes`, sehingga route baru tanpa uji akses terlihat. | RECOMMENDATION |
-| SEC-82 | **Pemeriksaan sebelum uji coba.** Sebelum uji coba R1, pengembang memeriksa production dengan daftar periksa: header dan sertifikat HTTPS dari luar, misalnya dengan `curl -I`, cookie bertanda `Secure`, `display_errors` mati, port yang terbuka, akses SSH, backup yang dapat dipulihkan, dan uji pemindaian dasar OWASP ZAP terhadap production sebelum data asli diisi, karena tidak ada server uji terpisah (DECISION, Session 10). Daftar periksa ini adalah `14` UC-10, dan hasilnya dicatat di catatan go-live (`14` §12). | RECOMMENDATION |
+| SEC-82 | **Pemeriksaan saat uji coba.** Selama uji coba R1, sebelum data asli diisi, pengembang memeriksa production dengan daftar periksa: header dan sertifikat HTTPS dari luar, misalnya dengan `curl -I`, cookie bertanda `Secure`, `display_errors` mati, port yang terbuka, akses SSH, dan uji pemindaian dasar OWASP ZAP terhadap production sebelum data asli diisi, karena tidak ada server uji terpisah (DECISION, Session 10). Daftar periksa ini adalah `14` UC-10, dan pemulihan backup diuji di `14` UC-09, dan hasilnya dicatat di catatan go-live (`14` §12). | RECOMMENDATION |
 
 ## 18. Penanganan insiden
 
@@ -542,11 +542,12 @@ Perubahan karena keputusan Session 9, termasuk yang ditulis di `11`:
 
 ## 21. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 9 menjawab OQ-17 (§2.1) dan menambah OQ-18:
+Session 9 menjawab OQ-17 (§2.1) dan menambah OQ-18. Session 10 menambah OQ-19 (`14` §18):
 
 | OQ | Pertanyaan | Dijawab di | Status |
 |---|---|---|---|
 | OQ-18 | Kebijakan data sekolah: masa simpan setiap jenis data, pemberitahuan privasi bagi siswa dan orang tua/wali, dasar pemrosesan data anak termasuk persetujuan orang tua/wali, dan penanggung jawab data di sekolah (SEC-66, SEC-68). | Sebelum uji coba R1, oleh sekolah | Terbuka |
+| OQ-19 | Tempat penyimpanan backup di luar VPS dan dua pemegang kunci privat (SEC-75). | Sebelum uji coba R1, oleh sekolah dan pengelola server | Terbuka |
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
@@ -562,4 +563,4 @@ Session 9 menjawab OQ-17 (§2.1) dan menambah OQ-18:
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-05 | Draft awal dari Session 9: keputusan Session 9, model ancaman, autentikasi dan password (`SEC-01` s.d. `SEC-07`), pembatasan login (`SEC-08` s.d. `SEC-11`), sesi (`SEC-12` s.d. `SEC-17`), stasiun dan kiosk termasuk PIN petugas dan satu login aktif (`SEC-18` s.d. `SEC-24`), otorisasi (`SEC-25` s.d. `SEC-27`), CSRF (`SEC-28` s.d. `SEC-31`), HTTPS, cookie, dan header (`SEC-32` s.d. `SEC-40`), pencegahan injeksi (`SEC-41` s.d. `SEC-48`), file unggahan (`SEC-49` s.d. `SEC-53`), pembatasan laju (`SEC-54` s.d. `SEC-56`), log (`SEC-57` s.d. `SEC-62`), data pribadi (`SEC-63` s.d. `SEC-69`), server dan backup (`SEC-70` s.d. `SEC-78`), pengembangan dan pengujian (`SEC-79` s.d. `SEC-82`), penanganan insiden (`SEC-83`, `SEC-84`), traceability, dan perubahan dokumen lain. Menjawab OQ-17 dan menambah OQ-18. |
-| 0.2 | 2026-10-05 | Keputusan Session 10 (`14`). SEC-75 butir 5 (pemulihan ke database sementara), SEC-82 (pemindaian terhadap production sebelum data asli), kepala dokumen, dan §21 (OQ-19) diperbarui. |
+| 0.2 | 2026-10-05 | Keputusan Session 10 (`14`). SEC-75 butir 5 (pemulihan ke database sementara), SEC-79 (data uji dari file import fiktif), SEC-82 (pemindaian terhadap production sebelum data asli), kepala dokumen, dan §21 (OQ-19) diperbarui. |
