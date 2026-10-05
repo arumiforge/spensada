@@ -545,7 +545,7 @@ Satu baris per akun stasiun, diperbarui setiap kontak (FS-KIO-04 butir 7, FS-KIO
 | Kolom | Tipe | Null | Keterangan |
 |---|---|---|---|
 | `akun_id` | INT | | Primary key. Akun berjenis `stasiun`. |
-| `kontak_terakhir_at` | DATETIME | Ya | Waktu permintaan terakhir dari stasiun. |
+| `kontak_terakhir_at` | DATETIME | Ya | Waktu permintaan muat data atau sinkron terakhir dari stasiun (`10` §5.2 butir 3). |
 | `sinkron_terakhir_at` | DATETIME | Ya | Waktu kiriman scan terakhir yang diterima. |
 | `belum_sinkron` | INT | Ya | Jumlah scan belum tersinkron yang terakhir dilaporkan. |
 | `belum_sinkron_dilaporkan_at` | DATETIME | Ya | Waktu laporan itu. Dipakai untuk definisi tersinkron di BR-WA-02 syarat 3. |
@@ -1174,4 +1174,4 @@ Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ. Session 6 
 | 0.1 | 2026-10-04 | Draft awal dari Session 5: konvensi, 31 tabel R1 dan 3 tabel R2, aturan baca status harian, pemicu hitung ulang, index, integritas, dan keputusan Session 5. |
 | 0.2 | 2026-10-04 | Keputusan Session 6 (§2.4, `07`). Tabel `antrean_hitung_ulang` (§11.5) ditambahkan, sehingga tabel R1 menjadi 32. DB-11 menjadi DECISION. Kepala dokumen, §1, DB-03, §4.1, §4.2, §5.4, §6.1, §8.1, §8.2, §9.3, §11.4, §13, §16, §17.2, §18, dan §19 diperbarui. Di antaranya, `tanda_selisih_berubah` membandingkan selisih scan dengan selisih yang diukur server saat kiriman diterima, dan pembuatan baris status dimulai dari hari ini bila `status_dibangun_sampai` kosong. Kunci `cron_terakhir_at` ditambahkan di §6.1. Usulan di §4.1, §6.4, §6.6, dan §10.4 menjadi DECISION. |
 | 0.3 | 2026-10-04 | Keputusan Session 7 (§2.5, `08`). Kolom `akun.nip` (R2) dan kunci `pengaturan.sekolah_kota` (R2) ditambahkan. §2.5 ditambahkan. Keterangan `siswa.foto_file` memuat foto kecil. §1, §14.1, dan §18 merujuk `08`. |
-| 0.4 | 2026-10-05 | Keputusan Session 8 (§2.6, `09`, `10`). Kolom `scan_galat`, `versi_kiosk`, dan `penyimpanan_permanen` ditambahkan di `status_stasiun` (§8.1), dan keterangan `data_dimuat_at` serta `scan.stasiun_id` (§8.2) diperbarui. Kepala dokumen, §13, §18, dan §19 diperbarui. |
+| 0.4 | 2026-10-05 | Keputusan Session 8 (§2.6, `09`, `10`). Kolom `scan_galat`, `versi_kiosk`, dan `penyimpanan_permanen` ditambahkan di `status_stasiun` (§8.1), dan keterangan `kontak_terakhir_at`, `data_dimuat_at`, serta `scan.stasiun_id` (§8.2) diperbarui. Kepala dokumen, §13, §18, dan §19 diperbarui. |

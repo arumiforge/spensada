@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.5 (draft) |
-| Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 4 (Business Rules). Diperbarui dengan keputusan Session 4b (Feature Specification, `04` §2), Session 5 (Database Architecture, §2.4), Session 6 (System Architecture, §2.5), dan Session 7 (UI/UX & Design System, `08`). |
+| Versi | 0.6 (draft) |
+| Tanggal | 2026-10-05 |
+| Sumber | Discovery Session 4 (Business Rules). Diperbarui dengan keputusan Session 4b (Feature Specification, `04` §2), Session 5 (Database Architecture, §2.4), Session 6 (System Architecture, §2.5), Session 7 (UI/UX & Design System, `08`), dan Session 8 (Routes / Pages / API, `09`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): ID requirement (`FR-*`, `NFR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). |
 | Dokumen terkait | [04-feature-specification.md](04-feature-specification.md): spesifikasi fitur (`FS-*`) yang menerapkan aturan ini. [06-database-design.md](06-database-design.md): desain data yang menyimpan aturan ini. [07-system-architecture.md](07-system-architecture.md): mekanisme teknis yang menjalankan aturan ini. [13-reporting-import-export.md](13-reporting-import-export.md): laporan dan rekap. |
 
@@ -15,7 +15,7 @@ Dokumen ini menetapkan aturan bisnis presensi: kalender, aturan jam dan sesi, sc
 - **ID.** Setiap aturan memakai ID `BR-<TOPIK>-<NN>`. ID tidak pernah dinomori ulang. Aturan yang batal ditandai `DEPRECATED`, bukan dihapus.
 - **Status.** Label status mengikuti `00`. Bila satu aturan memuat keputusan dan usulan sekaligus, keduanya disebut.
 - **Jam.** Semua jam memakai WIB. Nilai jam di dokumen ini adalah contoh. Nilai sebenarnya diisi admin saat penyiapan (UF-01).
-- **Nama teknis.** Tabel dan kolom ditetapkan di `06`, mekanisme teknis di `07`, dan route di Session 8. §14 merangkum kebutuhan data dari aturan ini, yang sudah dipenuhi di `06`.
+- **Nama teknis.** Tabel dan kolom ditetapkan di `06`, mekanisme teknis di `07`, dan route di `09`. §14 merangkum kebutuhan data dari aturan ini, yang sudah dipenuhi di `06`.
 
 | Kode topik | Topik | Bagian | Modul `01` |
 |---|---|---|---|
@@ -421,3 +421,4 @@ Nilai usulan yang perlu dipastikan saat implementasi:
 | 0.3 | 2026-10-04 | Keputusan Session 5 (§2.4). BR-KAL-06, BR-SCN-03, BR-STS-06, BR-KOR-10, BR-REK-04, dan BR-REK-05 menjadi DECISION, begitu juga syarat 4 BR-KAL-05. BR-IZN-12 memuat batas 3 lampiran. BR-REK-03 memuat pembulatan bilangan bulat. BR-REK-05 memuat pengecualian rekap rapor. BR-REK-01 dan §14 merujuk `06` dan `13`. |
 | 0.4 | 2026-10-04 | Keputusan Session 6 (§2.5, `07`). BR-KAL-06 dan BR-REK-05 menjadi DECISION sepenuhnya. BR-SCN-07 merujuk mekanisme jam kiosk di `07`, dan toleransi 2 menit di BR-SCN-08 ditetapkan. Keadaan kedua BR-SCN-08 memakai selisih yang diukur server saat scan diterima. §1, §14, §15, dan §16 diperbarui. |
 | 0.5 | 2026-10-04 | Keputusan Session 7 (`08`). Contoh pesan kiosk di §4.2 merujuk teks final di `08` §7.3, dan contoh libur memakai "Tingkat". Kepala dokumen dan §15 diperbarui. |
+| 0.6 | 2026-10-05 | Keputusan Session 8 (`09`). Pengantar merujuk route di `09`. Kepala dokumen diperbarui. |

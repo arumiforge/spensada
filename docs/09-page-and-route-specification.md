@@ -62,7 +62,7 @@ Penyusunan route dan API menemukan kebutuhan berikut. Semuanya berstatus RECOMME
 | ID | Aturan | Status |
 |---|---|---|
 | RT-01 | **Area, prefiks, dan file route.** Setiap area memiliki prefiks, file route, filter kelompok, namespace controller, dan halaman awal sendiri (tabel di bawah). File route didaftarkan di `Config\Routing::$routeFiles`, dengan `app/Config/Routes.php` di urutan pertama karena berisi placeholder, route `/`, dan route `/logo`. Auto routing tetap mati (`07` ARS-12). | RECOMMENDATION |
-| RT-02 | **Hak per method.** Setiap method controller di area panel, portal, dan kiosk, serta ganti password dan logout, memiliki atribut `#[Filter(by: 'hak', having: [...])]` (`07` ARS-13). Satu atribut dengan beberapa ID berarti cukup salah satu hak. Beberapa atribut berarti semuanya wajib, misalnya export yang memerlukan hak laporan dan `HA-LAP-05` (`13` IE-05). Atribut dibaca karena `Config\Routing::$useControllerAttributes` bernilai `true`, bawaan CI4 4.7. Filter hanya memeriksa hak. Cakupan data, batas mundur, dan keadaan data diperiksa service (`07` ARS-15), sehingga pemegang hak dengan cakupan Rombel tetap ditolak untuk siswa kelas lain. Uji otomatis memastikan setiap method di area itu memiliki atribut hak. | RECOMMENDATION |
+| RT-02 | **Hak per method.** Setiap method controller di area panel, portal, dan kiosk, serta ganti password dan logout, memiliki atribut `#[Filter(by: 'hak', having: [...])]` (`07` ARS-13). Satu atribut dengan beberapa ID berarti cukup salah satu hak. Beberapa atribut berarti semuanya wajib, misalnya export laporan yang memerlukan hak laporan dan `HA-LAP-05` (`13` IE-05). Atribut dibaca karena `Config\Routing::$useControllerAttributes` bernilai `true`, bawaan CI4 4.7. Filter hanya memeriksa hak. Cakupan data, batas mundur, dan keadaan data diperiksa service (`07` ARS-15), sehingga pemegang hak dengan cakupan Rombel tetap ditolak untuk siswa rombel lain. Uji otomatis memastikan setiap method di area itu memiliki atribut hak. | RECOMMENDATION |
 
 Area (RT-01):
 
@@ -74,7 +74,7 @@ Area (RT-01):
 | Kiosk | `/kiosk` | `Routes/Kiosk.php` | `sesi`, `area:stasiun` | `Kiosk` | `/kiosk` (HAL-KIO-01) |
 | Publik | `/` dan `/logo`; di R3 juga `/pengumuman/…` | `Routes.php`; di R3 juga `Routes/Publik.php` | — | `Publik` | `/` (HAL-INF-05, R3) |
 
-File route berada di `app/Config/Routes/`. Filter `area` menerima beberapa jenis akun yang dipisah koma. Filter `csrf` tetap global untuk semua permintaan selain GET (`07` ARS-13), termasuk PUT, PATCH, dan DELETE hasil isian `_method`.
+File route berada di `app/Config/Routes/`. Filter `area` menerima beberapa jenis akun yang dipisah koma. Filter `csrf` milik aplikasi didaftarkan di `Config\Filters::$aliases` dan diaktifkan di `$globals['before']` (`07` ARS-13); di repository saat ini baris itu masih dikomentari. Token diperiksa untuk POST, PUT, PATCH, dan DELETE, termasuk metode hasil isian `_method`.
 
 ### 3.2 Alamat dan parameter
 
@@ -97,7 +97,7 @@ Butir RT-04:
 | ID | Aturan | Status |
 |---|---|---|
 | RT-05 | **Metode HTTP.** Metode dipakai sesuai tabel di bawah, dengan butir penerapan di bawahnya. | DECISION (gaya REST, Session 8); RECOMMENDATION (pemetaan dan penerapan) |
-| RT-06 | **Halaman formulir dan konfirmasi.** Setiap tindakan yang membutuhkan isian atau konfirmasi memiliki halaman GET, dengan pasangan di tabel kedua di bawah. Tindakan tanpa isian dan tanpa konfirmasi tidak memiliki halaman GET; tombolnya langsung mengirim, misalnya aktifkan akun. Halaman konfirmasi menyebut dampaknya (`04` §4.7, `08` UI-28). R1 memakai halaman konfirmasi biasa. Tampilan konfirmasi dalam `<dialog>` (UI-28) adalah peningkatan opsional tanpa route baru. | DECISION (`tambah` dan `ubah`, Session 8); RECOMMENDATION (lainnya) |
+| RT-06 | **Halaman formulir dan konfirmasi.** Setiap tindakan yang membutuhkan isian atau konfirmasi memiliki halaman GET, dengan pasangan di tabel kedua di bawah. Tindakan tanpa isian dan tanpa konfirmasi tidak memiliki halaman GET; tombolnya langsung mengirim, misalnya aktifkan akun. Halaman konfirmasi menyebut dampaknya (`04` §4.7, `08` UI-28). R1 memakai halaman konfirmasi biasa. Tampilan konfirmasi dalam `<dialog>` (UI-28) adalah peningkatan opsional tanpa route baru. Pengecualian: halaman pengaturan tunggal (misalnya identitas sekolah, jadwal hari ini, dan batas mundur), ganti password, presensi manual, serta formulir keputusan (verifikasi izin dan tinjauan scan) berada di halaman indeks atau detailnya sendiri. Tindakannya tetap PUT, PATCH, atau DELETE ke alamat itu, atau POST ke `<data>/<kata-kerja>`. | DECISION (`tambah` dan `ubah`, Session 8); RECOMMENDATION (lainnya) |
 | RT-07 | **Konfirmasi bersyarat dan halaman periksa.** Bila dampak baru diketahui setelah isian diperiksa server, permintaan tulis pertama tidak menyimpan apa pun. Server menjawab 200 dengan halaman periksa yang memuat dampaknya dan isian yang sama sebagai isian tersembunyi, ditambah `konfirmasi=1`. Permintaan kedua dengan `konfirmasi=1` memeriksa ulang semua isian, lalu menyimpan. File unggahan dari permintaan pertama disimpan di `tmp/<token>/` (`07` ARS-55), dan token itu dibawa permintaan kedua. Token terikat ke akun pembuatnya dan hanya dapat dipakai sekali. Token yang tidak ada, milik akun lain, atau sudah dipakai dialihkan ke formulir asalnya dengan pesan. Pratinjau presensi manual tanpa JavaScript memakai isian `periksa=1` dengan cara yang sama, tanpa token. | RECOMMENDATION |
 
 Metode (RT-05):
@@ -140,9 +140,9 @@ Pasangan halaman dan tindakan (RT-06):
 Butir RT-08:
 
 1. Permintaan tulis yang berhasil dijawab 303 ke halaman GET, dengan pesan kilat (`08` UI-28). Tujuan pengalihan disebut di kolom Hasil setiap route.
-2. Permintaan tulis yang gagal validasi dijawab 303 ke halaman formulirnya, dengan isian lama dan pesan galat di flashdata (`withInput()`). Tujuannya ditulis eksplisit, bukan `redirect()->back()`.
+2. Permintaan tulis yang gagal validasi dijawab 303 ke halaman formulirnya, dengan isian lama dan pesan galat di flashdata (`withInput()`). Tujuannya ditulis eksplisit, bukan `redirect()->back()`. Isian password tidak pernah ikut disimpan sebagai isian lama, karena `withInput()` menyalin seluruh isian ke file sesi. Formulir login, ganti password, dan formulir lain yang memuat password menyimpan isian lama tanpa isian itu.
 3. Perubahan bersamaan yang ditolak dialihkan ke formulir yang memuat data terbaru, dengan pesan "data sudah diubah" (`08` UI-56).
-4. Pengecualian: rahasia yang tampil sekali (RT-09), halaman periksa (RT-07), dan permintaan latar belakang (`10`).
+4. Pengecualian: rahasia yang tampil sekali (RT-09), halaman periksa (RT-07), permintaan latar belakang (`10`), dan berkas yang dibuat langsung dari POST, misalnya cetak kartu (R3).
 
 ### 3.5 Daftar, pencarian, fragmen, dan berkas
 
@@ -152,7 +152,7 @@ Butir RT-08:
 | RT-14 | **Pencarian siswa.** Lihat butir di bawah tabel. | DECISION (hasil langsung saat mengetik, Session 8); RECOMMENDATION (rincian) |
 | RT-15 | **Fragmen dan permintaan latar belakang.** Bagian halaman yang diperbarui tanpa memuat ulang halaman memakai alamat fragmen yang disebut di halamannya, dengan hak yang sama dengan halamannya (`07` ARS-50). Permintaan ini mengirim header permintaan latar belakang, sehingga filter menjawab dengan kode JSON, bukan pengalihan (`07` ARS-13). Bentuknya di `10`. | RECOMMENDATION |
 | RT-16 | **Berkas.** Foto, lampiran, template, dan file hasil disajikan lewat controller setelah hak diperiksa, dengan header di `07` ARS-52. Daftar alamatnya ada di §13. Nama file unduhan mengikuti `13` IE-07. | RECOMMENDATION |
-| RT-17 | **Permintaan panjang dan sesi.** Permintaan yang hanya membaca sesi menutup sesi segera setelah identitas dibaca (`07` ARS-48): fragmen, pencarian siswa, berkas, API kiosk, dan export (R2). Unggah import dan proses foto massal menyimpan hasilnya di `tmp/<token>/`, bukan di sesi, sehingga sesi ditutup sebelum file dibaca. Permintaan yang memproses antrean hitung ulang menulis pesan kilat lebih dulu, lalu menutup sesi sebelum menunggu kunci (`07` ARS-36 butir 3). | RECOMMENDATION |
+| RT-17 | **Permintaan panjang dan sesi.** Permintaan yang hanya membaca sesi menutup sesi segera setelah identitas dibaca (`07` ARS-48): fragmen, pencarian siswa, berkas, muat data dan foto kiosk, dan export (R2). Sinkron kiosk menutup sesi setelah transaksinya, dan logout kiosk mengakhiri sesi (`10` API-08). Unggah import dan proses foto massal menyimpan hasilnya di `tmp/<token>/`, bukan di sesi, sehingga sesi ditutup sebelum file dibaca. Permintaan yang memproses antrean hitung ulang menulis pesan kilat lebih dulu, lalu menutup sesi sebelum menunggu kunci (`07` ARS-36 butir 3). | RECOMMENDATION |
 
 Butir RT-14:
 
@@ -169,7 +169,7 @@ Butir RT-14:
 |---|---|---|
 | RT-18 | **Halaman awal dan tujuan setelah login.** Lihat butir di bawah tabel. | RECOMMENDATION |
 | RT-19 | **Halaman galat.** Lihat butir di bawah tabel. | RECOMMENDATION |
-| RT-20 | **Nama controller, method, dan route.** Satu controller untuk satu kumpulan data di namespace area, misalnya `Panel\Siswa`, dengan nama teknis (`Rombel`, bukan `Kelas`). Nama method mengikuti tabel di bawah. Nama route berbentuk `<area>.<controller>.<method>` dalam `snake_case`, misalnya `panel.presensi_manual.form_batalkan`. View membuat alamat dengan `url_to()`. Modul JavaScript membaca alamat dari atribut `data-*` di HTML, bukan menulisnya sendiri. | RECOMMENDATION |
+| RT-20 | **Nama controller, method, dan route.** Satu controller untuk satu kumpulan data di namespace area, misalnya `Panel\Siswa`, dengan nama teknis (`Rombel`, bukan `Kelas`). Nama method mengikuti tabel di bawah. Nama route berbentuk `<area>.<controller>.<method>` dalam `snake_case`, misalnya `panel.presensi_manual.form_batalkan`. View membuat alamat dengan `url_to()`. Modul JavaScript membaca alamat dari atribut `data-*` di HTML, bukan menulisnya sendiri. Alur dua langkah memakai controller tersendiri (`ImportSiswa`, `ImportPenempatan`, `FotoMassal`) dengan method `unggah`, `pratinjau`, dan `konfirmasi`, dan export R2 dikumpulkan di `Panel\Ekspor`, karena alur itu melintasi kumpulan data. | RECOMMENDATION |
 | RT-21 | **Menu dan tombol sesuai hak.** Menu dan tombol tindakan hanya tampil bila pengguna memiliki hak untuk halaman atau data itu (`04` §4.1 butir 1, `08` UI-31). Tombol per baris memeriksa cakupan dan batas mundur untuk siswa dan tanggal baris itu, dengan service yang sama dengan pemeriksaan di server. Jumlah di lencana menu dihitung setiap kali halaman dibuat, bukan dari cache. | RECOMMENDATION |
 | RT-22 | **Route R2 dan R3.** Route R2 dan R3 di dokumen ini adalah kerangka. Route itu baru didaftarkan saat rilisnya, dan dirinci ulang bersama fiturnya menjelang rilis (`04` §11). | RECOMMENDATION |
 
@@ -184,7 +184,7 @@ Butir RT-18:
 Butir RT-19:
 
 1. Halaman 403, 404, dan 500 memakai pesan `08` UI-56 dan tautan ke halaman awal area pengguna (`08` UI-38).
-2. 404 memakai `Config\Routing::$override404` yang menunjuk `Galat::tidakDitemukan`. Controller ini memilih layout dari prefiks alamat dan jenis akun yang login.
+2. 404 memakai `Config\Routing::$override404` dengan nama kelas lengkap, `App\Controllers\Galat::tidakDitemukan`, karena CI4 tidak menambahkan namespace bawaan untuk nilai ini. Controller ini berjalan tanpa filter, sehingga membaca sesi sendiri untuk mengetahui jenis akun, lalu memilih layout dari prefiks alamat dan jenis akun itu.
 3. 403 berasal dari filter `hak`, dan dari pengecualian `DiLuarHak` yang dilempar service bila cakupan, batas mundur, atau keadaan data tidak cocok. Handler pengecualian aplikasi (`Config\Exceptions::handler()`) mengubah pengecualian itu menjadi halaman 403.
 4. 500 di production memakai view `app/Views/errors/html/production.php` yang disesuaikan, tanpa layout area, karena galat dapat terjadi sebelum data akun termuat.
 5. Akun yang membuka area jenis akun lain dialihkan ke halaman awalnya oleh filter `area`, bukan dijawab 403 (FS-AKN-01 E5).
@@ -317,8 +317,8 @@ Menu bawah di ponsel dan menu atas di layar lebar (`08` UI-35):
 | HAL-AKN-05 | GET | `/panel/akun-siswa` | `Panel\AkunSiswa::index` | `HA-AKN-06` | Halaman (`?kelas=`) |
 | HAL-AKN-05 | GET | `/panel/akun-siswa/slip` | `Panel\AkunSiswa::formSlip` | `HA-AKN-05` | Halaman konfirmasi (`?kelas=&siswa[]=`) |
 | HAL-AKN-05 | POST | `/panel/akun-siswa/slip` | `Panel\AkunSiswa::slip` | `HA-AKN-05` | 200 halaman slip (RT-09) |
-| HAL-AKN-06 | GET | `/panel/siswa/{id}/reset-password` | `Panel\AkunSiswa::formReset` | `HA-AKN-04` | Halaman konfirmasi |
-| HAL-AKN-06 | POST | `/panel/siswa/{id}/reset-password` | `Panel\AkunSiswa::reset` | `HA-AKN-04` | 200 slip satu siswa (RT-09) |
+| HAL-AKN-06 | GET | `/panel/siswa/{id}/reset-password` | `Panel\AkunSiswa::formResetPassword` | `HA-AKN-04` | Halaman konfirmasi |
+| HAL-AKN-06 | POST | `/panel/siswa/{id}/reset-password` | `Panel\AkunSiswa::resetPassword` | `HA-AKN-04` | 200 slip satu siswa (RT-09) |
 | HAL-AKN-07 | GET | `/panel/sistem` | `Panel\Sistem::index` | `HA-AKN-07` | Halaman |
 | HAL-AKN-08 | GET | `/portal/akun` | `Portal\Akun::index` | `HA-MD-05` | Halaman |
 | HAL-AKN-08 | GET | `/portal/foto` | `Portal\Akun::foto` | `HA-MD-05` | Berkas foto sendiri |
@@ -346,6 +346,7 @@ Rincian halaman:
 |---|---|---|---|---|---|
 | HAL-MD-01 | GET | `/panel/sekolah` | `Panel\Sekolah::index` | `HA-MD-09` | Halaman formulir |
 | HAL-MD-01 | PATCH | `/panel/sekolah` | `Panel\Sekolah::perbarui` | `HA-MD-09` | 303 → `/panel/sekolah` |
+| HAL-MD-01 | GET | `/logo` | `Publik\Logo::index` | — | Berkas (`?v=`, §13) |
 | HAL-MD-02 | GET | `/panel/tahun-ajaran` | `Panel\TahunAjaran::index` | `HA-MD-01` | Halaman |
 | HAL-MD-02 | GET | `/panel/tahun-ajaran/tambah` | `Panel\TahunAjaran::tambah` | `HA-MD-01` | Halaman |
 | HAL-MD-02 | POST | `/panel/tahun-ajaran` | `Panel\TahunAjaran::simpan` | `HA-MD-01` | 303 → daftar |
@@ -389,20 +390,20 @@ Rincian halaman:
 | HAL-MD-13 | GET | `/panel/penempatan/import/{token}` | `Panel\ImportPenempatan::pratinjau` | `HA-MD-03` | Halaman (`?tab=dilewati` atau `?tab=gagal`) |
 | HAL-MD-13 | GET | `/panel/penempatan/import/{token}/gagal.csv` | `Panel\ImportPenempatan::unduhGagal` | `HA-MD-03` | Berkas CSV |
 | HAL-MD-13 | POST | `/panel/penempatan/import/{token}/simpan` | `Panel\ImportPenempatan::simpan` | `HA-MD-03` | 303 → `/panel/penempatan` |
-| HAL-MD-13 | DELETE | `/panel/penempatan/import/{token}` | `Panel\ImportPenempatan::batal` | `HA-MD-03` | 303 → `/panel/penempatan/import` |
+| HAL-MD-13 | DELETE | `/panel/penempatan/import/{token}` | `Panel\ImportPenempatan::hapus` | `HA-MD-03` | 303 → `/panel/penempatan/import` |
 | HAL-MD-14 | GET | `/panel/siswa/import` | `Panel\ImportSiswa::index` | `HA-MD-04` | Halaman |
 | HAL-MD-14 | GET | `/panel/siswa/import/template` | `Panel\ImportSiswa::unduhTemplate` | `HA-MD-04` | Berkas XLSX (`?tahun_ajaran=`) |
 | HAL-MD-14 | POST | `/panel/siswa/import` | `Panel\ImportSiswa::unggah` | `HA-MD-04` | 303 → pratinjau |
 | HAL-MD-14 | GET | `/panel/siswa/import/{token}` | `Panel\ImportSiswa::pratinjau` | `HA-MD-04` | Halaman (`?tab=gagal`) |
 | HAL-MD-14 | GET | `/panel/siswa/import/{token}/gagal.csv` | `Panel\ImportSiswa::unduhGagal` | `HA-MD-04` | Berkas CSV |
 | HAL-MD-14 | POST | `/panel/siswa/import/{token}/simpan` | `Panel\ImportSiswa::simpan` | `HA-MD-04` | 303 → `/panel/siswa` |
-| HAL-MD-14 | DELETE | `/panel/siswa/import/{token}` | `Panel\ImportSiswa::batal` | `HA-MD-04` | 303 → `/panel/siswa/import` |
+| HAL-MD-14 | DELETE | `/panel/siswa/import/{token}` | `Panel\ImportSiswa::hapus` | `HA-MD-04` | 303 → `/panel/siswa/import` |
 | HAL-MD-15 | GET | `/panel/siswa/foto-massal` | `Panel\FotoMassal::index` | `HA-MD-08` | Halaman |
 | HAL-MD-15 | POST | `/panel/siswa/foto-massal` | `Panel\FotoMassal::unggah` | `HA-MD-08` | 303 → `/panel/siswa/foto-massal/{token}` |
 | HAL-MD-15 | GET | `/panel/siswa/foto-massal/{token}` | `Panel\FotoMassal::lihat` | `HA-MD-08` | Halaman pratinjau, kemajuan, atau hasil |
 | HAL-MD-15 | POST | `/panel/siswa/foto-massal/{token}/proses` | `Panel\FotoMassal::proses` | `HA-MD-08` | JSON (`10` EP-MD-02), atau 303 → halaman token tanpa JavaScript |
 | HAL-MD-15 | GET | `/panel/siswa/foto-massal/{token}/hasil.csv` | `Panel\FotoMassal::unduhHasil` | `HA-MD-08` | Berkas CSV |
-| HAL-MD-15 | DELETE | `/panel/siswa/foto-massal/{token}` | `Panel\FotoMassal::batal` | `HA-MD-08` | 303 → `/panel/siswa/foto-massal` |
+| HAL-MD-15 | DELETE | `/panel/siswa/foto-massal/{token}` | `Panel\FotoMassal::hapus` | `HA-MD-08` | 303 → `/panel/siswa/foto-massal` |
 | HAL-MD-16 | GET | `/panel/atribut-siswa` | `Panel\AtributSiswa::index` | `HA-MD-11` | Halaman |
 | HAL-MD-16 | GET | `/panel/atribut-siswa/tambah` | `Panel\AtributSiswa::tambah` | `HA-MD-11` | Halaman |
 | HAL-MD-16 | POST | `/panel/atribut-siswa` | `Panel\AtributSiswa::simpan` | `HA-MD-11` | 303 → daftar |
@@ -419,9 +420,9 @@ Route dengan kata tetap, misalnya `/panel/siswa/import` dan `/panel/siswa/cari`,
 Rincian halaman:
 
 - **HAL-MD-01 — Identitas sekolah** (FS-MD-01). Formulir nama resmi, alamat, dan logo, dengan pratinjau logo (`08` UI-28) dan pilihan "hapus logo". Logo yang tidak valid ditolak, tetapi isian lain tetap tersimpan, dengan pesan (E2). Isian kota/kabupaten ditambahkan di R2 (`06` §6.1).
-- **HAL-MD-02 — Tahun ajaran** (FS-MD-02). Daftar dengan tanda tahun ajaran aktif. Formulir tambah dan ubah memuat tanggal tahun ajaran serta tanggal kedua semester. Perubahan tanggal semester yang mengeluarkan tanggal dari semester memakai konfirmasi bersyarat yang menyebut tanggal itu (RT-07, FS-MD-02 butir 3). Konfirmasi aktifkan menjelaskan akibat di FS-MD-02 butir 2. Tombol hapus hanya tampil untuk tahun ajaran tanpa kelas (E4).
-- **HAL-MD-03 — Kelas dan wali kelas** (FS-MD-03). Daftar per tahun ajaran (bawaan tahun ajaran aktif): nama, tingkat, wali kelas, jumlah siswa, serta tanda tanpa wali kelas atau wali kelas nonaktif. Wali kelas dipilih dari akun staf aktif. Isian tingkat terkunci setelah kelas memiliki penempatan (E4). Tombol hapus hanya tampil untuk kelas tanpa penempatan (E3).
-- **HAL-MD-04 — Data siswa** (FS-MD-04 butir 7). Saringan: `cari`, `kelas`, `status` (`aktif`, `akan_aktif`, `nonaktif`, atau `semua`; bawaan `aktif`), `tanpa_wa`, `tanpa_foto`, dan `tanpa_kelas` untuk siswa aktif tanpa penempatan hari ini (FS-PRS-05 E1). Kolom: foto kecil, nama, NISN, kelas, status, dan tanda. Wali kelas hanya melihat siswa kelasnya. Tombol tambah, import, dan foto massal hanya tampil bagi admin. Keadaan kosong mengikuti E6.
+- **HAL-MD-02 — Tahun ajaran** (FS-MD-02). Daftar dengan tanda tahun ajaran aktif. Formulir tambah dan ubah memuat tanggal tahun ajaran serta tanggal kedua semester. Perubahan tanggal semester yang mengeluarkan tanggal dari semester memakai konfirmasi bersyarat yang menyebut tanggal itu (RT-07, FS-MD-02 butir 3). Konfirmasi aktifkan menjelaskan akibat di FS-MD-02 butir 2. Tombol hapus hanya tampil untuk tahun ajaran tanpa rombel (E4).
+- **HAL-MD-03 — Kelas dan wali kelas** (FS-MD-03). Daftar per tahun ajaran (bawaan tahun ajaran aktif): nama, tingkat, wali kelas, jumlah siswa, serta tanda tanpa wali kelas atau wali kelas nonaktif. Wali kelas dipilih dari akun staf aktif. Isian tingkat terkunci setelah rombel memiliki penempatan (E4). Tombol hapus hanya tampil untuk rombel tanpa penempatan (E3).
+- **HAL-MD-04 — Data siswa** (FS-MD-04 butir 7). Saringan: `cari`, `kelas`, `status` (`aktif`, `akan_aktif`, `nonaktif`, atau `semua`; bawaan `aktif`), `tanpa_wa`, `tanpa_foto`, dan `tanpa_kelas` untuk siswa aktif tanpa penempatan hari ini (FS-PRS-05 E1). Kolom: foto kecil, nama, NISN, kelas, status, dan tanda. Wali kelas hanya melihat siswa rombelnya. Tombol tambah, import, dan foto massal hanya tampil bagi admin. Keadaan kosong mengikuti E6.
 - **HAL-MD-05 — Tambah siswa** (FS-MD-04 butir 1). Isian di FS-MD-04, termasuk kelas dan tanggal mulai (bawaan hari ini) serta atribut tambahan yang aktif.
 - **HAL-MD-06 — Profil siswa** (FS-MD-04 butir 6, `08` §4.6). Halaman memakai tab:
   - "Profil" (`/panel/siswa/{id}`): foto 150×200 px, data siswa, nomor WA dengan format `08` UI-54, atribut tambahan yang aktif, status siswa dan riwayat masa aktif, riwayat penempatan, serta status akun bagi pemegang `HA-AKN-06`;
@@ -446,7 +447,7 @@ Rincian halaman:
 | Halaman | Metode | Alamat | Controller::method | Hak | Hasil |
 |---|---|---|---|---|---|
 | HAL-KIO-01 | GET | `/kiosk` | `Kiosk\Halaman::index` | `HA-KIO-01` | Kerangka kiosk |
-| HAL-KIO-01 | GET, POST | `/kiosk/api/v1/…` | `Kiosk\Api\V1\…` | `HA-KIO-01` | JSON (`10` EP-KIO-01 s.d. EP-KIO-04) |
+| HAL-KIO-01 | GET, POST | `/kiosk/api/v1/…` | `Kiosk\Api\V1\…` | `HA-KIO-01` | JSON atau JPEG (`10` EP-KIO-01 s.d. EP-KIO-04) |
 | HAL-KIO-02 | GET | `/panel/stasiun` | `Panel\Stasiun::index` | `HA-KIO-02`, `HA-AKN-03` | Halaman |
 | HAL-KIO-02 | GET | `/panel/stasiun/fragmen` | `Panel\Stasiun::fragmen` | `HA-KIO-02`, `HA-AKN-03` | Fragmen (`10` EP-KIO-05) |
 | HAL-KIO-02 | GET | `/panel/stasiun/tambah` | `Panel\Stasiun::tambah` | `HA-AKN-03` | Halaman |
@@ -509,13 +510,13 @@ Berkas statis kiosk (HAL-KIO-01), disajikan Nginx dari `public/` dan disimpan Se
 | HAL-PRS-04 | PUT | `/panel/jadwal-hari-ini` | `Panel\JadwalHariIni::ganti` | `HA-PRS-07` | 303 → `/panel/jadwal-hari-ini` |
 | HAL-PRS-04 | DELETE | `/panel/jadwal-hari-ini` | `Panel\JadwalHariIni::hapus` | `HA-PRS-07` | 303 → `/panel/jadwal-hari-ini` |
 | HAL-PRS-05 | GET | `/panel/mode-darurat` | `Panel\ModeDarurat::index` | `HA-PRS-08` | Halaman |
-| HAL-PRS-05 | GET | `/panel/mode-darurat/aktifkan` | `Panel\ModeDarurat::formAktifkan` | `HA-PRS-08` | Halaman konfirmasi |
+| HAL-PRS-05 | GET | `/panel/mode-darurat/aktifkan` | `Panel\ModeDarurat::formAktifkan` | `HA-PRS-08` | Halaman formulir |
 | HAL-PRS-05 | POST | `/panel/mode-darurat/aktifkan` | `Panel\ModeDarurat::aktifkan` | `HA-PRS-08` | 303 → `/panel/mode-darurat` |
-| HAL-PRS-05 | GET | `/panel/mode-darurat/akhiri` | `Panel\ModeDarurat::formAkhiri` | `HA-PRS-08` | Halaman konfirmasi |
+| HAL-PRS-05 | GET | `/panel/mode-darurat/akhiri` | `Panel\ModeDarurat::formAkhiri` | `HA-PRS-08` | Halaman formulir |
 | HAL-PRS-05 | POST | `/panel/mode-darurat/akhiri` | `Panel\ModeDarurat::akhiri` | `HA-PRS-08` | 303 → `/panel/mode-darurat` |
 | HAL-PRS-06 | GET | `/panel/mode-darurat/kelas` | `Panel\PresensiDarurat::index` | `HA-PRS-03` | Halaman |
 | HAL-PRS-06 | GET | `/panel/mode-darurat/kelas/{id}` | `Panel\PresensiDarurat::lihat` | `HA-PRS-03` | Halaman |
-| HAL-PRS-06 | POST | `/panel/mode-darurat/kelas/{id}` | `Panel\PresensiDarurat::simpan` | `HA-PRS-03` | 303 → halaman kelas yang sama |
+| HAL-PRS-06 | POST | `/panel/mode-darurat/kelas/{id}/catat` | `Panel\PresensiDarurat::catat` | `HA-PRS-03` | 303 → halaman kelas yang sama |
 | HAL-PRS-07 | GET | `/panel/presensi-manual` | `Panel\PresensiManual::index` | `HA-PRS-03` | Halaman (`?cari=` atau `?siswa=&tanggal=&jenis=&kembali=`) |
 | HAL-PRS-07 | GET | `/panel/presensi-manual/pratinjau` | `Panel\PresensiManual::pratinjau` | `HA-PRS-03` | Fragmen (`10` EP-PRS-01) |
 | HAL-PRS-07 | POST | `/panel/presensi-manual` | `Panel\PresensiManual::simpan` | `HA-PRS-03` | 303 → `kembali` atau formulir siswa yang sama; `periksa=1`: 200 pratinjau |
@@ -536,7 +537,7 @@ Rincian halaman:
 - **HAL-PRS-02 — Jadwal khusus** (FS-PRS-02). Daftar berurutan tanggal, dengan saringan `tahun_ajaran` (bawaan aktif). Formulir berisi rentang tanggal, tujuh isian, dan keterangan. Konfirmasi hapus menyebut bahwa status tanggal yang dicakup dihitung ulang. Tanggal di luar semester tetap tersimpan, disertai pesan peringatan (E3).
 - **HAL-PRS-03 — Libur** (FS-PRS-03). Tampilan daftar atau kalender bulanan (`tampilan=kalender` dan `bulan=YYYY-MM`, `08` UI-27), dengan warna berbeda untuk libur semua siswa dan libur sebagian. Formulir berisi rentang tanggal, keterangan, dan cakupan: semua siswa, tingkat, atau kelas, dengan kotak centang untuk tingkat dan kelas.
 - **HAL-PRS-04 — Jadwal hari ini** (FS-PRS-04). Formulir tujuh isian terisi aturan yang berlaku, dengan aturan saat ini di sampingnya, dan isian alasan. Bila jadwal hari ini sudah diubah, halaman menampilkan alasan dan pengubahnya, serta formulir "Kembalikan jadwal semula" dengan alasan. Bila hari ini bukan hari sekolah, halaman hanya menampilkan keterangan (E2). Alamat ini tidak menerima tanggal, sehingga tanggal lain tidak dapat diubah (E3).
-- **HAL-PRS-05 — Mode darurat** (FS-PRS-08). Halaman menampilkan keadaan hari ini dan setiap periode mode darurat hari ini. Konfirmasi aktifkan menjelaskan akibatnya dan mengingatkan bahwa internet putus bukan alasan (BR-DRT-01). Konfirmasi akhiri menampilkan jumlah siswa yang masih belum hadir per kelas (FS-PRS-08 butir 4), dan membawa ID periode yang aktif sebagai penjaga (RT-12). Bila hari ini bukan hari sekolah, kedua tindakan tidak tersedia (E1).
+- **HAL-PRS-05 — Mode darurat** (FS-PRS-08). Halaman menampilkan keadaan hari ini dan setiap periode mode darurat hari ini. Konfirmasi aktifkan menjelaskan akibatnya dan mengingatkan bahwa internet putus bukan alasan (BR-DRT-01). Konfirmasi akhiri menampilkan jumlah siswa yang masih belum hadir per kelas (FS-PRS-08 butir 4), dan membawa ID periode yang aktif sebagai penjaga (RT-12). Formulir aktifkan dan akhiri memuat isian alasan yang wajib (FS-PRS-08 E3). Bila hari ini bukan hari sekolah, kedua tindakan tidak tersedia (E1).
 - **HAL-PRS-06 — Presensi per kelas saat darurat** (FS-PRS-09). Hanya tersedia selama mode darurat aktif. Di luar itu, halaman menampilkan bahwa fitur tidak tersedia (E1). Pilihan kelas berisi kelas dalam cakupan beserta jumlah siswa yang belum tercatat. Daftar centang berisi foto kecil, nama, label izin bila ada, kotak hadir, dan tanda terlambat, dengan "centang semua". Setelah simpan, pesan menyebut siswa yang tercatat dan siswa yang dilewati (FS-PRS-09 butir 5).
 - **HAL-PRS-07 — Presensi manual** (FS-PRS-06, `08` UI-34). Tanpa `siswa`, halaman menampilkan pencarian siswa (RT-14). Dengan `siswa`, halaman menampilkan:
   - foto 240×320 px, nama, NISN, kelas, status pada tanggal terpilih, presensi yang sudah ada beserta sumbernya, serta peringatan izin atau koreksi (FS-PRS-06 butir 3);
@@ -558,9 +559,11 @@ Rincian halaman:
 | HAL-IZN-03 | GET | `/portal/izin/{id}` | `Portal\Izin::lihat` | `HA-IZN-04` | Halaman |
 | HAL-IZN-03 | GET | `/portal/izin/{id}/batalkan` | `Portal\Izin::formBatalkan` | `HA-IZN-01` | Halaman konfirmasi |
 | HAL-IZN-03 | POST | `/portal/izin/{id}/batalkan` | `Portal\Izin::batalkan` | `HA-IZN-01` | 303 → detail |
+| HAL-IZN-03 | GET | `/portal/lampiran/{id}` | `Portal\Lampiran::lihat` | `HA-IZN-05` | Berkas (§13) |
 | HAL-IZN-04 | GET | `/panel/izin/menunggu` | `Panel\Izin::menunggu` | `HA-IZN-03` | Halaman |
 | HAL-IZN-05 | GET | `/panel/izin` | `Panel\Izin::index` | `HA-IZN-04` | Halaman |
 | HAL-IZN-06 | GET | `/panel/izin/{id}` | `Panel\Izin::lihat` | `HA-IZN-04` | Halaman |
+| HAL-IZN-06 | GET | `/panel/lampiran/{id}` | `Panel\Lampiran::lihat` | `HA-IZN-05` | Berkas (§13) |
 | HAL-IZN-06 | POST | `/panel/izin/{id}/verifikasi` | `Panel\Izin::verifikasi` | `HA-IZN-03` | 303 → `/panel/izin/menunggu` |
 | HAL-IZN-07 | GET | `/panel/izin/{id}/ubah-keputusan` | `Panel\Izin::formUbahKeputusan` | `HA-IZN-06` | Halaman formulir |
 | HAL-IZN-07 | POST | `/panel/izin/{id}/ubah-keputusan` | `Panel\Izin::ubahKeputusan` | `HA-IZN-06` | 303 → `kembali` atau detail |
@@ -601,7 +604,7 @@ Lampiran dibuka lewat `/panel/lampiran/{id}` dan `/portal/lampiran/{id}` (§13).
 | HAL-LAP-01 | GET | `/panel` | `Panel\Dashboard::index` | `HA-LAP-01` | Halaman |
 | HAL-LAP-01 | GET | `/panel/dashboard/fragmen` | `Panel\Dashboard::fragmen` | `HA-LAP-01` | Fragmen (`10` EP-LAP-01) |
 | HAL-LAP-02 | GET | `/panel/dashboard/siswa` | `Panel\Dashboard::siswa` | `HA-LAP-02` | Halaman (`?status=&kelas=`) |
-| HAL-LAP-03 | GET | `/panel/kelas-saya` | `Panel\PresensiRombel::kelasSaya` | `HA-LAP-02` | 303 → daftar presensi kelasnya, atau halaman pilihan kelas |
+| HAL-LAP-03 | GET | `/panel/kelas-saya` | `Panel\PresensiRombel::kelasSaya` | `HA-LAP-02` | 302 → daftar presensi kelasnya, atau halaman pilihan kelas; bukan wali kelas: 302 → `/panel/presensi/kelas` |
 | HAL-LAP-04 | GET | `/panel/presensi/kelas` | `Panel\PresensiRombel::index` | `HA-LAP-02`, `HA-LAP-03` | Halaman |
 | HAL-LAP-04 | GET | `/panel/presensi/kelas/{id}` | `Panel\PresensiRombel::lihat` | `HA-LAP-02`, `HA-LAP-03` | Halaman (`?tanggal=`) |
 | HAL-LAP-05 | GET | `/panel/laporan/rekap-kelas` | `Panel\RekapRombel::index` | `HA-LAP-03` | Halaman |
@@ -628,14 +631,14 @@ Route R2 (kerangka, RT-22). Hak export mengikuti `13` §4 dan IE-05.
 Rincian halaman:
 
 - **HAL-LAP-01 — Dashboard hari ini** (FS-LAP-01, `08` UI-32). Kepala, peringatan sesuai hak, ubin ringkasan, dan tabel per kelas, dengan isi FS-LAP-01.
-  - Nama kelas menautkan daftar presensi kelas hari ini bila pengguna memegang `HA-LAP-02` untuk kelas itu.
+  - Nama kelas menautkan daftar presensi kelas hari ini bila pengguna memegang `HA-LAP-02` untuk rombel itu.
   - Angka belum hadir, Alpa, dan penanda menautkan HAL-LAP-02 bagi pemegang `HA-LAP-02` dengan cakupan Semua.
   - Peringatan menautkan status stasiun, scan bertanda, pengajuan menunggu, halaman penyiapan bagi admin (UF-01), dan pemeriksaan sistem bagi admin bila cron tidak berjalan lebih dari 5 menit atau ada antrean gagal (`07` ARS-56, ARS-36).
   - Bagian yang berubah diperbarui setiap 30 detik lewat fragmen (`07` ARS-50).
 - **HAL-LAP-02 — Siswa per status** (FS-LAP-01 butir 4). Hanya untuk pemegang `HA-LAP-02` dengan cakupan Semua, dan hanya untuk hari ini. Saringan `status` bernilai `belum_hadir`, `alpa`, `hadir`, `terlambat`, `izin`, `sakit`, `dispensasi`, atau `penanda`, dengan bawaan `belum_hadir` sebelum sesi masuk ditutup dan `alpa` setelahnya, serta saringan `kelas`. Setiap baris memuat kelas, foto kecil, nama, NISN, status, presensi masuk, penanda, dan tombol tindakan sesuai hak.
-- **HAL-LAP-03 — Kelas saya** (DECISION, Session 8). Menu hanya tampil bagi wali kelas di tahun ajaran aktif. Wali kelas satu kelas dialihkan ke daftar presensi kelasnya hari ini. Wali kelas lebih dari satu kelas melihat halaman pilihan yang hanya berisi kelas yang diampunya.
+- **HAL-LAP-03 — Kelas saya** (DECISION, Session 8). Menu hanya tampil bagi wali kelas di tahun ajaran aktif. Wali kelas satu rombel dialihkan ke daftar presensi rombelnya hari ini. Wali kelas lebih dari satu rombel melihat halaman pilihan yang hanya berisi rombel yang diampunya. Pemegang `HA-LAP-02` yang bukan wali kelas dialihkan ke `/panel/presensi/kelas`.
 - **HAL-LAP-04 — Daftar presensi kelas** (FS-LAP-02, `08` UI-33).
-  - Halaman indeks menampilkan kelas tahun ajaran aktif dalam cakupan, dikelompokkan per tingkat.
+  - Halaman indeks menampilkan rombel tahun ajaran aktif dalam cakupan, dikelompokkan per tingkat.
   - Halaman kelas memakai `tanggal` (bawaan hari ini, tidak boleh tanggal ke depan) dengan pemilih tanggal (`08` UI-28). Isi baris dan ringkasan mengikuti FS-LAP-02.
   - Tombol per baris menuju presensi manual, pembatalannya, koreksi, hapus koreksi, input izin, ubah keputusan izin, dan log, sesuai hak dan batas mundur, dengan parameter `kembali` ke halaman ini (RT-10).
   - Saat mode darurat aktif, daftar hari ini menautkan presensi per kelas (FS-LAP-02 butir 4).
@@ -703,7 +706,7 @@ Berkas disajikan lewat controller dengan aturan `07` ARS-52 (RT-16). Berkas dari
 | `GET /panel/penempatan/import/daftar` | Daftar siswa aktif untuk import penempatan (`13` IM-08) | `HA-MD-03` | Diunduh | HAL-MD-13 |
 | `GET /panel/penempatan/import/{token}/gagal.csv` | Baris gagal import penempatan | `HA-MD-03` | Diunduh | HAL-MD-13 |
 | `GET /panel/siswa/foto-massal/{token}/hasil.csv` | Ringkasan foto massal | `HA-MD-08` | Diunduh | HAL-MD-15 |
-| Alamat `…/ekspor` (R2) | File laporan (`13` §4) | Hak laporan + `HA-LAP-05` | Diunduh | §10 |
+| Alamat `…/ekspor` (R2) | File laporan (`13` §4) | Hak laporan + `HA-LAP-05`, kecuali export data siswa (`HA-MD-03`, `13` LP-06) | Diunduh | §10 |
 
 Aturan tambahan:
 
@@ -729,7 +732,7 @@ Label ini melengkapi `08` §9.2 untuk kode yang hanya tampil di halaman admin da
 | Status siswa (`06` §6.6 aturan 5) | Aktif · Akan aktif · Nonaktif. Periode yang dibatalkan tampil "Dibatalkan" di riwayat masa aktif. |
 | Alasan scan bertanda (saringan `alasan`) | `jam_maju` Jam laptop di depan jam server · `selisih_berubah` Selisih jam berubah · `luar_aturan` Di luar jendela scan atau bukan hari sekolah · `sinkron_terlambat` Terlambat tersinkron. Kode ini sesuai kolom `tanda_*` di `06` §8.2. |
 | Alasan stasiun disorot | Masih ada scan belum tersinkron · Tanpa kontak lebih dari 10 menit · Selisih jam lebih dari 2 menit · Ada scan galat · Penyimpanan permanen belum aktif |
-| `status_stasiun.penyimpanan_permanen` | `1` Aktif · `0` Belum aktif · kosong Belum dilaporkan |
+| `status_stasiun.penyimpanan_permanen` | `1` Aktif · `0` Belum aktif · kosong Tidak diketahui |
 | Tahap sesi di kepala dashboard (FS-LAP-01) | Scan masuk belum dibuka · Sesi masuk berjalan · Sesi masuk ditutup · Sesi pulang berjalan · Sesi pulang ditutup · Bukan hari sekolah |
 | Antrean hitung ulang (HAL-AKN-07) | Menunggu · Gagal · Selesai |
 | `wa_template.jenis_kejadian` (R2) | `scan_masuk` Scan masuk · `scan_pulang` Scan pulang · `terlambat` Terlambat · `tidak_hadir` Tidak hadir · `tidak_scan_pulang` Tidak scan pulang · `izin` Izin · `pulang_awal` Pulang lebih awal |
@@ -835,7 +838,7 @@ Label `log_aktivitas.jenis` ditetapkan bersama halamannya di Session 9.
 | `HA-LAP-02` | HAL-LAP-02 s.d. HAL-LAP-04 |
 | `HA-LAP-03` | HAL-LAP-04, HAL-LAP-05 |
 | `HA-LAP-04` | HAL-LAP-06, HAL-LAP-07 |
-| `HA-LAP-05` (R2) | Route `…/ekspor`, HAL-LAP-08, HAL-LAP-09 |
+| `HA-LAP-05` (R2) | Route `…/ekspor` selain export data siswa, HAL-LAP-08, HAL-LAP-09 |
 | `HA-LAP-06` (R2) | HAL-LAP-10 |
 | `HA-WA-01` s.d. `HA-WA-03` (R2) | HAL-WA-01 s.d. HAL-WA-03 |
 | `HA-INF-01` (R3) | HAL-INF-01 |
@@ -861,17 +864,17 @@ Perubahan karena keputusan Session 8, termasuk keputusan yang ditulis di `10`:
 
 | Dokumen | Versi | Perubahan |
 |---|---|---|
-| `00-project-overview.md` | 0.8 | Kepala dokumen memuat `09` dan `10`. R-06 dan R-10 diperbarui. Kondisi repository (§7.3), peta dokumen, dan progres sesi diperbarui. Glosarium ditambah: fragmen. |
+| `00-project-overview.md` | 0.8 | Kepala dokumen memuat `09` dan `10`. R-06 dan R-10 diperbarui. Kondisi repository (§7.3), peta dokumen, dan progres sesi diperbarui. Pengantar glosarium merujuk `09`, dan glosarium ditambah: fragmen dan scan galat. Entri status stasiun diperbarui. |
 | `01-product-requirements.md` | 0.8 | FR-KIO-12 memuat versi kode kiosk, penyimpanan permanen, dan scan galat. Kepala dokumen diperbarui. |
-| `02-user-roles-and-permissions.md` | 0.6 | Keputusan Session 8 ditambahkan di §1. `HA-AKN-07` ditambahkan di §6.1. §8 memuat alamat area dan halaman awal, menu akun di portal (`08` UI-35), dan menu "Kelas saya". |
+| `02-user-roles-and-permissions.md` | 0.6 | Keputusan Session 8 ditambahkan di §1. `HA-AKN-07` ditambahkan di §6.1, dan `HA-KIO-01` memuat logout kiosk. §8 memuat alamat area dan halaman awal, menu akun di portal (`08` UI-35), dan menu "Kelas saya". |
 | `03-user-flow.md` | 0.7 | §1 merujuk `09` dan `10`. UF-06 (status stasiun), UF-12 (pencarian siswa), dan UF-15 ("Kelas saya") diperbarui. |
 | `04-feature-specification.md` | 0.5 | §2.7 (keputusan Session 8) ditambahkan. §1 dan pengantar §7 merujuk `09` dan `10`. FS-KIO-03 (isi laporan kiosk dan scan galat), FS-KIO-04 (akun pencatat dan isi respons), FS-KIO-05 (kolom dan sorotan baru), FS-PRS-06 dan FS-IZN-02 (pencarian siswa), FS-LAP-01 ("Kelas saya" dan peringatan pemeriksaan sistem), §12.3, §13, dan §14 diperbarui. |
-| `06-database-design.md` | 0.4 | §2.6 (keputusan Session 8) ditambahkan. Kolom `scan_galat`, `versi_kiosk`, dan `penyimpanan_permanen` ditambahkan di `status_stasiun` (§8.1). Keterangan `scan.stasiun_id` (§8.2), §13, §18, dan §19 diperbarui. |
-| `07-system-architecture.md` | 0.3 | §2.5 (keputusan Session 8) ditambahkan. ARS-04 (kompresi JSON), ARS-12, ARS-13, ARS-20, ARS-21, ARS-29 s.d. ARS-31, ARS-33, ARS-57, §1, §17.3, §18, dan §19 diperbarui. |
-| `08-ui-ux-design-system.md` | 0.2 | §2.4 (keputusan Session 8) ditambahkan. UI-28 (komponen pencarian siswa), UI-31 (menu final di `09` §4), ikon "Kelas saya" di §4.5, tanda stasiun disorot di §4.2, §9.2, §14, §15, dan §16.2 diperbarui. Contoh menu di `08-contoh-tampilan.html` memuat "Kelas saya". |
+| `05-business-rules.md` | 0.6 | Pengantar merujuk route di `09`. |
+| `06-database-design.md` | 0.4 | §2.6 (keputusan Session 8) ditambahkan. Kolom `scan_galat`, `versi_kiosk`, dan `penyimpanan_permanen` ditambahkan di `status_stasiun` (§8.1). Keterangan `kontak_terakhir_at` dan `data_dimuat_at` (§8.1), keterangan `scan.stasiun_id` (§8.2), kepala dokumen, §13, §18, dan §19 diperbarui. |
+| `07-system-architecture.md` | 0.3 | §2.5 (keputusan Session 8) ditambahkan. ARS-04 (baris `gzip_types`), ARS-12, ARS-13 (filter `csrf` aplikasi dan urutan filter), ARS-20, ARS-21, ARS-29 s.d. ARS-31, ARS-33 (lama hasil tampil dan unduhan foto bersamaan), ARS-51 dan ARS-55 (file sementara konfirmasi bersyarat dan format token), ARS-57, §1, §17.3, §18, dan §19 diperbarui. |
+| `08-ui-ux-design-system.md` | 0.2 | §2.4 (keputusan Session 8) ditambahkan. UI-28 (komponen pencarian siswa), UI-31 (menu final di `09` §4), ikon "Kelas saya" di §4.5, tanda stasiun disorot di §4.2, UI-29 (menu lipat tanpa JavaScript), UI-38 (halaman 500), UI-44 (pita versi kiosk), §9.2 (termasuk kolom `libur.cakupan`), §14, §15, dan §16.2 diperbarui. Contoh menu di `08-contoh-tampilan.html` memuat "Kelas saya". |
 | `13-reporting-import-export.md` | 0.4 | Kepala dokumen, pengantar, dan IM-01 merujuk halaman, alamat unduhan, dan alamat export di `09`. §9 diperbarui. |
 
-`05` tidak berubah.
 
 ## 17. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
@@ -884,6 +887,7 @@ Session 8 tidak menjawab dan tidak menambah OQ. Daftar lengkapnya ada di `00` §
 | Pembatasan percobaan login, masa sesi staf dan siswa, serta PIN petugas untuk logout kiosk | HAL-AKN-01, `10` EP-KIO-04 | Session 9 |
 | Halaman log aktivitas akun dan label `log_aktivitas.jenis` | §14 | Session 9 |
 | Pencatatan pembukaan lampiran dan cache browser foto kecil | §13, OQ-17 | Session 9 |
+| Uji tampilan PDF dengan `Content-Security-Policy: sandbox` di Chrome dan Edge, karena penampil PDF bawaan dapat gagal memuat dalam sandbox | §13, `07` ARS-52 | Session 9 |
 | Rincian halaman R2: export, flyer, dan notifikasi WA | §10, §11 | Menjelang R2 (OQ-10) |
 | Rincian halaman R3: jadwal pelajaran, pengumuman, halaman publik, dan kartu | §12 | Menjelang R3 (OQ-13) |
 | Urutan pembuatan halaman dalam fase implementasi | — | Session 10–11 |

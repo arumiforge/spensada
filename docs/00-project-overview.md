@@ -274,7 +274,8 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Daftar presensi rombel | Tampilan status setiap siswa satu rombel pada satu tanggal, beserta sumber datanya dan tindakan sesuai hak (`04` FS-LAP-02). |
 | Kelompok dispensasi | Sekumpulan data dispensasi yang dibuat dari satu input massal. Keputusannya dapat diubah per siswa atau sekaligus satu kelompok (`05` BR-IZN-05, BR-IZN-09). |
 | Scan bertanda | Scan yang ditandai server saat sinkron untuk ditinjau, misalnya karena jam laptop tidak wajar (`05` BR-SCN-08). |
-| Status stasiun | Keadaan setiap stasiun scan yang tampil di panel: waktu kontak dan sinkron terakhir, serta jumlah scan belum tersinkron (`04` FS-KIO-05). |
+| Status stasiun | Keadaan setiap stasiun scan yang tampil di panel: waktu kontak dan sinkron terakhir, jumlah scan belum tersinkron dan scan galat, versi kode kiosk, serta keadaan penyimpanan permanen (`04` FS-KIO-05, `09` HAL-KIO-02). |
+| Scan galat | Scan yang ditolak server karena datanya rusak. Scan itu tetap tersimpan di laptop dengan tanda galat, dan dihitung terpisah dari scan belum tersinkron (`04` FS-KIO-03 E4, `10` EP-KIO-03). |
 | Data kiosk | Data yang dimuat kiosk dari server: siswa aktif beserta fotonya, aturan jam dan libur untuk hari ini dan 14 hari ke depan, identitas sekolah, dan parameter kiosk. Tidak memuat nomor WA, izin, atau riwayat (`07` ARS-23). |
 | Selisih jam | Selisih jam laptop stasiun terhadap jam server, diukur setiap kali kiosk menghubungi server. Jam scan adalah jam laptop ditambah selisih ini (`05` BR-SCN-07, `07` ARS-27). |
 | Pengajuan izin/sakit | Permohonan izin atau sakit dari siswa lewat portal, yang menunggu verifikasi staf. Siswa tidak dapat mengajukan dispensasi. |
@@ -316,7 +317,7 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | `02-user-roles-and-permissions.md` | Role dan permission | Session 3–8 | Draft 0.6 |
 | `03-user-flow.md` | Alur pengguna | Session 3–8 | Draft 0.7 |
 | `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b–8 | Draft 0.5 |
-| `05-business-rules.md` | Aturan bisnis | Session 4–7 | Draft 0.5 |
+| `05-business-rules.md` | Aturan bisnis | Session 4–8 | Draft 0.6 |
 | `06-database-design.md` | Desain database | Session 5–8 | Draft 0.4 |
 | `07-system-architecture.md` | Arsitektur sistem | Session 6–8 | Draft 0.3 |
 | `08-ui-ux-design-system.md` | Sistem desain UI/UX, dengan contoh visual `08-contoh-tampilan.html` | Session 7–8 | Draft 0.2 |
@@ -372,4 +373,4 @@ Aturan ini berlaku untuk AI atau developer yang mengerjakan kode di repository i
 | 0.5 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). `06` dan `13` dibuat. OQ-11 dan OQ-12 terjawab. R-12, R-13, R-14, R-17, dan R-20 diperbarui. Glosarium ditambah: penempatan, import penempatan, masa aktif, NIS, atribut tambahan siswa, dan salinan status harian. Isi R1, peta dokumen, dan progres sesi diperbarui. |
 | 0.6 | 2026-10-04 | Keputusan Session 6 (`07` §2). `07` dibuat. OQ-09 terjawab. R-01, R-04 s.d. R-06, R-08, R-11, R-13, R-15, R-18, dan R-19 diperbarui. Stack (§7.1), environment (§7.2), dan kondisi repository (§7.3) diperbarui. Glosarium ditambah: data kiosk, selisih jam, antrean hitung ulang, dan sesi login. Peta dokumen dan progres sesi diperbarui. |
 | 0.7 | 2026-10-04 | Keputusan Session 7 (`08` §2). `08` dan contoh visualnya dibuat. OQ-13 terjawab sebagian. R-19 diperbarui. Glosarium "Rombel" dan "Tingkat" memuat label layar. Kondisi repository, peta dokumen, dan progres sesi diperbarui. |
-| 0.8 | 2026-10-05 | Keputusan Session 8 (`09` §2). `09` dan `10` dibuat. R-06 dan R-10 diperbarui. Pengantar glosarium merujuk route di `09`, dan glosarium ditambah: fragmen. Kondisi repository, peta dokumen, dan progres sesi diperbarui. Tidak ada OQ yang terjawab atau ditambahkan. |
+| 0.8 | 2026-10-05 | Keputusan Session 8 (`09` §2). `09` dan `10` dibuat. R-06 dan R-10 diperbarui. Pengantar glosarium merujuk route di `09`, dan glosarium ditambah: fragmen dan scan galat. Entri status stasiun diperbarui. Kondisi repository, peta dokumen, dan progres sesi diperbarui. Tidak ada OQ yang terjawab atau ditambahkan. |

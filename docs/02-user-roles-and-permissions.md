@@ -187,7 +187,7 @@ Cara membaca:
 
 | ID | Hak akses | Admin | Staf | Wali kelas | Guru piket | Guru BK | Pimpinan | Siswa | Stasiun | Rujukan | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| HA-KIO-01 | Buka kiosk, muat data siswa aktif, catat scan, sinkron otomatis dan manual | — | — | — | — | — | — | — | Ya | FR-KIO-01 s.d. FR-KIO-10 | DECISION (akun stasiun; admin tidak membuka kiosk, Session 4) |
+| HA-KIO-01 | Buka kiosk, muat data siswa aktif, catat scan, sinkron otomatis dan manual, serta logout kiosk (`10` EP-KIO-04) | — | — | — | — | — | — | — | Ya | FR-KIO-01 s.d. FR-KIO-10 | DECISION (akun stasiun; admin tidak membuka kiosk, Session 4) |
 | HA-KIO-02 | Lihat status stasiun: waktu sinkron terakhir dan jumlah scan belum tersinkron | Ya | — | — | Ya | — | — | — | — | FR-KIO-12 | DECISION (Session 4) |
 | HA-KIO-03 | Tinjau scan yang ditandai saat sinkron, misalnya karena jam tidak wajar: terima atau tolak | Semua | — | — | Hari ini | — | — | — | — | FR-KIO-11, `05` BR-SCN-08 | RECOMMENDATION |
 
@@ -363,4 +363,4 @@ OQ-07 dan OQ-15 terjawab di Session 4: `HA-PRS-05` menjadi DEPRECATED, dan batas
 | 0.3 | 2026-10-03 | Keputusan Session 4b (`04` §2). Tabel keputusan Session 4b ditambahkan di §1. `HA-PRS-03` (pembatalan presensi manual), `HA-PRS-04` (hapus koreksi), `HA-IZN-06` (per kelompok), `HA-LAP-02` (penanda), `HA-LAP-03` (daftar presensi rombel per tanggal), dan `HA-LAP-04` (isi riwayat di portal) diperjelas. |
 | 0.4 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). Tabel keputusan Session 5 ditambahkan di §1. `HA-MD-11` (kelola atribut tambahan siswa) ditambahkan. `HA-MD-05` dan `HA-MD-10` diperjelas. `HA-LAP-06` ditinjau bersama OQ-11 tanpa perubahan. |
 | 0.5 | 2026-10-04 | Keputusan Session 6 (`07`). Tabel keputusan Session 6 ditambahkan di §1. Detail login akun stasiun (§2, §7.3) dan pembuatan admin pertama (§3) diperbarui. |
-| 0.6 | 2026-10-05 | Keputusan Session 8 (`09`, `10`). Tabel keputusan Session 8 ditambahkan di §1. `HA-AKN-07` (lihat pemeriksaan sistem) ditambahkan di §6.1. §8 memuat alamat area, halaman awal, menu akun di portal, dan menu "Kelas saya". |
+| 0.6 | 2026-10-05 | Keputusan Session 8 (`09`, `10`). Tabel keputusan Session 8 ditambahkan di §1. `HA-AKN-07` (lihat pemeriksaan sistem) ditambahkan di §6.1, dan `HA-KIO-01` memuat logout kiosk. §8 memuat alamat area, halaman awal, menu akun di portal, dan menu "Kelas saya". |
