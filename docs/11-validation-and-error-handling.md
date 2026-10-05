@@ -202,7 +202,7 @@ Teks layar kiosk mengikuti `08` §7.3 dan §7.4. Tambahan Session 9:
 | FS-KIO-01 butir 8 | PIN belum diatur | "PIN petugas belum diatur. Hubungi admin." (`12` SEC-21) |
 | FS-KIO-01 butir 8 | Hapus data lokal saat ada scan belum tersinkron | "Masih ada [n] scan belum tersinkron. Sinkronkan dulu sebelum menghapus data." |
 | FS-KIO-01 E2 | Akun stasiun login di laptop lain | "Akun stasiun ini sudah login di laptop lain. Scan yang belum tersinkron tetap tersimpan. Login lagi untuk memakai laptop ini." |
-| FS-KIO-04 | Pembatasan laju | Kiosk menunggu tanpa pesan. Bila berlangsung lebih dari 5 menit, pita "Server membatasi kiriman. Scan tetap tersimpan." tampil. |
+| FS-KIO-03 E6 | Pembatasan laju | Kiosk menunggu tanpa pesan. Bila berlangsung lebih dari 5 menit, pita "Server membatasi kiriman. Scan tetap tersimpan." tampil. |
 | FS-KIO-06 E4 | Menolak tanpa catatan | "Tulis catatan alasan penolakan." |
 
 Halaman PIN petugas di panel (`09` HAL-KIO-02):
@@ -416,7 +416,7 @@ Tingkat log (GAL-18):
 | `04` §4.3 (alasan wajib) | VAL-03, VAL-16 |
 | `04` §4.6 (perubahan bersamaan) | GAL-05, GAL-09 |
 | `04` §4.9 (file unggahan) | VAL-28, GAL-11 |
-| FS-AKN-01 s.d. FS-AKN-05 | VAL-20 s.d. VAL-21, §5.1 |
+| FS-AKN-01 s.d. FS-AKN-05 | VAL-20, VAL-21, §5.1 |
 | FS-KIO-01, FS-KIO-04, FS-KIO-06 | VAL-14, VAL-22, §5.3, GAL-15, GAL-16 |
 | FS-MD-01 s.d. FS-MD-09 | VAL-15, VAL-18, VAL-19, VAL-23, VAL-24, VAL-27, VAL-28, §5.2, §5.7, §5.8 |
 | FS-PRS-01 s.d. FS-PRS-10 | VAL-16, VAL-17, VAL-25, VAL-26, §5.4 |

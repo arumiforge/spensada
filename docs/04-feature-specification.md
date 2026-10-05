@@ -394,7 +394,7 @@ Tindakan massal, tindakan yang membuat password baru, dan tindakan yang mengubah
 - Satu kolom identitas berlabel "NISN atau username".
 - Halaman login menampilkan nama produk dan identitas sekolah (FS-MD-01).
 - Teks bantuan: siswa yang lupa atau belum punya password menghubungi wali kelas, dan staf menghubungi admin.
-- Teks bantuan juga meminta pengguna komputer bersama untuk logout, karena sesi tetap berjalan setelah browser ditutup (`12` SEC-12 butir 3, `08` UI-56).
+- Teks bantuan juga meminta pengguna komputer bersama untuk logout, karena sesi tetap berjalan setelah browser ditutup (`12` SEC-12 butir 3, `08` UI-38).
 
 **Acceptance criteria**
 
@@ -469,7 +469,7 @@ Given akun siswa dengan NISN 0012345678 di rombel 7A gagal login 20 kali sejak S
 When siswa login dengan password yang benar pada Selasa, 13 Oktober 2026 pukul 07.30
 Then login ditolak dengan pesan "Login akun ini dikunci karena terlalu banyak percobaan. Hubungi wali kelas atau admin."
   And log aktivitas memuat entri login_dikunci untuk akun itu
-When wali kelas 7A menekan "Buka kunci login" di detail akun siswa itu
+When wali kelas 7A menekan "Buka kunci login" di profil siswa itu
 Then tampil pesan "Kunci login [nama] sudah dibuka."
   And log aktivitas memuat entri kunci_login_dibuka dengan wali kelas 7A sebagai pelaku
   And siswa dapat login dengan password yang benar
@@ -602,7 +602,7 @@ Rujukan: FR-AKN-04, `12` SEC-03, SEC-04, `11` VAL-21.
 Given siswa dengan NISN 0012345678 sedang mengganti password
 When siswa memasukkan password baru "indonesia123" atau "bismillah"
 Then penggantian ditolak dengan pesan "Password ini terlalu umum dan mudah ditebak. Pilih password lain."
-When siswa memasukkan password baru "kucing0012345678"
+When siswa memasukkan password baru "zebra0012345678"
 Then penggantian ditolak dengan pesan "Password tidak boleh memuat NISN atau username."
 When siswa memasukkan password baru "sepeda biru di teras"
 Then password baru tersimpan
@@ -914,7 +914,7 @@ C. Reset password satu siswa:
 
 D. Buka kunci login:
 
-1. Selama login akun siswa dikunci karena terlalu banyak percobaan gagal (FS-AKN-01 butir 7), admin, atau wali kelas untuk rombelnya, dapat membuka kuncinya dengan tombol "Buka kunci login" di detail akun siswa (`HA-AKN-04`, DECISION, Session 9, `12` SEC-11).
+1. Selama login akun siswa dikunci karena terlalu banyak percobaan gagal (FS-AKN-01 butir 7), admin, atau wali kelas untuk rombelnya, dapat membuka kuncinya dengan tombol "Buka kunci login" di profil siswa (`09` HAL-AKN-06, `HA-AKN-04`, DECISION, Session 9, `12` SEC-11).
 2. Pembukaan kunci tidak mengubah password. Siswa yang juga lupa password direset seperti di C.
 
 **Keadaan kosong dan error**
@@ -4784,7 +4784,7 @@ Then pilihan perubahan per kelompok tidak tersedia, dan wali kelas hanya dapat m
 2. Siswa melihat datanya sendiri di portal, tanpa nama staf (§2.3).
 3. Lampiran hanya diberikan lewat permintaan yang sudah diperiksa haknya, dan tidak memiliki alamat publik (§4.9).
 4. Lampiran gambar dan PDF tampil di browser. Halaman detail izin menampilkan PDF di bingkai halaman, dengan tautan "Buka" dan "Unduh" di bawahnya untuk browser ponsel yang tidak menampilkan PDF di bingkai. Tautan "Unduh" memakai `?unduh=1`, sehingga file diunduh dengan nama aslinya yang sudah dibersihkan (`12` SEC-52).
-5. Setiap pembukaan dan unduhan lampiran oleh akun staf dicatat di log aktivitas: pelaku, waktu, alamat IP, lampiran, data izin atau kelompoknya, siswa, dan apakah lampiran diunduh. Pembukaan ulang lampiran yang sama oleh staf yang sama dalam 10 menit tidak dicatat lagi. Siswa yang membuka lampirannya sendiri tidak dicatat (DECISION, OQ-17, Session 9, `12` SEC-60).
+5. Setiap pembukaan dan unduhan lampiran oleh akun staf dicatat di log aktivitas: pelaku, waktu, alamat IP, lampiran, data izin atau kelompoknya, siswa, dan apakah lampiran diunduh. Pembukaan ulang lampiran yang sama oleh staf yang sama dalam 10 menit tidak dicatat lagi, sedangkan unduhan selalu dicatat. Siswa yang membuka lampirannya sendiri tidak dicatat (DECISION, OQ-17, Session 9, `12` SEC-60).
 6. Admin melihat catatan akses lampiran di halaman log aktivitas, dengan saringan cepat "Akses lampiran" (`HA-AKN-08`, `09` HAL-AKN-09, `12` SEC-62).
 
 **Keadaan kosong dan error**

@@ -328,7 +328,7 @@ Bila password masih wajib diganti, halaman ganti password (`/akun/password`) tam
 - Petugas adalah guru piket dan satpam/staf TU (DECISION).
 - Kiosk berjalan dengan akun stasiun, bukan akun pribadi petugas. Karena itu kiosk tidak mencatat siapa petugas yang berjaga (RECOMMENDATION).
 - Satpam tidak memerlukan akun untuk tugas ini.
-- Tindakan berisiko di kiosk, yaitu logout akun stasiun dan menghapus data lokal, dilindungi PIN petugas. Satu PIN 6 digit berlaku untuk semua stasiun, diatur admin, dan dibagikan ke petugas. Selama PIN belum diatur, tindakan itu cukup memakai konfirmasi (DECISION, Session 9, `12` SEC-21, SEC-22).
+- Tindakan berisiko di kiosk, yaitu logout akun stasiun dan menghapus data lokal, dilindungi PIN petugas. Satu PIN 6 digit berlaku untuk semua stasiun, diatur admin, dan dibagikan ke petugas. Selama PIN belum diatur, tindakan itu cukup memakai konfirmasi. (DECISION, Session 9, `12` SEC-21, SEC-22; RECOMMENDATION untuk keadaan PIN belum diatur)
 
 Pembagian tugas (RECOMMENDATION):
 

@@ -744,7 +744,7 @@ Aturan tambahan:
 1. Lampiran kelompok dapat dibuka staf yang cakupannya mencakup paling sedikit satu siswa kelompok itu, dan siswa yang termasuk kelompok itu (`06` §10.4 aturan 2).
 2. Template, file daftar, dan file hasil dibuat saat diunduh, dan tidak disimpan di `writable/uploads/`.
 3. Halaman yang menampilkan siswa tanpa foto memakai gambar pengganti, sehingga tidak meminta berkas foto (`08` UI-24). Permintaan foto siswa yang tidak memiliki foto dijawab 404.
-4. Setiap pembukaan dan unduhan lampiran oleh akun staf dicatat di log aktivitas dengan jenis `lampiran_dibuka`, kecuali pembukaan ulang lampiran yang sama oleh staf yang sama dalam 10 menit. Siswa yang membuka lampirannya sendiri tidak dicatat (OQ-17, `12` SEC-60). Foto kecil tetap `no-store` (`12` SEC-52).
+4. Setiap pembukaan dan unduhan lampiran oleh akun staf dicatat di log aktivitas dengan jenis `lampiran_dibuka`, kecuali pembukaan ulang lampiran yang sama oleh staf yang sama dalam 10 menit. Unduhan selalu dicatat. Siswa yang membuka lampirannya sendiri tidak dicatat (OQ-17, `12` SEC-60). Foto kecil tetap `no-store` (`12` SEC-52).
 
 ## 14. Label kode di halaman
 

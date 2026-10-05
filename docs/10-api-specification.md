@@ -118,7 +118,7 @@ Butir API-05:
 | ID | Aturan | Status |
 |---|---|---|
 | API-07 | **Cache dan kompresi.** Semua jawaban API dan fragmen memakai `Cache-Control: no-store`. Service Worker tidak menyimpan jawaban API (`07` ARS-22 butir 6). Nginx mengompresi JSON dengan gzip, sehingga `gzip_types` harus memuat `application/json`; bawaan Nginx hanya mengompresi `text/html`. Data kiosk untuk ±1.000 siswa berukuran sekitar 120 KB sebelum kompresi. | RECOMMENDATION |
-| API-08 | **Sesi.** EP-KIO-01, EP-KIO-02, fragmen, dan pencarian hanya membaca sesi, sehingga menutup sesi segera setelah identitas dibaca (`07` ARS-48). Sinkron menutup sesi setelah transaksinya selesai dan sebelum memproses antrean hitung ulang (ARS-36 butir 3). Logout (EP-KIO-04) mengakhiri sesi. Perpanjangan cookie login stasiun (ARS-30 butir 4) ditulis filter `sesi` sebelum sesi ditutup. Token CSRF disimpan di cookie (`Config\Security::$csrfProtection = 'cookie'`), sehingga regenerasinya tidak membutuhkan sesi yang terbuka. Token tetap disimpan di cookie (`12` SEC-28 butir 1). | RECOMMENDATION |
+| API-08 | **Sesi.** EP-KIO-01, EP-KIO-02, fragmen, dan pencarian hanya membaca sesi, sehingga menutup sesi segera setelah identitas dibaca (`07` ARS-48). Sinkron menutup sesi setelah transaksinya selesai dan sebelum memproses antrean hitung ulang (ARS-36 butir 3). Logout (EP-KIO-04) mengakhiri sesi. Perpanjangan cookie login stasiun (ARS-30 butir 4) ditulis filter `sesi` sebelum sesi ditutup. Token CSRF disimpan di cookie (`Config\Security::$csrfProtection = 'cookie'`), sehingga regenerasinya tidak membutuhkan sesi yang terbuka. | RECOMMENDATION |
 | API-09 | **Batas ukuran.** Satu kiriman sinkron memuat paling banyak 100 scan (`07` §2.3) dan berukuran paling besar 256 KB. Kiriman yang melebihinya dijawab 413 `terlalu_besar`. Parameter `cari` pencarian paling panjang 50 karakter. | RECOMMENDATION |
 | API-10 | **Versi.** Lihat butir di bawah tabel. | DECISION (versi di alamat, versi baru untuk perubahan yang tidak kompatibel, dan versi lama tetap dilayani, Session 8); RECOMMENDATION (butir 2, 4, 5, dan 6) |
 | API-11 | **Idempotensi dan urutan.** Lihat butir di bawah tabel. | RECOMMENDATION |
@@ -277,8 +277,10 @@ Isi `parameter` (`07` ARS-33):
 | `jeda_antartombol_ms` | 50 | Jeda antartombol scanner USB. |
 | `lama_tampil_detik` | `{"tercatat": 3, "ganda": 3, "ditolak": 6}` | Lama hasil scan tampil (`08` UI-41). |
 | `unduhan_foto_bersamaan` | 4 | Unduhan foto bersamaan (`07` §6.4). |
+| `pin_salah_maks` | 5 | Jumlah PIN salah sebelum menu petugas dikunci (`12` SEC-21). |
+| `pin_kunci_menit` | 5 | Lama menu petugas dikunci (`12` SEC-21). |
 
-Parameter ARS-33 yang hanya dipakai server, yaitu batas sorotan stasiun, ukuran foto kiosk, cache data kiosk, dan masa login stasiun, tidak dikirim.
+Parameter ARS-33 yang hanya dipakai server, yaitu batas sorotan stasiun, ukuran foto kiosk, cache data kiosk, masa login stasiun, dan batas laju API, tidak dikirim.
 
 Contoh jawaban, dengan satu siswa, dua tanggal aturan, dan tanpa libur. Data dibangun pukul 06.04.31 WIB, masih dalam masa cache 60 detik, dan permintaan diterima pukul 06.05.00,120 WIB:
 
@@ -299,7 +301,9 @@ Contoh jawaban, dengan satu siswa, dua tanggal aturan, dan tanpa libur. Data dib
     "jeda_nisn_sama_detik": 5,
     "jeda_antartombol_ms": 50,
     "lama_tampil_detik": { "tercatat": 3, "ganda": 3, "ditolak": 6 },
-    "unduhan_foto_bersamaan": 4
+    "unduhan_foto_bersamaan": 4,
+    "pin_salah_maks": 5,
+    "pin_kunci_menit": 5
   },
   "siswa": [
     {

@@ -269,7 +269,7 @@ Log aktivitas akun (`04` §4.4 butir 5), log aktivitas pengaturan (FS-MD-01), lo
 |---|---|---|---|
 | `id` | BIGINT | | Primary key. |
 | `jenis` | VARCHAR(40) | | Kode jenis di `12` SEC-59, misalnya `login_gagal`, `password_diganti`, `role_diubah`, `pengaturan_diubah`, `import_siswa`, `lampiran_dibuka`, dan `scan_ditolak_server`. Labelnya di `09` §14. |
-| `pelaku_id` | INT | Ya | Akun pelaku. Kosong untuk sistem, perintah CLI, login gagal, dan kunci login (`12` SEC-59). |
+| `pelaku_id` | INT | Ya | Akun pelaku. Kosong untuk sistem, perintah CLI, login gagal, dan `login_dikunci` (`12` SEC-59). |
 | `akun_id` | INT | Ya | Akun yang terdampak. |
 | `rombel_id` | INT | Ya | Rombel yang terdampak, misalnya pada cetak slip. |
 | `data` | JSON | Ya | Rincian menurut jenisnya (`12` SEC-59), misalnya nama file import dan jumlah baris. Tidak pernah memuat password, PIN, token, hash, atau isi file (`12` SEC-57). |
@@ -278,7 +278,7 @@ Log aktivitas akun (`04` §4.4 butir 5), log aktivitas pengaturan (FS-MD-01), lo
 
 Kunci dan index: index (`jenis`, `created_at`); index (`akun_id`, `created_at`); index (`pelaku_id`, `created_at`).
 
-Saringan cepat "Akses lampiran" dan "Scan ditolak server" di halaman log aktivitas (`12` SEC-62) memakai index (`jenis`, `created_at`). Pemeriksaan agar pembukaan ulang lampiran dalam 10 menit (`12` SEC-60) dan kiriman ulang scan yang ditolak (`12` SEC-24) tidak menulis entri baru memakai index (`pelaku_id`, `created_at`) dan isi `data`. Tidak ada kolom baru untuk keduanya. (RECOMMENDATION)
+Saringan cepat "Akses lampiran" dan "Scan ditolak server" di halaman log aktivitas (`12` SEC-62) memakai index (`jenis`, `created_at`). Pemeriksaan agar pembukaan ulang lampiran dalam 10 menit selain unduhan (`12` SEC-60) dan kiriman ulang scan yang ditolak (`12` SEC-24) tidak menulis entri baru memakai index (`pelaku_id`, `created_at`) dan isi `data`. Tidak ada kolom baru untuk keduanya. (RECOMMENDATION)
 
 ### 5.4 Sesi dan percobaan login
 
