@@ -2,11 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.6 (draft) |
+| Versi | 0.7 (draft) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), Session 5 (Database Architecture), Session 6 (System Architecture), dan Session 8 (Routes / Pages / API). |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), Session 5 (Database Architecture), Session 6 (System Architecture), Session 8 (Routes / Pages / API), dan Session 9 (Validation, Error Handling & Security). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): ID requirement (`FR-*`, `NFR-*`). |
-| Dokumen terkait | [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
+| Dokumen terkait | [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [11-validation-and-error-handling.md](11-validation-and-error-handling.md), [12-security.md](12-security.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
 
 Dokumen ini menetapkan jenis akun, role, cakupan data, dan hak akses setiap role. Dokumen ini menjawab OQ-02 dan OQ-14, serta sebagian OQ-08. Batas mundur (OQ-15) ditetapkan di `05` dan diterapkan pada cakupan di §5.
 
@@ -80,6 +80,17 @@ Keputusan Session 8 yang mengubah dokumen ini (rinciannya di `09` §2):
 | Kelas saya | Wali kelas mendapat menu "Kelas saya" di bawah Dashboard, yang membuka daftar presensi rombelnya hari ini (§8). Menu ini memakai `HA-LAP-02` dengan cakupan Rombel, sehingga tidak ada hak akses baru. | DECISION |
 | Alamat area dan halaman awal | Panel staf di `/panel`, portal siswa di `/portal`, kiosk di `/kiosk`, dan halaman login di `/login` (§8, `09` RT-01 dan RT-18). | RECOMMENDATION |
 
+Keputusan Session 9 yang mengubah dokumen ini (rinciannya di `12` §2):
+
+| Topik | Perubahan | Status |
+|---|---|---|
+| Log aktivitas dan akses lampiran | Setiap pembukaan dan unduhan lampiran oleh akun staf dicatat (OQ-17). Hak baru `HA-AKN-08`, "Lihat log aktivitas", hanya untuk admin (§6.1, `09` HAL-AKN-09). | DECISION |
+| Kunci login | Login dikunci setelah terlalu banyak percobaan gagal. Admin membuka kunci akun staf, siswa, dan stasiun; wali kelas membuka kunci akun siswa rombelnya. Pembukaan kunci termasuk `HA-AKN-02` s.d. `HA-AKN-04`, sehingga tidak ada hak baru (`12` SEC-11). | DECISION |
+| PIN petugas | Satu PIN 6 digit untuk semua stasiun, diatur admin lewat `HA-AKN-03`. PIN wajib untuk logout akun stasiun dan hapus data lokal di kiosk (§9, `12` SEC-21). | DECISION |
+| Satu login aktif per akun stasiun | Akun stasiun hanya aktif di satu laptop. Login terakhir berlaku, dan laptop sebelumnya diminta login ulang (§7.3, `12` SEC-19). | DECISION |
+| Sesi | Sesi staf dan siswa berakhir setelah 8 jam tanpa aktivitas atau 7 hari sejak login (`12` SEC-12). | DECISION |
+| Password | Password awal acak 8 karakter untuk siswa dan 12 karakter untuk staf dan stasiun. Password yang dipilih pengguna 8 s.d. 64 karakter dan tidak boleh password umum (§7.2, `12` SEC-03, SEC-05). | DECISION (aturan password); RECOMMENDATION (panjang password awal) |
+
 ## 2. Jenis akun
 
 Ada tiga jenis akun. Pengunjung halaman publik tidak memakai akun.
@@ -88,7 +99,7 @@ Ada tiga jenis akun. Pengunjung halaman publik tidak memakai akun.
 |---|---|---|---|---|---|---|
 | Akun staf | Semua guru dan staf, termasuk admin | Username dari admin | Admin | Acak, ditampilkan sekali saat dibuat | Direset oleh admin | DECISION |
 | Akun siswa | Setiap siswa aktif | NISN | Otomatis dari data siswa | Acak, dibagikan lewat slip akun per rombel | Direset oleh admin atau wali kelas (untuk rombelnya) | DECISION |
-| Akun stasiun | Setiap laptop stasiun scan | Username dari admin | Admin | Diisi admin saat memasang laptop | Admin mengganti kredensial | DECISION (satu akun per laptop; login 90 hari sejak kontak terakhir, Session 6, `07` ARS-30); RECOMMENDATION (rincian login; keamanan di Session 9) |
+| Akun stasiun | Setiap laptop stasiun scan | Username dari admin | Admin | Diisi admin saat memasang laptop | Admin mengganti kredensial | DECISION (satu akun per laptop; login 90 hari sejak kontak terakhir, Session 6, `07` ARS-30); RECOMMENDATION (rincian login; keamanan di `12` §7) |
 
 Aturan jenis akun:
 
@@ -97,7 +108,7 @@ Aturan jenis akun:
 3. **Satu jenis per akun.** Akun siswa hanya memiliki role Siswa, dan akun stasiun hanya memiliki role Stasiun. Role staf hanya dapat diberikan ke akun staf. (RECOMMENDATION)
 4. **Username staf tidak boleh hanya berisi angka.** Semua jenis akun memakai satu halaman login. Aturan ini mencegah username staf bentrok dengan NISN. (RECOMMENDATION)
 5. **Nonaktifkan, jangan hapus.** Akun yang sudah memiliki jejak di log tidak dihapus, tetapi dinonaktifkan. Akun nonaktif tidak dapat login, dan sesi yang sedang berjalan berakhir. Nama pemiliknya tetap tampil di log. (RECOMMENDATION)
-6. **Password disimpan sebagai hash.** Tidak ada yang dapat melihat password pengguna, termasuk admin. Karena itu password awal hanya dapat ditampilkan atau dicetak pada saat dibuat (§7). (RECOMMENDATION; detail di Session 9)
+6. **Password disimpan sebagai hash.** Tidak ada yang dapat melihat password pengguna, termasuk admin. Karena itu password awal hanya dapat ditampilkan atau dicetak pada saat dibuat (§7). Hash memakai bcrypt (`12` SEC-02). (RECOMMENDATION)
 
 ## 3. Role
 
@@ -160,12 +171,13 @@ Cara membaca:
 | ID | Hak akses | Admin | Staf | Wali kelas | Guru piket | Guru BK | Pimpinan | Siswa | Stasiun | Rujukan | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | HA-AKN-01 | Login, logout, ganti password sendiri | Ya | Ya | Ya | Ya | Ya | Ya | Ya | Login saja | FR-AKN-04 | DECISION |
-| HA-AKN-02 | Kelola akun staf: buat, ubah, nonaktifkan, reset password, beri role | Ya | — | — | — | — | — | — | — | FR-AKN-02, FR-AKN-08 | DECISION |
-| HA-AKN-03 | Kelola akun stasiun: buat, ganti kredensial, nonaktifkan | Ya | — | — | — | — | — | — | — | FR-AKN-03 | DECISION |
-| HA-AKN-04 | Reset password siswa | Semua | — | Rombel | — | — | — | — | — | FR-AKN-07 | DECISION |
+| HA-AKN-02 | Kelola akun staf: buat, ubah, nonaktifkan, reset password, buka kunci login, beri role | Ya | — | — | — | — | — | — | — | FR-AKN-02, FR-AKN-08 | DECISION |
+| HA-AKN-03 | Kelola akun stasiun: buat, ganti kredensial, nonaktifkan, buka kunci login, dan atur PIN petugas | Ya | — | — | — | — | — | — | — | FR-AKN-03 | DECISION |
+| HA-AKN-04 | Reset password siswa dan buka kunci login siswa | Semua | — | Rombel | — | — | — | — | — | FR-AKN-07 | DECISION |
 | HA-AKN-05 | Cetak slip akun siswa | Semua | — | Rombel | — | — | — | — | — | FR-AKN-06 | DECISION (slip; mekanisme §7.2, Session 4) |
 | HA-AKN-06 | Lihat status akun siswa (belum aktif, aktif, nonaktif) | Semua | — | Rombel | — | — | — | — | — | FR-AKN-05 | RECOMMENDATION |
 | HA-AKN-07 | Lihat pemeriksaan sistem: hasil pemeriksaan server, waktu terakhir cron berjalan, dan antrean hitung ulang yang menunggu atau gagal | Ya | — | — | — | — | — | — | — | `07` ARS-57, `09` HAL-AKN-07 | DECISION (Session 8) |
+| HA-AKN-08 | Lihat log aktivitas: kejadian akun dan login, pengaturan, import, akses lampiran, dan scan yang ditolak server | Ya | — | — | — | — | — | — | — | `12` SEC-26, SEC-59, `09` HAL-AKN-09 | DECISION (Session 9) |
 
 ### 6.2 Master data (MD) — R1
 
@@ -216,7 +228,7 @@ Cara membaca:
 | HA-IZN-05 | Buka lampiran surat | Semua | — | Rombel | Semua | Semua | Semua | Sendiri | — | FR-IZN-05 | DECISION (pimpinan, Session 4); RECOMMENDATION (pembagian lainnya) |
 | HA-IZN-06 | Ubah keputusan: batalkan yang disetujui, perpendek rentang, atau ubah penolakan menjadi persetujuan, dengan alasan. Untuk dispensasi massal, dapat diterapkan ke satu kelompok bila semua siswanya dalam cakupan. | Semua | — | Rombel | Semua | Semua | — | — | — | FR-IZN-06 | DECISION (Session 4; per kelompok, Session 4b) |
 
-Pimpinan dapat membuka lampiran (keputusan Session 4, mengganti usulan Session 3). Surat sakit termasuk data kesehatan (R-17). Perlu tidaknya mencatat setiap pembukaan lampiran ditinjau di Session 9 (OQ-17).
+Pimpinan dapat membuka lampiran (keputusan Session 4, mengganti usulan Session 3). Surat sakit termasuk data kesehatan (R-17). Setiap pembukaan dan unduhan lampiran oleh akun staf dicatat, termasuk oleh pimpinan, sedangkan siswa yang membuka lampirannya sendiri tidak dicatat (DECISION, Session 9, OQ-17, `12` SEC-60).
 
 ### 6.6 Dashboard dan laporan (LAP)
 
@@ -284,13 +296,13 @@ Mekanisme slip akun (DECISION, Session 4):
    Slip hanya dapat dilihat saat itu, karena password disimpan sebagai hash (§2 butir 6).
 3. **Mencetak ulang membuat password baru.** Mencetak slip ulang untuk rombel yang sama membuat password baru, sehingga slip lama tidak berlaku lagi. Akun yang sudah aktif tidak tersentuh, dan layar memberi peringatan sebelum slip dibuat.
 4. **Reset untuk satu siswa.** Siswa aktif yang lupa password direset satu per satu (`HA-AKN-04`). Hasilnya slip untuk satu siswa, dan siswa wajib mengganti password lagi.
-5. **Password mudah dibaca.** Password awal acak tidak memakai karakter yang mirip, seperti `O`/`0` dan `l`/`1`. Panjang dan aturan password ditetapkan di Session 9.
+5. **Password mudah dibaca.** Password awal acak tidak memakai karakter yang mirip, seperti `O`/`0` dan `l`/`1`. Password slip berisi 8 karakter dari huruf kecil tanpa `i`, `l`, dan `o`, dan angka `2`–`9` (`12` SEC-05). Aturan password yang dipilih siswa ada di `12` SEC-03.
 
 ### 7.3 Akun stasiun
 
 1. Admin membuat akun stasiun dengan nama yang mudah dikenali, misalnya "Gerbang 1" (`HA-AKN-03`).
 2. Admin login dengan akun stasiun sekali di laptop stasiun, di profil browser khusus kiosk (R-07), lalu memasang kiosk sebagai aplikasi di browser (`07` ARS-32).
-3. Login akun stasiun bertahan 90 hari sejak kontak terakhir, sehingga petugas tidak perlu login setiap pagi (DECISION, Session 6). Mekanismenya ada di `07` ARS-30, dan rincian keamanannya di Session 9.
+3. Login akun stasiun bertahan 90 hari sejak kontak terakhir, sehingga petugas tidak perlu login setiap pagi (DECISION, Session 6). Mekanismenya ada di `07` ARS-30, dan rincian keamanannya di `12` §7. Satu akun stasiun hanya aktif di satu laptop: login di laptop lain membuat laptop sebelumnya diminta login ulang (DECISION, Session 9, `12` SEC-19).
 4. Sebelum akun dicabut, misalnya karena laptop diganti, admin memastikan stasiun tidak memiliki scan belum tersinkron (`HA-KIO-02`).
 5. Setelah akun dicabut, data kiosk di laptop dihapus (R-07, `07` ARS-31).
 6. Bila laptop hilang, admin langsung menonaktifkan akunnya. Scan yang belum tersinkron di laptop itu hilang.
@@ -316,7 +328,7 @@ Bila password masih wajib diganti, halaman ganti password (`/akun/password`) tam
 - Petugas adalah guru piket dan satpam/staf TU (DECISION).
 - Kiosk berjalan dengan akun stasiun, bukan akun pribadi petugas. Karena itu kiosk tidak mencatat siapa petugas yang berjaga (RECOMMENDATION).
 - Satpam tidak memerlukan akun untuk tugas ini.
-- Tindakan berisiko di kiosk dilindungi PIN atau konfirmasi petugas. Contohnya logout akun stasiun dan menghapus data lokal. Detailnya ditetapkan di Session 9 (RECOMMENDATION).
+- Tindakan berisiko di kiosk, yaitu logout akun stasiun dan menghapus data lokal, dilindungi PIN petugas. Satu PIN 6 digit berlaku untuk semua stasiun, diatur admin, dan dibagikan ke petugas. Selama PIN belum diatur, tindakan itu cukup memakai konfirmasi. (DECISION, Session 9, `12` SEC-21, SEC-22; RECOMMENDATION untuk keadaan PIN belum diatur)
 
 Pembagian tugas (RECOMMENDATION):
 
@@ -333,26 +345,25 @@ Pembagian tugas (RECOMMENDATION):
 
 ## 10. Catatan keamanan dan privasi
 
-Rincian teknis ditulis di Session 9 (`12-security.md`).
+Rincian teknis ada di `12`.
 
 - **Data seperlunya.** Staf tanpa tugas khusus, dan wali kelas untuk rombel lain, hanya melihat angka (DECISION). Data siswa adalah data anak (R-17, UU 27/2022).
-- **Lampiran surat terbatas.** Lampiran surat hanya dapat dibuka siswa pemiliknya, staf yang berhak memverifikasi, dan pimpinan (`HA-IZN-05`). Pencatatan pembukaan lampiran mengikuti OQ-17.
+- **Lampiran surat terbatas.** Lampiran surat hanya dapat dibuka siswa pemiliknya, staf yang berhak memverifikasi, dan pimpinan (`HA-IZN-05`). Setiap pembukaan dan unduhan oleh staf dicatat (DECISION, OQ-17, `12` SEC-60).
 - **Nomor WA orang tua dilindungi.** Siswa tidak dapat mengubah nomor WA orang tua/wali (DECISION). Ini mencegah siswa mengalihkan notifikasi ketidakhadiran (R2) ke nomornya sendiri.
 - **Perubahan tercatat.**
   - Setiap perubahan presensi tercatat di log perubahan presensi (DECISION).
   - Perubahan nomor WA dan foto siswa dicatat (DECISION).
-  - Reset password, perubahan role, dan pencabutan akun stasiun dicatat (RECOMMENDATION).
-- **NISN bukan rahasia.** NISN tercetak di QR kartu, jadi keamanan akun siswa bergantung pada password. Pengamannya adalah password awal acak, kewajiban ganti password, dan pembatasan percobaan login (NFR-08).
+  - Login, kunci login, reset password, perubahan role, dan perubahan akun stasiun dicatat di log aktivitas, yang hanya dibuka admin (`HA-AKN-08`, `12` SEC-59) (RECOMMENDATION).
+- **NISN bukan rahasia.** NISN tercetak di QR kartu, jadi keamanan akun siswa bergantung pada password. Pengamannya adalah password awal acak, kewajiban ganti password, larangan password umum, dan pembatasan percobaan login (NFR-08, `12` SEC-03, SEC-08).
 - **Hak dicek di server.** Server memeriksa hak dan cakupan pada setiap permintaan, termasuk endpoint sinkron (NFR-07).
 
 ## 11. Pertanyaan terbuka terkait
 
-OQ-07 dan OQ-15 terjawab di Session 4: `HA-PRS-05` menjadi DEPRECATED, dan batas mundur diterapkan di §5. OQ-11 terjawab di Session 5: flyer berisi angka saja, dan `HA-LAP-06` tidak berubah.
+OQ-07 dan OQ-15 terjawab di Session 4: `HA-PRS-05` menjadi DEPRECATED, dan batas mundur diterapkan di §5. OQ-11 terjawab di Session 5: flyer berisi angka saja, dan `HA-LAP-06` tidak berubah. OQ-17 terjawab di Session 9: akses lampiran oleh staf dicatat, dan `HA-AKN-08` ditambahkan.
 
 | OQ | Pertanyaan | Dampak ke dokumen ini |
 |---|---|---|
 | OQ-08 | Jumlah stasiun scan | Jumlah akun stasiun. Desain mendukung jumlah stasiun berapa pun. |
-| OQ-17 | Pencatatan pembukaan lampiran surat | Dapat menambah pencatatan pada `HA-IZN-05`. |
 
 ## Riwayat perubahan
 
@@ -364,3 +375,4 @@ OQ-07 dan OQ-15 terjawab di Session 4: `HA-PRS-05` menjadi DEPRECATED, dan batas
 | 0.4 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). Tabel keputusan Session 5 ditambahkan di §1. `HA-MD-11` (kelola atribut tambahan siswa) ditambahkan. `HA-MD-05` dan `HA-MD-10` diperjelas. `HA-LAP-06` ditinjau bersama OQ-11 tanpa perubahan. |
 | 0.5 | 2026-10-04 | Keputusan Session 6 (`07`). Tabel keputusan Session 6 ditambahkan di §1. Detail login akun stasiun (§2, §7.3) dan pembuatan admin pertama (§3) diperbarui. |
 | 0.6 | 2026-10-05 | Keputusan Session 8 (`09`, `10`). Tabel keputusan Session 8 ditambahkan di §1. `HA-AKN-07` (lihat pemeriksaan sistem) ditambahkan di §6.1, dan `HA-KIO-01` memuat logout kiosk. §8 memuat alamat area, halaman awal, menu akun di portal, dan menu "Kelas saya". |
+| 0.7 | 2026-10-05 | Keputusan Session 9 (`11`, `12`). Tabel keputusan Session 9 ditambahkan di §1. `HA-AKN-08` (lihat log aktivitas) ditambahkan di §6.1. `HA-AKN-02` s.d. `HA-AKN-04` memuat buka kunci login, dan `HA-AKN-03` memuat PIN petugas. §2 butir 6, §6.5, §7.2 butir 5, §7.3, §9 (PIN petugas), §10, dan §11 diperbarui. |

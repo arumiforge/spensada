@@ -2,15 +2,15 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
+| Versi | 0.2 (draft, menunggu review) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 8 (Routes / Pages / API) |
+| Sumber | Discovery Session 8 (Routes / Pages / API). Diperbarui dengan keputusan Session 9 (Validation, Error Handling & Security, §2.3). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`), cakupan, area, dan halaman awal. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan ketentuan umum (§4). [06-database-design.md](06-database-design.md): tabel dan kode nilai. [07-system-architecture.md](07-system-architecture.md): area, filter, kiosk, file, sesi, dan perintah CLI (`ARS-*`). [08-ui-ux-design-system.md](08-ui-ux-design-system.md): komponen, tata letak, menu, dan label (`UI-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export. |
-| Dokumen terkait | [10-api-specification.md](10-api-specification.md): bentuk permintaan dan respons API kiosk, fragmen, dan bantuan formulir. `11-validation-and-error-handling.md` dan `12-security.md` (Session 9), keduanya belum dibuat. |
+| Dokumen terkait | [10-api-specification.md](10-api-specification.md): bentuk permintaan dan respons API kiosk, fragmen, dan bantuan formulir. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): teks validasi, pesan galat, dan halaman galat (`VAL-*`, `GAL-*`). [12-security.md](12-security.md): login, sesi, CSRF, header berkas, dan log aktivitas (`SEC-*`). |
 
 Dokumen ini menetapkan halaman dan route Spensada: konvensi alamat dan metode HTTP, kelompok route dan filter, menu panel dan portal, setiap halaman beserta route dan tindakannya, berkas yang disajikan lewat controller, halaman galat, serta label kode yang hanya tampil di halaman admin. Dokumen ini menyelesaikan hal yang diserahkan `07` (ARS-12, ARS-57) dan `08` (UI-31, §9.2) ke Session 8.
 
-Bentuk permintaan dan respons API, termasuk sinkron kiosk dan fragmen yang diperbarui berkala, ada di `10`. Teks validasi per isian dan pengamanan rinci ditetapkan di Session 9.
+Bentuk permintaan dan respons API, termasuk sinkron kiosk dan fragmen yang diperbarui berkala, ada di `10`. Teks validasi per isian dan penanganan galat ada di `11`, dan pengamanan rinci ada di `12`.
 
 ## 1. Cara membaca dokumen ini
 
@@ -54,6 +54,18 @@ Penyusunan route dan API menemukan kebutuhan berikut. Semuanya berstatus RECOMME
 | `status_stasiun.data_dimuat_at` belum memiliki cara lapor. | Kiosk melaporkan waktu data selesai dimuat di setiap kiriman sinkron. | `10` EP-KIO-03 |
 | Logout akun stasiun memerlukan cookie login stasiun, yang hanya dikirim ke alamat berawalan `/kiosk` (`07` ARS-30). | Logout kiosk memakai `POST /kiosk/api/v1/logout`, bukan `/logout`. | `10` EP-KIO-04 |
 | Halaman yang menampilkan password sekali tidak dapat memakai pola POST-alihkan-GET tanpa menyimpan password di sesi. | Halaman itu menjadi jawaban langsung permintaan tulisnya, tanpa disimpan di cache, dengan token sekali pakai. | RT-09 |
+
+### 2.3 Keputusan Session 9
+
+Keputusan Session 9 yang berdampak ke halaman dan route. Daftar lengkapnya ada di `12` §2.1.
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| Log aktivitas (OQ-17) | Hak baru `HA-AKN-08`, "Lihat log aktivitas", hanya untuk admin. Halaman log aktivitas memuat log akun, pengaturan, import, akses lampiran oleh staf, dan scan yang ditolak server. | HAL-AKN-09, §14, `12` SEC-26, SEC-59 s.d. SEC-62 | DECISION (hak dan akses lampiran); RECOMMENDATION (isi halaman) |
+| Pembatasan login | Kunci 15 menit setelah 5 kali gagal, kunci 24 jam setelah 20 kali gagal, dan batas per alamat IP. Admin, atau wali kelas untuk siswa rombelnya, membuka kunci lebih awal. | HAL-AKN-01, HAL-AKN-04, HAL-AKN-06, HAL-KIO-02, `12` SEC-08 s.d. SEC-11 | DECISION |
+| PIN petugas | Satu PIN 6 digit untuk semua stasiun, diatur admin di halaman PIN petugas. | HAL-KIO-02, `12` SEC-21 | DECISION |
+| Masa sesi | 8 jam tanpa aktivitas, atau 7 hari sejak login. | RT-18, `12` SEC-12 | DECISION |
+| Lampiran | Lampiran JPG, PNG, WebP, dan PDF tampil di browser, dengan tautan unduh. Pembukaan dan unduhan oleh staf dicatat. | §13, `12` SEC-52, SEC-60 | DECISION (pencatatan); RECOMMENDATION (penyajian) |
 
 ## 3. Konvensi route
 
@@ -132,8 +144,8 @@ Pasangan halaman dan tindakan (RT-06):
 | ID | Aturan | Status |
 |---|---|---|
 | RT-08 | **POST-alihkan-GET dan pesan kilat.** Lihat butir di bawah tabel. | RECOMMENDATION |
-| RT-09 | **Rahasia yang tampil sekali.** Password awal akun staf dan stasiun, password hasil reset atau ganti kredensial, dan slip akun (FS-AKN-03, FS-AKN-04, FS-AKN-05) tampil sebagai jawaban 200 langsung dari permintaan tulisnya, bukan lewat pengalihan, sehingga password tidak pernah ditulis ke sesi atau log. Jawaban memakai `Cache-Control: no-store`. Formulir atau halaman konfirmasi sebelumnya membawa token sekali pakai yang disimpan di sesi. Bila halaman dimuat ulang dan permintaan terkirim lagi, token sudah terpakai, sehingga server tidak membuat password baru dan mengalihkan ke halaman asal dengan pesan bahwa tindakan sudah dijalankan. Cara ini tidak bergantung pada pengaturan regenerasi token CSRF (Session 9). | RECOMMENDATION |
-| RT-10 | **Kembali ke halaman asal.** Tautan tindakan dari daftar, misalnya koreksi dari daftar presensi kelas, membawa parameter `kembali` berisi alamat asal. Setelah berhasil, server mengalihkan ke alamat itu. Nilai `kembali` hanya diterima bila berupa alamat relatif di area yang sama, diawali `/panel/` atau `/portal/`, tanpa `//`, garis miring terbalik, skema, atau host. Selain itu, nilai diabaikan dan server memakai tujuan bawaan route. | RECOMMENDATION |
+| RT-09 | **Rahasia yang tampil sekali.** Password awal akun staf dan stasiun, password hasil reset atau ganti kredensial, dan slip akun (FS-AKN-03, FS-AKN-04, FS-AKN-05) tampil sebagai jawaban 200 langsung dari permintaan tulisnya, bukan lewat pengalihan, sehingga password tidak pernah ditulis ke sesi atau log. Jawaban memakai `Cache-Control: no-store`. Formulir atau halaman konfirmasi sebelumnya membawa token sekali pakai yang disimpan di sesi. Bila halaman dimuat ulang dan permintaan terkirim lagi, token sudah terpakai, sehingga server tidak membuat password baru dan mengalihkan ke halaman asal dengan pesan bahwa tindakan sudah dijalankan. Cara ini tidak bergantung pada regenerasi token CSRF, yang tidak dipakai (`regenerate` `false`, `12` SEC-28). | RECOMMENDATION |
+| RT-10 | **Kembali ke halaman asal.** Tautan tindakan dari daftar, misalnya koreksi dari daftar presensi kelas, membawa parameter `kembali` berisi alamat asal. Setelah berhasil, server mengalihkan ke alamat itu. Nilai `kembali` hanya diterima bila berupa alamat relatif di area yang sama, diawali `/panel/` atau `/portal/`, tanpa `//`, garis miring terbalik, skema, atau host. Selain itu, nilai diabaikan dan server memakai tujuan bawaan route (`12` SEC-39). | RECOMMENDATION |
 | RT-11 | **Data yang tidak ada dan di luar cakupan.** ID di luar cakupan pengguna dijawab 403 dengan pesan di luar hak (`08` UI-56). ID yang tidak ada dijawab sama bagi pengguna yang hanya memiliki cakupan terbatas (Rombel, Hari ini, atau Sendiri) untuk hak halaman itu, sehingga keberadaan data tidak terbaca (`04` §4.1 butir 3). Pengguna dengan cakupan Semua mendapat 404. | RECOMMENDATION |
 | RT-12 | **Token versi dan penjaga di formulir.** Formulir PATCH, PUT, dan DELETE untuk data yang dapat diubah bersamaan membawa isian tersembunyi `versi` berisi `updated_at` saat formulir dibuka (`07` ARS-40). Formulir yang bergantung pada keadaan data membawa penjaganya, misalnya ID koreksi aktif saat formulir koreksi dibuka, atau ID periode mode darurat yang aktif (`07` ARS-41). Bila token atau penjaga tidak cocok, berlaku RT-08 butir 3. | RECOMMENDATION |
 
@@ -176,19 +188,21 @@ Butir RT-14:
 Butir RT-18:
 
 1. Halaman awal mengikuti `02` §8: akun staf ke `/panel`, akun siswa ke `/portal`, dan akun stasiun ke `/kiosk`. Akun yang wajib mengganti password diarahkan ke `/akun/password` lebih dulu.
-2. Bila filter `sesi` menolak navigasi GET biasa, yaitu bukan permintaan latar belakang, alamat yang diminta disimpan di sesi sebagai `tujuan`, lalu pengguna dialihkan ke `/login`. Pesan "Sesi berakhir" (`08` UI-56) tampil bila permintaan membawa cookie sesi yang sudah tidak berlaku.
-3. Setelah login berhasil, server mengalihkan ke `tujuan` bila alamat itu berada di area jenis akun yang login dan bukan kiosk (FS-AKN-01 E4). Selain itu, pengguna diarahkan ke halaman awalnya.
+2. Sesi staf dan siswa berakhir setelah 8 jam tanpa aktivitas, atau 7 hari sejak login (`12` SEC-12). Bila filter `sesi` menolak navigasi GET biasa, yaitu bukan permintaan latar belakang, alamat yang diminta disimpan di sesi sebagai `tujuan`, lalu pengguna dialihkan ke `/login`. Pesan "Sesi berakhir" (`08` UI-56) tampil bila permintaan membawa cookie sesi yang sudah tidak berlaku.
+3. Setelah login berhasil, server mengalihkan ke `tujuan` bila alamat itu berada di area jenis akun yang login dan bukan kiosk (FS-AKN-01 E4). `tujuan` hanya diterima bila berupa path di aplikasi sendiri, diawali satu `/` dan bukan `//` atau `/\` (`12` SEC-39). Selain itu, pengguna diarahkan ke halaman awalnya. Kiriman formulir yang ditolak karena sesi berakhir memakai halaman formulir sebagai `tujuan` (`11` GAL-07).
 4. `GET /login` dari pengguna yang sudah login mengalihkan ke halaman awalnya.
 5. Sebelum R3, `GET /` mengalihkan pengunjung yang belum login ke `/login`, dan pengguna yang sudah login ke halaman awalnya (`02` §8). Di R3, `/` menjadi halaman publik (HAL-INF-05).
 
 Butir RT-19:
 
-1. Halaman 403, 404, dan 500 memakai pesan `08` UI-56 dan tautan ke halaman awal area pengguna (`08` UI-38).
+1. Halaman 400, 403, 404, 429, dan 500 memakai pesan `08` UI-56 dan tautan ke halaman awal area pengguna (`08` UI-38). 400 berasal dari filter `invalidchars` atau isian wajib tersembunyi yang hilang (`11` GAL-02), dan 429 dari pembatasan laju (`11` GAL-10).
 2. 404 memakai `Config\Routing::$override404` dengan nama kelas lengkap, `App\Controllers\Galat::tidakDitemukan`, karena CI4 tidak menambahkan namespace bawaan untuk nilai ini. Controller ini berjalan tanpa filter, sehingga membaca sesi sendiri untuk mengetahui jenis akun, lalu memilih layout dari prefiks alamat dan jenis akun itu.
 3. 403 berasal dari filter `hak`, dan dari pengecualian `DiLuarHak` yang dilempar service bila cakupan, batas mundur, atau keadaan data tidak cocok. Handler pengecualian aplikasi (`Config\Exceptions::handler()`) mengubah pengecualian itu menjadi halaman 403.
-4. 500 di production memakai view `app/Views/errors/html/production.php` yang disesuaikan, tanpa layout area, karena galat dapat terjadi sebelum data akun termuat.
+4. 500 di production memakai view `app/Views/errors/html/production.php` yang disesuaikan, tanpa layout area, karena galat dapat terjadi sebelum data akun termuat. Halaman ini menampilkan kode laporan, yaitu 8 karakter pertama ID permintaan dalam huruf besar, misalnya `7F3A2C1B` (`11` GAL-13, `12` SEC-58).
 5. Akun yang membuka area jenis akun lain dialihkan ke halaman awalnya oleh filter `area`, bukan dijawab 403 (FS-AKN-01 E5).
 6. Permintaan latar belakang menerima kode JSON (`10` API-03).
+7. Nginx menyajikan tiga halaman statis dari `public/galat/`, tanpa melewati PHP: `/galat/413.html` untuk kiriman lebih besar dari `client_max_body_size` (`11` GAL-11), `/galat/429.html` untuk pembatasan laju `POST /login` (`11` GAL-10, `12` SEC-56), dan `/galat/503.html` saat pemeliharaan (`11` GAL-17, `12` SEC-78).
+8. Halaman galat memakai header keamanan dan CSP yang sama dengan halaman lain (`12` SEC-35).
 
 Nama method (RT-20):
 
@@ -256,6 +270,7 @@ Menu ini menyelesaikan isi kelompok di `08` UI-31. Urutan kelompok dan butir men
 | Notifikasi WA (R2) | Pesan ditahan | `/panel/wa/penahanan` | `HA-WA-03` | Jumlah penahanan aktif | HAL-WA-03 |
 | Akun dan stasiun | Akun staf | `/panel/akun-staf` | `HA-AKN-02` | — | HAL-AKN-04 |
 | Akun dan stasiun | Status stasiun | `/panel/stasiun` | `HA-KIO-02`, `HA-AKN-03` | Jumlah stasiun yang disorot | HAL-KIO-02 |
+| Akun dan stasiun | Log aktivitas | `/panel/log-aktivitas` | `HA-AKN-08` | — | HAL-AKN-09 |
 | Akun dan stasiun | Pemeriksaan sistem | `/panel/sistem` | `HA-AKN-07` | Tanda bila ada pemeriksaan yang perlu tindakan | HAL-AKN-07 |
 
 Menu akun di bilah atas (`08` UI-29) berisi "Ganti password" (`/akun/password`) dan "Logout" (`POST /logout`). Bilah mode darurat (`08` UI-30) menautkan `/panel/mode-darurat/kelas` bagi pemegang `HA-PRS-03`.
@@ -277,7 +292,7 @@ Contoh menu R1 per role, diturunkan dari matriks `02` §6. Akun dengan beberapa 
 | Akun siswa | — | Ya | — | — | — | Ya |
 | Import siswa, foto massal, penempatan kelas, atribut tambahan | — | — | — | — | — | Ya |
 | Kelompok Sekolah | — | — | — | — | — | Ya |
-| Akun staf, pemeriksaan sistem | — | — | — | — | — | Ya |
+| Akun staf, log aktivitas, pemeriksaan sistem | — | — | — | — | — | Ya |
 | Status stasiun | — | — | Ya | — | — | Ya |
 
 Admin yang juga wali kelas melihat "Kelas saya".
@@ -314,31 +329,42 @@ Menu bawah di ponsel dan menu atas di layar lebar (`08` UI-35):
 | HAL-AKN-04 | POST | `/panel/akun-staf/{id}/aktifkan` | `Panel\AkunStaf::aktifkan` | `HA-AKN-02` | 303 → detail |
 | HAL-AKN-04 | GET | `/panel/akun-staf/{id}/reset-password` | `Panel\AkunStaf::formResetPassword` | `HA-AKN-02` | Halaman konfirmasi |
 | HAL-AKN-04 | POST | `/panel/akun-staf/{id}/reset-password` | `Panel\AkunStaf::resetPassword` | `HA-AKN-02` | 200 password baru (RT-09) |
+| HAL-AKN-04 | POST | `/panel/akun-staf/{id}/buka-kunci` | `Panel\AkunStaf::bukaKunci` | `HA-AKN-02` | 303 → detail |
 | HAL-AKN-05 | GET | `/panel/akun-siswa` | `Panel\AkunSiswa::index` | `HA-AKN-06` | Halaman (`?kelas=`) |
 | HAL-AKN-05 | GET | `/panel/akun-siswa/slip` | `Panel\AkunSiswa::formSlip` | `HA-AKN-05` | Halaman konfirmasi (`?kelas=&siswa[]=`) |
 | HAL-AKN-05 | POST | `/panel/akun-siswa/slip` | `Panel\AkunSiswa::slip` | `HA-AKN-05` | 200 halaman slip (RT-09) |
 | HAL-AKN-06 | GET | `/panel/siswa/{id}/reset-password` | `Panel\AkunSiswa::formResetPassword` | `HA-AKN-04` | Halaman konfirmasi |
 | HAL-AKN-06 | POST | `/panel/siswa/{id}/reset-password` | `Panel\AkunSiswa::resetPassword` | `HA-AKN-04` | 200 slip satu siswa (RT-09) |
+| HAL-AKN-06 | POST | `/panel/siswa/{id}/buka-kunci` | `Panel\AkunSiswa::bukaKunci` | `HA-AKN-04` | 303 → profil siswa (HAL-MD-06) |
 | HAL-AKN-07 | GET | `/panel/sistem` | `Panel\Sistem::index` | `HA-AKN-07` | Halaman |
 | HAL-AKN-08 | GET | `/portal/akun` | `Portal\Akun::index` | `HA-MD-05` | Halaman |
 | HAL-AKN-08 | GET | `/portal/foto` | `Portal\Akun::foto` | `HA-MD-05` | Berkas foto sendiri |
+| HAL-AKN-09 | GET | `/panel/log-aktivitas` | `Panel\LogAktivitas::index` | `HA-AKN-08` | Halaman |
+| HAL-AKN-09 | GET | `/panel/log-aktivitas/{id}` | `Panel\LogAktivitas::lihat` | `HA-AKN-08` | Halaman |
 
 Rincian halaman:
 
-- **HAL-AKN-01 — Login** (FS-AKN-01, `08` UI-38). Satu halaman untuk semua jenis akun, dengan isian `identitas` dan `password`. Login yang gagal menampilkan pesan umum E1/E2, dan isian identitas tetap terisi. Pembatasan percobaan (E3) ditetapkan di Session 9. Login akun stasiun juga membuat cookie login stasiun (`07` ARS-30), lalu mengalihkan ke `/kiosk`.
+- **HAL-AKN-01 — Login** (FS-AKN-01, `08` UI-38). Satu halaman untuk semua jenis akun, dengan isian `identitas` dan `password`. Login yang gagal menampilkan pesan umum E1/E2, dan isian identitas tetap terisi. Pembatasan percobaan (E3) mengikuti `12` SEC-08: 5 kali gagal dalam 15 menit mengunci identitas itu sekitar 15 menit, 20 kali gagal dalam 24 jam menguncinya sekitar 24 jam, dan satu alamat IP dibatasi 100 kali gagal dalam 15 menit. Pesannya di `11` §5.1, dan halaman login tetap dijawab 303 → `/login`, bukan 429. Token CSRF yang ditolak menampilkan "Halaman login sudah terlalu lama dibuka. Login lagi." (`11` GAL-06). Nginx membatasi laju `POST /login` per alamat IP dan menjawab 429 dengan `/galat/429.html` (`12` SEC-56). Halaman memuat pengingat logout di komputer bersama dan tempat pemberitahuan privasi (`08` UI-38). Login akun stasiun juga membuat cookie login stasiun (`07` ARS-30), lalu mengalihkan ke `/kiosk`.
 - **HAL-AKN-02 — Logout** (FS-AKN-01 butir 8). Tombol logout di menu akun mengirim POST dengan token CSRF. Akun stasiun logout dari kiosk lewat `10` EP-KIO-04, karena hak logout akun stasiun termasuk `HA-KIO-01`.
 - **HAL-AKN-03 — Ganti password** (FS-AKN-02). Selama akun wajib mengganti password, halaman memakai kerangka halaman bersama tanpa menu (`08` UI-38). Pada penggantian wajib tepat setelah login, isian password lama tidak tampil (FS-AKN-02, isian password lama); penandanya ditulis ke sesi saat login. Di luar itu, halaman memakai kerangka area pengguna. Akun stasiun yang membuka halaman ini dialihkan ke `/kiosk`.
-- **HAL-AKN-04 — Akun staf** (FS-AKN-03). Daftar menampilkan nama, username, role, kelas yang diampu, status, dan login terakhir, dengan saringan `cari`, `role`, dan `status`. Detail memuat data akun dan tombol tindakan. Tambah dan reset password menjawab dengan halaman password sekali tampil (RT-09), dengan tombol salin dan cetak serta peringatan (FS-AKN-03 catatan). Konfirmasi nonaktifkan menyebut bila akun itu wali kelas (FS-AKN-03 butir 9). Tombol nonaktifkan tidak tampil untuk akun sendiri (E4). Isian NIP ditambahkan di formulir ubah mulai R2 (`06` §5.1).
+- **HAL-AKN-04 — Akun staf** (FS-AKN-03). Daftar menampilkan nama, username, role, kelas yang diampu, status, dan login terakhir, dengan saringan `cari`, `role`, dan `status`. Detail memuat data akun dan tombol tindakan. Tambah dan reset password menjawab dengan halaman password sekali tampil (RT-09), dengan tombol salin dan cetak serta peringatan (FS-AKN-03 catatan). Konfirmasi nonaktifkan menyebut bila akun itu wali kelas (FS-AKN-03 butir 9). Tombol nonaktifkan tidak tampil untuk akun sendiri (E4). Selama login akun dikunci, detail menampilkan keadaan kunci dan tombol "Buka kunci login", yang menghapus catatan percobaan gagal identitas itu (`12` SEC-11). Pesan berhasilnya "Kunci login [nama] sudah dibuka." (`11` §5.1). Isian NIP ditambahkan di formulir ubah mulai R2 (`06` §5.1).
 - **HAL-AKN-05 — Akun siswa dan slip** (FS-AKN-05). Tanpa `kelas`, halaman menampilkan pilihan kelas dalam cakupan. Dengan `kelas`, halaman menampilkan NISN, nama, status akun, waktu slip terakhir dibuat, dan login terakhir. Baris akun belum aktif memiliki kotak centang yang tercentang secara bawaan, dan tombol "Buat slip akun" membuka halaman konfirmasi untuk siswa terpilih. Konfirmasi menyebut jumlah akun yang mendapat password baru dan peringatan slip lama (FS-AKN-05 B2). Jawabannya halaman slip siap cetak (`08` UI-57 s.d. UI-59). Bila tidak ada akun belum aktif, tombol tidak tersedia dan halaman menampilkan "Semua akun di kelas ini sudah aktif." (E1).
-- **HAL-AKN-06 — Reset password siswa** (FS-AKN-05 C). Dibuka dari profil siswa (HAL-MD-06). Konfirmasi, lalu slip satu siswa dengan isi yang sama (`08` UI-59). Tombol tidak tersedia untuk akun nonaktif (E2).
+- **HAL-AKN-06 — Reset password siswa** (FS-AKN-05 C). Dibuka dari profil siswa (HAL-MD-06). Konfirmasi, lalu slip satu siswa dengan isi yang sama (`08` UI-59). Tombol tidak tersedia untuk akun nonaktif (E2). Selama login akun siswa dikunci, profil siswa menampilkan tombol "Buka kunci login" bagi pemegang `HA-AKN-04` (`12` SEC-11).
 - **HAL-AKN-07 — Pemeriksaan sistem** (`07` ARS-57, DECISION hak Session 8). Halaman baca saja dengan bagian:
   - hasil pemeriksaan `aplikasi:cek` yang dijalankan di PHP-FPM: versi PHP dan MySQL, ekstensi, zona waktu PHP dan MySQL, collation dan `sql_mode`, hak tulis `writable/`, `baseURL` HTTPS, serta batas unggah, `memory_limit`, dan opcache;
   - waktu terakhir cron berjalan (`pengaturan.cron_terakhir_at`, ARS-56);
   - antrean hitung ulang yang menunggu dan yang gagal beserta galat terakhirnya (ARS-36 butir 6), serta `status_dibangun_sampai` (ARS-37);
-  - versi aplikasi dan versi kode kiosk terbaru.
+  - versi aplikasi dan versi kode kiosk terbaru;
+  - jumlah baris `critical` dan `error` di log aplikasi hari ini dan kemarin, dengan tanda "Perlu tindakan" bila ada baris `critical`, tanpa menampilkan isi log (`11` GAL-22);
+  - nilai `CI_ENVIRONMENT`, yang harus `production` di server (`12` SEC-77).
 
   Setiap pemeriksaan bertanda "Baik" atau "Perlu tindakan". Halaman tidak menjalankan perintah. Perbaikan memakai perintah CLI, misalnya `php spark status:antrean`.
 - **HAL-AKN-08 — Akun di portal** (FS-MD-04 butir 6, AC-MD-04-06, `08` UI-35). Profil sendiri tanpa isian yang dapat diubah: foto, NISN, nama, kelas, nomor WA orang tua/wali, serta atribut lain dan atribut tambahan yang tampil di profil. Halaman memuat tautan ganti password dan tombol logout.
+- **HAL-AKN-09 — Log aktivitas** (`12` SEC-26, SEC-59 s.d. SEC-62, DECISION hak Session 9). Halaman baca saja bagi pemegang `HA-AKN-08`.
+  - Daftar memuat waktu, jenis (§14), pelaku, akun atau siswa yang terdampak, dan ringkasan, terbaru di atas, 50 baris per halaman (RT-13).
+  - Saringan: `jenis`, `pelaku`, `akun`, `mulai`, dan `selesai`, ditambah saringan cepat `cepat` bernilai `lampiran` ("Akses lampiran", jenis `lampiran_dibuka`), `login` ("Login", jenis `login_berhasil`, `login_gagal`, `login_dikunci`, dan `kunci_login_dibuka`), atau `scan_ditolak` ("Scan ditolak server", jenis `scan_ditolak_server`).
+  - Detail memuat isian `data` dalam bentuk tabel dengan label, bukan JSON mentah, beserta alamat IP bila tercatat. Isian `data` tidak pernah memuat password, PIN, token, atau hash (`12` SEC-57).
+  - Log hanya ditambah aplikasi. Halaman ini tidak memiliki tindakan ubah atau hapus.
 
 ## 6. Master data (MD)
 
@@ -459,6 +485,9 @@ Rincian halaman:
 | HAL-KIO-02 | GET | `/panel/stasiun/{id}/nonaktifkan` | `Panel\Stasiun::formNonaktifkan` | `HA-AKN-03` | Halaman konfirmasi |
 | HAL-KIO-02 | POST | `/panel/stasiun/{id}/nonaktifkan` | `Panel\Stasiun::nonaktifkan` | `HA-AKN-03` | 303 → `/panel/stasiun` |
 | HAL-KIO-02 | POST | `/panel/stasiun/{id}/aktifkan` | `Panel\Stasiun::aktifkan` | `HA-AKN-03` | 303 → `/panel/stasiun` |
+| HAL-KIO-02 | POST | `/panel/stasiun/{id}/buka-kunci` | `Panel\Stasiun::bukaKunci` | `HA-AKN-03` | 303 → `/panel/stasiun` |
+| HAL-KIO-02 | GET | `/panel/stasiun/pin` | `Panel\PinKiosk::index` | `HA-AKN-03` | Halaman |
+| HAL-KIO-02 | PUT | `/panel/stasiun/pin` | `Panel\PinKiosk::ganti` | `HA-AKN-03` | 303 → `/panel/stasiun/pin` |
 | HAL-KIO-03 | GET | `/panel/scan-bertanda` | `Panel\ScanBertanda::index` | `HA-KIO-03` | Halaman |
 | HAL-KIO-03 | POST | `/panel/scan-bertanda/tinjau` | `Panel\ScanBertanda::tinjauBanyak` | `HA-KIO-03` | 303 → daftar |
 | HAL-KIO-03 | GET | `/panel/scan-bertanda/{id}` | `Panel\ScanBertanda::lihat` | `HA-KIO-03` | Halaman |
@@ -467,7 +496,9 @@ Rincian halaman:
 Rincian halaman:
 
 - **HAL-KIO-01 — Kiosk** (FS-KIO-01 s.d. FS-KIO-03, `07` ARS-20, `08` §7). `GET /kiosk` mengirim kerangka yang sama untuk semua stasiun dan tidak memuat data siswa, sehingga aman disimpan Service Worker (`07` ARS-22). Semua data dimuat lewat API (`10`). Bila login stasiun berakhir, navigasi lewat jaringan dialihkan ke `/login`. Bila kerangka diambil dari cache, kiosk mengetahuinya dari jawaban API (ARS-22 butir 6). Berkas statis kiosk ada di tabel di bawah. Folder fisik `public/kiosk/` tidak dibuat (ARS-22 butir 2).
-- **HAL-KIO-02 — Status stasiun** (FS-KIO-05, FS-AKN-04). Satu baris per akun stasiun: nama, username (hanya bagi admin), status akun, kontak terakhir, sinkron terakhir, jumlah belum tersinkron, jumlah scan galat, selisih jam, waktu data dimuat, jumlah scan diterima hari ini, versi kode kiosk, dan penyimpanan permanen (DECISION, Session 8). Stasiun disorot dengan alasannya (§14) bila memenuhi FS-KIO-05 butir 2, memiliki scan galat, atau melaporkan penyimpanan permanen belum aktif. Versi kode yang berbeda dari versi kiosk terbaru diberi tanda "Versi lama" tanpa disorot. Daftar diperbarui setiap 30 detik lewat fragmen. Tindakan kelola akun hanya tampil bagi pemegang `HA-AKN-03`. Konfirmasi nonaktifkan menampilkan status stasiun dan peringatan scan belum tersinkron (FS-AKN-04 butir 3). Bila belum ada stasiun, halaman menampilkan "Belum ada stasiun scan." dengan tautan tambah bagi admin (FS-KIO-05 E1).
+- **HAL-KIO-02 — Status stasiun** (FS-KIO-05, FS-AKN-04). Satu baris per akun stasiun: nama, username (hanya bagi admin), status akun, kontak terakhir, sinkron terakhir, jumlah belum tersinkron, jumlah scan galat, selisih jam, waktu data dimuat, jumlah scan diterima hari ini, versi kode kiosk, dan penyimpanan permanen (DECISION, Session 8). Stasiun disorot dengan alasannya (§14) bila memenuhi FS-KIO-05 butir 2, memiliki scan galat, atau melaporkan penyimpanan permanen belum aktif. Versi kode yang berbeda dari versi kiosk terbaru diberi tanda "Versi lama" tanpa disorot. Daftar diperbarui setiap 30 detik lewat fragmen. Tindakan kelola akun hanya tampil bagi pemegang `HA-AKN-03`. Konfirmasi nonaktifkan menampilkan status stasiun dan peringatan scan belum tersinkron (FS-AKN-04 butir 3). Bila belum ada stasiun, halaman menampilkan "Belum ada stasiun scan." dengan tautan tambah bagi admin (FS-KIO-05 E1). Selama login akun stasiun dikunci, baris itu menampilkan tombol "Buka kunci login" bagi admin (`12` SEC-11).
+  - **PIN petugas** (`12` SEC-21, SEC-22). Halaman status stasiun menautkan `/panel/stasiun/pin` bagi pemegang `HA-AKN-03`. Halaman menampilkan apakah PIN sudah diatur dan kapan terakhir diganti, tetapi tidak pernah menampilkan PIN. Formulirnya berisi PIN baru dan ulangan PIN, 6 digit, dengan pesan `11` VAL-22 dan §5.3. Bila PIN belum diatur, halaman status stasiun menampilkan bilah peringatan "PIN petugas belum diatur." dengan tautan ke halaman ini.
+  - Route `/panel/stasiun/pin` tidak tertangkap route `/panel/stasiun/{id}`, karena `{id}` memakai placeholder `(:num)`, seperti di §6.
 - **HAL-KIO-03 — Scan bertanda** (FS-KIO-06). Daftar scan yang perlu tinjauan dan belum ditinjau, dikelompokkan per stasiun dan alasan, dengan saringan `tanggal` (bawaan hari ini), `stasiun`, dan `alasan` (kode di §14). Guru piket hanya dapat membuka hari ini (E3). Setiap baris memuat foto kecil, nama, kelas, jenis, jam scan, alasan, dan apakah scan dipakai selama belum ditinjau, dengan kotak centang untuk tinjauan beberapa scan sekaligus (FS-KIO-06 butir 5). Detail memuat foto 240×320 px (`08` UI-23), jam scan, jam laptop asli, selisih jam, waktu diterima, stasiun, dan alasan, beserta formulir keputusan. Catatan wajib saat menolak (E4).
 
 Berkas statis kiosk (HAL-KIO-01), disajikan Nginx dari `public/` dan disimpan Service Worker (`07` ARS-22):
@@ -585,7 +616,7 @@ Rincian halaman:
 - **HAL-IZN-03 — Detail izin siswa** (FS-IZN-01, FS-LAP-04 butir 5). Status, keputusan terbaru, catatan verifikasi, lampiran, dan riwayat keputusan tanpa nama staf (§14). Tombol batalkan hanya tampil selama status menunggu (FS-IZN-01 butir 5).
 - **HAL-IZN-04 — Pengajuan menunggu** (FS-IZN-04 butir 1). Pengajuan menunggu dalam cakupan, yang paling lama di atas: siswa, kelas, jenis, rentang, jumlah hari sekolah terdampak, waktu diajukan, dan tanda lampiran. Bila kosong, halaman menampilkan "Tidak ada pengajuan yang menunggu." (E1).
 - **HAL-IZN-05 — Daftar izin** (FS-IZN-06). Saringan: `status`, `jenis`, `mulai` dan `selesai`, `kelas`, `siswa`, `sumber`, dan `kelompok`, ditambah saringan cepat `cepat` bernilai `menunggu`, `hari_ini`, atau `minggu_ini` (FS-IZN-06 catatan). Bawaannya data yang rentangnya mencakup hari ini atau tanggal ke depan.
-- **HAL-IZN-06 — Detail izin dan verifikasi** (FS-IZN-04, FS-IZN-06). Keterangan, lampiran yang tampil langsung bila berupa gambar atau PDF, riwayat keputusan dengan nama staf, dan status presensi siswa pada setiap hari sekolah terdampak (FS-IZN-04 butir 3). Selama status menunggu, pemegang `HA-IZN-03` melihat formulir verifikasi berisi keputusan dan catatan, dengan pengingat "Catatan dapat dibaca siswa." Penyimpanan memeriksa bahwa status masih menunggu (`07` ARS-41), dan keputusan yang kalah cepat mengikuti FS-IZN-04 E2 dan E3. Pimpinan melihat halaman ini tanpa tombol tindakan (AC-IZN-06-01).
+- **HAL-IZN-06 — Detail izin dan verifikasi** (FS-IZN-04, FS-IZN-06). Keterangan, lampiran yang tampil langsung (gambar sebagai `<img>`, PDF di `<iframe>`, dengan tautan "Buka" dan "Unduh", §13), riwayat keputusan dengan nama staf, dan status presensi siswa pada setiap hari sekolah terdampak (FS-IZN-04 butir 3). Selama status menunggu, pemegang `HA-IZN-03` melihat formulir verifikasi berisi keputusan dan catatan, dengan pengingat "Catatan dapat dibaca siswa." Penyimpanan memeriksa bahwa status masih menunggu (`07` ARS-41), dan keputusan yang kalah cepat mengikuti FS-IZN-04 E2 dan E3. Pimpinan melihat halaman ini tanpa tombol tindakan (AC-IZN-06-01).
 - **HAL-IZN-07 — Ubah keputusan** (FS-IZN-05). Pilihan tindakan mengikuti status data: batalkan atau perpendek untuk data disetujui, dan setujui untuk data ditolak. Isian rentang baru untuk perpendek, dan alasan dengan pengingat "Alasan dapat dibaca siswa." Formulir menampilkan tanggal yang boleh diubah menurut batas mundur (FS-IZN-05 butir 2). Untuk data dari dispensasi massal, halaman menautkan ubah keputusan per kelompok bila semua siswa kelompok berada dalam cakupan pengguna.
 - **HAL-IZN-08 — Input izin oleh staf** (FS-IZN-02). Tanpa `siswa`, halaman menampilkan pencarian (RT-14). Formulir berisi jenis Izin, Sakit, atau Dispensasi, tanggal mulai dan selesai (bawaan dari parameter `tanggal`, atau hari ini), keterangan, dan paling banyak 3 lampiran. Bila bentrok dengan pengajuan menunggu, pesan galat menautkan pengajuan itu (FS-IZN-02 butir 4).
 - **HAL-IZN-09 — Dispensasi massal** (FS-IZN-03, FS-IZN-05 butir 5).
@@ -663,7 +694,7 @@ Kerangka route (RT-22). Halaman dirinci menjelang R2 setelah OQ-10 terjawab.
 | HAL-WA-03 | POST | `/panel/wa/penahanan/{id}/lepas` | `Panel\WaPenahanan::lepas` | `HA-WA-03` | 303 → penahanan |
 | HAL-WA-03 | POST | `/panel/wa/penahanan/{id}/batalkan` | `Panel\WaPenahanan::batalkan` | `HA-WA-03` | 303 → penahanan |
 
-Kredensial gateway tidak tampil di halaman pengaturan. Tempatnya ditetapkan di Session 9 (`06` §6.1).
+Kredensial gateway tidak tampil di halaman pengaturan. Kredensial disimpan di `.env` production, bukan di tabel `pengaturan` (`12` SEC-73, `06` §6.1).
 
 ## 12. Informasi dan kartu (INF, KRT) — R3
 
@@ -691,7 +722,7 @@ Pada jadwal pelajaran, `{id}` adalah ID rombel. Halaman publik hanya memuat peng
 
 ## 13. Berkas
 
-Berkas disajikan lewat controller dengan aturan `07` ARS-52 (RT-16). Berkas dari `writable/uploads/` memakai `X-Content-Type-Options: nosniff`, `Content-Security-Policy: sandbox`, dan `Cache-Control: no-store`, kecuali logo.
+Berkas disajikan lewat controller dengan aturan `07` ARS-52 (RT-16). Header berkas mengikuti tabel header berkas di `12` SEC-52: semua berkas memakai `Cache-Control: no-store`, kecuali logo, dan CSP `sandbox; default-src 'none'; frame-ancestors 'none'`, kecuali lampiran yang memakai `frame-ancestors 'self'` agar PDF dapat tampil di bingkai halaman detail izin. `X-Content-Type-Options: nosniff` dikirim Nginx untuk semua jawaban (`12` SEC-34).
 
 | Alamat | Isi | Hak | Cara tampil | Halaman |
 |---|---|---|---|---|
@@ -699,7 +730,7 @@ Berkas disajikan lewat controller dengan aturan `07` ARS-52 (RT-16). Berkas dari
 | `GET /panel/siswa/{id}/foto` | Foto standar, atau foto kecil dengan `?ukuran=kecil` | `HA-MD-05` sesuai cakupan | Tampil di browser | HAL-MD-09 |
 | `GET /portal/foto` | Foto siswa sendiri | `HA-MD-05` (Sendiri) | Tampil di browser | HAL-AKN-08 |
 | `GET /kiosk/api/v1/foto/{id}` | Foto kiosk | `HA-KIO-01` | Diambil kiosk (`10` EP-KIO-02) | HAL-KIO-01 |
-| `GET /panel/lampiran/{id}` | Lampiran izin atau lampiran bersama kelompok | `HA-IZN-05` sesuai cakupan | Gambar dan PDF tampil di browser; format lain diunduh | HAL-IZN-06, HAL-IZN-09 |
+| `GET /panel/lampiran/{id}` | Lampiran izin atau lampiran bersama kelompok | `HA-IZN-05` sesuai cakupan | Semua format yang diterima (JPG, PNG, WebP, dan PDF) tampil di browser. `?unduh=1` mengunduh dengan `Content-Disposition: attachment`. Halaman detail izin menampilkan PDF di `<iframe>`, dengan tautan "Buka" dan "Unduh" di bawahnya (`12` SEC-52). | HAL-IZN-06, HAL-IZN-09 |
 | `GET /portal/lampiran/{id}` | Lampiran milik data izin siswa itu, termasuk lampiran bersama kelompoknya | `HA-IZN-05` (Sendiri) | Sama dengan di atas | HAL-IZN-03 |
 | `GET /panel/siswa/import/template` | Template import XLSX (`13` IM-01) | `HA-MD-04` | Diunduh | HAL-MD-14 |
 | `GET /panel/siswa/import/{token}/gagal.csv` | Baris gagal import siswa (`13` IM-07) | `HA-MD-04` | Diunduh | HAL-MD-14 |
@@ -713,7 +744,7 @@ Aturan tambahan:
 1. Lampiran kelompok dapat dibuka staf yang cakupannya mencakup paling sedikit satu siswa kelompok itu, dan siswa yang termasuk kelompok itu (`06` §10.4 aturan 2).
 2. Template, file daftar, dan file hasil dibuat saat diunduh, dan tidak disimpan di `writable/uploads/`.
 3. Halaman yang menampilkan siswa tanpa foto memakai gambar pengganti, sehingga tidak meminta berkas foto (`08` UI-24). Permintaan foto siswa yang tidak memiliki foto dijawab 404.
-4. Pencatatan pembukaan lampiran mengikuti OQ-17 (Session 9). Cache browser untuk foto kecil ditinjau di Session 9 (`08` §15).
+4. Setiap pembukaan dan unduhan lampiran oleh akun staf dicatat di log aktivitas dengan jenis `lampiran_dibuka`, kecuali pembukaan ulang lampiran yang sama oleh staf yang sama dalam 10 menit. Unduhan selalu dicatat. Siswa yang membuka lampirannya sendiri tidak dicatat (OQ-17, `12` SEC-60). Foto kecil tetap `no-store` (`12` SEC-52).
 
 ## 14. Label kode di halaman
 
@@ -737,9 +768,11 @@ Label ini melengkapi `08` §9.2 untuk kode yang hanya tampil di halaman admin da
 | Antrean hitung ulang (HAL-AKN-07) | Menunggu · Gagal · Selesai |
 | `wa_template.jenis_kejadian` (R2) | `scan_masuk` Scan masuk · `scan_pulang` Scan pulang · `terlambat` Terlambat · `tidak_hadir` Tidak hadir · `tidak_scan_pulang` Tidak scan pulang · `izin` Izin · `pulang_awal` Pulang lebih awal |
 | `wa_outbox.status` (R2) | `menunggu` Menunggu · `dikirim` Terkirim · `gagal` Gagal · `dibatalkan` Dibatalkan |
+| `log_aktivitas.jenis` (`12` SEC-59) | `login_berhasil` Login berhasil · `login_gagal` Login gagal · `login_dikunci` Login dikunci · `kunci_login_dibuka` Kunci login dibuka · `password_diganti` Password diganti · `password_direset` Password direset · `slip_dicetak` Slip akun dibuat · `akun_dibuat` Akun dibuat · `akun_diubah` Akun diubah · `role_diubah` Role diubah · `akun_dinonaktifkan` Akun dinonaktifkan · `akun_diaktifkan` Akun diaktifkan · `kredensial_stasiun_diganti` Kredensial stasiun diganti · `login_stasiun_berpindah` Akun stasiun login di laptop lain · `pin_kiosk_diubah` PIN petugas diubah · `admin_pertama_dibuat` Admin pertama dibuat · `admin_dipulihkan` Akses admin dipulihkan · `pengaturan_diubah` Pengaturan diubah · `tahun_ajaran_diubah` Tahun ajaran diubah · `rombel_diubah` Kelas diubah · `wali_kelas_diubah` Wali kelas diganti · `atribut_siswa_diubah` Atribut tambahan diubah · `import_siswa` Import siswa · `import_penempatan` Import penempatan · `penempatan_massal` Penempatan massal · `foto_massal` Foto massal · `lampiran_dibuka` Lampiran dibuka · `ekspor` File laporan dibuat (R2) · `scan_ditolak_server` Scan ditolak server |
+| Alasan `login_gagal` | `password_salah` Password salah · `akun_tidak_ada` Akun tidak ada · `akun_nonaktif` Akun nonaktif · `belum_aktif` Akun belum aktif |
+| Jenis kunci `login_dikunci` | `pendek` 15 menit · `panjang` 24 jam · `ip` Alamat IP |
 | `wa_penahanan.status` dan `penyebab` (R2) | `ditahan` Ditahan · `dilepas` Dilepas · `dibatalkan` Dibatalkan; `ambang` Di bawah ambang pengaman · `belum_sinkron` Stasiun belum tersinkron |
 
-Label `log_aktivitas.jenis` ditetapkan bersama halamannya di Session 9.
 
 ## 15. Traceability
 
@@ -793,18 +826,22 @@ Label `log_aktivitas.jenis` ditetapkan bersama halamannya di Session 9.
 | FS-INF-03 (R3) | HAL-INF-05 |
 | FS-KRT-01 (R3) | HAL-KRT-01 |
 | `07` ARS-57 | HAL-AKN-07 |
+| `12` SEC-11 (buka kunci login) | HAL-AKN-04, HAL-AKN-06, HAL-KIO-02 |
+| `12` SEC-21 (PIN petugas) | HAL-KIO-02 |
+| `12` SEC-59 s.d. SEC-62 (log aktivitas), OQ-17 | HAL-AKN-09, §13 (lampiran) |
 
 ### 15.2 Hak akses → halaman
 
 | Hak akses | Halaman |
 |---|---|
 | `HA-AKN-01` | HAL-AKN-02, HAL-AKN-03 |
-| `HA-AKN-02` | HAL-AKN-04 |
-| `HA-AKN-03` | HAL-KIO-02 |
-| `HA-AKN-04` | HAL-AKN-06 |
+| `HA-AKN-02` | HAL-AKN-04, termasuk buka kunci login |
+| `HA-AKN-03` | HAL-KIO-02, termasuk PIN petugas dan buka kunci login |
+| `HA-AKN-04` | HAL-AKN-06, termasuk buka kunci login |
 | `HA-AKN-05` | HAL-AKN-05 |
 | `HA-AKN-06` | HAL-AKN-05, HAL-MD-06 (status akun) |
 | `HA-AKN-07` | HAL-AKN-07 |
+| `HA-AKN-08` | HAL-AKN-09 |
 | `HA-MD-01` | HAL-MD-02 |
 | `HA-MD-02` | HAL-MD-03 |
 | `HA-MD-03` | HAL-MD-05, HAL-MD-07, HAL-MD-10 s.d. HAL-MD-13, export data siswa (R2) |
@@ -875,19 +912,20 @@ Perubahan karena keputusan Session 8, termasuk keputusan yang ditulis di `10`:
 | `08-ui-ux-design-system.md` | 0.2 | §2.4 (keputusan Session 8) ditambahkan. UI-28 (komponen pencarian siswa), UI-31 (menu final di `09` §4), ikon "Kelas saya" di §4.5, tanda stasiun disorot di §4.2, UI-29 (menu lipat tanpa JavaScript), UI-38 (halaman 500), UI-44 (pita versi kiosk), §9.2 (termasuk kolom `libur.cakupan`), §14, §15, dan §16.2 diperbarui. Contoh menu di `08-contoh-tampilan.html` memuat "Kelas saya". |
 | `13-reporting-import-export.md` | 0.4 | Kepala dokumen, pengantar, dan IM-01 merujuk halaman, alamat unduhan, dan alamat export di `09`. §9 diperbarui. |
 
+Perubahan karena keputusan Session 9 dicatat di `12` §20.
 
 ## 17. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 8 tidak menjawab dan tidak menambah OQ. Daftar lengkapnya ada di `00` §8.2.
+Session 8 tidak menjawab dan tidak menambah OQ. Session 9 menjawab OQ-17 (§13, HAL-AKN-09) dan menambah OQ-18 (`12` §21). Daftar lengkapnya ada di `00` §8.2.
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
-| Teks validasi per isian, pesan galat rinci, dan pesan saat token CSRF ditolak di formulir | RT-08, RT-19 | Session 9 (`11`) |
-| Pengaturan CSRF, cookie, dan header keamanan untuk halaman dan berkas, termasuk `Cache-Control` halaman berisi data siswa | RT-05, RT-09, §13 | Session 9 (`12`) |
-| Pembatasan percobaan login, masa sesi staf dan siswa, serta PIN petugas untuk logout kiosk | HAL-AKN-01, `10` EP-KIO-04 | Session 9 |
-| Halaman log aktivitas akun dan label `log_aktivitas.jenis` | §14 | Session 9 |
-| Pencatatan pembukaan lampiran dan cache browser foto kecil | §13, OQ-17 | Session 9 |
-| Uji tampilan PDF dengan `Content-Security-Policy: sandbox` di Chrome dan Edge, karena penampil PDF bawaan dapat gagal memuat dalam sandbox | §13, `07` ARS-52 | Session 9 |
+| Teks validasi per isian, pesan galat rinci, dan pesan saat token CSRF ditolak di formulir | RT-08, RT-19 | Ditetapkan di Session 9 (`11` §4 s.d. §6, GAL-06) |
+| Pengaturan CSRF, cookie, dan header keamanan untuk halaman dan berkas, termasuk `Cache-Control` halaman berisi data siswa | RT-05, RT-09, §13 | Ditetapkan di Session 9 (`12` SEC-28 s.d. SEC-38, SEC-52) |
+| Pembatasan percobaan login, masa sesi staf dan siswa, serta PIN petugas untuk logout kiosk | HAL-AKN-01, `10` EP-KIO-04 | Ditetapkan di Session 9 (`12` SEC-08 s.d. SEC-12, SEC-21) |
+| Halaman log aktivitas akun dan label `log_aktivitas.jenis` | §14, HAL-AKN-09 | Ditetapkan di Session 9 (`12` SEC-59, SEC-62) |
+| Pencatatan pembukaan lampiran dan cache browser foto kecil | §13, OQ-17 | Ditetapkan di Session 9 (`12` SEC-52, SEC-60) |
+| Uji tampilan PDF dengan `Content-Security-Policy: sandbox` di Chrome dan Edge, karena penampil PDF bawaan dapat gagal memuat dalam sandbox | §13, `07` ARS-52 | Ditetapkan di Session 9: PDF tampil di `<iframe>` dengan CSP lampiran, dan tautan "Buka" dan "Unduh" menjadi cadangan (`12` SEC-52) |
 | Rincian halaman R2: export, flyer, dan notifikasi WA | §10, §11 | Menjelang R2 (OQ-10) |
 | Rincian halaman R3: jadwal pelajaran, pengumuman, halaman publik, dan kartu | §12 | Menjelang R3 (OQ-13) |
 | Urutan pembuatan halaman dalam fase implementasi | — | Session 10–11 |
@@ -897,3 +935,4 @@ Session 8 tidak menjawab dan tidak menambah OQ. Daftar lengkapnya ada di `00` §
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-05 | Draft awal dari Session 8: keputusan route, halaman, dan API; konvensi alamat, metode, formulir, pengalihan, pencarian, fragmen, berkas, login, dan galat (`RT-01` s.d. `RT-22`); menu panel dan portal; route dan rincian setiap halaman R1; kerangka route R2 dan R3; berkas; label kode di halaman; dan traceability. |
+| 0.2 | 2026-10-05 | Keputusan Session 9 (§2.3, `11`, `12`). Halaman baru HAL-AKN-09 (log aktivitas) dengan menu "Log aktivitas". Route buka kunci login (HAL-AKN-04, HAL-AKN-06, HAL-KIO-02) dan PIN petugas (HAL-KIO-02). HAL-AKN-01 (pembatasan login), HAL-AKN-07 (log aplikasi dan `CI_ENVIRONMENT`), HAL-IZN-06, RT-09, RT-10, RT-18, RT-19 (halaman 400, 429, 503, dan kode laporan), §11 (kredensial gateway), §13 (header berkas, unduhan lampiran, dan catatan akses), §14 (label `log_aktivitas.jenis`), kepala dokumen, §15, §16, dan §17 diperbarui. |

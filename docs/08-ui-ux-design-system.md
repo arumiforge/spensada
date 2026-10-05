@@ -2,15 +2,15 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.2 (draft, menunggu review) |
+| Versi | 0.3 (draft, menunggu review) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 7 (UI/UX & Design System). Diperbarui dengan keputusan Session 8 (Routes / Pages / API, §2.4). |
+| Sumber | Discovery Session 7 (UI/UX & Design System). Diperbarui dengan keputusan Session 8 (Routes / Pages / API, §2.4) dan Session 9 (Validation, Error Handling & Security, §2.5). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan batasan (`C-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`), area, dan halaman awal. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`), ketentuan umum (§4), dan catatan antarmuka awal. [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). [06-database-design.md](06-database-design.md): kode nilai. [07-system-architecture.md](07-system-architecture.md): library, aset, kiosk, foto, dan pembaruan halaman (`ARS-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, PDF, dan flyer. |
-| Dokumen terkait | `08-contoh-tampilan.html` (contoh visual dokumen ini, di folder yang sama). [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman, route, menu, dan label kode di halaman admin. [10-api-specification.md](10-api-specification.md): fragmen dan bantuan formulir. `11-validation-and-error-handling.md` dan `12-security.md` (Session 9), keduanya belum dibuat. |
+| Dokumen terkait | `08-contoh-tampilan.html` (contoh visual dokumen ini, di folder yang sama). [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman, route, menu, dan label kode di halaman admin. [10-api-specification.md](10-api-specification.md): fragmen dan bantuan formulir. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): teks validasi per isian dan pesan galat. [12-security.md](12-security.md): PIN petugas, sesi, CSP, dan header berkas. |
 
 Dokumen ini menetapkan sistem desain Spensada: prinsip, warna, huruf, ikon, foto, komponen, tata letak panel staf, portal siswa, dan kiosk, teks layar dan label, format tanggal dan angka, dokumen cetak, flyer, serta aksesibilitas dan dukungan perangkat. Dokumen ini menjawab R-19 dan sebagian OQ-13.
 
-Daftar halaman, route, dan menu ada di `09`, dan teks validasi serta pesan galat rinci ditetapkan di Session 9 (`11`). Dokumen ini hanya menetapkan pola tampilan dan teks yang dibutuhkan dokumen tersebut.
+Daftar halaman, route, dan menu ada di `09`, teks validasi serta pesan galat rinci ada di `11`, dan ketentuan keamanan ada di `12`. Dokumen ini hanya menetapkan pola tampilan dan teks yang dibutuhkan dokumen tersebut.
 
 ## 1. Cara membaca dokumen ini
 
@@ -85,6 +85,19 @@ Keputusan Session 8 yang berdampak ke tampilan. Rinciannya ada di `09` §2.
 | Status stasiun | Halaman status stasiun menampilkan versi kode kiosk dan keadaan penyimpanan permanen. Stasiun juga disorot bila memiliki scan galat atau penyimpanan permanennya belum aktif. | §4.2, `09` HAL-KIO-02 | DECISION (kolom); RECOMMENDATION (sorotan) |
 | Kata di alamat | Alamat memakai kata `kelas`, sama dengan label layar. | UI-51, `09` RT-03 | DECISION |
 | Label kode di halaman admin | Label kode yang belum ada di §9.2 ditetapkan di `09` §14. | §9.2 | RECOMMENDATION |
+
+### 2.5 Keputusan Session 9
+
+Keputusan Session 9 yang berdampak ke tampilan. Daftar lengkapnya ada di `12` §2.1.
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| PIN petugas | Satu PIN 6 digit untuk semua stasiun, diatur admin. PIN wajib untuk logout akun stasiun dan hapus data lokal di kiosk. | UI-48, `12` SEC-21, SEC-22 | DECISION |
+| Pembatasan login | Pesan kunci menyebut jam login dapat dicoba lagi, atau meminta menghubungi wali kelas atau admin untuk kunci 24 jam. | UI-38, `11` §5.1, `12` SEC-08 | DECISION |
+| Masa sesi | Sesi staf dan siswa berakhir setelah 8 jam tanpa aktivitas, atau 7 hari sejak login, dan tetap berjalan setelah browser ditutup. Halaman login mengingatkan logout di komputer bersama. | UI-38, `12` SEC-12 | DECISION |
+| Format dan ukuran unggahan | Paket 10 MB: foto, logo, dan lampiran paling besar 10 MB per file. Pesannya di `11` VAL-28. | §5 (unggah file), `12` SEC-49 | DECISION |
+| Log aktivitas | Admin melihat log aktivitas, termasuk akses lampiran, di halaman log aktivitas (`HA-AKN-08`). Labelnya di `09` §14. | §9.2, `09` HAL-AKN-09, `12` SEC-62 | DECISION (OQ-17); RECOMMENDATION (isi halaman) |
+| Tanpa atribut `style` | CSP tidak mengizinkan gaya di dalam HTML, sehingga atribut `style` tidak dipakai sama sekali. | UI-74, `12` SEC-36 | RECOMMENDATION |
 
 ## 3. Prinsip
 
@@ -242,10 +255,10 @@ Ikon yang dipakai (selain ikon status di §4.2):
 | Komponen | Aturan |
 |---|---|
 | Tombol | Jenis: utama (latar warna utama), kedua (bergaris), bahaya (merah, untuk pembatalan dan penonaktifan), dan teks. Satu formulir memiliki paling banyak satu tombol utama. Label tombol berupa kata kerja yang menyebut hasilnya, misalnya "Simpan presensi manual", bukan "OK". Tombol yang sedang memproses dinonaktifkan dan berlabel "Menyimpan…", agar tidak terkirim dua kali. |
-| Isian formulir | Label di atas isian, tidak di dalamnya. Isian opsional diberi tulisan "(opsional)", sehingga isian tanpa tanda adalah wajib. Teks bantuan di bawah label. Galat tampil di bawah isian dengan ikon dan teks merah, serta diringkas di atas formulir dengan tautan ke setiap isian (`role="alert"`). Isi formulir tetap utuh setelah galat. Isian alasan koreksi dan catatan verifikasi memuat pengingat "Alasan dapat dibaca siswa." (`04` §4.3 butir 4). |
+| Isian formulir | Label di atas isian, tidak di dalamnya. Isian opsional diberi tulisan "(opsional)", sehingga isian tanpa tanda adalah wajib. Teks bantuan di bawah label. Galat tampil di bawah isian dengan ikon dan teks merah, dan isian ditandai `aria-invalid="true"` dengan `aria-describedby` ke pesannya. Di atas formulir tampil ringkasan "Periksa [n] isian yang ditandai." dengan tautan ke setiap isian (`role="alert"`), dan fokus pindah ke ringkasan itu. Isi formulir tetap utuh setelah galat, kecuali password, PIN, dan file (`11` VAL-07). Isian alasan koreksi dan catatan verifikasi memuat pengingat "Alasan dapat dibaca siswa." (`04` §4.3 butir 4). |
 | Pilihan | Pilihan sedikit (≤ 5) memakai tombol radio, dan pilihan banyak memakai `select`. Pilihan ganda memakai kotak centang. Tidak memakai sakelar geser. |
 | Tanggal dan jam | Memakai `<input type="date">` dan `<input type="time">` bawaan browser, dengan `step="60"` untuk jam. Tampilan isian mengikuti bahasa perangkat, tetapi teks lain di halaman tetap memakai format UI-53. Formulir yang dibatasi batas mundur menampilkan "Dapat diubah: 6–13 Oktober 2026" (`04` §4.2). |
-| Unggah file | Tombol pilih file dengan nama file terpilih. Foto dan logo menampilkan pratinjau sebelum disimpan bila JavaScript aktif (FS-MD-01, FS-MD-07). Unggahan besar menampilkan kemajuan bertahap (ARS-54 butir 6). |
+| Unggah file | Tombol pilih file dengan nama file terpilih. Foto dan logo menampilkan pratinjau sebelum disimpan bila JavaScript aktif (FS-MD-01, FS-MD-07). Unggahan besar menampilkan kemajuan bertahap (ARS-54 butir 6). Format dan ukuran yang diterima ditulis di teks bantuan, misalnya "JPG, PNG, atau WebP, paling besar 10 MB." (`12` SEC-49). |
 | Tabel | Judul kolom pendek dengan `scope`. Angka rata kanan dengan `tabular-nums`. Baris total tebal di bawah. Kolom yang dapat diurutkan memakai tombol di judul kolom dan `aria-sort`. Tabel lebar digeser ke samping di dalam wadahnya sendiri, dengan kolom pertama tetap di kiri. Tabel angka di ponsel memakai huruf singkat dengan keterangan di bawah tabel (§4.2). |
 | Chip status | Pil berlatar warna muda, dengan ikon dan teks warna teks status (§4.2). Status data izin memakai chip bergaris. |
 | Ubin angka | Kotak berisi angka besar dan label dengan ikon status. Dipakai di kepala dashboard dan ringkasan rekap. Ubin "Belum hadir" atau Alpa disorot (FS-LAP-01). |
@@ -253,7 +266,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 | Pesan kilat | Pesan setelah tindakan berhasil atau gagal, tampil di atas isi halaman setelah pengalihan (pola POST, lalu alihkan, lalu GET). Pesan berhasil memakai `role="status"`, dan pesan gagal `role="alert"`. Pesan tetap tampil sampai pengguna pindah halaman. |
 | Konfirmasi | Tindakan yang membutuhkan konfirmasi (`04` §4.7) memakai langkah konfirmasi yang dibuat server dan menyebut dampaknya, misalnya "2 akun akan mendapat password baru". Dengan JavaScript, langkah itu boleh tampil dalam `<dialog>`. `confirm()` bawaan browser tidak dipakai. Tindakan yang sudah meminta alasan, misalnya pembatalan presensi manual, tidak meminta konfirmasi tambahan. |
 | Keadaan kosong | Kalimat yang menyebut keadaannya, ditambah tindakan berikutnya bila ada, misalnya "Belum ada stasiun scan." dengan tautan tambah akun stasiun (FS-KIO-05 E1). |
-| Diperbarui berkala | Fragmen yang diperbarui setiap 30 detik (ARS-50) menampilkan "Diperbarui 07.32". Bila permintaan gagal, tampil "Gagal memperbarui. Mencoba lagi." Bila sesi berakhir, polling berhenti dan tampil "Sesi berakhir. Muat ulang halaman untuk login lagi." Pembaruan berkala tidak diumumkan pembaca layar, kecuali keadaan gagal. |
+| Diperbarui berkala | Fragmen yang diperbarui setiap 30 detik (ARS-50) menampilkan "Diperbarui 07.32". Bila permintaan gagal, tampil "Gagal memperbarui. Mencoba lagi." Bila sesi berakhir, polling berhenti dan tampil "Sesi berakhir. Login lagi untuk melanjutkan." dengan tautan ke `/login` (`11` GAL-14). Pembaruan berkala tidak diumumkan pembaca layar, kecuali keadaan gagal. |
 | Tab | Untuk membagi satu isi, misalnya baris valid dan baris gagal di pratinjau import (FS-MD-06). Tanpa JavaScript, setiap tab adalah tautan dengan parameter. |
 | Pemilih tanggal | Isian tanggal dengan tombol hari sebelumnya dan berikutnya (FS-LAP-02). Tombol berikutnya nonaktif di hari ini. |
 | Pencarian siswa | Isian "Nama atau NISN" dengan ikon `search` dan tombol Cari. Tanpa JavaScript, hasil tampil setelah halaman dimuat ulang. Dengan JavaScript, hasil yang sama tampil saat mengetik, mulai 2 karakter: paling banyak 20 siswa dengan foto kecil, nama, NISN, kelas, dan status siswa. Hasil berupa daftar tautan biasa di bawah isian, sehingga dapat dipilih dengan Tab dan Enter, dan jumlahnya diumumkan pembaca layar lewat `aria-live="polite"`. Mode pilih banyak memakai kotak centang (`09` RT-14, `10` EP-MD-01). |
@@ -281,7 +294,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 | Laporan | Rekap per kelas, riwayat siswa; di R2 rekap semua kelas, rekap rapor, dan flyer | `HA-LAP-03` s.d. `HA-LAP-06` |
 | Siswa | Data siswa, import, foto massal, penempatan, akun siswa dan slip, atribut tambahan | `HA-MD-03` s.d. `HA-MD-05`, `HA-MD-08`, `HA-MD-11`, `HA-AKN-05`, `HA-AKN-06` |
 | Sekolah | Identitas sekolah, tahun ajaran, kelas dan wali kelas, pola mingguan, jadwal khusus, libur, batas mundur | `HA-MD-01`, `HA-MD-02`, `HA-MD-09`, `HA-PRS-01`, `HA-PRS-02`, `HA-PRS-09` |
-| Akun dan stasiun | Akun staf, akun dan status stasiun, pemeriksaan sistem | `HA-AKN-02`, `HA-AKN-03`, `HA-AKN-07`, `HA-KIO-02` |
+| Akun dan stasiun | Akun staf, akun dan status stasiun, PIN petugas, log aktivitas, pemeriksaan sistem | `HA-AKN-02`, `HA-AKN-03`, `HA-AKN-07`, `HA-AKN-08`, `HA-KIO-02` |
 
 ### 6.2 Portal siswa
 
@@ -295,7 +308,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-38 | **Login, ganti password, dan galat.** Halaman login berada di tengah layar dan memuat logo, nama resmi sekolah, serta nama produk "Spensada" (FS-MD-01). Isinya satu isian "NISN atau username", isian password dengan tombol tampilkan atau sembunyikan, dan teks bantuan: "Siswa yang lupa password menghubungi wali kelas. Staf menghubungi admin." (FS-AKN-01, FS-AKN-02). Halaman galat 403 dan 404 memakai kerangka area pengguna, sedangkan halaman 500 memakai kerangka tanpa menu area (`09` RT-19), dengan pesan di §9.4 dan tautan ke halaman awal. Halaman publik (R3) memakai kerangka portal tanpa menu bawah, dan dirinci menjelang R3. | RECOMMENDATION |
+| UI-38 | **Login, ganti password, dan galat.** Halaman login berada di tengah layar dan memuat logo, nama resmi sekolah, serta nama produk "Spensada" (FS-MD-01). Isinya satu isian "NISN atau username", isian password dengan tombol tampilkan atau sembunyikan, dan teks bantuan: "Siswa yang lupa password menghubungi wali kelas. Staf menghubungi admin. Di komputer bersama, logout setelah selesai." (FS-AKN-01, FS-AKN-02). Pengingat logout diperlukan karena sesi tetap berjalan setelah browser ditutup, sampai 8 jam tanpa aktivitas atau 7 hari sejak login (`12` SEC-12 butir 3). Pesan kunci login mengikuti `11` §5.1. Di bawah formulir login tersedia tempat pemberitahuan privasi dengan teks dari sekolah, yang juga tampil di portal siswa (`12` SEC-68, OQ-18). Halaman galat 403 dan 404 memakai kerangka area pengguna, sedangkan halaman 500 memakai kerangka tanpa menu area (`09` RT-19), dengan pesan di §9.4 dan tautan ke halaman awal. Halaman 500 menampilkan kode laporan 8 karakter, misalnya `7F3A2C1B`, untuk dilaporkan ke admin (`11` GAL-13). Halaman 400 dan 429 memakai teks di §9.4 (`11` GAL-02, GAL-10). Halaman 413, 429 dari Nginx, dan 503 pemeliharaan adalah file statis di `public/galat/` dengan logo dan teks yang sama, tanpa menu dan tanpa skrip (`11` GAL-11, GAL-17). Halaman publik (R3) memakai kerangka portal tanpa menu bawah, dan dirinci menjelang R3. | RECOMMENDATION |
 
 ## 7. Kiosk
 
@@ -386,13 +399,21 @@ Sebelum jam buka scan masuk dan di antara jendela masuk dan jendela pulang, blok
 | UI-45 | **Bunyi Web Audio.** Bunyi dibuat dengan `OscillatorNode` dan `GainNode` dari satu `AudioContext`, tanpa file suara (tabel di bawah). Browser dapat menahan `AudioContext` sampai ada interaksi pengguna. Bila keadaannya `suspended`, kiosk menampilkan peringatan "Bunyi belum aktif" dan memanggil `resume()` pada klik atau penekanan tombol pertama. Chrome mengizinkan bunyi tanpa klik untuk aplikasi yang sudah dipasang. Di Edge, admin mengatur "Putar otomatis media" menjadi "Izinkan" untuk alamat kiosk saat pemasangan stasiun (UF-06). Bunyi pertama diputar setelah `resume()` selesai. Menu petugas memuat tombol "Tes bunyi". | DECISION (tiga nada Web Audio dan pemetaannya); RECOMMENDATION (nada dan rincian) |
 | UI-46 | **Fokus dan scanner USB.** Tombol kiosk tidak menahan fokus. Setelah tombol diklik, fokus dikembalikan ke halaman, agar Enter dari scanner USB tidak menekan tombol itu (ARS-26). | RECOMMENDATION |
 | UI-47 | **Layar tetap menyala.** Selama kiosk tampil, kiosk meminta `navigator.wakeLock.request('screen')` dan memintanya lagi saat jendela kembali terlihat. Bila permintaan ditolak, kiosk tidak menampilkan galat. Pengaturan daya Windows tetap menjadi pengaman utama (ARS-32). | RECOMMENDATION |
-| UI-48 | **Tindakan berisiko di menu.** Logout, hapus data lokal, dan layar penuh berada di menu petugas, bukan di layar utama. PIN petugas ditetapkan di Session 9 (`02` §9). | RECOMMENDATION |
+| UI-48 | **Tindakan berisiko di menu.** Logout, hapus data lokal, dan layar penuh berada di menu petugas, bukan di layar utama. Logout dan hapus data lokal meminta PIN petugas (`12` SEC-21, SEC-22, `02` §9). Layar penuh, muat ulang data, dan sinkron sekarang tidak meminta PIN. Lihat butir di bawah tabel. | DECISION (PIN untuk logout dan hapus data lokal, Session 9); RECOMMENDATION (rincian) |
 
 | Bunyi | Nada | Bentuk gelombang | Durasi | Dipakai untuk |
 |---|---|---|---|---|
 | Berhasil | Satu nada ±1.046 Hz | Segitiga | 0,16 detik | Scan tercatat, termasuk Terlambat dan pulang lebih awal |
 | Peringatan | Dua nada ±740 Hz dengan jeda 0,08 detik | Segitiga | 2 × 0,12 detik | Scan ganda |
 | Galat | Satu nada ±196 Hz | Kotak, lebih pelan | 0,5 detik | Scan ditolak |
+
+Butir UI-48:
+
+1. Setelah tindakan dipilih, kiosk menampilkan dialog "Masukkan PIN petugas." dengan isian PIN yang disamarkan (`type="password"`, `inputmode="numeric"`, `autocomplete="off"`, 6 digit) dan tombol angka besar untuk layar sentuh. Teks layar mengikuti `11` §5.3.
+2. PIN diperiksa di kiosk dengan hash dari data kiosk, sehingga dapat dipakai saat offline (`12` SEC-21 butir 2). PIN salah menampilkan "PIN salah. Sisa [n] percobaan." Lima kali salah mengunci menu petugas 5 menit dengan pesan "Menu petugas dikunci sampai pukul [jam]."
+3. Bila PIN belum diatur, menu petugas menampilkan pita "PIN petugas belum diatur. Hubungi admin.", dan tindakan berisiko cukup memakai konfirmasi (`12` SEC-21 butir 4).
+4. Hapus data lokal tetap ditolak selama ada scan belum tersinkron: "Masih ada [n] scan belum tersinkron. Sinkronkan dulu sebelum menghapus data."
+5. Halaman pengaturan PIN di panel (`09` HAL-KIO-02) memakai isian yang sama, diisi dua kali, dengan pesan `11` VAL-22.
 
 ## 8. Gaya bahasa
 
@@ -450,7 +471,7 @@ Judul kolom file export dan template import di `13` ikut memakai label ini, misa
 | `libur.cakupan` | `semua` Semua siswa · `tingkat` Tingkat · `rombel` Kelas |
 | `atribut_siswa.tipe` | `teks` Teks · `angka` Angka · `tanggal` Tanggal · `pilihan` Pilihan |
 
-Label log, outbox WA, dan kode lain yang hanya tampil di halaman admin dan halaman staf tertentu ada di `09` §14, dengan pola yang sama: huruf awal kapital dan garis bawah menjadi spasi. Label `log_aktivitas.jenis` ditetapkan di Session 9.
+Label log, outbox WA, dan kode lain yang hanya tampil di halaman admin dan halaman staf tertentu ada di `09` §14, dengan pola yang sama: huruf awal kapital dan garis bawah menjadi spasi. Label `log_aktivitas.jenis` juga ada di `09` §14 (`12` SEC-59).
 
 ### 9.3 Format
 
@@ -478,7 +499,7 @@ Singkatan bulan: Jan, Feb, Mar, Apr, Mei, Jun, Jul, Agu, Sep, Okt, Nov, Des.
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-56 | **Pesan umum.** Pesan yang dipakai banyak fitur memakai teks di tabel di bawah. Teks validasi per isian ditetapkan di `11` (Session 9). | RECOMMENDATION |
+| UI-56 | **Pesan umum.** Pesan yang dipakai banyak fitur memakai teks di tabel di bawah. Teks validasi per isian ada di `11` §4, dan pesan per fitur di `11` §5. | RECOMMENDATION |
 
 | Keadaan | Teks untuk staf | Teks untuk siswa | Rujukan |
 |---|---|---|---|
@@ -486,8 +507,13 @@ Singkatan bulan: Jan, Feb, Mar, Apr, Mei, Jun, Jul, Agu, Sep, Okt, Nov, Des.
 | Di luar batas mundur | Tanggal 5 Oktober 2026 di luar batas mundur (7 hari). Hubungi admin. | Tanggal 5 Oktober 2026 sudah lewat batas pengajuan. Hubungi wali kelas. | `04` §4.2 |
 | Data sudah diubah orang lain | Data ini sudah diubah oleh Rina Wulandari pukul 07.40. Periksa data terbaru, lalu simpan lagi bila perlu. | — | `04` §4.6 |
 | Halaman tidak ditemukan | Halaman tidak ditemukan. | Halaman tidak ditemukan. | — |
-| Gangguan server | Terjadi gangguan. Coba lagi beberapa saat lagi. | Terjadi gangguan. Coba lagi beberapa saat lagi. | — |
+| Gangguan server | Terjadi gangguan. Coba lagi beberapa saat lagi. Bila berulang, laporkan kode 7F3A2C1B ke admin sekolah. | Terjadi gangguan. Coba lagi beberapa saat lagi. Bila berulang, laporkan kode 7F3A2C1B ke admin sekolah. | `11` GAL-13 |
 | Sesi berakhir | Sesi berakhir. Login lagi untuk melanjutkan. | Sesi berakhir. Login lagi untuk melanjutkan. | ARS-47 |
+| Sesi berakhir saat mengirim formulir | Sesi berakhir sebelum formulir terkirim. Login lagi, lalu kirim ulang formulir. | Sesi berakhir sebelum formulir terkirim. Login lagi, lalu kirim ulang formulir. | `11` GAL-07 |
+| Kiriman kedaluwarsa (CSRF) | Kiriman tidak dapat diproses karena halaman sudah terlalu lama dibuka. Periksa isian, lalu kirim lagi. | Kiriman tidak dapat diproses karena halaman sudah terlalu lama dibuka. Periksa isian, lalu kirim lagi. | `11` GAL-06 |
+| Permintaan rusak | Permintaan tidak dapat diproses. Muat ulang halaman, lalu coba lagi. | Permintaan tidak dapat diproses. Muat ulang halaman, lalu coba lagi. | `11` GAL-02 |
+| Terlalu banyak permintaan | Terlalu banyak permintaan. Tunggu sebentar, lalu coba lagi. | Terlalu banyak permintaan. Tunggu sebentar, lalu coba lagi. | `11` GAL-10 |
+| Pemeliharaan | Spensada sedang diperbarui. Coba lagi dalam beberapa menit. | Spensada sedang diperbarui. Coba lagi dalam beberapa menit. | `11` GAL-17 |
 | Wajib ganti password | Ganti password sebelum melanjutkan. | Ganti password sebelum melanjutkan. | `02` §2 |
 
 ## 10. Dokumen cetak
@@ -503,7 +529,7 @@ Singkatan bulan: Jan, Feb, Mar, Apr, Mei, Jun, Jul, Agu, Sep, Okt, Nov, Des.
 | ID | Aturan | Status |
 |---|---|---|
 | UI-58 | **8 slip per A4.** Halaman slip berukuran A4 tegak dengan 8 slip berukuran A7 (±105 × 74 mm), dalam 2 kolom × 4 baris, dengan garis potong putus-putus. Margin halaman 0, dan setiap slip memiliki ruang dalam ±6 mm agar isi tetap tercetak di printer yang tidak dapat mencetak sampai tepi. | DECISION (8 slip A7 dengan garis potong); RECOMMENDATION (margin) |
-| UI-59 | **Isi slip.** Logo dan nama sekolah, judul "Akun Spensada", nama, NISN, kelas, password awal, alamat aplikasi, dan petunjuk: "1. Login dengan NISN dan password di atas. 2. Ganti password, lalu simpan baik-baik. Lupa password? Hubungi wali kelas." Password memakai huruf berlebar tetap berukuran ±16 pt, dibagi per 4 karakter dengan jarak, dengan panjang password yang ditetapkan di Session 9, dan tanpa karakter yang mirip (`02` §7.2 butir 5). Halaman slip di layar menampilkan peringatan "Password hanya tampil sekali. Cetak atau simpan sekarang." (FS-AKN-05). Slip satu siswa hasil reset memakai isi yang sama dalam satu halaman. | DECISION (password dengan huruf berukuran besar dan petunjuk lengkap); RECOMMENDATION (rincian) |
+| UI-59 | **Isi slip.** Logo dan nama sekolah, judul "Akun Spensada", nama, NISN, kelas, password awal, alamat aplikasi, dan petunjuk: "1. Login dengan NISN dan password di atas. 2. Ganti password, lalu simpan baik-baik. Lupa password? Hubungi wali kelas." Password memakai huruf berlebar tetap berukuran ±16 pt, dan panjangnya 8 karakter dari 31 huruf kecil dan angka tanpa karakter yang mirip (`12` SEC-05, `02` §7.2 butir 5). Password tampil sebagai 2 kelompok 4 karakter dengan jarak, misalnya `k7mp 3xha`. Jarak itu hanya tampilan, dan tidak diketik. Halaman slip di layar menampilkan peringatan "Password hanya tampil sekali. Cetak atau simpan sekarang." (FS-AKN-05). Slip satu siswa hasil reset memakai isi yang sama dalam satu halaman. | DECISION (password dengan huruf berukuran besar dan petunjuk lengkap); RECOMMENDATION (rincian) |
 
 ### 10.3 PDF laporan (R2)
 
@@ -545,7 +571,7 @@ Bagian ini melengkapi struktur folder `07` §5.3.
 | ID | Aturan | Status |
 |---|---|---|
 | UI-73 | **File CSS.** CSS ditulis tanpa build, dalam file berikut, dan dimuat berurutan: `dasar.css` (token, reset, huruf), `komponen.css` (§5), `panel.css`, `portal.css`, atau `publik.css` (kerangka area), dan `cetak.css` (`media="print"`). Kiosk memakai `public/aset/kiosk/kiosk.css` yang mengimpor token yang sama. Alamat aset panel, portal, dan publik diberi parameter versi aplikasi, misalnya `?v=1.0.0`, agar cache browser diperbarui setelah rilis. Kiosk memakai versi cache Service Worker (ARS-22). | RECOMMENDATION |
-| UI-74 | **Nama kelas dan token.** Nama kelas CSS memakai bahasa Indonesia dengan huruf kecil dan tanda hubung, misalnya `.tombol-utama`, `.chip-status`, `.status-hadir`, dan `.tabel-angka`. Token memakai awalan sesuai §4, misalnya `--warna-utama` dan `--status-alpa-muda`. Tidak ada gaya di atribut `style`, kecuali nilai yang dihitung, misalnya lebar bilah kemajuan. | RECOMMENDATION |
+| UI-74 | **Nama kelas dan token.** Nama kelas CSS memakai bahasa Indonesia dengan huruf kecil dan tanda hubung, misalnya `.tombol-utama`, `.chip-status`, `.status-hadir`, dan `.tabel-angka`. Token memakai awalan sesuai §4, misalnya `--warna-utama` dan `--status-alpa-muda`. Tidak ada gaya di atribut `style`, karena CSP tidak mengizinkan gaya di dalam HTML (`12` SEC-36). Bilah kemajuan memakai elemen `<progress>`, atau lebarnya diatur lewat properti CSSOM dari modul JavaScript. | RECOMMENDATION |
 | UI-75 | **Label dan komponen di view.** Label kode nilai (§9.2), status (§4.2), dan istilah layar (§9.1) ditulis sekali di `app/Config/Label.php`, lalu dipakai view, file export, PDF, dan flyer. Komponen yang menerima data, misalnya chip status, foto siswa, dan pesan kilat, ditulis sebagai view komponen di `app/Views/komponen/`. Setiap area memiliki layout di `app/Views/layout/`. | RECOMMENDATION |
 | UI-76 | **JavaScript halaman.** Modul ES kecil di `public/aset/js/` (ARS-19), misalnya `polling.js` (ARS-50), `pratinjau-unggah.js`, `menu-lipat.js`, `dialog.js`, dan `flyer.js` (R2). Modul tidak bergantung satu sama lain, kecuali modul bantu format waktu (UI-55). | RECOMMENDATION |
 
@@ -588,22 +614,23 @@ Perubahan karena keputusan Session 7:
 
 File `docs/08-contoh-tampilan.html` juga dibuat di Session 7 (UI-77). `02` tidak berubah.
 
-Perubahan karena keputusan Session 8 dicatat di `09` §16.
+Perubahan karena keputusan Session 8 dicatat di `09` §16. Perubahan karena keputusan Session 9 dicatat di `12` §20.
 
 ## 15. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru. Session 8 menetapkan daftar halaman, route, dan menu (`09`).
+Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru. Session 8 menetapkan daftar halaman, route, dan menu (`09`). Session 9 menetapkan teks validasi, pesan galat, dan keamanan (`11`, `12`).
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
 | Contoh kartu OSIS lama dan desain kartu rinci | OQ-13, UI-62 | Sekolah, sebelum R3 |
 | Daftar halaman, route, dan isi menu final | UI-31 | Ditetapkan di Session 8 (`09` §4 s.d. §13) |
-| Teks validasi per isian dan pesan galat rinci | UI-56 | Session 9 (`11`) |
-| PIN petugas untuk tindakan berisiko di kiosk | UI-48 | Session 9 |
-| Cache browser untuk foto kecil, yang saat ini tidak disimpan (ARS-52) | UI-22 | Session 9 |
+| Teks validasi per isian dan pesan galat rinci | UI-56 | Ditetapkan di Session 9 (`11` §4 s.d. §6) |
+| PIN petugas untuk tindakan berisiko di kiosk | UI-48 | Ditetapkan di Session 9 (`12` SEC-21, SEC-22) |
+| Cache browser untuk foto kecil, yang saat ini tidak disimpan (ARS-52) | UI-22 | Ditetapkan di Session 9: foto kecil tetap `no-store` (`12` SEC-52) |
 | Format dan panjang NIP | UI-61 | Menjelang R2 |
 | Ukuran huruf, resolusi kamera, dan volume bunyi di laptop sekolah | UI-39, UI-45 | Uji di laptop sekolah sebelum uji coba R1 |
 | Rincian halaman publik | UI-38 | Menjelang R3 |
+| Teks pemberitahuan privasi di halaman login dan portal | UI-38 | Setelah OQ-18 terjawab (`12` SEC-68) |
 
 ## 16. Traceability
 
@@ -611,12 +638,12 @@ Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru. Session 8 menetapk
 
 | Fitur atau ketentuan | Tampilan |
 |---|---|
-| FS-AKN-01, FS-AKN-02 | UI-38, UI-56 |
+| FS-AKN-01, FS-AKN-02 | UI-38, UI-56, `11` §5.1 |
 | FS-AKN-05 | UI-57 s.d. UI-59 |
 | FS-MD-01 | UI-09, UI-38 |
 | FS-MD-03 | UI-51 |
 | FS-MD-04, FS-MD-07, FS-MD-08 | UI-22 s.d. UI-25, UI-54 |
-| FS-KIO-01 s.d. FS-KIO-03 | UI-39 s.d. UI-48 |
+| FS-KIO-01 s.d. FS-KIO-03 | UI-39 s.d. UI-48, `11` §5.3 |
 | FS-KIO-05, FS-KIO-06 | §4.2, UI-23 |
 | FS-PRS-05 | UI-01, UI-12 |
 | FS-PRS-06 | UI-34 |
@@ -630,7 +657,8 @@ Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru. Session 8 menetapk
 | FS-KRT-01 (R3) | UI-62 s.d. UI-64 |
 | `04` §4.2, §4.3, §4.7, §4.8 | §5, UI-53, UI-56 |
 | NFR-01, NFR-11 | UI-02, UI-18, UI-70 |
-| NFR-10, R-17 | UI-03 |
+| NFR-07 | UI-28 (isian formulir), UI-56, `11` VAL-07 |
+| NFR-10, R-17 | UI-03, UI-22 (foto kecil `no-store`), UI-38 (pemberitahuan privasi) |
 | R-19 | UI-65 |
 | OQ-13 | UI-62 |
 
@@ -672,3 +700,4 @@ Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru. Session 8 menetapk
 |---|---|---|
 | 0.1 | 2026-10-04 | Draft awal dari Session 7: keputusan tampilan, prinsip, warna dan status, huruf, ikon, foto, komponen, tata letak panel dan portal, kiosk, gaya bahasa, label dan format, dokumen cetak, flyer, aksesibilitas, aset, dan traceability. R-19 terjawab, dan OQ-13 terjawab sebagian. |
 | 0.2 | 2026-10-05 | Keputusan Session 8 (§2.4, `09`, `10`). UI-28 (komponen pencarian siswa), UI-31 (menu final di `09` §4.1, termasuk "Kelas saya"), tanda stasiun disorot di §4.2, §9.2 (label kode di `09` §14), ikon "Kelas saya" di §4.5, UI-29 (menu lipat tanpa JavaScript), UI-38 (halaman 500), UI-44 (pita versi kiosk), kolom `libur.cakupan` di §9.2, kepala dokumen, §14, §15, dan §16.2 diperbarui. Contoh menu di `08-contoh-tampilan.html` memuat "Kelas saya". |
+| 0.3 | 2026-10-05 | Keputusan Session 9 (§2.5, `11`, `12`). UI-28 (galat formulir, teks bantuan unggah, dan pesan sesi berakhir), UI-31 (menu PIN petugas dan log aktivitas), UI-38 (pengingat logout, pemberitahuan privasi, halaman 400, 413, 429, 503, dan kode laporan di halaman 500), UI-48 (PIN petugas), UI-56 (pesan umum baru dan pesan gangguan server dengan kode laporan), UI-59 (password slip 8 karakter), UI-74 (tanpa atribut `style`), §9.2, kepala dokumen, §14, §15, dan §16.1 diperbarui. |

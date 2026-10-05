@@ -2,13 +2,13 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.5 (draft, menunggu review) |
+| Versi | 0.6 (draft, menunggu review) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 4b (Feature Specification). Diperbarui dengan keputusan Session 5 (§2.4), Session 6 (§2.5), Session 7 (§2.6), dan Session 8 (§2.7). |
+| Sumber | Discovery Session 4b (Feature Specification). Diperbarui dengan keputusan Session 5 (§2.4), Session 6 (§2.5), Session 7 (§2.6), Session 8 (§2.7), dan Session 9 (§2.8). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan acceptance criteria tingkat tinggi (AC-01 s.d. AC-05). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). |
-| Dokumen terkait | [06-database-design.md](06-database-design.md): tabel yang ditulis dan dibaca setiap fitur. [07-system-architecture.md](07-system-architecture.md): mekanisme teknis, termasuk kiosk dan hitung ulang. [13-reporting-import-export.md](13-reporting-import-export.md): laporan, template import, dan format file. [08-ui-ux-design-system.md](08-ui-ux-design-system.md): tampilan, teks layar, dan label. [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman dan route setiap fitur. [10-api-specification.md](10-api-specification.md): API kiosk, fragmen, dan bantuan formulir. |
+| Dokumen terkait | [06-database-design.md](06-database-design.md): tabel yang ditulis dan dibaca setiap fitur. [07-system-architecture.md](07-system-architecture.md): mekanisme teknis, termasuk kiosk dan hitung ulang. [13-reporting-import-export.md](13-reporting-import-export.md): laporan, template import, dan format file. [08-ui-ux-design-system.md](08-ui-ux-design-system.md): tampilan, teks layar, dan label. [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman dan route setiap fitur. [10-api-specification.md](10-api-specification.md): API kiosk, fragmen, dan bantuan formulir. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): aturan isian, teks pesan validasi, dan penanganan galat. [12-security.md](12-security.md): password, pembatasan login, sesi, PIN petugas, file unggahan, dan log aktivitas. |
 
-Dokumen ini merinci setiap fitur R1 sampai siap dirancang di Session 5–8 dan diimplementasikan. Setiap fitur memuat:
+Dokumen ini merinci setiap fitur R1 sampai siap dirancang di Session 5–9 dan diimplementasikan. Setiap fitur memuat:
 
 - tujuan, aktor dan hak, serta prasyarat;
 - input dan validasi, perilaku, dan aturan terkait;
@@ -50,7 +50,7 @@ Dokumen ini juga mencatat keputusan Session 4b atas usulan di `05` (§2). Dokume
 
   Semua jam memakai WIB.
 - **Acceptance criteria.** Ditulis dalam format Given/When/Then seperti `01` §7. Sebuah fitur dianggap selesai bila semua acceptance criteria-nya lulus, dan dokumen fase di Session 11 merujuk ID ini. (RECOMMENDATION)
-- **Nama teknis.** Tabel, kolom, route, dan teks layar ditetapkan di Session 5–8. Nama tabel dan kolom ada di `06`, mekanisme teknis di `07`, teks layar dan label di `08`, halaman dan route di `09`, serta API di `10`. Contoh pesan di dokumen ini bukan teks final, kecuali teks kiosk yang difinalkan di `08` §7.3. Dokumen ini tetap memakai istilah "rombel", yang tampil sebagai "Kelas" di layar (`08` UI-51).
+- **Nama teknis.** Tabel, kolom, route, teks layar, dan teks pesan ditetapkan di Session 5–9. Nama tabel dan kolom ada di `06`, mekanisme teknis di `07`, teks layar dan label di `08`, halaman dan route di `09`, API di `10`, aturan isian dan teks pesan validasi di `11`, serta ketentuan keamanan di `12`. Contoh pesan di dokumen ini bukan teks final, kecuali teks kiosk yang difinalkan di `08` §7.3. Teks final pesan validasi dan galat setiap fitur ada di `11` §5, dan menggantikan contoh pesan di dokumen ini. Dokumen ini tetap memakai istilah "rombel", yang tampil sebagai "Kelas" di layar (`08` UI-51).
 
 ## 2. Keputusan Session 4b
 
@@ -150,6 +150,21 @@ Keputusan Session 8 yang berdampak ke fitur. Rinciannya ada di `09` §2 dan `10`
 | Pemeriksaan sistem | Hak baru `HA-AKN-07` untuk admin (`02` §6.1, `09` HAL-AKN-07). Dashboard admin menautkan halaman itu bila cron tidak berjalan atau ada antrean hitung ulang yang gagal. | FS-LAP-01 | DECISION (hak); RECOMMENDATION (peringatan) |
 | Scan galat dan akun pencatat | Kiosk melaporkan jumlah scan galat di setiap kontak. Setiap scan membawa akun stasiun pencatatnya, dan server menolak scan yang dicatat akun lain (`10` EP-KIO-03). | FS-KIO-03, FS-KIO-04, FS-KIO-05 | RECOMMENDATION |
 
+### 2.8 Keputusan Session 9
+
+Keputusan Session 9 yang berdampak ke fitur. Rinciannya ada di `12` §2.1, dan teks pesannya di `11` §5.
+
+| Topik | Keputusan | Fitur | Status |
+|---|---|---|---|
+| Pencatatan akses lampiran (OQ-17) | Setiap pembukaan dan unduhan lampiran surat oleh akun staf dicatat: pelaku, waktu, lampiran, dan siswa. Siswa yang membuka lampirannya sendiri tidak dicatat. Admin melihat catatan itu di halaman log aktivitas, lewat hak baru `HA-AKN-08` (`12` SEC-26, SEC-60, `09` HAL-AKN-09). | FS-IZN-06 | DECISION |
+| Masa sesi staf dan siswa | Sesi berakhir setelah 8 jam tidak ada aktivitas, atau 7 hari sejak login, mana yang lebih dulu. Sesi tetap berjalan setelah browser ditutup. Akun stasiun tetap mengikuti login 90 hari (`12` SEC-12). | FS-AKN-01 | DECISION |
+| Aturan password | 8 s.d. 64 karakter. Password tidak boleh ada di daftar password umum, dan tidak boleh memuat NISN, username, atau tanggal lahir. Tidak ada aturan wajib huruf besar, angka, atau simbol (`12` SEC-03, `11` VAL-21). | FS-AKN-02 | DECISION |
+| Pembatasan percobaan login | Lima kali gagal untuk satu identitas dalam 15 menit mengunci login identitas itu sekitar 15 menit. Dua puluh kali gagal dalam 24 jam menguncinya sekitar 24 jam. Admin, atau wali kelas untuk siswa rombelnya, dapat membuka kunci lebih awal. Satu alamat IP dibatasi 100 kali gagal dalam 15 menit (`12` SEC-08 s.d. SEC-11). | FS-AKN-01, FS-AKN-03 s.d. FS-AKN-05 | DECISION |
+| PIN petugas kiosk | Satu PIN 6 digit untuk semua stasiun, diatur admin. PIN wajib untuk logout akun stasiun dan untuk hapus data lokal di kiosk (`12` SEC-21, SEC-22). | FS-KIO-01 | DECISION |
+| Retensi data | Belum ada penghapusan data presensi, scan, izin, lampiran, log, dan data siswa, sampai sekolah menetapkan kebijakan datanya (OQ-18). Hanya data teknis yang dibersihkan otomatis (`12` SEC-66, SEC-67). | Semua fitur | DECISION |
+| Format dan ukuran unggahan | Paket 10 MB: foto, logo, dan lampiran paling besar 10 MB per file. Foto dan logo berformat JPG, PNG, atau WebP. Lampiran berformat JPG, PNG, WebP, atau PDF, paling banyak 3 file. File import paling besar 5 MB. Foto massal paling besar 100 MB per unggahan (`12` SEC-49, `11` VAL-28). | §4.9, FS-MD-01, FS-MD-06 s.d. FS-MD-08, FS-IZN-01 s.d. FS-IZN-03 | DECISION |
+| Satu login aktif per akun stasiun | Satu akun stasiun hanya aktif di satu laptop. Login terakhir yang berlaku, dan laptop sebelumnya diminta login ulang (`12` SEC-19). | FS-AKN-04, FS-KIO-01 | DECISION |
+
 ## 3. Daftar fitur
 
 | ID | Fitur | Rilis | Requirement | Alur | Rincian |
@@ -236,7 +251,7 @@ Ketentuan di bagian ini berlaku untuk semua fitur, sehingga tidak diulang di set
    - perubahan keputusan izin/sakit/dispensasi;
    - penolakan pengajuan izin/sakit (berupa catatan).
 2. Alasan presensi manual dipilih dari daftar di BR-KOR-04. Alasan lainnya berupa teks bebas.
-3. Alasan yang hanya berisi spasi dianggap kosong. Panjang maksimal alasan ditetapkan di Session 9.
+3. Alasan yang hanya berisi spasi dianggap kosong. Alasan paling sedikit 5 karakter, dan paling panjang 255 karakter, kecuali keterangan izin/sakit/dispensasi, catatan verifikasi, dan alasan ubah keputusan yang paling panjang 500 karakter (`11` VAL-03, VAL-16).
 4. Alasan koreksi dan catatan verifikasi dapat dibaca siswa di portal (§2.3). Formulirnya menampilkan pengingat ini. (DECISION, Session 4b)
 
 ### 4.4 Log perubahan presensi
@@ -247,8 +262,8 @@ Ketentuan di bagian ini berlaku untuk semua fitur, sehingga tidak diulang di set
 4. Log tidak dapat diubah atau dihapus dari aplikasi.
 5. Log lain berada di luar log ini:
    - perubahan nomor WA, foto, masa aktif, penempatan, dan data siswa lainnya dicatat di log data siswa (FS-MD-04, FS-MD-05, `06` §12.2);
-   - aktivitas akun (login, reset password, perubahan role, dan akun stasiun) dicatat di log aktivitas akun, yang dirinci di Session 9;
-   - pencatatan pembukaan lampiran mengikuti OQ-17.
+   - aktivitas akun (login, reset password, perubahan role, dan akun stasiun), perubahan pengaturan, import, dan scan yang ditolak server dicatat di log aktivitas (`06` §5.3), dengan daftar jenis di `12` SEC-59;
+   - setiap pembukaan dan unduhan lampiran oleh akun staf dicatat di log aktivitas (`12` SEC-60, OQ-17 terjawab).
 
 | Jenis perubahan | Fitur |
 |---|---|
@@ -292,7 +307,12 @@ Tindakan massal, tindakan yang membuat password baru, dan tindakan yang mengubah
 
 1. Foto siswa, lampiran surat, dan file import disimpan di luar folder `public/`. File tersebut hanya diberikan lewat permintaan yang sudah diperiksa haknya (NFR-10, R-17).
 2. Logo sekolah bukan data pribadi, sehingga boleh tampil di halaman login dan halaman publik.
-3. Format dan ukuran maksimal file ditetapkan di Session 9.
+3. Format dan ukuran file mengikuti Paket 10 MB (DECISION, Session 9, `12` SEC-49). Pesan galatnya di `11` VAL-28.
+   - Foto siswa dan logo: JPG, PNG, atau WebP, paling besar 10 MB dan 24 megapiksel.
+   - Lampiran: JPG, PNG, WebP, atau PDF, paling besar 10 MB per file, paling banyak 3 file.
+   - Import siswa dan import penempatan: XLSX atau CSV, paling besar 5 MB dan 2.000 baris data.
+   - Foto massal: paling besar 100 MB per unggahan, paling banyak 100 file, atau satu ZIP berisi paling banyak 2.000 entri.
+4. Tipe file ditentukan dari isinya, dan ekstensinya harus sesuai (`12` SEC-50). Foto, logo, dan lampiran gambar disimpan ulang, sehingga metadata seperti lokasi GPS terbuang. PDF disimpan apa adanya (`12` SEC-51).
 
 ## 5. Akun dan akses (AKN)
 
@@ -306,7 +326,7 @@ Tindakan massal, tindakan yang membuat password baru, dan tindakan yang mengubah
 | Alur | UF-20 |
 | Aktor dan hak | Semua jenis akun (`HA-AKN-01`). Akun stasiun hanya login. |
 | Aturan terkait | `02` §2 (aturan jenis akun), §4 butir 4 (pemisahan area), §8 (area dan halaman awal) |
-| Status | DECISION (login per jenis akun; pemisahan area untuk akun staf dan akun stasiun); RECOMMENDATION (satu halaman login dan rincian lain) |
+| Status | DECISION (login per jenis akun; pemisahan area untuk akun staf dan akun stasiun; pembatasan login dan masa sesi, Session 9); RECOMMENDATION (satu halaman login dan rincian lain) |
 
 **Prasyarat**
 
@@ -316,8 +336,8 @@ Tindakan massal, tindakan yang membuat password baru, dan tindakan yang mengubah
 
 | Isian | Wajib | Validasi |
 |---|---|---|
-| Identitas login | Ya | NISN untuk siswa, atau username untuk staf dan stasiun. Spasi di awal dan akhir dibuang. |
-| Password | Ya | Dicocokkan dengan hash password (`02` §2 butir 6). |
+| Identitas login | Ya | NISN untuk siswa, atau username untuk staf dan stasiun. Spasi di awal dan akhir dibuang, lalu identitas diubah ke huruf kecil (`12` SEC-01). |
+| Password | Ya | Dicocokkan dengan hash password (`02` §2 butir 6, `12` SEC-02). Password tidak diubah sama sekali, termasuk spasinya. |
 
 **Perilaku**
 
@@ -330,9 +350,14 @@ Tindakan massal, tindakan yang membuat password baru, dan tindakan yang mengubah
    - akun siswa ke riwayat kehadiran sendiri;
    - akun stasiun ke layar scan.
 6. Setiap jenis akun hanya dapat membuka areanya sendiri (`02` §4 butir 4). Permintaan ke area lain diarahkan ke halaman awal akun itu.
-7. Percobaan login yang gagal dibatasi per identitas login dan per alamat IP (NFR-08). Setelah batasnya tercapai, login ditolak sementara.
+7. Percobaan login yang gagal dibatasi per identitas login dan per alamat IP (NFR-08). Kunci berlaku untuk identitas yang dicoba, baik akunnya ada maupun tidak. Selama dikunci, password yang benar pun ditolak (DECISION, Session 9, `12` SEC-08 s.d. SEC-11):
+   - lima kali gagal untuk satu identitas dalam 15 menit mengunci login identitas itu sekitar 15 menit;
+   - dua puluh kali gagal untuk satu identitas dalam 24 jam menguncinya sekitar 24 jam;
+   - seratus kali gagal dari satu alamat IP dalam 15 menit mengunci login dari alamat IP itu sekitar 15 menit;
+   - admin dapat membuka kunci akun staf, akun siswa, dan akun stasiun, dan wali kelas dapat membuka kunci akun siswa rombelnya (FS-AKN-03, FS-AKN-04, FS-AKN-05). Kunci per alamat IP tidak dapat dibuka dari aplikasi.
 8. Logout mengakhiri sesi dan kembali ke halaman login. Logout akun stasiun di kiosk adalah tindakan berisiko dan diatur di FS-KIO-01.
 9. Bila akun dinonaktifkan saat sesinya berjalan, sesi itu berakhir pada permintaan berikutnya (`02` §2 butir 5).
+10. Sesi staf dan siswa berakhir setelah 8 jam tanpa aktivitas, atau 7 hari sejak login, mana yang lebih dulu. Sesi tetap berjalan setelah browser ditutup. Polling dashboard dan polling fragmen lain tidak dihitung sebagai aktivitas, sehingga halaman yang dibiarkan terbuka tetap berakhir setelah 8 jam tanpa tindakan (DECISION, Session 9, `12` SEC-12). Akun stasiun mengikuti login 90 hari (`07` ARS-30).
 
 **Keadaan kosong dan error**
 
@@ -340,35 +365,36 @@ Tindakan massal, tindakan yang membuat password baru, dan tindakan yang mengubah
 |---|---|---|
 | E1 | Identitas login tidak ada, atau password salah. | Pesan umum: "NISN/username atau password salah." |
 | E2 | Akun nonaktif, atau akun siswa yang belum memiliki password. | Pesan umum yang sama dengan E1 (UF-20 E2). |
-| E3 | Batas percobaan login tercapai. | "Terlalu banyak percobaan. Coba lagi dalam beberapa menit." |
-| E4 | Sesi berakhir. | Pengguna kembali ke halaman login. Setelah login, pengguna diarahkan ke halaman yang tadi dibuka, kecuali kiosk. |
+| E3 | Batas percobaan login tercapai. | Pesan sesuai jenis kunci (`11` §5.1). Kunci 15 menit: "Terlalu banyak percobaan login. Coba lagi pukul [jam]." Kunci 24 jam: "Login akun ini dikunci karena terlalu banyak percobaan. Hubungi wali kelas atau admin." Kunci per alamat IP: "Terlalu banyak percobaan login dari jaringan ini. Coba lagi pukul [jam]." |
+| E4 | Sesi berakhir. | Pengguna kembali ke halaman login dengan pesan "Sesi berakhir. Login lagi untuk melanjutkan." Setelah login, pengguna diarahkan ke halaman yang tadi dibuka, kecuali kiosk (`11` §5.1, GAL-07). |
 | E5 | Pengguna membuka area jenis akun lain. | Pengguna diarahkan ke halaman awal areanya sendiri. |
 
 **Data dan log**
 
 - Dibaca: akun (identitas login, hash password, status, penanda wajib ganti password, dan role).
-- Ditulis: sesi, catatan percobaan login gagal, dan waktu login terakhir.
-- Log: login gagal dan penolakan sementara dicatat di log keamanan (Session 9).
+- Ditulis: sesi, catatan percobaan login gagal di tabel `percobaan_login` (`06` §5.4, `12` SEC-09), dan waktu login terakhir.
+- Log: login berhasil, login gagal, dan kunci yang mulai berlaku dicatat di log aktivitas dengan jenis `login_berhasil`, `login_gagal`, dan `login_dikunci` (`12` SEC-59).
 
 **Parameter dan default**
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
-| Batas percobaan login gagal dan lama penolakan | Belum ditetapkan | Sistem | Session 9 |
-| Masa berlaku sesi staf dan siswa | Belum ditetapkan | Sistem | Session 9 |
+| Batas percobaan login gagal dan lama penolakan | 5 gagal dalam 15 menit: kunci sekitar 15 menit. 20 gagal dalam 24 jam: kunci sekitar 24 jam. 100 gagal per alamat IP dalam 15 menit: kunci sekitar 15 menit (`12` SEC-08) | Sistem | Session 9 (DECISION) |
+| Masa berlaku sesi staf dan siswa | 8 jam tanpa aktivitas, atau 7 hari sejak login, mana yang lebih dulu (`12` SEC-12) | Sistem | Session 9 (DECISION) |
 | Masa berlaku login akun stasiun | 90 hari sejak kontak terakhir (`02` §7.3, `07` ARS-30) | Sistem | Session 6 (DECISION) |
 
 **Di luar cakupan**
 
 - Reset password mandiri lewat email atau WhatsApp (FR-AKN-07).
 - Login dengan akun Google atau SSO, dan verifikasi dua langkah.
-- Pilihan "ingat saya" untuk akun staf dan akun siswa.
+- Pilihan "ingat saya" untuk akun staf dan akun siswa. Semua sesi staf dan siswa bertahan sampai batas di butir 10, termasuk setelah browser ditutup, tanpa pilihan terpisah (`12` SEC-12).
 
 **Catatan antarmuka awal**
 
 - Satu kolom identitas berlabel "NISN atau username".
 - Halaman login menampilkan nama produk dan identitas sekolah (FS-MD-01).
 - Teks bantuan: siswa yang lupa atau belum punya password menghubungi wali kelas, dan staf menghubungi admin.
+- Teks bantuan juga meminta pengguna komputer bersama untuk logout, karena sesi tetap berjalan setelah browser ditutup (`12` SEC-12 butir 3, `08` UI-38).
 
 **Acceptance criteria**
 
@@ -435,6 +461,31 @@ Then permintaan berikutnya dari guru piket diarahkan ke halaman login
   And guru piket tidak dapat login lagi
 ```
 
+**AC-AKN-01-07 — Kunci 24 jam dan pembukaan kunci**
+Rujukan: NFR-08, `HA-AKN-04`, UF-21, `12` SEC-08, SEC-11, `11` §5.1.
+
+```text
+Given akun siswa dengan NISN 0012345678 di rombel 7A gagal login 20 kali sejak Senin, 12 Oktober 2026 pukul 19.00
+When siswa login dengan password yang benar pada Selasa, 13 Oktober 2026 pukul 07.30
+Then login ditolak dengan pesan "Login akun ini dikunci karena terlalu banyak percobaan. Hubungi wali kelas atau admin."
+  And log aktivitas memuat entri login_dikunci untuk akun itu
+When wali kelas 7A menekan "Buka kunci login" di profil siswa itu
+Then tampil pesan "Kunci login [nama] sudah dibuka."
+  And log aktivitas memuat entri kunci_login_dibuka dengan wali kelas 7A sebagai pelaku
+  And siswa dapat login dengan password yang benar
+```
+
+**AC-AKN-01-08 — Sesi berakhir setelah 8 jam tanpa aktivitas**
+Rujukan: NFR-07, UF-20, `12` SEC-12, `11` §5.1.
+
+```text
+Given staf "rina.w" login pukul 06.30 dan membiarkan dashboard terbuka tanpa tindakan
+  And dashboard terus diperbarui lewat polling setiap 30 detik
+When pukul 14.31 staf membuka halaman lain
+Then staf diarahkan ke halaman login dengan pesan "Sesi berakhir. Login lagi untuk melanjutkan."
+  And setelah login lagi, staf diarahkan ke halaman yang tadi dibuka
+```
+
 ### FS-AKN-02 — Ganti password
 
 | Item | Isi |
@@ -445,7 +496,7 @@ Then permintaan berikutnya dari guru piket diarahkan ke halaman login
 | Alur | UF-20 |
 | Aktor dan hak | Akun staf dan akun siswa (`HA-AKN-01`). Akun stasiun tidak mengganti password sendiri; kredensialnya diganti admin (FS-AKN-04). |
 | Aturan terkait | `02` §2 butir 1 dan 6, `02` §7.2 |
-| Status | DECISION (ganti password sendiri; wajib ganti password awal dan password hasil reset); RECOMMENDATION (rincian) |
+| Status | DECISION (ganti password sendiri; wajib ganti password awal dan password hasil reset; aturan password, Session 9); RECOMMENDATION (rincian) |
 
 **Prasyarat**
 
@@ -455,8 +506,8 @@ Then permintaan berikutnya dari guru piket diarahkan ke halaman login
 
 | Isian | Wajib | Validasi |
 |---|---|---|
-| Password lama | Ya, kecuali pada penggantian wajib tepat setelah login | Cocok dengan password saat ini. |
-| Password baru | Ya | Memenuhi aturan password (Session 9). Tidak sama dengan password lama, dan tidak sama dengan identitas login. |
+| Password lama | Ya, kecuali pada penggantian wajib tepat setelah login | Cocok dengan password saat ini. Password lama yang salah dihitung sebagai login gagal untuk akun itu (`12` SEC-06). |
+| Password baru | Ya | Memenuhi aturan password (DECISION, Session 9, `12` SEC-03, `11` VAL-21): 8 s.d. 64 karakter, tidak ada di daftar password umum, dan tidak memuat NISN, username, atau tanggal lahir. Tidak ada aturan wajib huruf besar, angka, atau simbol. Tidak sama dengan password saat ini. |
 | Ulangi password baru | Ya | Sama dengan password baru. |
 
 **Perilaku**
@@ -464,28 +515,29 @@ Then permintaan berikutnya dari guru piket diarahkan ke halaman login
 1. Sistem memeriksa isian, lalu menyimpan hash password baru (`02` §2 butir 6).
 2. Penanda wajib ganti password dihapus.
 3. Akun siswa yang berstatus belum aktif berubah menjadi aktif (`02` §7.2).
-4. Sesi lain dari akun yang sama diakhiri. Sesi yang sedang dipakai tetap berjalan.
+4. Sesi lain dari akun yang sama diakhiri. Sesi yang sedang dipakai tetap berjalan dengan ID sesi baru (`12` SEC-06, SEC-14).
 5. Pengguna diarahkan ke halaman awal areanya.
+6. Lima kali password lama salah berturut-turut di satu sesi mengakhiri sesi itu, dan pengguna login lagi (`11` §5.1, `12` SEC-06).
 
 **Keadaan kosong dan error**
 
 | Kode | Keadaan | Respons |
 |---|---|---|
-| E1 | Password lama salah. | "Password lama salah." Password tidak berubah. |
+| E1 | Password lama salah. | "Password lama salah." Password tidak berubah. Kegagalan ini dicatat sebagai percobaan login gagal (`11` §5.1). |
 | E2 | Ulangan password tidak sama. | "Ulangan password tidak sama." |
-| E3 | Password baru tidak memenuhi aturan, sama dengan password lama, atau sama dengan identitas login. | Penggantian ditolak dengan penjelasan aturan yang dilanggar. |
+| E3 | Password baru tidak memenuhi aturan, sama dengan password saat ini, atau memuat NISN atau username. | Penggantian ditolak dengan penjelasan aturan yang dilanggar. Teks pesannya di `11` VAL-21. |
 
 **Data dan log**
 
 - Dibaca: hash password dan penanda wajib ganti password.
 - Ditulis: hash password, penanda wajib ganti password, status akun siswa, dan waktu penggantian password.
-- Log: penggantian password dicatat tanpa isi password, di log aktivitas akun (Session 9).
+- Log: penggantian password dicatat tanpa isi password, di log aktivitas dengan jenis `password_diganti` (`12` SEC-59).
 
 **Parameter dan default**
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
-| Aturan password (panjang minimal dan jenis karakter) | Belum ditetapkan | Sistem | Session 9 |
+| Aturan password (panjang minimal dan jenis karakter) | 8 s.d. 64 karakter; tidak ada di daftar password umum; tidak memuat NISN, username, atau tanggal lahir; tanpa aturan komposisi (`12` SEC-03) | Sistem | Session 9 (DECISION) |
 
 **Di luar cakupan**
 
@@ -495,7 +547,7 @@ Then permintaan berikutnya dari guru piket diarahkan ke halaman login
 
 **Catatan antarmuka awal**
 
-- Aturan password tampil di formulir.
+- Aturan password tampil di formulir, dengan teks bantuan di `11` VAL-21.
 - Tombol untuk menampilkan dan menyembunyikan password.
 
 **Acceptance criteria**
@@ -543,6 +595,19 @@ Then sesi di perangkat kedua berakhir pada permintaan berikutnya
   And sesi di perangkat pertama tetap berjalan
 ```
 
+**AC-AKN-02-05 — Password umum ditolak**
+Rujukan: FR-AKN-04, `12` SEC-03, SEC-04, `11` VAL-21.
+
+```text
+Given siswa dengan NISN 0012345678 sedang mengganti password
+When siswa memasukkan password baru "indonesia123" atau "bismillah"
+Then penggantian ditolak dengan pesan "Password ini terlalu umum dan mudah ditebak. Pilih password lain."
+When siswa memasukkan password baru "zebra0012345678"
+Then penggantian ditolak dengan pesan "Password tidak boleh memuat NISN atau username."
+When siswa memasukkan password baru "sepeda biru di teras"
+Then password baru tersimpan
+```
+
 ### FS-AKN-03 — Akun staf dan role
 
 | Item | Isi |
@@ -563,13 +628,13 @@ Then sesi di perangkat kedua berakhir pada permintaan berikutnya
 
 | Isian | Wajib | Validasi |
 |---|---|---|
-| Nama lengkap | Ya | Teks. |
-| Username | Ya | Unik di semua akun staf dan akun stasiun. Tidak boleh hanya berisi angka (`02` §2 butir 4). Karakter yang boleh: huruf kecil, angka, titik, dan garis bawah. Panjangnya ditetapkan di Session 9. |
+| Nama lengkap | Ya | Teks. Aturannya di `11` VAL-15. |
+| Username | Ya | Unik di semua akun staf dan akun stasiun. Tidak boleh hanya berisi angka (`02` §2 butir 4). Diubah ke huruf kecil, lalu harus 3 s.d. 30 karakter, diawali huruf, dan hanya berisi huruf kecil, angka, titik, dan garis bawah (`11` VAL-20). |
 | Role | Tidak | Pilihan: Admin, Guru piket, Guru BK, dan Pimpinan. Role Staf melekat otomatis. Role Wali kelas tidak dipilih di sini (`02` §4 butir 2). |
 
 **Perilaku**
 
-1. **Tambah akun.** Sistem membuat password awal acak dengan karakter yang mudah dibaca (`02` §7.2 butir 5), lalu menampilkannya sekali. Akun wajib mengganti password saat login pertama.
+1. **Tambah akun.** Sistem membuat password awal acak 12 karakter dengan karakter yang mudah dibaca (`02` §7.2 butir 5, `12` SEC-05), lalu menampilkannya sekali. Akun wajib mengganti password saat login pertama.
 2. **Ubah akun.** Admin mengubah nama, username, dan role. Perubahan role berlaku mulai permintaan berikutnya dari pengguna itu.
 3. **Daftar akun.** Daftar akun staf menampilkan nama, username, role, rombel yang diampu sebagai wali kelas (FS-MD-03), status, dan waktu login terakhir.
 4. **Nonaktifkan.** Akun tidak dapat login, dan sesi yang sedang berjalan berakhir. Nama pemiliknya tetap tampil di log (`02` §2 butir 5). Admin dapat mengaktifkan kembali akun yang nonaktif.
@@ -578,27 +643,28 @@ Then sesi di perangkat kedua berakhir pada permintaan berikutnya
 7. Admin tidak dapat menonaktifkan akunnya sendiri.
 8. Akun staf tidak dihapus dari aplikasi. Akun yang salah dibuat diubah atau dinonaktifkan.
 9. Menonaktifkan staf yang menjadi wali kelas tidak menghapus penugasannya. Daftar rombel menandai rombel yang wali kelasnya nonaktif, dan admin menetapkan penggantinya (FS-MD-03).
+10. **Buka kunci login.** Selama login akun staf dikunci karena terlalu banyak percobaan gagal (FS-AKN-01 butir 7), detail akun menampilkan tombol "Buka kunci login". Tombol ini menghapus catatan percobaan gagal akun itu, sehingga akun dapat langsung login lagi (`HA-AKN-02`, DECISION, Session 9, `12` SEC-11).
 
 **Keadaan kosong dan error**
 
 | Kode | Keadaan | Respons |
 |---|---|---|
-| E1 | Username sudah dipakai. | "Username sudah dipakai." |
-| E2 | Username hanya berisi angka, atau memakai karakter yang tidak boleh. | Penyimpanan ditolak dengan penjelasan aturan username. |
+| E1 | Username sudah dipakai. | "Username sudah dipakai." (`11` VAL-20) |
+| E2 | Username hanya berisi angka, terlalu pendek atau panjang, atau memakai karakter yang tidak boleh. | Penyimpanan ditolak dengan penjelasan aturan username (`11` VAL-20). |
 | E3 | Tindakan membuat tidak ada lagi admin aktif. | "Harus ada minimal satu admin aktif." (UF-04 E3) |
-| E4 | Admin menonaktifkan akunnya sendiri. | Ditolak. |
+| E4 | Admin menonaktifkan akunnya sendiri. | Ditolak: "Anda tidak dapat menonaktifkan akun sendiri." (`11` §5.1) |
 | E5 | Password awal belum diserahkan, tetapi halamannya sudah ditutup. | Admin mereset password akun itu. |
 
 **Data dan log**
 
 - Ditulis: akun staf (nama, username, hash password, status, penanda wajib ganti password, role, dan waktu login terakhir).
-- Log: pembuatan akun, perubahan role, penonaktifan, pengaktifan kembali, dan reset password dicatat di log aktivitas akun (`02` §10, Session 9).
+- Log: pembuatan dan perubahan akun, perubahan role, penonaktifan, pengaktifan kembali, reset password, dan pembukaan kunci login dicatat di log aktivitas dengan jenis `akun_dibuat`, `akun_diubah`, `role_diubah`, `akun_dinonaktifkan`, `akun_diaktifkan`, `password_direset`, dan `kunci_login_dibuka` (`02` §10, `12` SEC-59).
 
 **Parameter dan default**
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
-| Panjang password awal dan aturan username | Belum ditetapkan | Sistem | Session 9 |
+| Panjang password awal dan aturan username | Password awal 12 karakter dari huruf kecil dan angka tanpa karakter yang mirip (`12` SEC-05). Username 3 s.d. 30 karakter (`11` VAL-20) | Sistem | Session 9 (RECOMMENDATION) |
 
 **Di luar cakupan**
 
@@ -682,7 +748,7 @@ Then staf dapat mencatat presensi manual hari ini untuk siswa semua rombel
 | Alur | UF-06 |
 | Aktor dan hak | Admin (`HA-AKN-03`, `HA-KIO-02`). |
 | Aturan terkait | `02` §2, §4 butir 3 dan 4, §7.3, R-07 |
-| Status | DECISION (satu akun stasiun per laptop; login 90 hari, Session 6); RECOMMENDATION (rincian; keamanan login di Session 9) |
+| Status | DECISION (satu akun stasiun per laptop; login 90 hari, Session 6; satu login aktif per akun stasiun, Session 9); RECOMMENDATION (rincian) |
 
 **Prasyarat**
 
@@ -692,12 +758,12 @@ Then staf dapat mencatat presensi manual hari ini untuk siswa semua rombel
 
 | Isian | Wajib | Validasi |
 |---|---|---|
-| Nama stasiun | Ya | Unik dan mudah dikenali, misalnya "Gerbang 1". |
+| Nama stasiun | Ya | Unik dan mudah dikenali, misalnya "Gerbang 1". 2 s.d. 50 karakter, satu baris (`11` VAL-27). |
 | Username | Ya | Aturannya sama dengan username staf (FS-AKN-03). |
 
 **Perilaku**
 
-1. **Tambah.** Sistem membuat password acak dan menampilkannya sekali. Admin memakainya untuk login di laptop stasiun (UF-06). Akun stasiun tidak wajib mengganti password.
+1. **Tambah.** Sistem membuat password acak 12 karakter (`12` SEC-05) dan menampilkannya sekali. Admin memakainya untuk login di laptop stasiun (UF-06). Akun stasiun tidak wajib mengganti password.
 2. **Ganti kredensial.** Sistem membuat password baru dan mengakhiri login akun stasiun itu, sehingga kiosk meminta login ulang. Scan yang belum tersinkron tetap tersimpan di laptop dan dikirim setelah login ulang (FS-KIO-03).
 3. **Nonaktifkan.**
    - Sebelum menonaktifkan, sistem menampilkan status stasiun: waktu sinkron terakhir dan jumlah scan belum tersinkron yang terakhir dilaporkan (FS-KIO-05).
@@ -706,30 +772,32 @@ Then staf dapat mencatat presensi manual hari ini untuk siswa semua rombel
 4. Kiosk yang menerima status "akun nonaktif" dari server menghapus data siswa, foto, dan scan di laptop itu (R-07). Cara teknisnya ada di `07` ARS-31.
 5. Admin dapat mengaktifkan kembali akun stasiun. Kiosk lalu memuat data dari awal.
 6. Akun stasiun hanya dapat membuka kiosk (`02` §4 butir 4). Admin tidak membuka kiosk dengan akun staf (`02` §4 butir 3).
+7. **Satu login aktif.** Satu akun stasiun hanya aktif di satu laptop. Login terakhir yang berlaku. Laptop yang sebelumnya memakai akun itu diminta login ulang pada kontak berikutnya, dan scan yang belum tersinkron di laptop itu tetap tersimpan. Perpindahan ini dicatat di log aktivitas (DECISION, Session 9, `12` SEC-19). Bila laptop lama masih menyimpan scan belum tersinkron, petugas login lagi di laptop lama untuk mengirimnya, sehingga laptop baru dipakai setelah laptop lama tersinkron, atau dengan akun stasiun lain.
+8. **Buka kunci login.** Selama login akun stasiun dikunci karena terlalu banyak percobaan gagal (FS-AKN-01 butir 7), admin dapat membuka kuncinya dari detail akun stasiun (`HA-AKN-03`, `12` SEC-11).
 
 **Keadaan kosong dan error**
 
 | Kode | Keadaan | Respons |
 |---|---|---|
-| E1 | Nama stasiun atau username sudah dipakai. | Penyimpanan ditolak. |
+| E1 | Nama stasiun atau username sudah dipakai. | Penyimpanan ditolak (`11` §5.1). |
 | E2 | Stasiun yang akan dinonaktifkan masih melaporkan scan belum tersinkron. | Peringatan beserta jumlah scan. Penonaktifan menunggu konfirmasi. |
 | E3 | Password stasiun hilang. | Admin mengganti kredensial. |
 
 **Data dan log**
 
-- Ditulis: akun stasiun (nama, username, hash password, dan status).
+- Ditulis: akun stasiun (nama, username, hash password, status, dan ID login stasiun yang berlaku, `12` SEC-19).
 - Dibaca: status stasiun (FS-KIO-05).
-- Log: pembuatan, penggantian kredensial, penonaktifan, dan pengaktifan kembali dicatat di log aktivitas akun (`02` §10, Session 9).
+- Log: pembuatan, perubahan, penggantian kredensial, penonaktifan, pengaktifan kembali, perpindahan login ke laptop lain, dan pembukaan kunci login dicatat di log aktivitas dengan jenis `akun_dibuat`, `akun_diubah`, `kredensial_stasiun_diganti`, `akun_dinonaktifkan`, `akun_diaktifkan`, `login_stasiun_berpindah`, dan `kunci_login_dibuka` (`02` §10, `12` SEC-59).
 
 **Parameter dan default**
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
 | Masa berlaku login akun stasiun | 90 hari sejak kontak terakhir (`02` §7.3, `07` ARS-30) | Sistem | Session 6 (DECISION) |
+| Jumlah laptop yang aktif per akun stasiun | 1; login terakhir yang berlaku (`12` SEC-19) | Sistem | Session 9 (DECISION) |
 
 **Di luar cakupan**
 
-- Mengikat akun stasiun ke satu perangkat. Kebutuhan ini ditinjau di Session 9.
 - Mengunci laptop dari jarak jauh selain dengan menonaktifkan akun.
 - Stasiun di lokasi selain gerbang utama (`02` §9).
 
@@ -780,6 +848,22 @@ Then kiosk meminta login ulang
   And setelah login dengan kredensial baru, keempat scan terkirim ke server
 ```
 
+**AC-AKN-04-05 — Satu login aktif per akun stasiun**
+Rujukan: FR-AKN-03, NFR-03, `HA-AKN-03`, UF-06, `12` SEC-19, `11` §5.3.
+
+```text
+Given akun stasiun "Gerbang 1" login di laptop A, dan laptop A memiliki 3 scan belum tersinkron
+When petugas login dengan akun "Gerbang 1" di laptop B
+Then laptop B membuka layar scan
+  And log aktivitas memuat entri login_stasiun_berpindah untuk "Gerbang 1"
+When laptop A menghubungi server berikutnya
+Then laptop A menampilkan "Akun stasiun ini sudah login di laptop lain. Scan yang belum tersinkron tetap tersimpan. Login lagi untuk memakai laptop ini."
+  And ketiga scan tetap tersimpan di laptop A
+When petugas login lagi dengan akun "Gerbang 1" di laptop A
+Then ketiga scan terkirim ke server
+  And laptop B diminta login ulang pada kontak berikutnya
+```
+
 ### FS-AKN-05 — Akun siswa dan slip akun
 
 | Item | Isi |
@@ -788,7 +872,7 @@ Then kiosk meminta login ulang
 | Rilis | R1 |
 | Requirement | FR-AKN-05, FR-AKN-06, FR-AKN-07 |
 | Alur | UF-05, UF-07, UF-21 |
-| Aktor dan hak | Sistem membuat akun. Admin (semua) dan wali kelas (rombel) melihat status akun (`HA-AKN-06`), mencetak slip akun (`HA-AKN-05`), dan mereset password (`HA-AKN-04`). |
+| Aktor dan hak | Sistem membuat akun. Admin (semua) dan wali kelas (rombel) melihat status akun (`HA-AKN-06`), mencetak slip akun (`HA-AKN-05`), serta mereset password dan membuka kunci login (`HA-AKN-04`). |
 | Aturan terkait | `02` §2, §7.2 |
 | Status | DECISION (akun otomatis, slip per rombel, mekanisme slip, reset oleh admin dan wali kelas); RECOMMENDATION (rincian) |
 
@@ -817,7 +901,7 @@ B. Cetak slip akun:
 
 1. Wali kelas atau admin memilih rombel dan siswa yang akan dicetak.
 2. Sistem meminta konfirmasi. Layar konfirmasi menyebut jumlah akun yang akan mendapat password baru, dan memperingatkan bahwa slip lama untuk akun tersebut tidak berlaku lagi (`02` §7.2 butir 3).
-3. Setelah konfirmasi, sistem membuat password acak baru untuk setiap akun terpilih dan menandainya wajib ganti password.
+3. Setelah konfirmasi, sistem membuat password acak baru 8 karakter untuk setiap akun terpilih dan menandainya wajib ganti password. Password dibuat dari 31 karakter, yaitu huruf kecil dan angka tanpa karakter yang mirip (`12` SEC-05).
 4. Sistem menampilkan halaman slip siap cetak, beberapa slip per halaman A4. Setiap slip berisi nama, NISN, rombel, password awal, alamat aplikasi, petunjuk singkat login pertama, dan identitas sekolah.
 5. Halaman slip hanya dapat dilihat saat itu. Setelah halaman ditutup, password tidak dapat ditampilkan lagi (`02` §2 butir 6), dan sistem tidak menyimpan slip (UF-05).
 6. Akun yang sudah aktif tidak tersentuh.
@@ -827,6 +911,11 @@ C. Reset password satu siswa:
 1. Admin, atau wali kelas untuk rombelnya, memilih reset password untuk satu siswa.
 2. Sistem membuat password acak baru, menandai akun wajib ganti password, dan menampilkan slip untuk satu siswa.
 3. Status akun tidak berubah. Akun aktif tetap aktif, dengan kewajiban mengganti password saat login berikutnya.
+
+D. Buka kunci login:
+
+1. Selama login akun siswa dikunci karena terlalu banyak percobaan gagal (FS-AKN-01 butir 7), admin, atau wali kelas untuk rombelnya, dapat membuka kuncinya dengan tombol "Buka kunci login" di profil siswa (`09` HAL-AKN-06, `HA-AKN-04`, DECISION, Session 9, `12` SEC-11).
+2. Pembukaan kunci tidak mengubah password. Siswa yang juga lupa password direset seperti di C.
 
 **Keadaan kosong dan error**
 
@@ -840,14 +929,14 @@ C. Reset password satu siswa:
 **Data dan log**
 
 - Ditulis: akun siswa (username NISN, hash password, status, penanda wajib ganti password, waktu slip terakhir dibuat, dan waktu login terakhir).
-- Log: cetak slip (pelaku, rombel, dan jumlah akun) dan reset password (pelaku dan siswa) dicatat di log aktivitas akun (Session 9). Password tidak pernah dicatat.
+- Log: cetak slip (pelaku, rombel, dan jumlah akun), reset password (pelaku dan siswa), dan pembukaan kunci login dicatat di log aktivitas dengan jenis `slip_dicetak`, `password_direset`, dan `kunci_login_dibuka` (`12` SEC-59). Password tidak pernah dicatat.
 
 **Parameter dan default**
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
 | Jumlah slip per halaman A4 | 8 (ukuran A7, `08` UI-58) | Sistem | Session 7 (DECISION) |
-| Panjang password awal | Belum ditetapkan | Sistem | Session 9 |
+| Panjang password awal | 8 karakter dari 31 karakter tanpa huruf dan angka yang mirip (`12` SEC-05) | Sistem | Session 9 (RECOMMENDATION) |
 
 **Di luar cakupan**
 
@@ -947,7 +1036,7 @@ Then akun siswa D menjadi nonaktif dan sesinya berakhir
 |---|---|---|
 | Nama resmi sekolah | Ya | Teks. |
 | Alamat | Tidak | Teks. |
-| Logo | Tidak | File gambar. Format dan ukuran maksimal ditetapkan di Session 9 (§4.9). Ukurannya diperkecil otomatis. |
+| Logo | Tidak | JPG, PNG, atau WebP, paling besar 10 MB dan 24 megapiksel (DECISION, Session 9, §4.9, `12` SEC-49). Logo diperkecil otomatis agar muat dalam 512×512 px, dan disimpan sebagai PNG agar transparansinya tetap ada (`12` SEC-51). |
 
 **Perilaku**
 
@@ -960,12 +1049,12 @@ Then akun siswa D menjadi nonaktif dan sesinya berakhir
 | Kode | Keadaan | Respons |
 |---|---|---|
 | E1 | Identitas belum diisi. | Aplikasi hanya menampilkan "Spensada". Dashboard admin menampilkan pengingat penyiapan (FS-LAP-01). |
-| E2 | File logo tidak valid. | Penyimpanan logo ditolak; isian lain tetap dapat disimpan. |
+| E2 | File logo tidak valid. | Penyimpanan logo ditolak; isian lain tetap dapat disimpan. Pesannya di `11` VAL-28 dan §5.2. |
 
 **Data dan log**
 
 - Ditulis: pengaturan identitas sekolah dan file logo.
-- Log: perubahan identitas dicatat di log aktivitas pengaturan (Session 9).
+- Log: perubahan identitas dan logo dicatat di log aktivitas dengan jenis `pengaturan_diubah` (`12` SEC-59).
 
 **Parameter dan default**
 
@@ -1047,7 +1136,7 @@ Then permintaan ditolak
 **Data dan log**
 
 - Ditulis: tahun ajaran (nama, tanggal mulai dan selesai, status aktif) dan semester (jenis, tanggal mulai dan selesai).
-- Log: perubahan tanggal semester dicatat di log perubahan presensi (§4.4).
+- Log: perubahan tanggal semester dicatat di log perubahan presensi (§4.4). Pembuatan, perubahan, dan aktivasi tahun ajaran dicatat di log aktivitas dengan jenis `tahun_ajaran_diubah` (`12` SEC-59).
 
 **Parameter dan default**
 
@@ -1141,7 +1230,7 @@ Then penyimpanan ditolak
 **Data dan log**
 
 - Ditulis: rombel (tahun ajaran, nama, tingkat) dan penugasan wali kelas.
-- Log: penetapan dan pergantian wali kelas dicatat di log aktivitas akun (Session 9).
+- Log: penetapan dan pergantian wali kelas dicatat di log aktivitas dengan jenis `wali_kelas_diubah`. Pembuatan, perubahan, dan penghapusan rombel dicatat dengan jenis `rombel_diubah` (`12` SEC-59).
 
 **Parameter dan default**
 
@@ -1374,7 +1463,7 @@ Then siswa L tidak memiliki status pada tanggal mana pun sejak 1 Oktober 2026
    4. Setelah konfirmasi, penempatan baru dimulai pada tanggal mulai tahun ajaran baru.
 4. Siswa kelas 9 yang lulus dinonaktifkan lewat FS-MD-04.
 5. Penempatan dengan tanggal lampau diperbolehkan. Status pada tanggal terdampak dihitung ulang, karena libur per tingkat atau rombel bergantung pada penempatan (BR-KAL-05).
-6. **Import penempatan** (DECISION, Session 5). Untuk pengacakan ulang rombel, admin mengunduh daftar siswa aktif, mengisi kolom rombel tujuan, lalu mengunggahnya dengan tahun ajaran tujuan dan tanggal mulai. Sistem menampilkan pratinjau, lalu menyimpan semua baris valid dalam satu transaksi. Baris dengan rombel tujuan kosong dilewati. Rinciannya di `13` IM-02 dan IM-08 s.d. IM-11.
+6. **Import penempatan** (DECISION, Session 5). Untuk pengacakan ulang rombel, admin mengunduh daftar siswa aktif, mengisi kolom rombel tujuan, lalu mengunggahnya dengan tahun ajaran tujuan dan tanggal mulai. Sistem menampilkan pratinjau, lalu menyimpan semua baris valid dalam satu transaksi. Baris dengan rombel tujuan kosong dilewati. File XLSX atau CSV paling besar 5 MB dan 2.000 baris data, sama dengan import siswa (FS-MD-06, `12` SEC-49), dan alasan baris gagalnya di `11` §5.7. Rinciannya di `13` IM-02 dan IM-08 s.d. IM-11.
 
 **Keadaan kosong dan error**
 
@@ -1388,7 +1477,7 @@ Then siswa L tidak memiliki status pada tanggal mana pun sejak 1 Oktober 2026
 
 - Ditulis: penempatan (siswa, rombel, tanggal mulai, dan tanggal selesai) (`06` §6.7).
 - Log data siswa: setiap perubahan penempatan. Penempatan massal memakai penanda kelompok yang sama.
-- Log aktivitas: setiap import penempatan (pelaku, waktu, nama file, dan jumlah baris).
+- Log aktivitas: setiap import penempatan (pelaku, waktu, nama file, dan jumlah baris) dengan jenis `import_penempatan`, dan setiap penempatan per rombel asal dengan jenis `penempatan_massal` (`12` SEC-59).
 
 **Parameter dan default**
 
@@ -1468,7 +1557,7 @@ Then 180 siswa ditempatkan mulai tanggal mulai tahun ajaran 2027/2028
 
 | Isian | Wajib | Validasi |
 |---|---|---|
-| File | Ya | .xlsx atau .csv. Ukuran dan jumlah baris maksimal ditetapkan di Session 9. Kolomnya mengikuti template (`13` §6). |
+| File | Ya | .xlsx atau .csv, paling besar 5 MB dan 2.000 baris data. Isi XLSX setelah diekstrak paling besar 50 MB, dan hanya lembar pertama yang dibaca (DECISION, Session 9, `12` SEC-49). Kolomnya mengikuti template (`13` §6). |
 | Tahun ajaran tujuan | Ya | Default tahun ajaran aktif. |
 | Tanggal mulai aktif dan penempatan | Ya | Default hari ini, atau tanggal mulai tahun ajaran bila tahun ajaran itu belum dimulai. |
 
@@ -1476,11 +1565,14 @@ Validasi setiap baris (UF-02 langkah 3):
 
 | Kolom | Validasi |
 |---|---|
-| NISN | Dibaca sebagai teks dan harus tepat 10 digit. NISN 9 digit dari sel angka yang kehilangan nol di depan dinyatakan gagal, dengan petunjuk untuk memformat kolom sebagai teks. Tidak boleh ganda di dalam file. NISN yang sudah ada di database, aktif maupun nonaktif, membuat baris gagal dengan alasan "NISN sudah terdaftar atas nama <nama>" (DECISION, Session 5, UF-02 E2). |
+| NISN | Dibaca sebagai teks dan harus tepat 10 digit. NISN 8 atau 9 digit dari sel angka yang kehilangan nol di depan dinyatakan gagal, dengan petunjuk untuk memformat kolom sebagai teks. Tidak boleh ganda di dalam file. NISN yang sudah ada di database, aktif maupun nonaktif, membuat baris gagal dengan alasan "NISN sudah terdaftar atas nama <nama>" (DECISION, Session 5, UF-02 E2). |
 | Nama lengkap | Wajib. |
 | Rombel | Wajib, dan harus cocok dengan nama rombel di tahun ajaran tujuan. |
 | Nomor WA orang tua/wali | Opsional. Bila diisi, divalidasi dan dibakukan seperti FS-MD-04. |
 | Kolom opsional lain | NIS, jenis kelamin, tanggal lahir, alamat, nama orang tua/wali, dan atribut tambahan divalidasi sesuai `13` §6.1. Atribut tambahan yang wajib harus terisi. |
+| Semua kolom | Sel XLSX yang berisi rumus membuat baris gagal (`12` SEC-46). |
+
+Alasan baris gagal ditulis dengan teks di `11` §5.7.
 
 **Perilaku**
 
@@ -1496,21 +1588,21 @@ Validasi setiap baris (UF-02 langkah 3):
 | Kode | Keadaan | Respons |
 |---|---|---|
 | E1 | Semua baris gagal. | Tidak ada data yang disimpan. Admin memperbaiki file lalu mengunggah ulang (UF-02 E1). |
-| E2 | Format file salah, atau kolom tidak sesuai template. | Ditolak sebelum validasi baris, dengan daftar kolom yang diharapkan. |
-| E3 | File melebihi batas ukuran atau jumlah baris. | Ditolak dengan penjelasan batasnya. |
+| E2 | Format file salah, atau kolom tidak sesuai template. | Ditolak sebelum validasi baris, dengan daftar kolom yang diharapkan (`11` §5.2). |
+| E3 | File melebihi batas ukuran atau jumlah baris. | Ditolak sebelum validasi baris, dengan penjelasan batasnya (`11` VAL-28). Tidak ada data yang disimpan. |
 | E4 | Pratinjau ditinggalkan tanpa konfirmasi. | Tidak ada data yang disimpan. |
 
 **Data dan log**
 
 - Ditulis: siswa, nilai atribut tambahan, masa aktif, penempatan, dan akun siswa.
-- Log: setiap import (pelaku, waktu, nama file, jumlah baris dibuat dan dilewati) dicatat di log aktivitas (Session 9). Setiap siswa yang dibuat dicatat di log data siswa dengan penanda kelompok yang sama (`06` §12.2).
+- Log: setiap import (pelaku, waktu, nama file, jumlah baris dibuat dan dilewati) dicatat di log aktivitas dengan jenis `import_siswa` (`12` SEC-59). Setiap siswa yang dibuat dicatat di log data siswa dengan penanda kelompok yang sama (`06` §12.2).
 
 **Parameter dan default**
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
 | Kolom template | `13` §6.1 | Sistem | — (DECISION, Session 5) |
-| Ukuran file dan jumlah baris maksimal | Belum ditetapkan | Sistem | Session 9 |
+| Ukuran file dan jumlah baris maksimal | 5 MB dan 2.000 baris data; isi XLSX setelah diekstrak 50 MB (`12` SEC-49) | Sistem | Session 9 (DECISION untuk 5 MB; RECOMMENDATION untuk jumlah baris dan isi XLSX) |
 
 **Di luar cakupan**
 
@@ -1577,6 +1669,17 @@ Then baris itu gagal dengan alasan "NISN sudah terdaftar atas nama Budi"
   And data siswa Budi tidak berubah
 ```
 
+**AC-MD-06-06 — File lebih dari 2.000 baris ditolak**
+Rujukan: FR-MD-05, `HA-MD-04`, `12` SEC-49, `11` VAL-28.
+
+```text
+Given file import berukuran 1 MB berisi 2.150 baris data
+When admin mengunggah file
+Then file ditolak dengan pesan "File berisi 2.150 baris data. Paling banyak 2.000 baris per file. Bagi file menjadi beberapa bagian."
+  And pratinjau tidak ditampilkan
+  And tidak ada data yang tersimpan
+```
+
 ### FS-MD-07 — Foto siswa satu per satu
 
 | Item | Isi |
@@ -1597,12 +1700,12 @@ Then baris itu gagal dengan alasan "NISN sudah terdaftar atas nama Budi"
 
 | Isian | Wajib | Validasi |
 |---|---|---|
-| File foto | Ya | File gambar. Format dan ukuran maksimal ditetapkan di Session 9 (§4.9). |
+| File foto | Ya | JPG, PNG, atau WebP, paling besar 10 MB dan 24 megapiksel (DECISION, Session 9, §4.9, `12` SEC-49). Tipe file ditentukan dari isinya (`12` SEC-50). |
 
 **Perilaku**
 
 1. Admin, atau wali kelas untuk rombelnya, membuka profil siswa lalu mengunggah foto.
-2. Sistem memperkecil foto ke ukuran standar, lalu menyimpannya di luar folder `public/` (§4.9).
+2. Sistem memperkecil foto ke ukuran standar, lalu menyimpannya di luar folder `public/` (§4.9). Penyimpanan ulang membuang metadata foto, termasuk lokasi GPS (`07` ARS-53, `12` SEC-51).
 3. Foto baru menggantikan foto lama. Penggantian dicatat di log data siswa: pelaku dan waktu (FR-MD-09).
 4. Kiosk menampilkan foto baru setelah memuat ulang data (FS-KIO-01).
 
@@ -1610,7 +1713,7 @@ Then baris itu gagal dengan alasan "NISN sudah terdaftar atas nama Budi"
 
 | Kode | Keadaan | Respons |
 |---|---|---|
-| E1 | File bukan gambar, atau melebihi ukuran maksimal. | Ditolak. Foto lama tetap dipakai. |
+| E1 | File bukan gambar, atau melebihi ukuran maksimal. | Ditolak. Foto lama tetap dipakai. Pesannya di `11` VAL-28 dan §5.2. |
 | E2 | Siswa di luar cakupan. | Ditolak (§4.1). |
 | E3 | Siswa belum memiliki foto. | Profil, kiosk, dan presensi manual menampilkan gambar pengganti. Siswa ditandai "tanpa foto" (FS-MD-04). |
 
@@ -1678,7 +1781,7 @@ Then unggahan ditolak dan foto lama tetap dipakai
 
 | Isian | Wajib | Validasi |
 |---|---|---|
-| File foto | Ya | Banyak file gambar sekaligus, atau satu file ZIP (DECISION, Session 6, `07` ARS-54). Nama file diawali 10 digit NISN, lalu langsung diikuti ekstensi atau dipisah garis bawah, spasi, atau tanda hubung (`13` IM-03). Contohnya `0012345678.jpg` dan `0012345678_Budi Santoso.jpg`. |
+| File foto | Ya | Banyak file gambar sekaligus, atau satu file ZIP (DECISION, Session 6, `07` ARS-54). Paling besar 100 MB per unggahan dan paling banyak 100 file. ZIP paling banyak 2.000 entri, dengan isi setelah diekstrak paling besar 500 MB. Setiap foto JPG, PNG, atau WebP, paling besar 10 MB dan 24 megapiksel (DECISION, Session 9, `12` SEC-49). Nama file diawali 10 digit NISN, lalu langsung diikuti ekstensi atau dipisah garis bawah, spasi, atau tanda hubung (`13` IM-03). Contohnya `0012345678.jpg` dan `0012345678_Budi Santoso.jpg`. |
 
 **Perilaku**
 
@@ -1686,8 +1789,10 @@ Then unggahan ditolak dan foto lama tetap dipakai
 2. Sistem mencocokkan setiap nama file dengan NISN siswa, lalu menampilkan pratinjau:
    - file yang cocok, termasuk yang akan mengganti foto lama;
    - file yang tidak cocok, karena NISN tidak ditemukan atau nama file tidak sesuai format;
-   - file ganda untuk NISN yang sama;
-   - file yang bukan gambar valid, atau melebihi batas piksel (`07` ARS-53).
+   - file ganda untuk NISN yang sama, yang semuanya dilewati;
+   - file yang bukan gambar valid, atau melebihi batas ukuran atau piksel (`07` ARS-53, `12` SEC-49).
+
+   Keterangan per file memakai teks di `11` §5.8.
 3. Admin mengonfirmasi. Sistem memperkecil dan menyimpan foto yang cocok secara bertahap, dengan tampilan progres (`07` ARS-54). File ganda dan file tidak cocok dilewati.
 4. Setiap penggantian dicatat di log data siswa, satu entri per siswa.
 5. Sistem menampilkan ringkasan hasil, yang dapat diunduh.
@@ -1696,20 +1801,21 @@ Then unggahan ditolak dan foto lama tetap dipakai
 
 | Kode | Keadaan | Respons |
 |---|---|---|
-| E1 | Tidak ada file yang cocok. | Tidak ada yang disimpan. |
-| E2 | Ukuran unggahan melebihi batas. | Ditolak dengan saran membagi unggahan. |
+| E1 | Tidak ada file yang cocok. | Tidak ada yang disimpan (`11` §5.2). |
+| E2 | Ukuran unggahan, jumlah file, atau isi ZIP melebihi batas. | Ditolak dengan saran membagi unggahan (`11` VAL-28). |
 
 **Data dan log**
 
 - Ditulis: file foto per siswa.
 - Log data siswa: penggantian foto per siswa.
+- Log aktivitas: setiap foto massal yang selesai dicatat dengan jenis `foto_massal`, beserta jumlah foto disimpan, dilewati, dan gagal (`12` SEC-59).
 
 **Parameter dan default**
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
 | Format nama file | NISN di awal nama file (`13` IM-03) | Tetap | — (DECISION, Session 5) |
-| Ukuran unggahan maksimal | Usulan 100 MB per unggahan; satu ZIP paling banyak 2.000 file dengan total isi 500 MB (`07` ARS-04, ARS-54) | Sistem | Session 9 |
+| Ukuran unggahan maksimal | 100 MB per unggahan, paling banyak 100 file; satu ZIP paling banyak 2.000 entri dengan isi setelah diekstrak paling besar 500 MB (`07` ARS-04, ARS-54, `12` SEC-49) | Sistem | Session 9 (DECISION untuk 100 MB; RECOMMENDATION untuk jumlah file dan isi ZIP) |
 
 **Di luar cakupan**
 
@@ -1787,7 +1893,7 @@ Then file pertama ditandai cocok
 4. Menyembunyikan atribut menghilangkannya dari formulir, profil, dan template, tetapi nilainya tetap tersimpan.
 5. Atribut hanya dapat dihapus bila belum ada siswa yang memiliki nilai. Pilihan yang sudah dipakai siswa tidak dapat dihapus.
 6. Atribut tambahan tidak dipakai logika presensi, rekap, atau filter laporan (DECISION, Session 5). Atribut ini juga tidak dimuat kiosk (RECOMMENDATION). Nilainya ikut di export data siswa (`13` LP-06).
-7. Perubahan nilai dicatat di log data siswa (`06` §12.2). Perubahan definisi atribut dicatat di log aktivitas pengaturan (Session 9).
+7. Perubahan nilai dicatat di log data siswa (`06` §12.2). Perubahan definisi atribut dicatat di log aktivitas dengan jenis `atribut_siswa_diubah` (`12` SEC-59).
 
 **Keadaan kosong dan error**
 
@@ -1801,7 +1907,7 @@ Then file pertama ditandai cocok
 **Data dan log**
 
 - Ditulis: definisi atribut (`atribut_siswa`) dan nilai per siswa (`nilai_atribut_siswa`) (`06` §6.8, §6.9).
-- Log: nilai di log data siswa; definisi di log aktivitas pengaturan (Session 9).
+- Log: nilai di log data siswa; definisi di log aktivitas dengan jenis `atribut_siswa_diubah` (`12` SEC-59).
 
 **Parameter dan default**
 
@@ -1812,6 +1918,7 @@ Tidak ada.
 - Atribut tambahan untuk staf atau rombel.
 - Atribut berupa file.
 - Rekap, filter laporan, atau pencarian berdasarkan atribut tambahan.
+- Atribut untuk data kesehatan atau data pribadi spesifik lain. Panduan admin menyebut larangan ini (`12` SEC-64).
 
 **Catatan antarmuka awal**
 
@@ -1866,7 +1973,7 @@ Kiosk adalah satu-satunya bagian yang berjalan sebagai aplikasi client di browse
 | Alur | UF-06, UF-09 |
 | Aktor dan hak | Akun stasiun (`HA-KIO-01`). Petugas menekan tombol di kiosk tanpa login sendiri (`02` §9). |
 | Aturan terkait | BR-JAM-01, BR-JAM-06, BR-KAL-02, BR-KAL-05, BR-SCN-07, R-07, R-08 |
-| Status | DECISION (local-first; data dan foto dimuat lebih dulu; nilai parameter, Session 6); RECOMMENDATION (rincian) |
+| Status | DECISION (local-first; data dan foto dimuat lebih dulu; nilai parameter, Session 6; PIN petugas, Session 9); RECOMMENDATION (rincian) |
 
 **Prasyarat**
 
@@ -1888,14 +1995,20 @@ Tidak ada isian. Pemicunya adalah membuka kiosk, menekan tombol "Muat ulang data
    - Pola mingguan, jadwal khusus, jadwal hari ini, dan libur untuk hari ini dan N hari ke depan, sehingga kiosk tetap tahu aturan jam bila offline beberapa hari.
    - Identitas sekolah dan nama stasiun.
    - Jam server, untuk mengukur selisih jam laptop (BR-SCN-07).
+   - Hash PIN petugas, agar PIN dapat diperiksa saat offline (`12` SEC-21 butir 2, `10` EP-KIO-01).
 3. **Data minimal.** Kiosk tidak memuat nomor WA, data izin/sakit/dispensasi, riwayat, atau data siswa nonaktif (R-07).
 4. **Penggantian utuh.** Data baru menggantikan data lama hanya setelah selesai dimuat seluruhnya. Bila pemuatan gagal, kiosk tetap memakai data lama dan menampilkan pesan. Foto hanya diunduh bila berubah.
 5. **Status siap.** Kiosk menampilkan koneksi, waktu data terakhir dimuat, jumlah siswa, jumlah scan belum tersinkron, jam WIB, dan nama stasiun (UF-09 langkah 3).
 6. **Data lama.** Bila data lebih tua dari batas umur data, kiosk menampilkan peringatan untuk memuat ulang saat online, tetapi tetap dapat dipakai (UF-09 E1).
 7. **Di luar rentang aturan.** Bila tanggal hari ini berada di luar rentang jadwal khusus dan libur yang dimuat, kiosk memakai pola mingguan dan menampilkan peringatan. Server tetap menilai ulang scan dengan aturan lengkap (FS-KIO-04).
-8. **Tindakan berisiko di kiosk** dilindungi PIN atau konfirmasi petugas (`02` §9). Detailnya ditetapkan di Session 9.
+8. **Tindakan berisiko di kiosk** dilindungi PIN petugas (`02` §9, DECISION, Session 9, `12` SEC-21, SEC-22).
+   - Satu PIN 6 digit berlaku untuk semua stasiun. Admin mengaturnya di halaman PIN petugas (`09` HAL-KIO-02, `/panel/stasiun/pin`, `HA-AKN-03`), dengan aturan isian di `11` VAL-22. Kiosk memakai PIN baru setelah memuat ulang data.
+   - Logout akun stasiun dan hapus data lokal meminta PIN petugas. Layar penuh, muat ulang data, dan sinkron sekarang tidak meminta PIN. Penghapusan data karena akun stasiun dinonaktifkan juga tidak meminta PIN (FS-AKN-04).
+   - Lima kali PIN salah mengunci menu petugas selama 5 menit. Hitungannya tidak hilang saat halaman dimuat ulang.
+   - Bila PIN belum diatur, menu petugas menampilkan pita "PIN petugas belum diatur. Hubungi admin.", dan tindakan berisiko cukup memakai konfirmasi (`08` UI-48).
    - Logout akun stasiun tidak menghapus scan yang belum tersinkron. Scan itu dikirim setelah akun stasiun yang sama login kembali.
-   - Hapus data lokal ditolak selama masih ada scan belum tersinkron. Pengecualiannya penghapusan karena akun stasiun dinonaktifkan (FS-AKN-04).
+   - Hapus data lokal ditolak selama masih ada scan belum tersinkron. Pengecualiannya penghapusan karena akun stasiun dinonaktifkan (FS-AKN-04). Scan galat ikut terhapus, dan penghapusan itu aman karena server sudah mencatat setiap scan yang ditolak (FS-KIO-04 E3, `12` SEC-24).
+   - Teks layarnya di `11` §5.3.
 9. **Penyiapan pertama** (UF-06): kiosk meminta izin kamera dan penyimpanan permanen di browser (NFR-03). Kiosk dipasang sebagai aplikasi di browser, agar penyimpanan permanen diberikan (`07` ARS-21). Bila penyimpanan permanen ditolak, kiosk menampilkan peringatan risiko kehilangan data.
 
 **Keadaan kosong dan error**
@@ -1903,7 +2016,7 @@ Tidak ada isian. Pemicunya adalah membuka kiosk, menekan tombol "Muat ulang data
 | Kode | Keadaan | Respons |
 |---|---|---|
 | E1 | Kiosk belum pernah memuat data dan laptop offline. | Scan dinonaktifkan dengan pesan "Data belum dimuat. Hubungkan ke internet." (UF-09 E2) |
-| E2 | Login akun stasiun berakhir. | Kiosk meminta login ulang. Data dan scan di laptop tetap tersimpan (UF-09 E3). |
+| E2 | Login akun stasiun berakhir, termasuk karena akun stasiun itu login di laptop lain (FS-AKN-04 butir 7). | Kiosk meminta login ulang. Data dan scan di laptop tetap tersimpan (UF-09 E3). Untuk login di laptop lain, pesannya di `11` §5.3. |
 | E3 | Akun stasiun nonaktif. | Data di laptop dihapus, dan scan berhenti (FS-AKN-04, UF-09 E5). |
 | E4 | Pemuatan gagal di tengah jalan. | Data lama tetap dipakai, dengan pesan gagal memuat. |
 | E5 | Penyimpanan browser penuh. | Peringatan untuk petugas. Scan baru tidak boleh ditampilkan berhasil bila gagal disimpan (FS-KIO-02 E8). |
@@ -1911,7 +2024,7 @@ Tidak ada isian. Pemicunya adalah membuka kiosk, menekan tombol "Muat ulang data
 
 **Data dan log**
 
-- Ditulis di laptop: data siswa, foto, aturan jam, kalender, selisih jam, dan versi data.
+- Ditulis di laptop: data siswa, foto, aturan jam, kalender, selisih jam, versi data, hash PIN petugas, serta hitungan PIN salah dan waktu kunci menu petugas.
 - Ditulis di server: waktu data terakhir dimuat oleh stasiun, untuk status stasiun (FS-KIO-05).
 
 **Parameter dan default**
@@ -1922,6 +2035,8 @@ Tidak ada isian. Pemicunya adalah membuka kiosk, menekan tombol "Muat ulang data
 | Batas umur data sebelum peringatan | 3 hari atau 72 jam (UF-09 E1) | Sistem | Session 6 (DECISION) |
 | Ukuran foto kiosk | 300×400 px, JPEG (`07` ARS-53) | Sistem | Session 6 (DECISION) |
 | Ukuran tampil foto di kiosk | Tinggi ±50% layar, paling besar 300×400 px (`08` UI-23) | Sistem | Session 7 (DECISION) |
+| PIN petugas | Satu PIN 6 digit untuk semua stasiun; belum diatur sampai admin mengaturnya (`12` SEC-21) | Admin | Session 9 (DECISION) |
+| PIN salah sebelum menu petugas dikunci | 5 kali; menu dikunci 5 menit (`12` SEC-21) | Sistem | Session 9 (RECOMMENDATION) |
 
 **Di luar cakupan**
 
@@ -1991,6 +2106,22 @@ Rujukan: `02` §9, NFR-03.
 Given kiosk memiliki 3 scan belum tersinkron
 When petugas memilih hapus data lokal
 Then tindakan ditolak dengan pesan bahwa masih ada 3 scan belum tersinkron
+```
+
+**AC-KIO-01-07 — PIN petugas**
+Rujukan: `02` §9, `HA-AKN-03`, UF-06, `12` SEC-21, SEC-22, `11` §5.3.
+
+```text
+Given admin sudah mengatur PIN petugas
+  And kiosk "Gerbang 1" sudah memuat data terbaru dan memiliki 2 scan belum tersinkron
+When petugas memilih logout akun stasiun
+Then kiosk menampilkan "Masukkan PIN petugas."
+When petugas memasukkan PIN yang salah 5 kali pukul 07.40
+Then menu petugas menampilkan "Menu petugas dikunci sampai pukul 07.45."
+  And logout tidak dapat dipilih sampai pukul 07.45
+When setelah pukul 07.45 petugas memilih logout dan memasukkan PIN yang benar
+Then akun stasiun logout
+  And kedua scan tetap tersimpan di laptop
 ```
 
 ### FS-KIO-02 — Scan dan umpan balik
@@ -2241,8 +2372,9 @@ Tidak ada isian. Pemicunya adalah interval otomatis dan tombol "Sinkron sekarang
 | E1 | Offline. | Indikator koneksi berubah. Scan tetap berjalan, dan sinkron berjalan sendiri saat koneksi kembali (UF-11 E1). |
 | E2 | Login akun stasiun berakhir. | Sinkron berhenti, dan kiosk meminta login ulang. Scan belum tersinkron tetap tersimpan. |
 | E3 | Akun stasiun nonaktif. | Data di laptop dihapus (FS-AKN-04). |
-| E4 | Server menolak sebagian scan karena datanya rusak (FS-KIO-04 E3). | Scan itu tetap di laptop dengan tanda galat, dan jumlahnya dilaporkan di status stasiun sebagai scan galat, terpisah dari jumlah belum tersinkron. Scan lain tetap tersinkron. Scan galat dikirim ulang sekali setiap kali versi kode kiosk berubah (`10` EP-KIO-03). |
+| E4 | Server menolak sebagian scan karena datanya rusak (FS-KIO-04 E3). | Scan itu tetap di laptop dengan tanda galat, dan jumlahnya dilaporkan di status stasiun sebagai scan galat, terpisah dari jumlah belum tersinkron. Scan lain tetap tersinkron. Scan galat dikirim ulang sekali setiap kali versi kode kiosk berubah (`10` EP-KIO-03). Server mencatat setiap scan yang ditolak di log aktivitas (FS-KIO-04 E3), sehingga scan galat aman ikut terhapus saat data lokal dihapus (FS-KIO-01 butir 8, `12` SEC-24). |
 | E5 | Akhir hari, masih ada scan belum tersinkron dan tidak ada internet. | Laptop boleh dimatikan, dan petugas melapor ke guru piket. Sinkron berjalan saat online kembali (UF-11 E5). |
+| E6 | Server membatasi laju kiriman (429 `terlalu_sering`). | Kiosk menunggu sesuai `Retry-After`, lalu mengirim lagi. Scan tetap tersimpan. Bila berlangsung lebih dari 5 menit, pita "Server membatasi kiriman. Scan tetap tersimpan." tampil (`11` §5.3, `12` SEC-54, SEC-55). |
 
 **Data dan log**
 
@@ -2332,7 +2464,7 @@ Then kiosk terbuka dari cache dan penghitung tetap menunjukkan 12
 
 **Prasyarat**
 
-- Permintaan berasal dari akun stasiun yang login dan aktif (NFR-07). Detail pengamanan endpoint ditetapkan di Session 9.
+- Permintaan berasal dari akun stasiun yang login dan aktif (NFR-07). Login diperiksa lewat sesi atau cookie login stasiun beserta ID login stasiun yang berlaku, sehingga laptop yang akunnya sudah login di laptop lain ditolak (`12` SEC-18, SEC-19). Server tidak memercayai hasil penilaian kiosk (`12` SEC-20).
 
 **Input dan validasi**
 
@@ -2371,21 +2503,24 @@ Setiap kiriman juga membawa jam laptop saat kiriman dibuat dan laporan keadaan k
 
 | Kode | Keadaan | Respons |
 |---|---|---|
-| E1 | Permintaan tanpa login akun stasiun yang sah. | Ditolak. Kiosk meminta login ulang (FS-KIO-03 E2). |
+| E1 | Permintaan tanpa login akun stasiun yang sah, termasuk dari laptop yang akunnya sudah login di laptop lain. | Ditolak dengan 401 `login_ulang`. Kiosk meminta login ulang (FS-KIO-03 E2, `12` SEC-19). |
 | E2 | Akun stasiun nonaktif. | Ditolak dengan status "nonaktif" (FS-AKN-04). |
-| E3 | Satu scan dalam kiriman rusak, misalnya NISN bukan 10 digit, atau dicatat akun stasiun lain. | Hanya scan itu yang ditolak, dengan alasan (`10` EP-KIO-03). Scan lain tetap diproses. |
-| E4 | NISN tidak dikenal server. | Disimpan dengan hasil ditolak dan tidak dipakai. |
+| E3 | Satu scan dalam kiriman rusak, misalnya NISN bukan 10 digit, atau dicatat akun stasiun lain. | Hanya scan itu yang ditolak, dengan alasan (`10` EP-KIO-03). Scan lain tetap diproses. Server mencatat scan yang ditolak di log aktivitas dengan jenis `scan_ditolak_server`. Kiriman ulang scan yang sama tidak menulis log baru (`12` SEC-24). |
+| E4 | NISN tidak dikenal server. | Disimpan dengan hasil ditolak dan tidak dipakai. Scan ini bukan scan rusak, sehingga dijawab sebagai diterima dan tidak ditulis di log aktivitas (`10` EP-KIO-03). |
+| E5 | Kiriman melewati batas laju per akun stasiun. | Ditolak dengan 429 `terlalu_sering` dan header `Retry-After` (`10` API-03, `12` SEC-54, SEC-55). Kiosk mengikuti FS-KIO-03 E6. |
 
 **Data dan log**
 
 - Ditulis: catatan scan dengan kolom di `05` §14, termasuk hasil di server (dipakai, ganda, ditandai, atau ditolak) dan alasan penandaan; status stasiun.
 - Catatan scan tidak pernah diubah isinya atau dihapus (BR-SCN-06). Hasil tinjauan disimpan terpisah dari isi scan (FS-KIO-06).
+- Log: setiap scan yang ditolak dicatat di log aktivitas dengan jenis `scan_ditolak_server`: stasiun, kode tolak, UUID, NISN, jam scan, dan data mentah paling besar 1 KB (`12` SEC-24, SEC-59). Admin melihatnya di halaman log aktivitas (`09` HAL-AKN-09).
 
 **Parameter dan default**
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
 | Toleransi selisih jam | 2 menit (BR-SCN-08) | Sistem | Session 6 (DECISION) |
+| Batas laju muat data dan sinkron | 120 permintaan per menit per akun stasiun, digabung (`12` SEC-54) | Sistem | Uji beban sebelum uji coba R1 (usulan Session 9, RECOMMENDATION) |
 
 **Di luar cakupan**
 
@@ -2457,6 +2592,19 @@ Rujukan: UF-11 E6, BR-WA-01.
 Given scan masuk siswa D pada Senin pukul 06.55 baru tersinkron pada Selasa pagi
 When server menerima scan itu
 Then status siswa D pada hari Senin dihitung ulang memakai scan tersebut
+```
+
+**AC-KIO-04-07 — Scan yang ditolak server tercatat**
+Rujukan: FR-KIO-10, R-10, `10` EP-KIO-03, `12` SEC-24.
+
+```text
+Given kiosk "Gerbang 1" mengirim kiriman berisi satu scan dengan akun stasiun pencatat "Gerbang 2", dan satu scan dengan NISN "12345"
+When server memproses kiriman itu
+Then kedua scan ditolak dengan alasan masing-masing, dan scan lain di kiriman itu tetap diproses
+  And log aktivitas memuat dua entri scan_ditolak_server untuk "Gerbang 1", dengan kode tolak, UUID, NISN, dan jam scan
+When kiosk mengirim ulang kedua scan yang sama
+Then kedua scan ditolak lagi
+  And log aktivitas tidak memuat entri baru untuk kedua scan itu
 ```
 
 ### FS-KIO-05 — Status stasiun
@@ -3879,7 +4027,7 @@ Then daftar 7B tampil
 
 | Kode | Keadaan | Respons |
 |---|---|---|
-| E1 | Nilai di luar rentang. | Ditolak. |
+| E1 | Nilai di luar rentang. | Ditolak: "Batas mundur 0 sampai 31 hari." (`11` VAL-27) |
 
 **Data dan log**
 
@@ -3891,7 +4039,7 @@ Then daftar 7B tampil
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
 | Batas mundur | 7 hari | Admin | — (DECISION) |
-| Rentang nilai yang boleh | 0–31 hari | Sistem | Session 9 |
+| Rentang nilai yang boleh | 0–31 hari (`11` VAL-27) | Sistem | Session 9 (RECOMMENDATION) |
 
 **Di luar cakupan**
 
@@ -3963,8 +4111,8 @@ Tidak ada.
 
 **Di luar cakupan**
 
-- Log akses atau log siapa yang melihat data (OQ-17, Session 9).
-- Log aktivitas akun (Session 9).
+- Log akses atau log siapa yang melihat data. Pembukaan lampiran oleh staf dicatat di log aktivitas, bukan di log ini (OQ-17 terjawab, FS-IZN-06, `12` SEC-60).
+- Log aktivitas akun. Log ini dibuka admin di halaman log aktivitas (`HA-AKN-08`, `09` HAL-AKN-09, `12` SEC-62).
 - Export log di R1. Export log ke CSV termasuk R2 (`13` LP-07).
 
 **Catatan antarmuka awal**
@@ -4025,7 +4173,7 @@ Validasi tanggal yang berlaku untuk semua fitur di bagian ini:
 | Alur | UF-17 |
 | Aktor dan hak | Siswa, untuk dirinya sendiri (`HA-IZN-01`, `HA-IZN-04`, `HA-IZN-05`). |
 | Aturan terkait | BR-IZN-01 s.d. BR-IZN-03, BR-IZN-06, BR-IZN-07, BR-IZN-11, BR-IZN-12, BR-MUN-01, BR-MUN-02 |
-| Status | DECISION (pengajuan siswa; tanggal lampau dalam batas mundur; bukan dispensasi; tumpang tindih dan tanggal ke depan, Session 4b; paling banyak 3 lampiran, Session 5); RECOMMENDATION (rentang tanggal, lampiran opsional, pembatalan oleh siswa) |
+| Status | DECISION (pengajuan siswa; tanggal lampau dalam batas mundur; bukan dispensasi; tumpang tindih dan tanggal ke depan, Session 4b; paling banyak 3 lampiran, Session 5; format dan ukuran lampiran, Session 9); RECOMMENDATION (rentang tanggal, lampiran opsional, pembatalan oleh siswa) |
 
 **Prasyarat**
 
@@ -4037,8 +4185,8 @@ Validasi tanggal yang berlaku untuk semua fitur di bagian ini:
 |---|---|---|
 | Jenis | Ya | Izin atau Sakit. Dispensasi tidak tersedia (BR-IZN-03). |
 | Tanggal mulai dan selesai | Ya | Validasi tanggal di awal §9. |
-| Keterangan | Ya | Teks. |
-| Lampiran surat | Tidak | Paling banyak 3 file (DECISION, Session 5). Format dan ukurannya ditetapkan di Session 9 (§4.9). |
+| Keterangan | Ya | Teks, 5 s.d. 500 karakter (`11` VAL-16). |
+| Lampiran surat | Tidak | Paling banyak 3 file (DECISION, Session 5). JPG, PNG, WebP, atau PDF, paling besar 10 MB per file (DECISION, Session 9, §4.9, `12` SEC-49). Gambar paling besar 24 megapiksel. |
 
 **Perilaku**
 
@@ -4048,6 +4196,7 @@ Validasi tanggal yang berlaku untuk semua fitur di bagian ini:
 4. Siswa melihat daftar pengajuannya beserta status, keputusan terbaru, dan catatan verifikasi, tanpa nama staf (FR-IZN-04, §2.3).
 5. Selama status masih "menunggu", siswa dapat membatalkan pengajuan. Statusnya menjadi "dibatalkan". Setelah diverifikasi, siswa menghubungi wali kelas untuk perubahan.
 6. Pengajuan tidak dapat diubah. Siswa membatalkannya, lalu mengajukan ulang.
+7. Lampiran gambar disimpan ulang: diputar sesuai EXIF, diperkecil bila sisi terpanjangnya lebih dari 2.000 px, lalu disimpan sebagai JPEG. Penyimpanan ulang membuang metadata, termasuk lokasi GPS dari foto ponsel. PDF disimpan apa adanya (`12` SEC-51).
 
 **Keadaan kosong dan error**
 
@@ -4057,7 +4206,7 @@ Validasi tanggal yang berlaku untuk semua fitur di bagian ini:
 | E2 | Tumpang tindih dengan data yang menunggu atau disetujui (UF-17 E3). | Ditolak dengan menunjukkan data yang sudah ada. |
 | E3 | Rentang tidak memuat hari sekolah. | "Tidak ada hari sekolah pada tanggal yang dipilih." |
 | E4 | Tanggal selesai di luar tahun ajaran aktif. | Ditolak. |
-| E5 | Lampiran tidak valid. | Ditolak, dan isian lain tetap terisi. |
+| E5 | Lampiran tidak valid. | Ditolak, dan isian lain tetap terisi. File perlu dipilih ulang. Pesannya di `11` VAL-28 dan §5.5. |
 | E6 | Siswa belum pernah mengajukan. | Daftar kosong dengan tombol "Ajukan izin/sakit". |
 
 **Data dan log**
@@ -4069,7 +4218,7 @@ Validasi tanggal yang berlaku untuk semua fitur di bagian ini:
 
 | Parameter | Default | Diatur oleh | Dipastikan di |
 |---|---|---|---|
-| Format dan ukuran lampiran | Belum ditetapkan | Sistem | Session 9 |
+| Format dan ukuran lampiran | JPG, PNG, WebP, atau PDF; paling besar 10 MB per file; paling banyak 3 file (`12` SEC-49) | Sistem | Session 9 (DECISION) |
 
 **Di luar cakupan**
 
@@ -4153,6 +4302,19 @@ When pratinjau tampil
 Then hanya Sabtu, 17 Oktober 2026 yang disebut sebagai hari sekolah terdampak
 ```
 
+**AC-IZN-01-08 — Lampiran gambar disimpan ulang**
+Rujukan: FR-IZN-01, NFR-10, R-17, `12` SEC-49, SEC-51.
+
+```text
+Given siswa memotret surat dokter dengan ponsel, menghasilkan file JPG 4000×3000 px berukuran 4 MB yang memuat lokasi GPS di EXIF
+When siswa mengajukan Sakit untuk 13 Oktober 2026 dengan lampiran foto itu
+Then lampiran tersimpan sebagai JPEG berukuran paling besar 2000×1500 px
+  And lampiran yang tersimpan tidak memuat metadata EXIF, termasuk lokasi GPS
+When siswa melampirkan file "surat.pdf" berukuran 12 MB pada pengajuan lain
+Then lampiran ditolak dengan pesan "Ukuran file surat.pdf 12 MB. Paling besar 10 MB."
+  And isian lain tetap terisi
+```
+
 ### FS-IZN-02 — Input izin/sakit/dispensasi oleh staf
 
 | Item | Isi |
@@ -4176,8 +4338,8 @@ Then hanya Sabtu, 17 Oktober 2026 yang disebut sebagai hari sekolah terdampak
 | Siswa | Ya | Dicari berdasarkan nama atau NISN dalam cakupan, dengan hasil langsung saat mengetik bila JavaScript aktif (DECISION, Session 8, `09` RT-14). Siswa juga dapat dipilih lewat pintasan dari dashboard, daftar presensi rombel, atau profil siswa. |
 | Jenis | Ya | Izin, Sakit, atau Dispensasi. |
 | Tanggal mulai dan selesai | Ya | Validasi tanggal di awal §9. |
-| Keterangan | Ya | Teks, termasuk sumber kabar, misalnya "telepon ibu pukul 06.30". |
-| Lampiran | Tidak | Foto surat atau surat tugas, paling banyak 3 file (DECISION, Session 5). |
+| Keterangan | Ya | Teks, 5 s.d. 500 karakter (`11` VAL-16), termasuk sumber kabar, misalnya "telepon ibu pukul 06.30". |
+| Lampiran | Tidak | Foto surat atau surat tugas, paling banyak 3 file (DECISION, Session 5). JPG, PNG, WebP, atau PDF, paling besar 10 MB per file (DECISION, Session 9, §4.9, `12` SEC-49). Lampiran gambar disimpan ulang seperti FS-IZN-01 butir 7. |
 
 **Perilaku**
 
@@ -4276,10 +4438,10 @@ Then status siswa D hari ini menjadi Izin
 
 | Isian | Wajib | Validasi |
 |---|---|---|
-| Pilihan siswa | Ya | Salah satu cara: siswa terpilih (boleh lintas rombel), satu rombel, atau satu tingkat. Hanya siswa dalam cakupan yang dapat dipilih. Wali kelas hanya dapat memilih siswa rombelnya. |
+| Pilihan siswa | Ya | Salah satu cara: siswa terpilih (boleh lintas rombel), satu rombel, atau satu tingkat. Hanya siswa dalam cakupan yang dapat dipilih. Wali kelas hanya dapat memilih siswa rombelnya. Siswa terpilih paling banyak 200; untuk kelompok yang lebih besar dipakai pilihan rombel atau tingkat (`11` VAL-31). |
 | Tanggal mulai dan selesai | Ya | Validasi tanggal di awal §9. |
-| Keterangan | Ya | Nama kegiatan, misalnya "Lomba OSN tingkat kabupaten". |
-| Lampiran | Tidak | Surat tugas, paling banyak 3 file (DECISION, Session 6). Lampiran berlaku untuk seluruh kelompok (`06` §10.4). |
+| Keterangan | Ya | Nama kegiatan, misalnya "Lomba OSN tingkat kabupaten". 5 s.d. 500 karakter (`11` VAL-16). |
+| Lampiran | Tidak | Surat tugas, paling banyak 3 file (DECISION, Session 6). JPG, PNG, WebP, atau PDF, paling besar 10 MB per file (DECISION, Session 9, §4.9, `12` SEC-49). Lampiran berlaku untuk seluruh kelompok (`06` §10.4). Lampiran gambar disimpan ulang seperti FS-IZN-01 butir 7. |
 
 **Perilaku**
 
@@ -4379,7 +4541,7 @@ Then wali kelas hanya dapat memilih siswa rombel 7A
 
 1. Daftar verifikasi berisi pengajuan menunggu dalam cakupan, dengan yang paling lama di atas. Setiap baris menampilkan siswa, rombel, jenis, rentang, jumlah hari sekolah terdampak, waktu diajukan, dan tanda lampiran.
 2. Jumlah pengajuan yang menunggu tampil di menu dan di dashboard (FS-LAP-01).
-3. Detail pengajuan menampilkan keterangan, lampiran, dan status presensi siswa pada tanggal terdampak. Contohnya siswa sudah scan masuk pada salah satu tanggal itu.
+3. Detail pengajuan menampilkan keterangan, lampiran, dan status presensi siswa pada tanggal terdampak. Contohnya siswa sudah scan masuk pada salah satu tanggal itu. Lampiran tampil dan dicatat seperti di FS-IZN-06 butir 4 dan 5 (`12` SEC-52, SEC-60).
 4. **Setujui:** status menjadi "disetujui", verifikator dan waktunya dicatat, dan status presensi dihitung ulang. Status Izin atau Sakit juga berlaku bila sebelumnya Alpa, Hadir, atau Terlambat (BR-STS-03).
 5. **Tolak:** status menjadi "ditolak" dengan catatan. Status presensi tidak berubah (UF-18 langkah 5).
 6. Keputusan yang tersimpan lebih dulu yang berlaku. Staf kedua mendapat pesan bahwa pengajuan sudah diverifikasi, beserta nama verifikatornya (BR-IZN-08).
@@ -4602,9 +4764,9 @@ Then pilihan perubahan per kelompok tidak tersedia, dan wali kelas hanya dapat m
 | Rilis | R1 |
 | Requirement | FR-IZN-04, FR-IZN-05 |
 | Alur | UF-17, UF-18 |
-| Aktor dan hak | Lihat daftar (`HA-IZN-04`) dan buka lampiran (`HA-IZN-05`): admin, guru piket, guru BK, dan pimpinan (semua), wali kelas (rombel), dan siswa (sendiri). |
-| Aturan terkait | BR-IZN-12, R-17, OQ-17 |
-| Status | DECISION (pimpinan membuka lampiran); RECOMMENDATION (pembagian lainnya dan rincian) |
+| Aktor dan hak | Lihat daftar (`HA-IZN-04`) dan buka lampiran (`HA-IZN-05`): admin, guru piket, guru BK, dan pimpinan (semua), wali kelas (rombel), dan siswa (sendiri). Catatan akses lampiran dilihat admin di halaman log aktivitas (`HA-AKN-08`). |
+| Aturan terkait | BR-IZN-12, R-17, OQ-17 (terjawab) |
+| Status | DECISION (pimpinan membuka lampiran; pencatatan akses lampiran, OQ-17, Session 9); RECOMMENDATION (pembagian lainnya dan rincian) |
 
 **Prasyarat**
 
@@ -4621,20 +4783,22 @@ Then pilihan perubahan per kelompok tidak tersedia, dan wali kelas hanya dapat m
 1. Staf melihat daftar dalam cakupannya. Detail setiap data menampilkan keterangan, lampiran, dan riwayat keputusan beserta nama staf.
 2. Siswa melihat datanya sendiri di portal, tanpa nama staf (§2.3).
 3. Lampiran hanya diberikan lewat permintaan yang sudah diperiksa haknya, dan tidak memiliki alamat publik (§4.9).
-4. Pencatatan setiap pembukaan lampiran mengikuti keputusan OQ-17 (Session 9).
+4. Lampiran gambar dan PDF tampil di browser. Halaman detail izin menampilkan PDF di bingkai halaman, dengan tautan "Buka" dan "Unduh" di bawahnya untuk browser ponsel yang tidak menampilkan PDF di bingkai. Tautan "Unduh" memakai `?unduh=1`, sehingga file diunduh dengan nama aslinya yang sudah dibersihkan (`12` SEC-52).
+5. Setiap pembukaan dan unduhan lampiran oleh akun staf dicatat di log aktivitas: pelaku, waktu, alamat IP, lampiran, data izin atau kelompoknya, siswa, dan apakah lampiran diunduh. Pembukaan ulang lampiran yang sama oleh staf yang sama dalam 10 menit tidak dicatat lagi, sedangkan unduhan selalu dicatat. Siswa yang membuka lampirannya sendiri tidak dicatat (DECISION, OQ-17, Session 9, `12` SEC-60).
+6. Admin melihat catatan akses lampiran di halaman log aktivitas, dengan saringan cepat "Akses lampiran" (`HA-AKN-08`, `09` HAL-AKN-09, `12` SEC-62).
 
 **Keadaan kosong dan error**
 
 | Kode | Keadaan | Respons |
 |---|---|---|
 | E1 | Tidak ada data yang cocok. | "Tidak ada data izin/sakit/dispensasi." |
-| E2 | Lampiran di luar cakupan, atau dibuka tanpa login. | Ditolak. |
-| E3 | File lampiran tidak ditemukan. | Pesan galat. Data lain tetap tampil. |
+| E2 | Lampiran di luar cakupan, atau dibuka tanpa login. | Ditolak (`11` §5.5). |
+| E3 | File lampiran tidak ditemukan. | "File lampiran tidak ditemukan. Laporkan ke admin." Data lain tetap tampil. Kejadian ini dicatat di log aplikasi (`11` §5.5, GAL-18). |
 
 **Data dan log**
 
 - Dibaca: data izin/sakit/dispensasi, riwayat keputusan, dan lampiran.
-- Log: pembukaan lampiran mengikuti OQ-17.
+- Log: setiap pembukaan dan unduhan lampiran oleh staf dicatat di log aktivitas dengan jenis `lampiran_dibuka` (`12` SEC-59, SEC-60). Entri ini ditulis di luar transaksi (`12` SEC-57).
 
 **Parameter dan default**
 
@@ -4643,6 +4807,7 @@ Tidak ada.
 **Di luar cakupan**
 
 - Export daftar izin. Laporan ini tidak termasuk matriks laporan Session 5 (`13` §4).
+- Pencatatan siapa yang melihat daftar dan detail izin. Hanya pembukaan lampiran yang dicatat (`12` SEC-60).
 
 **Catatan antarmuka awal**
 
@@ -4678,6 +4843,24 @@ Rujukan: `HA-IZN-04`, `HA-IZN-05`.
 Given siswa A sudah login
 When siswa A membuka alamat detail izin milik siswa B
 Then permintaan ditolak
+```
+
+**AC-IZN-06-04 — Akses lampiran tercatat**
+Rujukan: FR-IZN-05, `HA-IZN-05`, `HA-AKN-08`, R-17, OQ-17, `12` SEC-60, `09` HAL-AKN-09.
+
+```text
+Given siswa dengan NISN 0012345678 memiliki data Sakit 13 Oktober 2026 dengan lampiran surat dokter
+When guru BK membuka lampiran itu pukul 09.00
+Then log aktivitas memuat entri lampiran_dibuka dengan guru BK sebagai pelaku, waktu, lampiran, dan siswa itu
+When guru BK membuka lampiran yang sama lagi pukul 09.05
+Then log aktivitas tidak memuat entri baru
+When guru BK mengunduh lampiran itu pukul 09.20
+Then log aktivitas memuat entri lampiran_dibuka baru yang menandai lampiran diunduh
+When siswa itu membuka lampirannya sendiri di portal
+Then log aktivitas tidak memuat entri baru
+When admin membuka halaman log aktivitas dengan saringan "Akses lampiran"
+Then entri guru BK tampil
+  And guru BK dan kepala sekolah tidak dapat membuka halaman log aktivitas
 ```
 
 ## 10. Dashboard dan laporan (LAP)
@@ -5309,9 +5492,10 @@ Fitur R1 yang perlu diperhatikan agar R2 tidak memerlukan perubahan besar:
 |---|---|
 | `HA-AKN-01` | FS-AKN-01, FS-AKN-02 |
 | `HA-AKN-02` | FS-AKN-03 |
-| `HA-AKN-03` | FS-AKN-04 |
+| `HA-AKN-03` | FS-AKN-04, FS-KIO-01 (PIN petugas) |
 | `HA-AKN-04`, `HA-AKN-05`, `HA-AKN-06` | FS-AKN-05 |
 | `HA-AKN-07` | FS-LAP-01 (peringatan). Halaman pemeriksaan sistem dirinci di `09` HAL-AKN-07, bukan sebagai fitur di dokumen ini. |
+| `HA-AKN-08` | FS-IZN-06 (catatan akses lampiran), FS-KIO-04 (scan yang ditolak server), dan log aktivitas akun di FS-AKN-01 s.d. FS-AKN-05. Halaman log aktivitas dirinci di `09` HAL-AKN-09 dan `12` SEC-62, bukan sebagai fitur di dokumen ini. |
 | `HA-MD-01` | FS-MD-02 |
 | `HA-MD-02` | FS-MD-03 |
 | `HA-MD-03` | FS-MD-04, FS-MD-05, FS-MD-09 |
@@ -5363,13 +5547,13 @@ Fitur R1 yang perlu diperhatikan agar R2 tidak memerlukan perubahan besar:
 | `03-user-flow.md` | 0.3 | UF-02, UF-28, UF-12, UF-14, UF-15, UF-16, UF-17, UF-18, UF-19, UF-22, UF-27, dan UF-29 diperbarui sesuai keputusan Session 4b. Rujukan ke `04` ditambahkan. |
 | `05-business-rules.md` | 0.2 | BR-STS-07, BR-SCN-10, BR-KOR-08, BR-KOR-09, BR-IZN-07, BR-IZN-10, BR-IZN-11, BR-DRT-06, BR-DRT-07, dan BR-KAL-03 menjadi DECISION. BR-KOR-11 diganti dengan pembatalan presensi manual. BR-KOR-10, BR-IZN-05, BR-IZN-09, BR-JAM-10 (jadwal hari ini sebagai lapisan tersendiri), dan BR-REK-04 (hari yang belum final tidak dihitung) diperbarui. Kebutuhan data di §14 dilengkapi. |
 
-Perubahan dokumen karena keputusan Session 5 dicatat di `06` §18, karena keputusan Session 6 di `07` §18, karena keputusan Session 7 di `08` §14, dan karena keputusan Session 8 di `09` §16.
+Perubahan dokumen karena keputusan Session 5 dicatat di `06` §18, karena keputusan Session 6 di `07` §18, karena keputusan Session 7 di `08` §14, karena keputusan Session 8 di `09` §16, dan karena keputusan Session 9 di `12` §20.
 
 ## 14. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
 ### 14.1 Pertanyaan terbuka
 
-Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), Session 6 menjawab OQ-09 (`07`), dan Session 7 menjawab sebagian OQ-13 (`08`). Session 8 tidak menjawab dan tidak menambah OQ. Daftar lengkapnya ada di `00` §8.2.
+Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), Session 6 menjawab OQ-09 (`07`), dan Session 7 menjawab sebagian OQ-13 (`08`). Session 8 tidak menjawab dan tidak menambah OQ. Session 9 menjawab OQ-17 dan menambah OQ-18 (`12` §2.1, §21). Daftar lengkapnya ada di `00` §8.2.
 
 | OQ | Pertanyaan singkat | Fitur terdampak | Jadwal |
 |---|---|---|---|
@@ -5379,7 +5563,8 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 | OQ-11 | Matriks laporan × format; isi flyer | FS-LAP-03, FS-LAP-05, FS-LAP-06 | Terjawab di Session 5 (`13` §4, LP-08) |
 | OQ-12 | Format nama file foto | FS-MD-08 | Terjawab di Session 5 (`13` IM-03) |
 | OQ-13 | Desain kartu siswa baru | FS-KRT-01 | Terjawab sebagian di Session 7: mengikuti kartu lama. Contoh kartu diserahkan sebelum R3. |
-| OQ-17 | Pencatatan pembukaan lampiran | FS-IZN-04, FS-IZN-06 | Session 9 |
+| OQ-17 | Pencatatan pembukaan lampiran | FS-IZN-04, FS-IZN-06 | Terjawab di Session 9: setiap pembukaan dan unduhan lampiran oleh staf dicatat, dan dilihat admin di log aktivitas (`12` SEC-60) |
+| OQ-18 | Kebijakan data sekolah: masa simpan data, pemberitahuan privasi, dan penanggung jawab data | Semua fitur yang menyimpan data siswa, terutama FS-MD-04, FS-MD-07, dan FS-IZN-06 | Sebelum uji coba R1, oleh sekolah (`12` SEC-66, SEC-68) |
 
 ### 14.2 Nilai yang dipastikan nanti
 
@@ -5401,11 +5586,14 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 | Lama hasil scan tampil dan jenis bunyi | Ditetapkan: 3 dan 6 detik; bunyi Web Audio API (`08` UI-41, UI-45) | FS-KIO-02 | Session 7 (DECISION) |
 | Jumlah slip per halaman A4 | Ditetapkan: 8 | FS-AKN-05 | Session 7 (DECISION) |
 | Isi laporan kiosk di setiap kontak | Ditetapkan: `10` EP-KIO-03, termasuk versi kode kiosk dan penyimpanan permanen | FS-KIO-03, FS-KIO-05 | Session 8 (DECISION untuk versi kode dan penyimpanan permanen; RECOMMENDATION untuk isian lain) |
-| Penanganan scan galat yang tetap ditolak, termasuk saat data lokal akan dihapus | — | FS-KIO-03 | Session 9 |
-| Aturan password, username, dan panjang password awal | — | FS-AKN-02, FS-AKN-03 | Session 9 |
-| Batas percobaan login dan masa berlaku sesi staf dan siswa | — | FS-AKN-01 | Session 9 |
-| Format dan ukuran file unggahan | — | §4.9 | Session 9 |
-| Rentang nilai batas mundur | 0–31 hari | FS-PRS-10 | Session 9 |
+| Penanganan scan galat yang tetap ditolak, termasuk saat data lokal akan dihapus | Ditetapkan: server mencatat setiap scan yang ditolak di log aktivitas, sehingga penghapusan data lokal aman (`12` SEC-24) | FS-KIO-03, FS-KIO-04 | Session 9 (RECOMMENDATION) |
+| Aturan password, username, dan panjang password awal | Ditetapkan: password 8 s.d. 64 karakter dengan daftar password umum (`12` SEC-03); username 3 s.d. 30 karakter (`11` VAL-20); password awal 12 karakter untuk staf dan stasiun, dan 8 karakter untuk siswa (`12` SEC-05) | FS-AKN-02 s.d. FS-AKN-05 | Session 9 (DECISION untuk aturan password; RECOMMENDATION untuk username dan password awal) |
+| Batas percobaan login dan masa berlaku sesi staf dan siswa | Ditetapkan: 5 gagal dalam 15 menit, 20 gagal dalam 24 jam, dan 100 gagal per alamat IP dalam 15 menit (`12` SEC-08); sesi 8 jam tanpa aktivitas atau 7 hari sejak login (`12` SEC-12) | FS-AKN-01 | Session 9 (DECISION) |
+| Format dan ukuran file unggahan | Ditetapkan: Paket 10 MB (`12` SEC-49) | §4.9 | Session 9 (DECISION) |
+| Rentang nilai batas mundur | Ditetapkan: 0–31 hari (`11` VAL-27) | FS-PRS-10 | Session 9 (RECOMMENDATION) |
+| PIN petugas kiosk | Ditetapkan: satu PIN 6 digit untuk semua stasiun, diatur admin; 5 kali salah mengunci menu petugas 5 menit (`12` SEC-21) | FS-KIO-01 | Session 9 (DECISION untuk PIN; RECOMMENDATION untuk kunci menu) |
+| Batas laju API kiosk | 120 permintaan per menit per akun stasiun untuk muat data dan sinkron (`12` SEC-54) | FS-KIO-03, FS-KIO-04 | Uji beban sebelum uji coba R1 |
+| Daftar password umum final, termasuk nama sekolah | `12` SEC-04 | FS-AKN-02 | Implementasi FS-AKN-02 |
 
 ## Riwayat perubahan
 
@@ -5416,3 +5604,4 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 | 0.3 | 2026-10-04 | Keputusan Session 6 (§2.5, `07`). §4.5 dan §4.6 merujuk mekanisme di `07`. Nilai parameter FS-AKN-01, FS-AKN-04, FS-MD-07, FS-KIO-01 s.d. FS-KIO-05, dan FS-LAP-01 ditetapkan, dan FS-MD-08 memuat usulan batas unggah serta pemrosesan foto bertahap. Masa berlaku akun stasiun disebut masa login, bukan sesi (FS-AKN-01, FS-AKN-04, FS-KIO-01, FS-KIO-03, FS-KIO-04). Selisih jam diukur server dari jam laptop di setiap kiriman (FS-KIO-03, FS-KIO-04). FS-AKN-03, FS-MD-03, FS-MD-04, FS-IZN-03, pengantar §7, §11, §13, §14.1, dan §14.2 diperbarui. OQ-09 terjawab. |
 | 0.4 | 2026-10-04 | Keputusan Session 7 (§2.6, `08`). §1 dan pengantar catatan antarmuka awal merujuk `08`. §4.8, FS-AKN-05, FS-MD-03, FS-MD-07, FS-KIO-01, FS-KIO-02, FS-KIO-02 E7, FS-PRS-05, FS-LAP-03, FS-LAP-04, §11, §13, §14.1, dan §14.2 diperbarui. OQ-13 terjawab sebagian. |
 | 0.5 | 2026-10-05 | Keputusan Session 8 (§2.7, `09`, `10`). §1 dan pengantar §7 merujuk `09` dan `10`. FS-KIO-03 (isi laporan kiosk dan scan galat), FS-KIO-04 (akun pencatat, isi respons, dan status stasiun), FS-KIO-05 (kolom dan sorotan baru, AC-KIO-05-03), FS-PRS-06 dan FS-IZN-02 (pencarian siswa), FS-LAP-01 ("Kelas saya" dan peringatan pemeriksaan sistem), §12.3, §13, §14.1, dan §14.2 diperbarui. |
+| 0.6 | 2026-10-05 | Keputusan Session 9 (§2.8, `11`, `12`). Kepala dokumen dan §1 merujuk `11` dan `12`. §4.3 (panjang alasan), §4.4 butir 5 (log aktivitas dan akses lampiran), dan §4.9 (Paket 10 MB dan penyimpanan ulang gambar) diperbarui. FS-AKN-01 (pembatasan login, masa sesi, dan log), FS-AKN-02 (aturan password), FS-AKN-03 s.d. FS-AKN-05 (password awal, username, dan buka kunci login), FS-AKN-04 (satu login aktif per akun stasiun), FS-KIO-01 (PIN petugas), FS-KIO-03 dan FS-KIO-04 (log scan yang ditolak server dan pembatasan laju), FS-MD-01 s.d. FS-MD-03, FS-MD-05 s.d. FS-MD-09 (format dan ukuran unggahan, dan jenis log), FS-PRS-10, FS-PRS-11, FS-IZN-01 s.d. FS-IZN-04, dan FS-IZN-06 (penyajian dan catatan akses lampiran) diperbarui. Acceptance criteria baru: AC-AKN-01-07, AC-AKN-01-08, AC-AKN-02-05, AC-AKN-04-05, AC-KIO-01-07, AC-KIO-04-07, AC-MD-06-06, AC-IZN-01-08, dan AC-IZN-06-04. §12.3, §13, §14.1, dan §14.2 diperbarui. OQ-17 terjawab, dan OQ-18 ditambahkan. |

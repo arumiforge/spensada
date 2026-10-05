@@ -2,11 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.4 (draft, menunggu review) |
+| Versi | 0.5 (draft, menunggu review) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, §2.4), Session 7 (UI/UX & Design System, §2.5), dan Session 8 (Routes / Pages / API, §2.6). |
+| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, §2.4), Session 7 (UI/UX & Design System, §2.5), Session 8 (Routes / Pages / API, §2.6), dan Session 9 (Validation, Error Handling & Security, §2.7). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`), bagian "Data dan log", dan ketentuan umum (§4). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`) dan kebutuhan data (§14). |
-| Dokumen terkait | [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export yang membaca dan menulis tabel di dokumen ini. [07-system-architecture.md](07-system-architecture.md): mekanisme hitung ulang, penguncian, sesi, dan kiosk yang memakai tabel di dokumen ini. [10-api-specification.md](10-api-specification.md): API kiosk yang membaca dan menulis tabel di dokumen ini. |
+| Dokumen terkait | [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export yang membaca dan menulis tabel di dokumen ini. [07-system-architecture.md](07-system-architecture.md): mekanisme hitung ulang, penguncian, sesi, dan kiosk yang memakai tabel di dokumen ini. [10-api-specification.md](10-api-specification.md): API kiosk yang membaca dan menulis tabel di dokumen ini. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): batas isian yang sesuai dengan panjang kolom di dokumen ini. [12-security.md](12-security.md): pembatasan login, log aktivitas, PIN petugas, file, dan retensi. |
 
 Dokumen ini menetapkan desain database Spensada: konvensi, daftar tabel, kolom, tipe, relasi, kunci unik, dan index. Dokumen ini juga memutuskan cara menyimpan status harian (BR-STS-06), dan mencatat keputusan Session 5 atas usulan di `05` yang berdampak ke data.
 
@@ -35,7 +35,7 @@ Tabel R1 dirinci penuh. Tabel R2 (notifikasi WhatsApp) juga dirinci, agar R2 tid
 | Masa aktif | Disimpan sebagai periode aktif di tabel tersendiri, sehingga siswa yang dinonaktifkan lalu diaktifkan kembali tetap memiliki riwayat yang benar. | BR-KAL-06, §6.6 | DECISION |
 | Alasan penonaktifan | Lulus, pindah sekolah, keluar, meninggal dunia, salah input, dan lainnya. | FS-MD-04, §6.6 | DECISION |
 | Lampiran izin | Paling banyak 3 file per data izin/sakit/dispensasi. | BR-IZN-12, §10.4 | DECISION |
-| Retensi | R1 tidak menghapus data presensi, scan, maupun log. Kebijakan retensi menurut UU 27/2022 diputuskan di Session 9. | DB-13 | DECISION |
+| Retensi | R1 tidak menghapus data presensi, scan, maupun log. Kebijakan retensi menurut UU 27/2022 menunggu kebijakan data sekolah (OQ-18, §2.7). | DB-13 | DECISION |
 
 ### 2.2 Tinjauan RECOMMENDATION di `05`
 
@@ -84,13 +84,26 @@ Keputusan Session 8 yang berdampak ke desain data. Rinciannya ada di `09` §2 da
 | Waktu data dimuat | `status_stasiun.data_dimuat_at` diisi dari laporan kiosk di setiap kontak. | §8.1, `10` EP-KIO-03 | RECOMMENDATION |
 | Akun pencatat scan | Setiap scan di kiriman membawa akun stasiun pencatatnya, yang disimpan di `scan.stasiun_id`. Scan yang dicatat akun lain ditolak. Tidak ada kolom baru. | §8.2, `10` EP-KIO-03 | RECOMMENDATION |
 
+### 2.7 Keputusan Session 9
+
+Keputusan Session 9 yang berdampak ke desain data. Rinciannya ada di `12` §2 dan `11` §2.
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| Retensi | Belum ada penghapusan data presensi, scan, izin, lampiran, log, dan data siswa, sampai sekolah menetapkan kebijakan datanya (OQ-18). Hanya data teknis yang dibersihkan otomatis. | DB-13, `12` SEC-66, SEC-67 | DECISION |
+| Pencatatan akses lampiran (OQ-17) | Setiap pembukaan dan unduhan lampiran oleh akun staf dicatat di `log_aktivitas` dengan jenis `lampiran_dibuka`. Tidak ada tabel baru. | §5.3, §10.4, `12` SEC-60 | DECISION |
+| Satu login aktif per akun stasiun | Login terakhir yang berlaku. ID login yang berlaku disimpan di kolom baru `akun.login_stasiun_id`. | §5.1, `12` SEC-19 | DECISION (satu login aktif); RECOMMENDATION (kolom) |
+| PIN petugas kiosk | Satu PIN 6 digit untuk semua stasiun, diatur admin. Hashnya disimpan di kunci baru `pengaturan.kiosk_pin`. | §6.1, `12` SEC-21 | DECISION (PIN); RECOMMENDATION (kunci dan bentuk nilai) |
+| Pembatasan percobaan login | Login gagal dicatat di tabel baru `percobaan_login`, bukan di cache CI4. | §5.4, `12` SEC-08 s.d. SEC-10 | DECISION (batas, `12` §2.1); RECOMMENDATION (tabel) |
+| Jenis log aktivitas | Daftar jenis, pelaku, dan isi `data` ditetapkan di `12` SEC-59. | §5.3, `12` SEC-57, SEC-59 | RECOMMENDATION |
+
 ## 3. Konvensi
 
 | ID | Aturan | Status |
 |---|---|---|
 | DB-01 | **Bahasa dan bentuk nama.** Nama tabel dan kolom memakai istilah domain berbahasa Indonesia sesuai glosarium (`00` §9), bentuk tunggal, huruf kecil, `snake_case`, tanpa singkatan yang tidak umum. Contohnya `siswa`, `rombel`, `penempatan`, `presensi_manual`, dan `koreksi_status`. Kolom teknis umum tetap `id` dan `<tabel>_id`. | DECISION |
 | DB-02 | **Kolom waktu CI4.** Tabel yang barisnya dapat diubah memiliki `created_at` dan `updated_at` (DATETIME), diisi otomatis oleh Model CI4 (`$useTimestamps`). Pengecualiannya: tabel yang barisnya hanya ditambah atau dihapus, seperti `scan`, `akun_role`, dan log, cukup memiliki `created_at` atau kolom waktu bernama sesuai isinya; tabel keadaan dan pengaturan (`pengaturan`, `status_stasiun`, `wa_template`) cukup memiliki `updated_at`; tabel anak yang selalu ditulis bersama induknya (`pola_mingguan_hari`, `libur_cakupan`) tidak memiliki kolom waktu sendiri; dan salinan `status_harian` memakai `dihitung_at`. Fitur soft delete CI4 (`deleted_at`) tidak dipakai, karena pembatalan dan penghapusan membutuhkan alasan dan pelaku (DB-09). | DECISION (nama kolom waktu); RECOMMENDATION (pengecualian dan tanpa soft delete) |
-| DB-03 | **Primary key.** Setiap tabel memiliki primary key satu kolom, agar dapat dipakai Model CI4. Tabel entitas memakai `id` `INT UNSIGNED AUTO_INCREMENT`, dan tabel bervolume tinggi memakai `BIGINT UNSIGNED`: `scan`, `status_harian`, `antrean_hitung_ulang`, `log_presensi`, `log_data_siswa`, `log_aktivitas`, dan `wa_outbox`. Pengecualiannya tiga tabel yang primary key-nya kunci alami: `pengaturan` (`kunci`), `status_stasiun` (`akun_id`), dan `wa_template` (`jenis_kejadian`). Pasangan yang harus unik, seperti akun dan role, memakai kunci unik di samping `id`. NISN bukan primary key. NISN disimpan sebagai teks dengan kunci unik, sehingga koreksi NISN tidak mengubah relasi (R-12). | RECOMMENDATION |
+| DB-03 | **Primary key.** Setiap tabel memiliki primary key satu kolom, agar dapat dipakai Model CI4. Tabel entitas memakai `id` `INT UNSIGNED AUTO_INCREMENT`, dan tabel bervolume tinggi memakai `BIGINT UNSIGNED`: `scan`, `status_harian`, `antrean_hitung_ulang`, `log_presensi`, `log_data_siswa`, `log_aktivitas`, `percobaan_login`, dan `wa_outbox`. Pengecualiannya tiga tabel yang primary key-nya kunci alami: `pengaturan` (`kunci`), `status_stasiun` (`akun_id`), dan `wa_template` (`jenis_kejadian`). Pasangan yang harus unik, seperti akun dan role, memakai kunci unik di samping `id`. NISN bukan primary key. NISN disimpan sebagai teks dengan kunci unik, sehingga koreksi NISN tidak mengubah relasi (R-12). | RECOMMENDATION |
 | DB-04 | **Engine dan charset.** InnoDB, `utf8mb4`, dan `utf8mb4_general_ci`, sesuai `app/Config/Database.php`. | CONFIRMED (charset di konfigurasi); RECOMMENDATION (InnoDB) |
 | DB-05 | **Waktu.** Kolom tanggal-waktu memakai `DATETIME` berisi jam WIB, bukan `TIMESTAMP`. Zona waktu sesi MySQL diset `+07:00`, dan `appTimezone` diset `Asia/Jakarta` (`05` §14, R-11). Tanggal presensi memakai `DATE` menurut WIB. Jam pada aturan jam memakai `TIME`. Ketelitian sampai detik. | DECISION (WIB, OQ-05); RECOMMENDATION (tipe) |
 | DB-06 | **Kode nilai.** Kolom berkode memakai `VARCHAR` berisi kode huruf kecil, bukan tipe `ENUM` MySQL, agar penambahan kode tidak mengubah struktur kolom. Server memvalidasi kode dari daftar di dokumen ini. Kolom ya/tidak memakai `TINYINT(1)`. | RECOMMENDATION |
@@ -100,7 +113,7 @@ Keputusan Session 8 yang berdampak ke desain data. Rinciannya ada di `09` §2 da
 | DB-10 | **Satu data aktif.** Aturan "paling banyak satu data aktif" ditegakkan database dengan kolom turunan (generated column) yang bernilai 1 saat data aktif dan `NULL` saat tidak aktif, ditambah kunci unik. Contoh di bawah tabel ini. Kolom ini ditulis dengan SQL langsung di migration, karena Forge CI4 belum mendukung generated column. | RECOMMENDATION |
 | DB-11 | **Perubahan bersamaan.** Pemeriksaan "data belum diubah orang lain" (`04` §4.6) memakai `updated_at` sebagai token versi. Formulir membawa nilai `updated_at` saat dibuka. Penyimpanan memakai `UPDATE ... WHERE id = ? AND updated_at = ?`, sehingga ditolak bila nilainya sudah berbeda. Rinciannya di `07` ARS-40 dan ARS-41. | DECISION (Session 6) |
 | DB-12 | **Salinan status harian.** Status harian disimpan sebagai salinan yang selalu dapat dibangun ulang dari sumbernya (§11). Salinan tidak pernah diubah langsung oleh pengguna. | DECISION |
-| DB-13 | **Retensi.** R1 tidak menghapus data presensi, scan, izin, maupun log. Penghapusan data pengaturan mengikuti DB-09. Kolom `tanggal` di tabel bervolume tinggi memungkinkan pengarsipan per tahun ajaran bila Session 9 memutuskannya. | DECISION |
+| DB-13 | **Retensi.** Belum ada penghapusan data presensi, scan, izin, lampiran, log, dan data siswa, termasuk siswa yang sudah lulus, sampai sekolah menetapkan kebijakan datanya (OQ-18, `12` SEC-66). Penghapusan data pengaturan mengikuti DB-09. Data teknis, yaitu `percobaan_login`, antrean selesai, file sementara, dan file tanpa rujukan, dibersihkan tugas harian sesuai `12` SEC-67. Kolom `tanggal` di tabel bervolume tinggi memungkinkan pengarsipan atau penghapusan per tahun ajaran setelah kebijakan itu ada. | DECISION (Session 9) |
 | DB-14 | **Isi log.** Data lama dan data baru di log disimpan sebagai `JSON`, berisi kolom yang berubah beserta konteks yang dibutuhkan untuk dibaca tanpa tabel lain, misalnya nama siswa dan tanggal. | RECOMMENDATION |
 | DB-15 | **File.** Foto, lampiran, dan logo disimpan sebagai file di `writable/uploads/`, di luar `public/` (`04` §4.9). Database menyimpan path relatif. Untuk lampiran, database juga menyimpan nama asli, tipe, dan ukuran file (§10.4). Nama file di disk dibuat acak, tidak memuat NISN atau nama siswa. | RECOMMENDATION |
 | DB-16 | **Kunci unik dari kiosk.** Setiap scan disimpan dengan ID unik dari kiosk sebagai kunci unik. Kiriman ulang dengan ID yang sama tidak membuat baris baru (BR-SCN-05, NFR-04). | RECOMMENDATION |
@@ -122,7 +135,8 @@ MySQL mengizinkan banyak baris dengan `aktif_kunci` `NULL`, sehingga presensi ya
 |---|---|---|---|---|---|
 | Akun | `akun` | Akun staf, siswa, dan stasiun | R1 | FS-AKN-01 s.d. FS-AKN-05 | RECOMMENDATION |
 | Akun | `akun_role` | Role yang diberikan admin ke akun staf | R1 | FS-AKN-03 | RECOMMENDATION |
-| Akun | `log_aktivitas` | Kerangka log aktivitas akun, pengaturan, dan import | R1 | FS-AKN-01 s.d. FS-AKN-05, FS-MD-01, FS-MD-03, FS-MD-06 | RECOMMENDATION (rincian di Session 9) |
+| Akun | `log_aktivitas` | Log aktivitas akun, pengaturan, import, akses lampiran, dan scan yang ditolak server | R1 | FS-AKN-01 s.d. FS-AKN-05, FS-MD-01, FS-MD-03, FS-MD-06, FS-KIO-04, FS-IZN-06 | DECISION (akses lampiran, OQ-17); RECOMMENDATION (jenis di `12` SEC-59) |
+| Akun | `percobaan_login` | Catatan login gagal untuk pembatasan login | R1 | FS-AKN-01 | RECOMMENDATION |
 | Pengaturan | `pengaturan` | Identitas sekolah dan nilai yang diatur admin | R1 | FS-MD-01, FS-PRS-10, FS-WA-01 | RECOMMENDATION |
 | Master data | `tahun_ajaran` | Tahun ajaran dan tanda aktif | R1 | FS-MD-02 | RECOMMENDATION |
 | Master data | `semester` | Dua semester per tahun ajaran | R1 | FS-MD-02 | RECOMMENDATION |
@@ -156,7 +170,7 @@ MySQL mengizinkan banyak baris dengan `aktif_kunci` `NULL`, sehingga presensi ya
 | Notifikasi | `wa_outbox` | Antrean pesan WhatsApp | R2 | FS-WA-02, FS-WA-03 | DECISION (nama tabel, Session 6); RECOMMENDATION (kolom) |
 | Notifikasi | `wa_penahanan` | Penahanan pesan per tanggal dan jenis | R2 | FS-WA-03 | RECOMMENDATION |
 
-Total 32 tabel R1 dan 3 tabel R2. Kebutuhan R3 ada di §14.2. Sesi login disimpan sebagai file, sehingga tidak ada tabel sesi. Pembatasan percobaan login ditetapkan di Session 9 (§5.4).
+Total 33 tabel R1 dan 3 tabel R2. Kebutuhan R3 ada di §14.2. Sesi login disimpan sebagai file, sehingga tidak ada tabel sesi. Login gagal dicatat di `percobaan_login` (§5.4).
 
 ### 4.2 Relasi utama
 
@@ -220,7 +234,7 @@ Satu tabel untuk tiga jenis akun (`02` §2). Role Staf, Siswa, dan Stasiun didap
 |---|---|---|---|
 | `id` | INT | | Primary key. |
 | `jenis` | VARCHAR(10) | | `staf`, `siswa`, atau `stasiun`. |
-| `username` | VARCHAR(50) | | Identitas login. Unik. Akun siswa memakai NISN, dan ikut berubah saat NISN dikoreksi (FS-MD-04). Username staf dan stasiun tidak boleh hanya berisi angka (`02` §2 butir 4). |
+| `username` | VARCHAR(50) | | Identitas login. Unik. Akun siswa memakai NISN, dan ikut berubah saat NISN dikoreksi (FS-MD-04). Username staf dan stasiun tidak boleh hanya berisi angka (`02` §2 butir 4). Aturan isiannya di `11` VAL-20. |
 | `nama` | VARCHAR(100) | Ya | Nama staf atau nama stasiun, misalnya "Gerbang 1". Kosong untuk akun siswa; namanya diambil dari `siswa`. |
 | `siswa_id` | INT | Ya | Wajib untuk akun siswa, kosong untuk jenis lain. Unik. |
 | `password_hash` | VARCHAR(255) | Ya | Hash password (`02` §2 butir 6). Kosong untuk akun siswa yang belum pernah dibuatkan password. |
@@ -229,6 +243,7 @@ Satu tabel untuk tiga jenis akun (`02` §2). Role Staf, Siswa, dan Stasiun didap
 | `password_diganti_at` | DATETIME | Ya | Waktu penggantian password terakhir. |
 | `slip_dibuat_at` | DATETIME | Ya | Waktu slip akun terakhir dibuat (akun siswa). |
 | `login_terakhir_at` | DATETIME | Ya | Waktu login terakhir yang berhasil. |
+| `login_stasiun_id` | CHAR(32) | Ya | ID login stasiun yang berlaku, 32 karakter heksadesimal acak. Hanya untuk akun stasiun. Diganti setiap login, dikosongkan saat logout, ganti kredensial, dan penonaktifan (`12` SEC-19). |
 | `nip` | VARCHAR(30) | Ya | R2. NIP atau nomor induk pegawai lain untuk akun staf, diisi admin, dan dicetak di blok tanda tangan PDF (`08` UI-61). Kosong untuk akun siswa dan stasiun. |
 | `created_at`, `updated_at` | DATETIME | | DB-02. |
 
@@ -248,24 +263,45 @@ Kunci dan index: unik (`akun_id`, `role`). Pencabutan role menghapus baris ini d
 
 ### 5.3 `log_aktivitas`
 
-Kerangka untuk log aktivitas akun (`04` §4.4 butir 5), log aktivitas pengaturan (FS-MD-01), dan log import (FS-MD-06). Daftar jenis dan isinya dirinci di Session 9.
+Log aktivitas akun (`04` §4.4 butir 5), log aktivitas pengaturan (FS-MD-01), log import (FS-MD-06), akses lampiran (OQ-17), dan scan yang ditolak server. Daftar jenis, pelaku, dan isi `data` ada di `12` SEC-59. Aplikasi hanya menambah baris, tidak pernah mengubah atau menghapusnya. Entri ditulis di transaksi yang sama dengan perubahan datanya, kecuali entri login gagal dan akses lampiran (`12` SEC-57).
 
 | Kolom | Tipe | Null | Keterangan |
 |---|---|---|---|
 | `id` | BIGINT | | Primary key. |
-| `jenis` | VARCHAR(40) | | Contoh: `login_gagal`, `password_diganti`, `password_direset`, `role_diubah`, `akun_dinonaktifkan`, `slip_dicetak`, `wali_kelas_diubah`, `pengaturan_diubah`, `import_siswa`, `import_penempatan`, `foto_massal`. |
-| `pelaku_id` | INT | Ya | Akun pelaku. Kosong untuk sistem atau untuk login gagal tanpa akun yang dikenali. |
+| `jenis` | VARCHAR(40) | | Kode jenis di `12` SEC-59, misalnya `login_gagal`, `password_diganti`, `role_diubah`, `pengaturan_diubah`, `import_siswa`, `lampiran_dibuka`, dan `scan_ditolak_server`. Labelnya di `09` §14. |
+| `pelaku_id` | INT | Ya | Akun pelaku. Kosong untuk sistem, perintah CLI, login gagal, dan `login_dikunci` (`12` SEC-59). |
 | `akun_id` | INT | Ya | Akun yang terdampak. |
 | `rombel_id` | INT | Ya | Rombel yang terdampak, misalnya pada cetak slip. |
-| `data` | JSON | Ya | Rincian, misalnya nama file import dan jumlah baris. Tidak pernah memuat password. |
+| `data` | JSON | Ya | Rincian menurut jenisnya (`12` SEC-59), misalnya nama file import dan jumlah baris. Tidak pernah memuat password, PIN, token, hash, atau isi file (`12` SEC-57). |
 | `ip` | VARCHAR(45) | Ya | Alamat IP. |
 | `created_at` | DATETIME | | Waktu kejadian. |
 
 Kunci dan index: index (`jenis`, `created_at`); index (`akun_id`, `created_at`); index (`pelaku_id`, `created_at`).
 
+Saringan cepat "Akses lampiran" dan "Scan ditolak server" di halaman log aktivitas (`12` SEC-62) memakai index (`jenis`, `created_at`). Pemeriksaan agar pembukaan ulang lampiran dalam 10 menit selain unduhan (`12` SEC-60) dan kiriman ulang scan yang ditolak (`12` SEC-24) tidak menulis entri baru memakai index (`pelaku_id`, `created_at`) dan isi `data`. Tidak ada kolom baru untuk keduanya. (RECOMMENDATION)
+
 ### 5.4 Sesi dan percobaan login
 
-Sesi CI4 disimpan sebagai file di `writable/session`, sehingga tidak ada tabel sesi (DECISION, Session 6, `07` ARS-47). Pembatasan percobaan login (NFR-08) ditetapkan di Session 9, termasuk apakah memakai cache CI4 atau tabel tersendiri. Keduanya tidak memengaruhi tabel lain.
+Sesi CI4 disimpan sebagai file di `writable/session`, sehingga tidak ada tabel sesi (DECISION, Session 6, `07` ARS-47). Masa sesi dan isinya ada di `12` SEC-12 s.d. SEC-17.
+
+Pembatasan percobaan login (NFR-08) memakai tabel `percobaan_login`, bukan cache CI4, karena cache tidak atomik dan dikosongkan saat rilis (`12` SEC-10). (RECOMMENDATION, Session 9)
+
+| Kolom | Tipe | Null | Keterangan |
+|---|---|---|---|
+| `id` | BIGINT | | Primary key. |
+| `identitas_hash` | CHAR(64) | | HMAC-SHA256 dalam heksadesimal atas identitas login yang sudah dibersihkan, dengan kunci yang diturunkan dari kunci enkripsi aplikasi lewat `hash_hkdf()` dan konteks `spensada-percobaan-login` (`12` SEC-09). Identitas tidak disimpan sebagai teks. |
+| `ip` | VARCHAR(45) | | Alamat IP dari `REMOTE_ADDR` (`12` §5). |
+| `created_at` | DATETIME | | Waktu login gagal. |
+
+Kunci dan index: index (`identitas_hash`, `created_at`); index (`ip`, `created_at`). Tidak ada foreign key ke `akun`, karena identitas yang dicoba belum tentu ada.
+
+Aturan:
+
+1. Setiap login gagal menulis satu baris, termasuk password lama yang salah saat ganti password (`12` SEC-06). Kunci dihitung dari baris dalam 15 menit atau 24 jam terakhir (`12` SEC-08).
+2. Login yang berhasil menghapus baris identitas itu. Pembukaan kunci oleh admin atau wali kelas juga menghapusnya (`12` SEC-11).
+3. Baris yang lebih tua dari 24 jam dihapus tugas harian (`07` ARS-56).
+4. Tabel ini data teknis, bukan log (DB-13). Jejak login ada di `log_aktivitas` (`login_gagal`, `login_dikunci`).
+5. Penggantian kunci enkripsi aplikasi membuat hash lama tidak cocok lagi, sehingga kunci login yang sedang berlaku ikut hilang (`12` SEC-73).
 
 ## 6. Pengaturan dan master data
 
@@ -293,8 +329,11 @@ Daftar kunci:
 | `wa_ambang_persen` | 50 | Admin | R2 | BR-WA-03 |
 | `status_dibangun_sampai` | Kosong | Sistem | R1 | §11.4 |
 | `cron_terakhir_at` | Kosong | Sistem | R1 | `07` ARS-56 |
+| `kiosk_pin` | Kosong | Admin | R1 | PIN petugas kiosk (`12` SEC-21) |
 
-Kredensial gateway WhatsApp tidak disimpan di tabel ini. Tempatnya ditetapkan di Session 9, sebelum R2 (OQ-10).
+Nilai `kiosk_pin` adalah teks JSON berisi garam, jumlah iterasi, dan hash PBKDF2-SHA256 (`garam`, `iterasi`, `hash`), tidak pernah PIN itu sendiri. Hash ini dikirim ke kiosk di data kiosk (`10` EP-KIO-01). Kosong berarti PIN belum diatur (`12` SEC-21 butir 4). Perubahannya dicatat di `log_aktivitas` dengan jenis `pin_kiosk_diubah`, tanpa PIN maupun hashnya. (RECOMMENDATION, Session 9)
+
+Kredensial gateway WhatsApp tidak disimpan di tabel ini, tetapi di `.env` production (`12` SEC-73).
 
 ### 6.2 `tahun_ajaran`
 
@@ -771,7 +810,8 @@ Aturan:
 
 1. Paling banyak 3 lampiran per data izin (DECISION, Session 5), dan 3 lampiran bersama per kelompok (DECISION, Session 6). Server memeriksanya saat unggah.
 2. Lampiran sebuah data izin adalah lampiran miliknya sendiri, ditambah lampiran kelompoknya bila ada. Hak membuka mengikuti BR-IZN-12.
-3. Format dan ukuran file ditetapkan di Session 9 (`04` §4.9). Pencatatan pembukaan lampiran mengikuti OQ-17.
+3. Format dan ukuran file mengikuti `12` SEC-49: JPG, PNG, WebP, atau PDF, paling besar 10 MB per file. Lampiran gambar disimpan ulang sebagai JPEG (`12` SEC-51), sehingga `mime` untuk gambar berisi `image/jpeg` dan `ukuran` berisi ukuran file yang tersimpan. PDF disimpan apa adanya. `nama_asli` dibersihkan sebelum disimpan (`12` SEC-50).
+4. Setiap pembukaan dan unduhan lampiran oleh akun staf dicatat di `log_aktivitas` dengan jenis `lampiran_dibuka` (DECISION, Session 9, OQ-17, `12` SEC-60). Siswa yang membuka lampirannya sendiri tidak dicatat.
 
 ## 11. Status harian
 
@@ -961,9 +1001,10 @@ Kiosk menyimpan data di browser (`00` §5). Struktur penyimpanan browser ada di 
 | Aturan jam dan hari sekolah untuk hari ini dan 14 hari ke depan | `pola_mingguan`, `pola_mingguan_hari`, `jadwal_khusus`, `jadwal_hari_ini`, `semester` |
 | Libur beserta cakupan | `libur`, `libur_cakupan` |
 | Identitas sekolah dan nama stasiun | `pengaturan`, `akun.nama` |
+| Hash PIN petugas | `pengaturan.kiosk_pin` (`12` SEC-21) |
 | Jam server dan versi data | Server; `status_stasiun.versi_data` |
 
-Penerimaan sinkron menulis `scan`, `status_stasiun`, dan `antrean_hitung_ulang` dalam satu transaksi, lalu antrean diproses (§11.4, §11.5). Laporan keadaan kiosk di setiap kontak mengisi kolom `status_stasiun`, termasuk `scan_galat`, `versi_kiosk`, dan `penyimpanan_permanen`. Bentuk permintaan dan jawabannya ada di `10` §5.
+Penerimaan sinkron menulis `scan`, `status_stasiun`, dan `antrean_hitung_ulang` dalam satu transaksi, lalu antrean diproses (§11.4, §11.5). Laporan keadaan kiosk di setiap kontak mengisi kolom `status_stasiun`, termasuk `scan_galat`, `versi_kiosk`, dan `penyimpanan_permanen`. Setiap scan yang ditolak server dicatat di `log_aktivitas` dengan jenis `scan_ditolak_server` (`12` SEC-24), sehingga penghapusan data lokal di laptop tidak menghilangkan buktinya. Setiap permintaan kiosk membandingkan ID login stasiun dengan `akun.login_stasiun_id` (`12` SEC-19). Bentuk permintaan dan jawabannya ada di `10` §5.
 
 ## 14. Rilis berikutnya
 
@@ -1048,6 +1089,8 @@ Perkiraan volume per tahun ajaran (R-20, NFR-12), dengan ±1.000 siswa dan ±200
 | `status_harian` | ±200 ribu | Satu baris per siswa per hari sekolah. |
 | `log_presensi` | Puluhan ribu | Bergantung pada jumlah koreksi, presensi manual, dan izin. |
 | `wa_outbox` (R2) | Sampai ±400 ribu | Bila scan masuk dan scan pulang aktif. |
+| `log_aktivitas` | Puluhan sampai ratusan ribu | Terutama `login_berhasil`, `login_gagal`, dan `lampiran_dibuka` (`12` SEC-59). |
+| `percobaan_login` | Ratusan | Baris yang lebih tua dari 24 jam dihapus (§5.4). |
 | Tabel lain | Ratusan sampai ribuan | |
 
 Query utama dan index pendukungnya:
@@ -1079,7 +1122,9 @@ Volume ini ringan untuk MySQL 8. Partisi tabel tidak diperlukan di R1. (RECOMMEN
 | Jadwal khusus tidak tumpang tindih, dan rentang tahun ajaran tidak tumpang tindih | Diperiksa server di dalam transaksi, dengan kunci bernama MySQL (`GET_LOCK`, `07` ARS-42). |
 | Selalu ada admin aktif (`02` §4 butir 6) | Diperiksa server di dalam transaksi, dengan kunci bernama (`07` ARS-42). |
 | Data belum diubah orang lain (`04` §4.6) | Token `updated_at` di klausa `WHERE` (DB-11). |
-| Perubahan data dan entri log | Ditulis dalam satu transaksi. Bila salah satunya gagal, keduanya batal. |
+| Perubahan data dan entri log | Ditulis dalam satu transaksi. Bila salah satunya gagal, keduanya batal. Entri login gagal dan akses lampiran ditulis di luar transaksi, karena tidak menyertai perubahan data (`12` SEC-57). |
+| Percobaan login bersamaan untuk satu identitas tidak melewati batas | Kunci bernama `spensada:login:<40 karakter pertama hash identitas>` (`12` SEC-10). |
+| Satu login aktif per akun stasiun | `akun.login_stasiun_id` diganti di setiap login, dan dibandingkan di setiap permintaan kiosk (`12` SEC-19). |
 | Import siswa dan penempatan massal | Semua baris valid disimpan dalam satu transaksi (FS-MD-06 butir 4). |
 | Hitung ulang status | Antrean ditulis dalam transaksi yang sama dengan perubahan sumber, lalu diproses setelah commit. Antrean yang tersisa dilanjutkan permintaan berikutnya, cron, atau perintah CLI, sehingga tidak ada yang terlewat (§11.5, `07` ARS-35 s.d. ARS-37). |
 
@@ -1112,7 +1157,7 @@ Volume ini ringan untuk MySQL 8. Partisi tabel tidak diperlukan di R1. (RECOMMEN
 
 | Fitur | Tabel yang ditulis |
 |---|---|
-| FS-AKN-01 s.d. FS-AKN-05 | `akun`, `akun_role`, `log_aktivitas` |
+| FS-AKN-01 s.d. FS-AKN-05 | `akun`, `akun_role`, `log_aktivitas`, `percobaan_login` |
 | FS-MD-01 | `pengaturan`, `log_aktivitas` |
 | FS-MD-02 | `tahun_ajaran`, `semester`, `status_harian`, `log_presensi` |
 | FS-MD-03 | `rombel`, `log_aktivitas` |
@@ -1123,7 +1168,7 @@ Volume ini ringan untuk MySQL 8. Partisi tabel tidak diperlukan di R1. (RECOMMEN
 | FS-MD-08 | `siswa`, `log_data_siswa`, `log_aktivitas` |
 | FS-MD-09 | `atribut_siswa`, `nilai_atribut_siswa`, `log_data_siswa`, `log_aktivitas` |
 | FS-KIO-01 | `status_stasiun` |
-| FS-KIO-04 | `scan`, `status_stasiun`, `status_harian` |
+| FS-KIO-04 | `scan`, `status_stasiun`, `status_harian`, `log_aktivitas` (`scan_ditolak_server`) |
 | FS-KIO-06 | `scan_tinjauan`, `scan`, `status_harian`, `log_presensi` |
 | FS-PRS-01 s.d. FS-PRS-04 | `pola_mingguan`, `pola_mingguan_hari`, `jadwal_khusus`, `libur`, `libur_cakupan`, `jadwal_hari_ini`, `status_harian`, `log_presensi` |
 | FS-PRS-05 | `status_harian`, `scan` (hasil), `antrean_hitung_ulang` |
@@ -1132,6 +1177,7 @@ Volume ini ringan untuk MySQL 8. Partisi tabel tidak diperlukan di R1. (RECOMMEN
 | FS-PRS-08 | `mode_darurat`, `status_harian`, `log_presensi` |
 | FS-PRS-10 | `pengaturan`, `log_presensi` |
 | FS-IZN-01 s.d. FS-IZN-05 | `izin`, `izin_riwayat`, `izin_kelompok`, `lampiran`, `status_harian`, `log_presensi` |
+| FS-IZN-06 | `log_aktivitas` (`lampiran_dibuka`) |
 | FS-LAP-01 s.d. FS-LAP-04 | Hanya membaca, terutama `status_harian` |
 | FS-WA-01 s.d. FS-WA-03 (R2) | `wa_template`, `wa_outbox`, `wa_penahanan`, `pengaturan` |
 
@@ -1139,7 +1185,7 @@ Fitur yang mengubah sumber status di §11.4 juga menulis `antrean_hitung_ulang` 
 
 ## 18. Perubahan pada dokumen lain
 
-Perubahan karena keputusan Session 5, termasuk keputusan di `13`. Perubahan karena keputusan Session 6 dicatat di `07` §18, karena keputusan Session 7 di `08` §14, dan karena keputusan Session 8 di `09` §16.
+Perubahan karena keputusan Session 5, termasuk keputusan di `13`. Perubahan karena keputusan Session 6 dicatat di `07` §18, karena keputusan Session 7 di `08` §14, karena keputusan Session 8 di `09` §16, dan karena keputusan Session 9 di `12` §20.
 
 | Dokumen | Versi | Perubahan |
 |---|---|---|
@@ -1152,20 +1198,20 @@ Perubahan karena keputusan Session 5, termasuk keputusan di `13`. Perubahan kare
 
 ## 19. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ. Session 6 menetapkan empat hal pertama di tabel ini (`07`), dan Session 8 menetapkan bentuk API kiosk (`10`).
+Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ. Session 6 menetapkan empat hal pertama di tabel ini (`07`), dan Session 8 menetapkan bentuk API kiosk (`10`). Session 9 menjawab OQ-17, menambah OQ-18, dan menetapkan hal yang dijadwalkan ke Session 9 (`11`, `12`).
 
 | Hal | Dampak ke desain | Dipastikan di |
 |---|---|---|
 | Mekanisme hitung ulang dan pembuatan baris hari ini | §11.4, §11.5 | Ditetapkan di Session 6 (`07` §7) |
-| Penyimpanan sesi CI4 dan pembatasan percobaan login | §5.4 | Sesi: ditetapkan di Session 6 (`07` ARS-47). Pembatasan percobaan login: Session 9 |
+| Penyimpanan sesi CI4 dan pembatasan percobaan login | §5.4 | Sesi: ditetapkan di Session 6 (`07` ARS-47). Pembatasan percobaan login: ditetapkan di Session 9, tabel `percobaan_login` (`12` SEC-09) |
 | Format `uuid` scan dan versi data kiosk | §8.1, §8.2 | Ditetapkan di Session 6 sebagai RECOMMENDATION (`07` ARS-23, ARS-24). Bentuk API: ditetapkan di Session 8 (`10` §5) |
 | Kunci bernama untuk pemeriksaan tumpang tindih global | §16 | Ditetapkan di Session 6 sebagai RECOMMENDATION (`07` ARS-42) |
-| Isi dan jenis `log_aktivitas` | §5.3 | Session 9 |
-| Kebijakan retensi data | DB-13 | Session 9 |
-| Panjang maksimal alasan dan catatan | Panjang kolom di dokumen ini | Session 9 |
-| Tempat kredensial gateway WA dan kolom `id_provider` | §6.1, §14.1 | Kredensial: Session 9. Kolom `id_provider`: sebelum R2 (OQ-10) |
-| Pencatatan pembukaan lampiran | Mungkin tabel baru | Session 9 (OQ-17) |
-| Penanganan scan galat yang tetap ditolak setelah dikirim ulang | `status_stasiun.scan_galat` | Session 9 (`10` §9) |
+| Isi dan jenis `log_aktivitas` | §5.3 | Ditetapkan di Session 9 (`12` SEC-59) |
+| Kebijakan retensi data | DB-13 | Kebijakan data sekolah, sebelum uji coba R1 (OQ-18, `12` SEC-66) |
+| Panjang maksimal alasan dan catatan | Panjang kolom di dokumen ini | Ditetapkan di Session 9 (`11` VAL-16, VAL-27). Panjang kolom tidak berubah. |
+| Tempat kredensial gateway WA dan kolom `id_provider` | §6.1, §14.1 | Kredensial: ditetapkan di Session 9, di `.env` (`12` SEC-73). Kolom `id_provider`: sebelum R2 (OQ-10) |
+| Pencatatan pembukaan lampiran | §5.3, §10.4 | Ditetapkan di Session 9: `log_aktivitas` jenis `lampiran_dibuka`, tanpa tabel baru (OQ-17, `12` SEC-60) |
+| Penanganan scan galat yang tetap ditolak setelah dikirim ulang | `status_stasiun.scan_galat`, §5.3 | Ditetapkan di Session 9: dicatat di `log_aktivitas` (`12` SEC-24) |
 
 ## Riwayat perubahan
 
@@ -1175,3 +1221,4 @@ Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ. Session 6 
 | 0.2 | 2026-10-04 | Keputusan Session 6 (§2.4, `07`). Tabel `antrean_hitung_ulang` (§11.5) ditambahkan, sehingga tabel R1 menjadi 32. DB-11 menjadi DECISION. Kepala dokumen, §1, DB-03, §4.1, §4.2, §5.4, §6.1, §8.1, §8.2, §9.3, §11.4, §13, §16, §17.2, §18, dan §19 diperbarui. Di antaranya, `tanda_selisih_berubah` membandingkan selisih scan dengan selisih yang diukur server saat kiriman diterima, dan pembuatan baris status dimulai dari hari ini bila `status_dibangun_sampai` kosong. Kunci `cron_terakhir_at` ditambahkan di §6.1. Usulan di §4.1, §6.4, §6.6, dan §10.4 menjadi DECISION. |
 | 0.3 | 2026-10-04 | Keputusan Session 7 (§2.5, `08`). Kolom `akun.nip` (R2) dan kunci `pengaturan.sekolah_kota` (R2) ditambahkan. §2.5 ditambahkan. Keterangan `siswa.foto_file` memuat foto kecil. §1, §14.1, dan §18 merujuk `08`. |
 | 0.4 | 2026-10-05 | Keputusan Session 8 (§2.6, `09`, `10`). Kolom `scan_galat`, `versi_kiosk`, dan `penyimpanan_permanen` ditambahkan di `status_stasiun` (§8.1), dan keterangan `kontak_terakhir_at`, `data_dimuat_at`, serta `scan.stasiun_id` (§8.2) diperbarui. Kepala dokumen, §13, §18, dan §19 diperbarui. |
+| 0.5 | 2026-10-05 | Keputusan Session 9 (§2.7, `11`, `12`). Tabel `percobaan_login` (§5.4) ditambahkan, sehingga tabel R1 menjadi 33. Kolom `akun.login_stasiun_id` (§5.1) dan kunci `pengaturan.kiosk_pin` (§6.1) ditambahkan. Jenis `log_aktivitas` (§5.3) merujuk `12` SEC-59, termasuk `lampiran_dibuka` (OQ-17) dan `scan_ditolak_server`. DB-13 menjadi DECISION Session 9 (OQ-18). Kepala dokumen, §2.1, DB-03, §4.1, §10.4, §13, §15, §16, §17.2, §18, dan §19 diperbarui. |
