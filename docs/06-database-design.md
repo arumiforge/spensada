@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.5 (draft, menunggu review) |
+| Versi | 0.6 (draft, menunggu review) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, §2.4), Session 7 (UI/UX & Design System, §2.5), Session 8 (Routes / Pages / API, §2.6), dan Session 9 (Validation, Error Handling & Security, §2.7). |
+| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, §2.4), Session 7 (UI/UX & Design System, §2.5), Session 8 (Routes / Pages / API, §2.6), Session 9 (Validation, Error Handling & Security, §2.7), dan Session 10 (Development Roadmap, `14`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`), bagian "Data dan log", dan ketentuan umum (§4). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`) dan kebutuhan data (§14). |
 | Dokumen terkait | [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export yang membaca dan menulis tabel di dokumen ini. [07-system-architecture.md](07-system-architecture.md): mekanisme hitung ulang, penguncian, sesi, dan kiosk yang memakai tabel di dokumen ini. [10-api-specification.md](10-api-specification.md): API kiosk yang membaca dan menulis tabel di dokumen ini. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): batas isian yang sesuai dengan panjang kolom di dokumen ini. [12-security.md](12-security.md): pembatasan login, log aktivitas, PIN petugas, file, dan retensi. |
 
@@ -328,6 +328,7 @@ Daftar kunci:
 | `wa_tunda_menit` | 60 | Admin | R2 | BR-WA-02 |
 | `wa_ambang_persen` | 50 | Admin | R2 | BR-WA-03 |
 | `status_dibangun_sampai` | Kosong | Sistem | R1 | §11.4 |
+| `status_mulai` | Kosong | Sistem, lewat perintah `status:mulai` | R1 | §11.4, `14` GL-08 |
 | `cron_terakhir_at` | Kosong | Sistem | R1 | `07` ARS-56 |
 | `kiosk_pin` | Kosong | Admin | R1 | PIN petugas kiosk (`12` SEC-21) |
 
@@ -893,7 +894,8 @@ Setiap hitung ulang baris (siswa, tanggal) lebih dulu menghitung ulang kolom has
 
 Pembuatan baris per tanggal:
 
-1. `pengaturan.status_dibangun_sampai` menyimpan tanggal terakhir yang barisnya sudah dibuat untuk semua siswa. Bila kosong, pembuatan dimulai dari hari ini, sehingga aplikasi yang mulai dipakai di tengah tahun ajaran tidak membuat Alpa untuk tanggal sebelumnya (`07` ARS-37).
+1. `pengaturan.status_dibangun_sampai` menyimpan tanggal terakhir yang barisnya sudah dibuat untuk semua siswa. Bila kosong, pembuatan dimulai dari hari ini, sehingga aplikasi yang mulai dipakai di tengah tahun ajaran tidak membuat Alpa untuk tanggal sebelumnya (`07` ARS-37). Nilai awalnya saat go-live adalah H−1, diisi perintah `status:mulai` (`14` GL-08).
+   - `pengaturan.status_mulai` menyimpan tanggal pertama yang memiliki status, yaitu hari go-live. Tidak ada baris untuk tanggal sebelumnya, juga lewat hitung ulang per siswa (butir 4), sehingga perubahan data dan scan sebelum go-live tidak membuat Alpa. Antrean untuk tanggal sebelumnya dilewati. Kosong berarti tanpa batas bawah. Nilai ini diisi sekali dan tidak diubah dari aplikasi. (RECOMMENDATION, Session 10, `14` §2.2)
 2. Sebelum status dibaca, dan juga oleh cron setiap menit (`07` ARS-37, ARS-56), sistem membuat baris untuk setiap tanggal setelah `status_dibangun_sampai` sampai hari ini, untuk semua siswa yang hari sekolahnya tanggal itu. Setelah itu `status_dibangun_sampai` diperbarui.
 3. Dengan cara ini, tanggal yang tidak dibuka siapa pun tetap memiliki baris lengkap, sehingga siswa yang tidak hadir tetap menjadi Alpa.
 4. Hitung ulang untuk satu siswa, misalnya karena scan masuk, hanya membuat atau memperbarui baris siswa itu. Hitung ulang itu tidak dihitung sebagai pembuatan tanggal.
@@ -1222,3 +1224,4 @@ Session 5 menjawab OQ-11 dan OQ-12 (`13` §2), dan tidak menambah OQ. Session 6 
 | 0.3 | 2026-10-04 | Keputusan Session 7 (§2.5, `08`). Kolom `akun.nip` (R2) dan kunci `pengaturan.sekolah_kota` (R2) ditambahkan. §2.5 ditambahkan. Keterangan `siswa.foto_file` memuat foto kecil. §1, §14.1, dan §18 merujuk `08`. |
 | 0.4 | 2026-10-05 | Keputusan Session 8 (§2.6, `09`, `10`). Kolom `scan_galat`, `versi_kiosk`, dan `penyimpanan_permanen` ditambahkan di `status_stasiun` (§8.1), dan keterangan `kontak_terakhir_at`, `data_dimuat_at`, serta `scan.stasiun_id` (§8.2) diperbarui. Kepala dokumen, §13, §18, dan §19 diperbarui. |
 | 0.5 | 2026-10-05 | Keputusan Session 9 (§2.7, `11`, `12`). Tabel `percobaan_login` (§5.4) ditambahkan, sehingga tabel R1 menjadi 33. Kolom `akun.login_stasiun_id` (§5.1) dan kunci `pengaturan.kiosk_pin` (§6.1) ditambahkan. Jenis `log_aktivitas` (§5.3) merujuk `12` SEC-59, termasuk `lampiran_dibuka` (OQ-17) dan `scan_ditolak_server`. DB-13 menjadi DECISION Session 9 (OQ-18). Kepala dokumen, §2.1, DB-03, §4.1, §10.4, §13, §15, §16, §17.2, §18, dan §19 diperbarui. |
+| 0.6 | 2026-10-05 | Keputusan Session 10 (`14`). Kunci `pengaturan.status_mulai` ditambahkan (§6.1). §11.4 butir 1 memuat batas bawah `status_mulai` dan nilai awal `status_dibangun_sampai` saat go-live (`14` GL-08). |

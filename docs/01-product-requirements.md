@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.9 (draft) |
+| Versi | 0.10 (draft) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan), Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), Session 5 (database, `06`; laporan, import, dan export, `13`), Session 6 (arsitektur sistem, `07`), Session 7 (UI/UX dan sistem desain, `08`), Session 8 (route, halaman, dan API, `09` dan `10`), dan Session 9 (validasi, penanganan galat, dan keamanan, `11` dan `12`). |
+| Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan), Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), Session 5 (database, `06`; laporan, import, dan export, `13`), Session 6 (arsitektur sistem, `07`), Session 7 (UI/UX dan sistem desain, `08`), Session 8 (route, halaman, dan API, `09` dan `10`), Session 9 (validasi, penanganan galat, dan keamanan, `11` dan `12`), dan Session 10 (roadmap, `14`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), asumsi (`A-xx`), dan pertanyaan terbuka (`OQ-xx`) |
 
 ## 1. Cara membaca dokumen ini
@@ -197,7 +197,7 @@ Library yang dipakai (NFR-16). Versi, lisensi, dan alasannya ada di `07` ARS-10.
 | C-03 | Production di VPS (OQ-09, `07` ARS-01). Document root diarahkan ke `public/`, dan cron tersedia sejak R1. | DECISION (hosting online; VPS, Session 6) |
 | C-04 | Format QR kartu tidak dapat diubah: NISN polos. | CONFIRMED |
 | C-05 | Gateway WhatsApp adalah layanan pihak ketiga tidak resmi. Risiko nomor diblokir diterima. | DECISION |
-| C-06 | Import .xlsx di R1 membutuhkan PhpSpreadsheet yang dipasang lewat Composer. Karena itu repository dipindah ke Composer appstarter di fase implementasi pertama (OQ-09, `07` ARS-07). | DECISION (Composer appstarter, Session 6); RECOMMENDATION (waktu migrasi) |
+| C-06 | Import .xlsx di R1 membutuhkan PhpSpreadsheet yang dipasang lewat Composer. Karena itu repository dipindah ke Composer appstarter di fase implementasi pertama, FASE-00 (OQ-09, `07` ARS-07, `14` §6). | DECISION (Composer appstarter, Session 6); RECOMMENDATION (waktu migrasi) |
 
 ## 6. Kriteria keberhasilan v1
 
@@ -306,7 +306,7 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | Validasi, pesan, dan penanganan galat | `11` |
 | Keamanan dan data pribadi | `12` (§19 memetakan NFR, risiko, dan fitur ke ketentuan keamanan) |
 | Halaman | `09` |
-| Fase implementasi | `15` |
+| Roadmap dan fase implementasi | `14` (§16.1 memetakan fitur ke fase) dan `15` |
 | Spesifikasi fitur dan acceptance criteria rinci | `04` (§12.1 memetakan setiap FR ke fitur) |
 
 ## Riwayat perubahan
@@ -322,3 +322,4 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | 0.7 | 2026-10-04 | Keputusan Session 7 (`08`). FR-KRT-01 dan NFR-11 diperbarui. Daftar library memuat flyer dengan Canvas API, chillerlan/php-qrcode, Plus Jakarta Sans, dan Lucide sebagai DECISION. OQ-13 di §8 terjawab sebagian. §9 merujuk `08`. |
 | 0.8 | 2026-10-05 | Keputusan Session 8 (`09`, `10`). FR-KIO-12 memuat versi kode kiosk, penyimpanan permanen, dan scan yang ditolak server. |
 | 0.9 | 2026-10-05 | Keputusan Session 9 (`11`, `12`). NFR-06, NFR-07, dan NFR-10 merujuk `11` dan `12`. NFR-08 memuat batas percobaan login dan menjadi DECISION. FR-IZN-05 memuat jawaban OQ-17 dan format lampiran. Di §8, OQ-17 dihapus karena terjawab, dan OQ-18 ditambahkan. §9 merujuk `11` dan `12`. |
+| 0.10 | 2026-10-05 | Keputusan Session 10 (`14`). C-06 merujuk FASE-00. Kepala dokumen dan §9 merujuk `14`. |

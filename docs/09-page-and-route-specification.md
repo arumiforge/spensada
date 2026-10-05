@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.2 (draft, menunggu review) |
+| Versi | 0.3 (draft, menunggu review) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 8 (Routes / Pages / API). Diperbarui dengan keputusan Session 9 (Validation, Error Handling & Security, §2.3). |
+| Sumber | Discovery Session 8 (Routes / Pages / API). Diperbarui dengan keputusan Session 9 (Validation, Error Handling & Security, §2.3) dan Session 10 (Development Roadmap, `14`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`), cakupan, area, dan halaman awal. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan ketentuan umum (§4). [06-database-design.md](06-database-design.md): tabel dan kode nilai. [07-system-architecture.md](07-system-architecture.md): area, filter, kiosk, file, sesi, dan perintah CLI (`ARS-*`). [08-ui-ux-design-system.md](08-ui-ux-design-system.md): komponen, tata letak, menu, dan label (`UI-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export. |
 | Dokumen terkait | [10-api-specification.md](10-api-specification.md): bentuk permintaan dan respons API kiosk, fragmen, dan bantuan formulir. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): teks validasi, pesan galat, dan halaman galat (`VAL-*`, `GAL-*`). [12-security.md](12-security.md): login, sesi, CSRF, header berkas, dan log aktivitas (`SEC-*`). |
 
@@ -928,7 +928,7 @@ Session 8 tidak menjawab dan tidak menambah OQ. Session 9 menjawab OQ-17 (§13, 
 | Uji tampilan PDF dengan `Content-Security-Policy: sandbox` di Chrome dan Edge, karena penampil PDF bawaan dapat gagal memuat dalam sandbox | §13, `07` ARS-52 | Ditetapkan di Session 9: PDF tampil di `<iframe>` dengan CSP lampiran, dan tautan "Buka" dan "Unduh" menjadi cadangan (`12` SEC-52) |
 | Rincian halaman R2: export, flyer, dan notifikasi WA | §10, §11 | Menjelang R2 (OQ-10) |
 | Rincian halaman R3: jadwal pelajaran, pengumuman, halaman publik, dan kartu | §12 | Menjelang R3 (OQ-13) |
-| Urutan pembuatan halaman dalam fase implementasi | — | Session 10–11 |
+| Urutan pembuatan halaman dalam fase implementasi | — | Ditetapkan di Session 10 (`14` §7); rincian per PR di Session 11 (`15`) |
 
 ## Riwayat perubahan
 
@@ -936,3 +936,4 @@ Session 8 tidak menjawab dan tidak menambah OQ. Session 9 menjawab OQ-17 (§13, 
 |---|---|---|
 | 0.1 | 2026-10-05 | Draft awal dari Session 8: keputusan route, halaman, dan API; konvensi alamat, metode, formulir, pengalihan, pencarian, fragmen, berkas, login, dan galat (`RT-01` s.d. `RT-22`); menu panel dan portal; route dan rincian setiap halaman R1; kerangka route R2 dan R3; berkas; label kode di halaman; dan traceability. |
 | 0.2 | 2026-10-05 | Keputusan Session 9 (§2.3, `11`, `12`). Halaman baru HAL-AKN-09 (log aktivitas) dengan menu "Log aktivitas". Route buka kunci login (HAL-AKN-04, HAL-AKN-06, HAL-KIO-02) dan PIN petugas (HAL-KIO-02). HAL-AKN-01 (pembatasan login), HAL-AKN-07 (log aplikasi dan `CI_ENVIRONMENT`), HAL-IZN-06, RT-09, RT-10, RT-18, RT-19 (halaman 400, 429, 503, dan kode laporan), §11 (kredensial gateway), §13 (header berkas, unduhan lampiran, dan catatan akses), §14 (label `log_aktivitas.jenis`), kepala dokumen, §15, §16, dan §17 diperbarui. |
+| 0.3 | 2026-10-05 | Keputusan Session 10 (`14`). §17 merujuk urutan pembuatan halaman di `14` §7. Kepala dokumen diperbarui. |
