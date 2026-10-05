@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
+| Versi | 0.2 (draft, menunggu review) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 9 (Validation, Error Handling & Security) |
+| Sumber | Discovery Session 9 (Validation, Error Handling & Security). Diperbarui dengan keputusan Session 10 (Development Roadmap, `14`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): NFR-06 s.d. NFR-10. [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): jenis akun, role, dan hak akses (`HA-*`). [04-feature-specification.md](04-feature-specification.md): fitur akun, kiosk, dan izin (`FS-*`). [06-database-design.md](06-database-design.md): tabel `akun`, `log_aktivitas`, `pengaturan`, dan `lampiran`. [07-system-architecture.md](07-system-architecture.md): filter, sesi, cookie stasiun, file, cron, dan server (`ARS-*`). [09-page-and-route-specification.md](09-page-and-route-specification.md): route dan konvensi (`RT-*`). [10-api-specification.md](10-api-specification.md): API kiosk dan kode galat (`API-*`, `EP-*`). |
 | Dokumen terkait | [11-validation-and-error-handling.md](11-validation-and-error-handling.md): aturan isian, pesan validasi, dan penanganan galat. [08-ui-ux-design-system.md](08-ui-ux-design-system.md): teks layar. [13-reporting-import-export.md](13-reporting-import-export.md): file import dan export. |
 
@@ -470,17 +470,17 @@ Butir SEC-75:
 2. Backup disimpan di luar VPS, di penyimpanan dengan akses tulis yang tidak dapat menghapus backup lama dari VPS, misalnya bucket object storage dengan kunci akses tanpa hak hapus.
 3. Rotasi: 30 backup harian terakhir dan 12 backup bulanan terakhir, yaitu backup hari pertama setiap bulan. Rotasi ini menghapus salinan lama, tidak menghapus data dari database.
 4. `.env` dicadangkan terpisah, dienkripsi dengan kunci yang sama, setiap kali berubah.
-5. Pemulihan diuji setiap semester ke server uji, dengan hasil dicatat. Server uji dihapus setelah pengujian, karena berisi data asli.
+5. Pemulihan diuji setiap semester ke database sementara `spensada_pulih` di VPS yang sama, dengan hasil dicatat. Tidak ada server uji terpisah (DECISION, Session 10). Database itu dan file hasil pemulihan dihapus setelah pengujian, karena berisi data asli (`14` UC-09, RM-18).
 6. Backup memuat data anak dan data kesehatan, sehingga mengikuti kebijakan data sekolah setelah OQ-18 terjawab.
 
 ## 17. Pengembangan dan pengujian
 
 | ID | Ketentuan | Status |
 |---|---|---|
-| SEC-79 | **Data uji.** Lingkungan pengembangan dan uji memakai data buatan dari seeder, bukan salinan data asli siswa. Bila salinan data asli diperlukan untuk memeriksa masalah, salinan itu disamarkan lebih dulu: nama, NISN, tanggal lahir, alamat, nomor WA, foto, dan lampiran diganti. | RECOMMENDATION |
+| SEC-79 | **Data uji.** Lingkungan pengembangan dan uji, termasuk production selama uji coba R1 (`14` §11), memakai data buatan dari seeder atau file import fiktif, bukan salinan data asli siswa. Bila salinan data asli diperlukan untuk memeriksa masalah, salinan itu disamarkan lebih dulu: nama, NISN, tanggal lahir, alamat, nomor WA, foto, dan lampiran diganti. | RECOMMENDATION |
 | SEC-80 | **Rahasia di repository.** `.env`, dump database, dan isi `writable/` tidak pernah di-commit (`07` ARS-09). Contoh konfigurasi memakai nilai palsu. Fitur secret scanning GitHub dinyalakan untuk repository. | RECOMMENDATION |
 | SEC-81 | **Uji keamanan otomatis.** Uji PHPUnit (`07` ARS-58) mencakup: setiap route di `09` ditolak tanpa login dan oleh jenis akun yang salah, data di luar cakupan dijawab 403, permintaan tulis tanpa token CSRF ditolak, pembatasan login dan pembukaan kuncinya, aturan password, sesi yang berakhir setelah 8 jam dan 7 hari, satu login aktif per akun stasiun, header CSP per area dan header berkas, penolakan file berbahaya (file PHP berganti nama `.jpg`, SVG, PDF palsu, ZIP dengan `..`), dan log `lampiran_dibuka`. Daftar route diambil dari `php spark routes`, sehingga route baru tanpa uji akses terlihat. | RECOMMENDATION |
-| SEC-82 | **Pemeriksaan sebelum uji coba.** Sebelum uji coba R1, pengembang memeriksa production dengan daftar periksa: header dan sertifikat HTTPS dari luar, misalnya dengan `curl -I`, cookie bertanda `Secure`, `display_errors` mati, port yang terbuka, akses SSH, backup yang dapat dipulihkan, dan uji pemindaian dasar OWASP ZAP terhadap server uji. Hasilnya dicatat di prosedur go-live (Session 10). | RECOMMENDATION |
+| SEC-82 | **Pemeriksaan saat uji coba.** Selama uji coba R1, sebelum data asli diisi, pengembang memeriksa production dengan daftar periksa: header dan sertifikat HTTPS dari luar, misalnya dengan `curl -I`, cookie bertanda `Secure`, `display_errors` mati, port yang terbuka, akses SSH, dan uji pemindaian dasar OWASP ZAP terhadap production sebelum data asli diisi, karena tidak ada server uji terpisah (DECISION, Session 10). Daftar periksa ini adalah `14` UC-10, dan pemulihan backup diuji di `14` UC-09, dan hasilnya dicatat di catatan go-live (`14` §12). | RECOMMENDATION |
 
 ## 18. Penanganan insiden
 
@@ -542,11 +542,12 @@ Perubahan karena keputusan Session 9, termasuk yang ditulis di `11`:
 
 ## 21. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 9 menjawab OQ-17 (§2.1) dan menambah OQ-18:
+Session 9 menjawab OQ-17 (§2.1) dan menambah OQ-18. Session 10 menambah OQ-19 (`14` §18):
 
 | OQ | Pertanyaan | Dijawab di | Status |
 |---|---|---|---|
 | OQ-18 | Kebijakan data sekolah: masa simpan setiap jenis data, pemberitahuan privasi bagi siswa dan orang tua/wali, dasar pemrosesan data anak termasuk persetujuan orang tua/wali, dan penanggung jawab data di sekolah (SEC-66, SEC-68). | Sebelum uji coba R1, oleh sekolah | Terbuka |
+| OQ-19 | Tempat penyimpanan backup di luar VPS dan dua pemegang kunci privat (SEC-75). | Sebelum uji coba R1, oleh sekolah dan pengelola server | Terbuka |
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
@@ -554,11 +555,12 @@ Session 9 menjawab OQ-17 (§2.1) dan menambah OQ-18:
 | Daftar password umum final, termasuk nama sekolah | SEC-04 | Implementasi FS-AKN-02 |
 | Batas laju API kiosk dan Nginx | SEC-54, SEC-56 | Uji beban sebelum uji coba R1 |
 | Teks pemberitahuan privasi | SEC-68 | Setelah OQ-18 terjawab |
-| Tempat penyimpanan backup dan pemegang kunci privat | SEC-75 | Prosedur go-live (Session 10) |
-| Daftar periksa keamanan production | SEC-82 | Prosedur go-live (Session 10) |
+| Tempat penyimpanan backup dan pemegang kunci privat | SEC-75 | Sekolah dan pengelola server, sebelum uji coba R1 (OQ-19); dipasang di `14` GL-04 |
+| Daftar periksa keamanan production | SEC-82 | Ditetapkan di Session 10 (`14` UC-10) |
 
 ## Riwayat perubahan
 
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-05 | Draft awal dari Session 9: keputusan Session 9, model ancaman, autentikasi dan password (`SEC-01` s.d. `SEC-07`), pembatasan login (`SEC-08` s.d. `SEC-11`), sesi (`SEC-12` s.d. `SEC-17`), stasiun dan kiosk termasuk PIN petugas dan satu login aktif (`SEC-18` s.d. `SEC-24`), otorisasi (`SEC-25` s.d. `SEC-27`), CSRF (`SEC-28` s.d. `SEC-31`), HTTPS, cookie, dan header (`SEC-32` s.d. `SEC-40`), pencegahan injeksi (`SEC-41` s.d. `SEC-48`), file unggahan (`SEC-49` s.d. `SEC-53`), pembatasan laju (`SEC-54` s.d. `SEC-56`), log (`SEC-57` s.d. `SEC-62`), data pribadi (`SEC-63` s.d. `SEC-69`), server dan backup (`SEC-70` s.d. `SEC-78`), pengembangan dan pengujian (`SEC-79` s.d. `SEC-82`), penanganan insiden (`SEC-83`, `SEC-84`), traceability, dan perubahan dokumen lain. Menjawab OQ-17 dan menambah OQ-18. |
+| 0.2 | 2026-10-05 | Keputusan Session 10 (`14`). SEC-75 butir 5 (pemulihan ke database sementara), SEC-79 (data uji dari file import fiktif), SEC-82 (pemindaian terhadap production sebelum data asli), kepala dokumen, dan §21 (OQ-19) diperbarui. |

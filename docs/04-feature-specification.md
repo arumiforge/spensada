@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.6 (draft, menunggu review) |
+| Versi | 0.7 (draft, menunggu review) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 4b (Feature Specification). Diperbarui dengan keputusan Session 5 (§2.4), Session 6 (§2.5), Session 7 (§2.6), Session 8 (§2.7), dan Session 9 (§2.8). |
+| Sumber | Discovery Session 4b (Feature Specification). Diperbarui dengan keputusan Session 5 (§2.4), Session 6 (§2.5), Session 7 (§2.6), Session 8 (§2.7), dan Session 9 (§2.8). Fase implementasi setiap fitur ada di `14` (Session 10). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan acceptance criteria tingkat tinggi (AC-01 s.d. AC-05). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). |
 | Dokumen terkait | [06-database-design.md](06-database-design.md): tabel yang ditulis dan dibaca setiap fitur. [07-system-architecture.md](07-system-architecture.md): mekanisme teknis, termasuk kiosk dan hitung ulang. [13-reporting-import-export.md](13-reporting-import-export.md): laporan, template import, dan format file. [08-ui-ux-design-system.md](08-ui-ux-design-system.md): tampilan, teks layar, dan label. [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman dan route setiap fitur. [10-api-specification.md](10-api-specification.md): API kiosk, fragmen, dan bantuan formulir. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): aturan isian, teks pesan validasi, dan penanganan galat. [12-security.md](12-security.md): password, pembatasan login, sesi, PIN petugas, file unggahan, dan log aktivitas. |
 
@@ -49,7 +49,7 @@ Dokumen ini juga mencatat keputusan Session 4b atas usulan di `05` (§2). Dokume
   - "hari ini" adalah Selasa, 13 Oktober 2026, sehingga tanggal 6–13 Oktober 2026 masih berada dalam batas mundur.
 
   Semua jam memakai WIB.
-- **Acceptance criteria.** Ditulis dalam format Given/When/Then seperti `01` §7. Sebuah fitur dianggap selesai bila semua acceptance criteria-nya lulus, dan dokumen fase di Session 11 merujuk ID ini. (RECOMMENDATION)
+- **Acceptance criteria.** Ditulis dalam format Given/When/Then seperti `01` §7. Sebuah fitur dianggap selesai bila semua acceptance criteria-nya lulus, dengan syarat lain di definisi selesai `14` RM-05. Fase setiap fitur ada di `14` §16.1, dan dokumen fase `15` (Session 11) merujuk ID ini. (RECOMMENDATION)
 - **Nama teknis.** Tabel, kolom, route, teks layar, dan teks pesan ditetapkan di Session 5–9. Nama tabel dan kolom ada di `06`, mekanisme teknis di `07`, teks layar dan label di `08`, halaman dan route di `09`, API di `10`, aturan isian dan teks pesan validasi di `11`, serta ketentuan keamanan di `12`. Contoh pesan di dokumen ini bukan teks final, kecuali teks kiosk yang difinalkan di `08` §7.3. Teks final pesan validasi dan galat setiap fitur ada di `11` §5, dan menggantikan contoh pesan di dokumen ini. Dokumen ini tetap memakai istilah "rombel", yang tampil sebagai "Kelas" di layar (`08` UI-51).
 
 ## 2. Keputusan Session 4b
@@ -313,6 +313,14 @@ Tindakan massal, tindakan yang membuat password baru, dan tindakan yang mengubah
    - Import siswa dan import penempatan: XLSX atau CSV, paling besar 5 MB dan 2.000 baris data.
    - Foto massal: paling besar 100 MB per unggahan, paling banyak 100 file, atau satu ZIP berisi paling banyak 2.000 entri.
 4. Tipe file ditentukan dari isinya, dan ekstensinya harus sesuai (`12` SEC-50). Foto, logo, dan lampiran gambar disimpan ulang, sehingga metadata seperti lokasi GPS terbuang. PDF disimpan apa adanya (`12` SEC-51).
+
+### 4.10 Tanggal sebelum sistem dipakai
+
+Tanggal sebelum `pengaturan.status_mulai`, yaitu hari go-live (`14` GL-08), tidak memiliki status (`06` §11.4). Bila `status_mulai` kosong, ketentuan ini tidak berlaku. (RECOMMENDATION, Session 10)
+
+1. Presensi manual, koreksi status, input izin/sakit/dispensasi, pengajuan siswa, dan dispensasi massal untuk tanggal itu ditolak dengan pesan "Tanggal sebelum sistem mulai dipakai (<tanggal go-live>)", walaupun masih dalam batas mundur. Untuk rentang tanggal, hanya tanggal sejak `status_mulai` yang boleh.
+2. Dashboard hari ini, daftar presensi rombel, rekap, dan riwayat untuk tanggal itu menampilkan "Pencatatan kehadiran dimulai <tanggal go-live>", bukan angka nol atau belum hadir.
+3. Scan untuk tanggal itu tetap diterima dan disimpan sebagai catatan scan, misalnya saat gladi bersih (`14` GL-11), tetapi tidak membuat status.
 
 ## 5. Akun dan akses (AKN)
 
@@ -5605,3 +5613,4 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 | 0.4 | 2026-10-04 | Keputusan Session 7 (§2.6, `08`). §1 dan pengantar catatan antarmuka awal merujuk `08`. §4.8, FS-AKN-05, FS-MD-03, FS-MD-07, FS-KIO-01, FS-KIO-02, FS-KIO-02 E7, FS-PRS-05, FS-LAP-03, FS-LAP-04, §11, §13, §14.1, dan §14.2 diperbarui. OQ-13 terjawab sebagian. |
 | 0.5 | 2026-10-05 | Keputusan Session 8 (§2.7, `09`, `10`). §1 dan pengantar §7 merujuk `09` dan `10`. FS-KIO-03 (isi laporan kiosk dan scan galat), FS-KIO-04 (akun pencatat, isi respons, dan status stasiun), FS-KIO-05 (kolom dan sorotan baru, AC-KIO-05-03), FS-PRS-06 dan FS-IZN-02 (pencarian siswa), FS-LAP-01 ("Kelas saya" dan peringatan pemeriksaan sistem), §12.3, §13, §14.1, dan §14.2 diperbarui. |
 | 0.6 | 2026-10-05 | Keputusan Session 9 (§2.8, `11`, `12`). Kepala dokumen dan §1 merujuk `11` dan `12`. §4.3 (panjang alasan), §4.4 butir 5 (log aktivitas dan akses lampiran), dan §4.9 (Paket 10 MB dan penyimpanan ulang gambar) diperbarui. FS-AKN-01 (pembatasan login, masa sesi, dan log), FS-AKN-02 (aturan password), FS-AKN-03 s.d. FS-AKN-05 (password awal, username, dan buka kunci login), FS-AKN-04 (satu login aktif per akun stasiun), FS-KIO-01 (PIN petugas), FS-KIO-03 dan FS-KIO-04 (log scan yang ditolak server dan pembatasan laju), FS-MD-01 s.d. FS-MD-03, FS-MD-05 s.d. FS-MD-09 (format dan ukuran unggahan, dan jenis log), FS-PRS-10, FS-PRS-11, FS-IZN-01 s.d. FS-IZN-04, dan FS-IZN-06 (penyajian dan catatan akses lampiran) diperbarui. Acceptance criteria baru: AC-AKN-01-07, AC-AKN-01-08, AC-AKN-02-05, AC-AKN-04-05, AC-KIO-01-07, AC-KIO-04-07, AC-MD-06-06, AC-IZN-01-08, dan AC-IZN-06-04. §12.3, §13, §14.1, dan §14.2 diperbarui. OQ-17 terjawab, dan OQ-18 ditambahkan. |
+| 0.7 | 2026-10-05 | Keputusan Session 10 (`14`). Kepala dokumen dan §1 merujuk definisi selesai (`14` RM-05) dan fase setiap fitur (`14` §16.1). §4.10 (tanggal sebelum `status_mulai`) ditambahkan. |

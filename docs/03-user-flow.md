@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.8 (draft) |
+| Versi | 0.9 (draft) |
 | Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), Session 5 (Database Architecture), Session 6 (System Architecture), Session 7 (UI/UX & Design System), Session 8 (Routes / Pages / API), dan Session 9 (Validation, Error Handling & Security). |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), Session 5 (Database Architecture), Session 6 (System Architecture), Session 7 (UI/UX & Design System), Session 8 (Routes / Pages / API), Session 9 (Validation, Error Handling & Security), dan Session 10 (Development Roadmap). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md), [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [07-system-architecture.md](07-system-architecture.md), [08-ui-ux-design-system.md](08-ui-ux-design-system.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [10-api-specification.md](10-api-specification.md), [11-validation-and-error-handling.md](11-validation-and-error-handling.md), [12-security.md](12-security.md) |
 
 ## 1. Cara membaca dokumen ini
@@ -88,7 +88,7 @@ Alur utama:
 8. Admin mengunggah foto siswa secara massal (UF-03).
 9. Admin membuat akun stasiun dan memasang laptop stasiun scan (UF-06).
 10. Wali kelas mencetak dan membagikan slip akun siswa (UF-05).
-11. Sekolah melakukan uji coba scan sebelum dipakai penuh. Rencana uji coba ditetapkan di Session 10.
+11. Sebelum data asli diisi, sekolah dan pengembang menjalankan uji coba R1: uji teknis di server production dengan data buatan dan kartu uji (`14` §11). Setelah lulus, database production dibangun ulang, data asli diisi, dan sistem langsung menggantikan cara lama sejak hari H tanpa masa paralel (DECISION, Session 10, `14` §12). Langkah 1–10 dengan data asli dijalankan ulang menurut prosedur go-live.
 
 Hasil: sistem siap dipakai untuk presensi harian.
 
@@ -749,3 +749,4 @@ OQ-03 s.d. OQ-07, OQ-15, dan OQ-16 terjawab di Session 4. Alur yang terdampak su
 | 0.6 | 2026-10-04 | Keputusan Session 7 (`08`). UF-06 langkah 4 (izin suara dan tes bunyi), UF-10 langkah 7 (lama hasil tampil), UF-24 (flyer), dan UF-26 (kartu) diperbarui. §1 merujuk `08`. |
 | 0.7 | 2026-10-05 | Keputusan Session 8 (`09`, `10`). UF-06 langkah 5 pemasangan (pemeriksaan status stasiun) dan langkah 1 pencabutan (scan galat), UF-12 langkah 2 (pencarian siswa), dan UF-15 langkah 1 ("Kelas saya") diperbarui. §1 merujuk `09` dan `10`. |
 | 0.8 | 2026-10-05 | Keputusan Session 9 (`11`, `12`). UF-06 (penyiapan laptop, PIN petugas, scan galat, dan E2 satu login aktif), UF-17 langkah 2 (format lampiran), UF-18 langkah 2 (pencatatan akses lampiran), UF-20 (aturan password dan E1 pembatasan login), dan UF-21 (E2 buka kunci) diperbarui. §1 merujuk `11` dan `12`. Di §10, OQ-17 dihapus karena terjawab, dan OQ-18 ditambahkan. |
+| 0.9 | 2026-10-05 | Keputusan Session 10 (`14`). UF-01 butir 11 merujuk uji coba R1 dan prosedur go-live di `14`. Kepala dokumen diperbarui. |
