@@ -2,11 +2,11 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.5 (draft) |
-| Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), Session 5 (Database Architecture), dan Session 6 (System Architecture). |
+| Versi | 0.6 (draft) |
+| Tanggal | 2026-10-05 |
+| Sumber | Discovery Session 3 (User Roles & User Flow). Diperbarui dengan keputusan Session 4 (Business Rules), Session 4b (Feature Specification), Session 5 (Database Architecture), Session 6 (System Architecture), dan Session 8 (Routes / Pages / API). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): ID requirement (`FR-*`, `NFR-*`). |
-| Dokumen terkait | [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
+| Dokumen terkait | [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
 
 Dokumen ini menetapkan jenis akun, role, cakupan data, dan hak akses setiap role. Dokumen ini menjawab OQ-02 dan OQ-14, serta sebagian OQ-08. Batas mundur (OQ-15) ditetapkan di `05` dan diterapkan pada cakupan di §5.
 
@@ -71,6 +71,14 @@ Keputusan Session 6 yang mengubah dokumen ini (rinciannya di `07` §2):
 | Admin pertama | Dibuat lewat perintah CLI saat instalasi. Perintah serupa memulihkan akses bila satu-satunya admin lupa password (`07` ARS-49). | DECISION |
 | Sesi | Status akun dan penggantian password diperiksa di setiap permintaan. Penonaktifan akun mengakhiri semua sesinya, dan penggantian password mengakhiri sesi lain (`07` ARS-47). | DECISION |
 | Peta hak akses di kode | Matriks di §6 ditulis sebagai konfigurasi kode dengan kunci berupa ID `HA-*` (`07` ARS-15). | RECOMMENDATION |
+
+Keputusan Session 8 yang mengubah dokumen ini (rinciannya di `09` §2):
+
+| Topik | Perubahan | Status |
+|---|---|---|
+| Pemeriksaan sistem | Hak baru `HA-AKN-07`, "Lihat pemeriksaan sistem", hanya untuk admin (§6.1, `09` HAL-AKN-07). | DECISION |
+| Kelas saya | Wali kelas mendapat menu "Kelas saya" di bawah Dashboard, yang membuka daftar presensi rombelnya hari ini (§8). Menu ini memakai `HA-LAP-02` dengan cakupan Rombel, sehingga tidak ada hak akses baru. | DECISION |
+| Alamat area dan halaman awal | Panel staf di `/panel`, portal siswa di `/portal`, kiosk di `/kiosk`, dan halaman login di `/login` (§8, `09` RT-01 dan RT-18). | RECOMMENDATION |
 
 ## 2. Jenis akun
 
@@ -157,6 +165,7 @@ Cara membaca:
 | HA-AKN-04 | Reset password siswa | Semua | — | Rombel | — | — | — | — | — | FR-AKN-07 | DECISION |
 | HA-AKN-05 | Cetak slip akun siswa | Semua | — | Rombel | — | — | — | — | — | FR-AKN-06 | DECISION (slip; mekanisme §7.2, Session 4) |
 | HA-AKN-06 | Lihat status akun siswa (belum aktif, aktif, nonaktif) | Semua | — | Rombel | — | — | — | — | — | FR-AKN-05 | RECOMMENDATION |
+| HA-AKN-07 | Lihat pemeriksaan sistem: hasil pemeriksaan server, waktu terakhir cron berjalan, dan antrean hitung ulang yang menunggu atau gagal | Ya | — | — | — | — | — | — | — | `07` ARS-57, `09` HAL-AKN-07 | DECISION (Session 8) |
 
 ### 6.2 Master data (MD) — R1
 
@@ -288,16 +297,18 @@ Mekanisme slip akun (DECISION, Session 4):
 
 ## 8. Area dan halaman awal
 
-Semua jenis akun memakai satu halaman login. Setelah login, sistem mengarahkan pengguna ke area sesuai jenis akunnya. (RECOMMENDATION)
+Semua jenis akun memakai satu halaman login (`/login`). Setelah login, sistem mengarahkan pengguna ke area sesuai jenis akunnya. (RECOMMENDATION)
 
 | Jenis akun | Area | Halaman awal | Isi menu |
 |---|---|---|---|
-| Akun staf | Panel staf/admin | Dashboard hari ini | Gabungan menu dari semua role-nya |
-| Akun siswa | Portal siswa | Riwayat kehadiran sendiri | Riwayat, izin/sakit, dan di R3 jadwal serta pengumuman |
-| Akun stasiun | Kiosk | Layar scan | Hanya kiosk |
-| Tanpa login | Halaman publik (R3) | Halaman publik; sebelum R3 langsung halaman login | Pengumuman, info sekolah, rekap agregat hari ini |
+| Akun staf | Panel staf/admin (`/panel`) | Dashboard hari ini (`/panel`) | Gabungan menu dari semua role-nya (`09` §4.1). Wali kelas juga mendapat menu "Kelas saya" di bawah Dashboard. |
+| Akun siswa | Portal siswa (`/portal`) | Riwayat kehadiran sendiri (`/portal`) | Riwayat, izin/sakit, akun, dan di R3 jadwal serta pengumuman (`09` §4.2) |
+| Akun stasiun | Kiosk (`/kiosk`) | Layar scan (`/kiosk`) | Hanya kiosk |
+| Tanpa login | Halaman publik (R3) | Halaman publik (`/`); sebelum R3, `/` mengalihkan ke `/login` | Pengumuman, info sekolah, rekap agregat hari ini |
 
-Bila password masih wajib diganti, halaman ganti password tampil lebih dulu sebelum area mana pun.
+Bila password masih wajib diganti, halaman ganti password (`/akun/password`) tampil lebih dulu sebelum area mana pun. Alamat setiap halaman dan tujuan setelah login ada di `09` RT-18.
+
+"Kelas saya" membuka daftar presensi rombel yang diampu wali kelas untuk hari ini. Menu ini tampil bagi akun yang menjadi wali kelas pada tahun ajaran aktif, termasuk admin yang juga wali kelas (`09` §4.1, HAL-LAP-03). (DECISION, Session 8)
 
 ## 9. Petugas di stasiun scan
 
@@ -352,3 +363,4 @@ OQ-07 dan OQ-15 terjawab di Session 4: `HA-PRS-05` menjadi DEPRECATED, dan batas
 | 0.3 | 2026-10-03 | Keputusan Session 4b (`04` §2). Tabel keputusan Session 4b ditambahkan di §1. `HA-PRS-03` (pembatalan presensi manual), `HA-PRS-04` (hapus koreksi), `HA-IZN-06` (per kelompok), `HA-LAP-02` (penanda), `HA-LAP-03` (daftar presensi rombel per tanggal), dan `HA-LAP-04` (isi riwayat di portal) diperjelas. |
 | 0.4 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). Tabel keputusan Session 5 ditambahkan di §1. `HA-MD-11` (kelola atribut tambahan siswa) ditambahkan. `HA-MD-05` dan `HA-MD-10` diperjelas. `HA-LAP-06` ditinjau bersama OQ-11 tanpa perubahan. |
 | 0.5 | 2026-10-04 | Keputusan Session 6 (`07`). Tabel keputusan Session 6 ditambahkan di §1. Detail login akun stasiun (§2, §7.3) dan pembuatan admin pertama (§3) diperbarui. |
+| 0.6 | 2026-10-05 | Keputusan Session 8 (`09`, `10`). Tabel keputusan Session 8 ditambahkan di §1. `HA-AKN-07` (lihat pemeriksaan sistem) ditambahkan di §6.1. §8 memuat alamat area, halaman awal, menu akun di portal, dan menu "Kelas saya". |

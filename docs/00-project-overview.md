@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.7 (draft) |
-| Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, Session 4b, Session 5, Session 6, dan Session 7. |
-| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [08-ui-ux-design-system.md](08-ui-ux-design-system.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
+| Versi | 0.8 (draft) |
+| Tanggal | 2026-10-05 |
+| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, Session 4b, Session 5, Session 6, Session 7, dan Session 8. |
+| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [08-ui-ux-design-system.md](08-ui-ux-design-system.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [10-api-specification.md](10-api-specification.md), [13-reporting-import-export.md](13-reporting-import-export.md) |
 
 Dokumen ini adalah titik masuk dokumentasi proyek. Baca dokumen ini sebelum dokumen lain.
 
@@ -146,13 +146,13 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | Lokal — alamat | `https://spensada.test` (virtual host otomatis Laragon dengan SSL). HTTPS diperlukan agar webcam bisa dipakai. Panduan lokal ada di `07` §15. | RECOMMENDATION |
 | Production | VPS dengan Linux, Nginx, PHP 8.3, dan MySQL 8.4 (OQ-09). Document root diarahkan ke `public/`, seluruh aplikasi memakai HTTPS, dan cron dipakai sejak R1. Langkahnya ada di `07` §16. | DECISION (hosting online; VPS, Session 6) |
 
-### 7.3 Kondisi repository (CONFIRMED, dicek 2026-10-04)
+### 7.3 Kondisi repository (CONFIRMED, dicek 2026-10-05)
 
 | Item | Kondisi |
 |---|---|
 | Framework | CodeIgniter 4.7.4, dipasang tanpa Composer: folder `system/` ikut di-commit dan tidak ada `vendor/`. `composer.json` yang ada adalah milik framework, bukan aplikasi. Repository dipindah ke Composer appstarter di fase implementasi pertama (`07` ARS-07). |
 | Kode aplikasi | Belum ada. Hanya `Home::index` dan `app/Views/welcome_message.php` bawaan. |
-| Git | Berisi dokumen `docs/` dari Session 1–7, termasuk contoh visual `docs/08-contoh-tampilan.html`, serta `.gitignore` dari Session 6 (`07` ARS-09). |
+| Git | Berisi dokumen `docs/` dari Session 1–8, termasuk contoh visual `docs/08-contoh-tampilan.html`, serta `.gitignore` dari Session 6 (`07` ARS-09). |
 | Konfigurasi database | `app/Config/Database.php`: MySQLi, `utf8mb4` / `utf8mb4_general_ci`, kredensial kosong. |
 | `baseURL` | Masih `http://localhost:8080/`. |
 | `appTimezone` | Masih `UTC`. Diubah ke `Asia/Jakarta` di fase implementasi pertama (`07` ARS-44). |
@@ -167,11 +167,11 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | R-03 | Antrean pagi 500–1.000 siswa. Kecepatan baca webcam tetap menjadi batas walaupun tanpa jeda jaringan. | Beberapa stasiun scan di gerbang utama. Kiosk juga menerima scanner QR USB (mode keyboard). | RECOMMENDATION; lokasi DECISION (gerbang utama, Session 3); jumlah stasiun OPEN (OQ-08) | Session 3 (lokasi); OQ-08 (jumlah) |
 | R-04 | Chrome dan Edge di Windows tidak memiliki `BarcodeDetector`. Menurut MDN browser-compat-data, fitur ini hanya ada di macOS/ChromeOS. | Library zxing-wasm, disajikan dari server sendiri (`07` ARS-10, ARS-25). | CONFIRMED (risiko); DECISION (zxing-wasm, Session 6) | Session 6 |
 | R-05 | Jam scan berasal dari laptop, sehingga bisa salah atau diubah. | Selisih jam laptop terhadap server diukur saat data dimuat dan setiap kali sinkron. Kiosk menjaga jam dengan jam monoton browser, dan kiosk yang dibuka offline memakai selisih terakhir dengan peringatan. Server menandai scan dengan jam tidak wajar untuk ditinjau (`05` BR-SCN-07, BR-SCN-08; `07` ARS-27, ARS-28). Jam laptop yang sudah dibetulkan sebelum scan terkirim tidak terdeteksi (`07` ARS-27 langkah 7). Laptop kiosk memakai akun Windows non-admin. | RECOMMENDATION; DECISION (kiosk yang dibuka offline, Session 6) | Session 4 (aturan), Session 6 (teknis) |
-| R-06 | Scan yang belum tersinkron bisa hilang bila laptop rusak atau data browser terhapus. | IndexedDB dengan penyimpanan permanen, kiosk dipasang sebagai aplikasi, penghitung "belum tersinkron", dan sinkron otomatis (`07` ARS-21, ARS-29). | RECOMMENDATION | Session 6 |
+| R-06 | Scan yang belum tersinkron bisa hilang bila laptop rusak atau data browser terhapus. | IndexedDB dengan penyimpanan permanen, kiosk dipasang sebagai aplikasi, penghitung "belum tersinkron", dan sinkron otomatis (`07` ARS-21, ARS-29). Kiosk melaporkan jumlah scan belum tersinkron dan keadaan penyimpanan permanen ke status stasiun di panel (`10` EP-KIO-03, `09` HAL-KIO-02). | RECOMMENDATION; DECISION (laporan penyimpanan permanen, Session 8) | Session 6, 8 |
 | R-07 | Data dan foto siswa (data anak) tersimpan di laptop stasiun scan. | Laptop dan profil browser khusus kiosk. Data dihapus saat perangkat tidak lagi dipakai. | RECOMMENDATION | Session 9 |
 | R-08 | Halaman kiosk harus bisa dibuka ulang tanpa internet, misalnya setelah laptop restart. | Service Worker untuk halaman dan aset kiosk (`07` ARS-22). | RECOMMENDATION | Session 6 |
 | R-09 | Kiriman sinkron bisa terulang, dan satu siswa bisa scan di beberapa stasiun. | ID unik per scan dari laptop. Scan pertama yang berlaku: server memakai scan paling awal dari semua stasiun (`05` BR-SCN-03). | RECOMMENDATION (ID unik); DECISION (aturan penggabungan, Session 4) | Session 4 |
-| R-10 | Endpoint sinkron bisa disalahgunakan untuk mengirim presensi palsu. | Hanya untuk akun stasiun yang login, dilindungi CSRF, dan divalidasi server. | RECOMMENDATION | Session 9 |
+| R-10 | Endpoint sinkron bisa disalahgunakan untuk mengirim presensi palsu. | Hanya untuk akun stasiun yang login, dilindungi CSRF, dan divalidasi server. Setiap scan membawa akun stasiun pencatatnya, dan server menolak scan dari akun lain (`10` EP-KIO-03). Rincian pengamanan di Session 9. | RECOMMENDATION | Session 8, 9 |
 | R-11 | Zona waktu default CodeIgniter adalah `UTC`, dan zona waktu server hosting bisa berbeda dari sekolah. | Zona waktu aplikasi dan database diset eksplisit ke WIB (`Asia/Jakarta`, +07:00). Lihat `05` BR-JAM-12 dan §14. Caranya di `07` ARS-44 s.d. ARS-46. | CONFIRMED (default CI4); DECISION (WIB, OQ-05) | Session 4 (zona), Session 6 (teknis) |
 | R-12 | NISN bisa diawali nol, dan Excel sering membuang nol di depan. | NISN disimpan sebagai teks 10 digit, `id` internal menjadi primary key, dan import divalidasi per baris. Template XLSX memformat kolom NISN sebagai teks (`06` DB-03, `13` IM-01). | RECOMMENDATION | Session 5 |
 | R-13 | Status Alpa salah bila dihitung sebelum semua data masuk. | Status dapat dihitung ulang setiap kali data berubah, sehingga scan yang tersinkron belakangan mengoreksi Alpa. Hasilnya disimpan sebagai salinan yang dapat dibangun ulang (`06` §11). Hitung ulang memakai antrean yang ditulis bersama perubahan data, sehingga tidak ada yang terlewat (`07` §7). Sesi masuk ditutup otomatis. Pesan "tidak hadir" ditunda, menunggu semua stasiun tersinkron, dan ditahan bila jumlah siswa tercatat masuk di bawah ambang (`05` BR-STS-06, BR-WA-02, BR-WA-03). | DECISION (tutup otomatis, tunda, ambang: Session 4; hitung ulang dan salinan: Session 5; antrean: Session 6) | Session 4, 5, 6 |
@@ -221,7 +221,7 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 
 ## 9. Glosarium
 
-Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antarmuka. Nama teknis (tabel, kolom, route) ditetapkan di Session 5–8 dan dipetakan ke istilah ini. Nama tabel dan kolom ada di `06`.
+Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antarmuka. Nama teknis (tabel, kolom, route) ditetapkan di Session 5–8 dan dipetakan ke istilah ini. Nama tabel dan kolom ada di `06`, dan route di `09`. Alamat halaman memakai label layar, misalnya `kelas` untuk rombel (`09` RT-03).
 
 | Istilah | Definisi |
 |---|---|
@@ -291,6 +291,7 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Hari sekolah | Tanggal kegiatan belajar menurut pola mingguan, jadwal khusus, dan kalender sekolah. Karena libur dapat berlaku per tingkat atau rombel, hari sekolah ditentukan per siswa (`05` BR-KAL-05). |
 | Kalender sekolah | Daftar hari libur (untuk semua siswa, tingkat tertentu, atau rombel tertentu) dan jadwal khusus yang diatur admin. |
 | Dashboard hari ini | Halaman pantauan kehadiran pada hari berjalan, per rombel. |
+| Fragmen | Potongan HTML dari server untuk bagian halaman yang diperbarui tanpa memuat ulang halaman, misalnya tabel dashboard hari ini yang diperbarui setiap 30 detik (`07` ARS-50, `10`). |
 | Rekap | Ringkasan kehadiran per rombel atau per siswa untuk rentang tanggal tertentu. |
 | Rekap agregat | Jumlah kehadiran per rombel tanpa nama atau data individu siswa. Satu-satunya data kehadiran yang tampil di halaman publik. |
 | Flyer kehadiran | Gambar PNG ringkasan kehadiran (per rombel atau total) yang dibuat di browser dan diunduh staf untuk dibagikan. |
@@ -310,20 +311,20 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 
 | Dokumen | Isi | Sesi | Status |
 |---|---|---|---|
-| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–7 | Draft 0.7 |
-| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–7 | Draft 0.7 |
-| `02-user-roles-and-permissions.md` | Role dan permission | Session 3–6 | Draft 0.5 |
-| `03-user-flow.md` | Alur pengguna | Session 3–7 | Draft 0.6 |
-| `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b–7 | Draft 0.4 |
+| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–8 | Draft 0.8 |
+| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–8 | Draft 0.8 |
+| `02-user-roles-and-permissions.md` | Role dan permission | Session 3–8 | Draft 0.6 |
+| `03-user-flow.md` | Alur pengguna | Session 3–8 | Draft 0.7 |
+| `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b–8 | Draft 0.5 |
 | `05-business-rules.md` | Aturan bisnis | Session 4–7 | Draft 0.5 |
-| `06-database-design.md` | Desain database | Session 5–7 | Draft 0.3 |
-| `07-system-architecture.md` | Arsitektur sistem | Session 6–7 | Draft 0.2 |
-| `08-ui-ux-design-system.md` | Sistem desain UI/UX, dengan contoh visual `08-contoh-tampilan.html` | Session 7 | Draft 0.1 |
-| `09-page-and-route-specification.md` | Halaman dan route | Session 8 | Belum dibuat |
-| `10-api-specification.md` | API, termasuk sinkron kiosk | Session 8 | Belum dibuat |
+| `06-database-design.md` | Desain database | Session 5–8 | Draft 0.4 |
+| `07-system-architecture.md` | Arsitektur sistem | Session 6–8 | Draft 0.3 |
+| `08-ui-ux-design-system.md` | Sistem desain UI/UX, dengan contoh visual `08-contoh-tampilan.html` | Session 7–8 | Draft 0.2 |
+| `09-page-and-route-specification.md` | Halaman, route, dan menu | Session 8 | Draft 0.1 |
+| `10-api-specification.md` | API, termasuk sinkron kiosk | Session 8 | Draft 0.1 |
 | `11-validation-and-error-handling.md` | Validasi dan penanganan error | Session 9 | Belum dibuat |
 | `12-security.md` | Keamanan | Session 9 | Belum dibuat |
-| `13-reporting-import-export.md` | Laporan, import, dan export | Session 5–7 | Draft 0.3 |
+| `13-reporting-import-export.md` | Laporan, import, dan export | Session 5–8 | Draft 0.4 |
 | `14-development-roadmap.md` | Roadmap pengembangan | Session 10 | Belum dibuat |
 | `15-implementation-phases.md` | Dokumen fase implementasi | Session 11 | Belum dibuat |
 
@@ -338,9 +339,9 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | 4b | Feature Specification (`04`), lanjutan Session 4 sebelum Session 5 | Selesai |
 | 5 | Database Architecture (`06`), serta laporan, import, dan export (`13`) | Selesai |
 | 6 | System Architecture (`07`) | Selesai |
-| 7 | UI/UX & Design System (`08`) | Selesai, menunggu review dokumen |
-| 8 | Routes / Pages / API | Berikutnya |
-| 9 | Security / Validation / Error Handling | Belum |
+| 7 | UI/UX & Design System (`08`) | Selesai |
+| 8 | Routes / Pages / API (`09`, `10`) | Selesai, menunggu review dokumen |
+| 9 | Security / Validation / Error Handling | Berikutnya |
 | 10 | Development Roadmap | Belum |
 | 11 | Implementation Phase Documents | Belum |
 
@@ -371,3 +372,4 @@ Aturan ini berlaku untuk AI atau developer yang mengerjakan kode di repository i
 | 0.5 | 2026-10-04 | Keputusan Session 5 (`06` §2, `13` §2). `06` dan `13` dibuat. OQ-11 dan OQ-12 terjawab. R-12, R-13, R-14, R-17, dan R-20 diperbarui. Glosarium ditambah: penempatan, import penempatan, masa aktif, NIS, atribut tambahan siswa, dan salinan status harian. Isi R1, peta dokumen, dan progres sesi diperbarui. |
 | 0.6 | 2026-10-04 | Keputusan Session 6 (`07` §2). `07` dibuat. OQ-09 terjawab. R-01, R-04 s.d. R-06, R-08, R-11, R-13, R-15, R-18, dan R-19 diperbarui. Stack (§7.1), environment (§7.2), dan kondisi repository (§7.3) diperbarui. Glosarium ditambah: data kiosk, selisih jam, antrean hitung ulang, dan sesi login. Peta dokumen dan progres sesi diperbarui. |
 | 0.7 | 2026-10-04 | Keputusan Session 7 (`08` §2). `08` dan contoh visualnya dibuat. OQ-13 terjawab sebagian. R-19 diperbarui. Glosarium "Rombel" dan "Tingkat" memuat label layar. Kondisi repository, peta dokumen, dan progres sesi diperbarui. |
+| 0.8 | 2026-10-05 | Keputusan Session 8 (`09` §2). `09` dan `10` dibuat. R-06 dan R-10 diperbarui. Pengantar glosarium merujuk route di `09`, dan glosarium ditambah: fragmen. Kondisi repository, peta dokumen, dan progres sesi diperbarui. Tidak ada OQ yang terjawab atau ditambahkan. |

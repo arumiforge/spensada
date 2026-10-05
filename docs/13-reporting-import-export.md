@@ -2,14 +2,15 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.3 (draft, menunggu review) |
-| Tanggal | 2026-10-04 |
-| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, `07`) dan Session 7 (UI/UX & Design System, `08`). |
+| Versi | 0.4 (draft, menunggu review) |
+| Tanggal | 2026-10-05 |
+| Sumber | Discovery Session 5 (Database Architecture). Diperbarui dengan keputusan Session 6 (System Architecture, `07`), Session 7 (UI/UX & Design System, `08`), dan Session 8 (Routes / Pages / API, `09`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): FR-MD-05, FR-MD-07, FR-LAP-02 s.d. FR-LAP-05. [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [04-feature-specification.md](04-feature-specification.md): FS-MD-05, FS-MD-06, FS-MD-08, FS-LAP-01 s.d. FS-LAP-06. [05-business-rules.md](05-business-rules.md): aturan rekap (§12). [06-database-design.md](06-database-design.md): tabel dan aturan baca status harian (§11). [07-system-architecture.md](07-system-architecture.md): library, penyimpanan file, dan foto. [08-ui-ux-design-system.md](08-ui-ux-design-system.md): label, format, PDF, dan flyer. |
+| Dokumen terkait | [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman laporan dan import, alamat unduhan template dan file hasil, serta alamat export (R2). |
 
 Dokumen ini menetapkan laporan dan formatnya, isi flyer kehadiran, template import siswa, import penempatan, dan format nama file foto untuk upload massal. Dokumen ini menjawab OQ-11 dan OQ-12.
 
-Laporan di layar termasuk R1 dan dirinci di `04`, kecuali tampilan rekap semua rombel (LP-02) yang termasuk R2. Export ke file dan flyer termasuk R2 (`00` §6.1). Import siswa, penempatan massal, dan foto massal termasuk R1.
+Laporan di layar termasuk R1 dan dirinci di `04`, kecuali tampilan rekap semua rombel (LP-02) yang termasuk R2. Export ke file dan flyer termasuk R2 (`00` §6.1). Import siswa, penempatan massal, dan foto massal termasuk R1. Halaman laporan dan import, alamat unduhan, dan alamat export ada di `09` §6, §10, dan §13.
 
 ## 1. Cara membaca dokumen ini
 
@@ -220,7 +221,7 @@ Status: DECISION (isi kolom dan perlakuan NISN yang sudah ada, Session 5); RECOM
 
 | ID | Aturan | Status |
 |---|---|---|
-| IM-01 | **Import siswa dan template.** Import siswa (FS-MD-06) memakai kolom di §6.1. Admin mengunduh template XLSX dari halaman import. Template dibuat saat diunduh, sehingga kolom atribut tambahan selalu terbaru. Lembar "Siswa" berisi judul kolom di baris 1, dengan kolom NISN dan NIS berformat teks. Lembar "Petunjuk" berisi arti setiap kolom, daftar rombel tahun ajaran tujuan, dan daftar atribut tambahan beserta pilihannya. | RECOMMENDATION |
+| IM-01 | **Import siswa dan template.** Import siswa (FS-MD-06) memakai kolom di §6.1. Admin mengunduh template XLSX dari halaman import (`GET /panel/siswa/import/template`, `09` §13). Template dibuat saat diunduh, sehingga kolom atribut tambahan selalu terbaru. Lembar "Siswa" berisi judul kolom di baris 1, dengan kolom NISN dan NIS berformat teks. Lembar "Petunjuk" berisi arti setiap kolom, daftar rombel tahun ajaran tujuan, dan daftar atribut tambahan beserta pilihannya. | RECOMMENDATION |
 | IM-04 | **Pencocokan kolom.** Kolom dikenali dari judulnya, tanpa membedakan huruf besar dan kecil dan tanpa spasi di awal dan akhir. Urutan kolom bebas. Kolom opsional boleh tidak ada. File ditolak sebelum validasi baris bila kolom wajib tidak ada, ada judul kolom yang tidak dikenal, atau ada judul kolom ganda (FS-MD-06 E2). | RECOMMENDATION |
 | IM-05 | **CSV.** File CSV memakai UTF-8, dengan atau tanpa BOM. Pemisahnya koma atau titik koma, dikenali dari baris judul, karena Excel berbahasa Indonesia menyimpan CSV dengan titik koma. | RECOMMENDATION |
 | IM-06 | **Isi sel.** Spasi di awal dan akhir dibuang. Baris yang semua selnya kosong diabaikan. Sel kosong pada kolom opsional berarti tidak diisi. | RECOMMENDATION |
@@ -259,7 +260,7 @@ Format gambar yang diterima dan ukuran maksimal ditetapkan di Session 9. Foto di
 
 ## 9. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06` §18, dan perubahan karena keputusan Session 6 di `07` §18.
+Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06` §18, perubahan karena keputusan Session 6 di `07` §18, karena keputusan Session 7 di `08` §14, dan karena keputusan Session 8 di `09` §16.
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
@@ -276,3 +277,4 @@ Dokumen ini menjawab OQ-11 dan OQ-12. Perubahan pada dokumen lain dicatat di `06
 | 0.1 | 2026-10-04 | Draft awal dari Session 5: matriks laporan × format, rincian tujuh laporan dan flyer, template import siswa, import penempatan, format nama file foto, dan ketentuan umum. OQ-11 dan OQ-12 terjawab. |
 | 0.2 | 2026-10-04 | Keputusan Session 6 (`07`). IE-02 dan LP-03 (pengecualian rekap rapor) menjadi DECISION. IE-12 memuat mPDF dan Composer. IM-13 dan §8 memuat dukungan ZIP dan ukuran foto. §2, termasuk judulnya, dan §9 diperbarui. |
 | 0.3 | 2026-10-04 | Keputusan Session 7 (`08`). Judul kolom yang memuat "Rombel" diganti "Kelas", termasuk nama file contoh di IE-07. IM-01 menerima judul kolom lama "Rombel". IE-06, IE-10, IE-12, LP-08, §1, §8, dan §9 merujuk `08`. |
+| 0.4 | 2026-10-05 | Keputusan Session 8 (`09`). Kepala dokumen, pengantar, dan IM-01 merujuk halaman, alamat unduhan, dan alamat export di `09`. §9 diperbarui. |
