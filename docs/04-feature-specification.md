@@ -1045,11 +1045,12 @@ Then akun siswa D menjadi nonaktif dan sesinya berakhir
 | Nama resmi sekolah | Ya | Teks. |
 | Alamat | Tidak | Teks. |
 | Logo | Tidak | JPG, PNG, atau WebP, paling besar 10 MB dan 24 megapiksel (DECISION, Session 9, §4.9, `12` SEC-49). Logo diperkecil otomatis agar muat dalam 512×512 px, dan disimpan sebagai PNG agar transparansinya tetap ada (`12` SEC-51). |
+| Pemberitahuan privasi | Tidak | Teks biasa tanpa HTML, paling panjang 2.000 karakter. Baris baru menjadi paragraf baru. Kosong berarti pemberitahuan tidak tampil (`06` §6.1 `privasi_teks`, `12` SEC-68). |
 
 **Perilaku**
 
 1. Admin menyimpan identitas sekolah. Perubahan langsung berlaku.
-2. Identitas sekolah tampil di halaman login, kepala panel staf dan portal siswa, slip akun (FS-AKN-05), dan kiosk. Di rilis berikutnya juga di flyer, halaman publik, dan kartu.
+2. Identitas sekolah tampil di halaman login, kepala panel staf dan portal siswa, slip akun (FS-AKN-05), dan kiosk. Di rilis berikutnya juga di flyer, halaman publik, dan kartu. Pemberitahuan privasi tampil di halaman login dan portal siswa (`08` UI-38).
 3. Nama produk "Spensada" selalu tampil dan tidak dapat diubah.
 
 **Keadaan kosong dan error**
