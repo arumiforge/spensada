@@ -128,6 +128,23 @@ if (! function_exists('format_number')) {
     }
 }
 
+if (! function_exists('format_wa')) {
+    /**
+     * Shows a stored WA number (62…) with a leading 0 and hyphens after the
+     * 4th and 8th digit: 6281234567890 → 0812-3456-7890 (docs/08 UI-54).
+     */
+    function format_wa(?string $value): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        $lokal = str_starts_with($value, '62') ? '0' . substr($value, 2) : $value;
+
+        return implode('-', array_filter([substr($lokal, 0, 4), substr($lokal, 4, 4), substr($lokal, 8)], static fn (string $part): bool => $part !== ''));
+    }
+}
+
 if (! function_exists('format_rupiah')) {
     /**
      * Formats money as "Rp 1.250.000". Negative amounts become "-Rp 1.250.000".

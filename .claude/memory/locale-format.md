@@ -25,6 +25,7 @@ user-facing dates, times, numbers, or money. The helper is autoloaded
 | `format_number(12.5, 1)` | `12,5` |
 | `format_rupiah(1250000)` | `Rp 1.250.000` (negative: `-Rp 1.250.000`) |
 | `format_percent(87.5)` | `88%` (whole number, half rounds up — `docs/13` IE-04) |
+| `format_wa('6281234567890')` | `0812-3456-7890` (stored `62…`, shown with `0` and hyphens) |
 
 Inputs: `DateTimeInterface`, Unix timestamp, or a string. Strings without an
 offset are read as WIB. Empty input returns `''`.
