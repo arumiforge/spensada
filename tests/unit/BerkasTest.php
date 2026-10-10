@@ -187,4 +187,54 @@ final class BerkasTest extends CIUnitTestCase
             unlink($path);
         }
     }
+
+    public function testSimpanFotoMakesThreeJpegSizesOnWhite(): void
+    {
+        $image = imagecreatetruecolor(1200, 1200);
+        imagesavealpha($image, true);
+        imagealphablending($image, false);
+        imagefill($image, 0, 0, imagecolorallocatealpha($image, 0, 0, 0, 127));
+        imagepng($image, $this->dir . '/foto');
+
+        $gambar  = new Gambar();
+        $relatif = $gambar->simpanFoto($this->dir . '/foto');
+        $nama    = basename($relatif);
+
+        try {
+            $this->assertMatchesRegularExpression('#^foto/[0-9a-f]{32}\.jpg$#', $relatif);
+
+            foreach (['foto/' => 600, 'foto/kiosk/' => 300, 'foto/kecil/' => 120] as $folder => $sisi) {
+                $path = WRITEPATH . 'uploads/' . $folder . $nama;
+                $this->assertSame([$sisi, $sisi, IMAGETYPE_JPEG], array_slice(getimagesize($path), 0, 3), $folder);
+                $warna = imagecolorsforindex($hasil = imagecreatefromjpeg($path), imagecolorat($hasil, 5, 5));
+                $this->assertGreaterThan(245, $warna['red'], $folder);
+            }
+        } finally {
+            $gambar->hapusFoto($relatif);
+        }
+
+        $this->assertFileDoesNotExist(WRITEPATH . 'uploads/foto/kecil/' . $nama);
+    }
+
+    public function testSimpanFotoNeverEnlarges(): void
+    {
+        imagejpeg(imagecreatetruecolor(100, 80), $this->dir . '/kecil');
+
+        $gambar  = new Gambar();
+        $relatif = $gambar->simpanFoto($this->dir . '/kecil');
+
+        try {
+            $this->assertSame([100, 80], array_slice(getimagesize(WRITEPATH . 'uploads/' . $relatif), 0, 2));
+            $this->assertSame([100, 80], array_slice(getimagesize(WRITEPATH . 'uploads/foto/kecil/' . basename($relatif)), 0, 2));
+        } finally {
+            $gambar->hapusFoto($relatif);
+        }
+    }
+
+    public function testSimpanFotoReturnsNullForDamagedImage(): void
+    {
+        file_put_contents($this->dir . '/rusak', "\xFF\xD8\xFF\xE0" . str_repeat('x', 100));
+
+        $this->assertNull((new Gambar())->simpanFoto($this->dir . '/rusak'));
+    }
 }
