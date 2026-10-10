@@ -2,9 +2,14 @@
 
 namespace Config;
 
+use App\Filters\Area;
+use App\Filters\Csrf;
+use App\Filters\Hak;
+use App\Filters\Keamanan;
+use App\Filters\Sesi;
+use App\Filters\WajibGanti;
 use CodeIgniter\Config\Filters as BaseFilters;
 use CodeIgniter\Filters\Cors;
-use CodeIgniter\Filters\CSRF;
 use CodeIgniter\Filters\DebugToolbar;
 use CodeIgniter\Filters\ForceHTTPS;
 use CodeIgniter\Filters\Honeypot;
@@ -25,7 +30,7 @@ class Filters extends BaseFilters
      * or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
-        'csrf'          => CSRF::class,
+        'csrf'          => Csrf::class,
         'toolbar'       => DebugToolbar::class,
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
@@ -34,6 +39,12 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        // Spensada filters (docs/07 ARS-13)
+        'sesi'        => Sesi::class,
+        'area'        => Area::class,
+        'wajib-ganti' => WajibGanti::class,
+        'hak'         => Hak::class,
+        'keamanan'    => Keamanan::class,
     ];
 
     /**
@@ -58,6 +69,7 @@ class Filters extends BaseFilters
             'pagecache',   // Web Page Caching
             'performance', // Performance Metrics
             'toolbar',     // Debug Toolbar
+            'keamanan',    // CSP and Permissions-Policy, also on 404 (docs/12 SEC-35)
         ],
     ];
 
@@ -72,9 +84,10 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
+            // csrf runs before every other filter, so the token is checked before login (docs/10 §4.1).
+            'csrf',
+            // JSON bodies are checked per field after json_decode() instead (docs/12 SEC-43).
+            'invalidchars' => ['except' => ['kiosk/api/*']],
         ],
         'after' => [
             // 'honeypot',
