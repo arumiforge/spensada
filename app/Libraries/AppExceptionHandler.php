@@ -2,6 +2,7 @@
 
 namespace App\Libraries;
 
+use App\Filters\Keamanan;
 use CodeIgniter\Debug\ExceptionHandler;
 use CodeIgniter\Debug\ExceptionHandlerInterface;
 use CodeIgniter\HTTP\Exceptions\HTTPException;
@@ -55,7 +56,7 @@ class AppExceptionHandler implements ExceptionHandlerInterface
         }
 
         self::prepare($statusCode, $request, $response);
-        // Security headers (docs/12 SEC-35): the lead wires Keamanan::applyHeaders($request, $response) here.
+        Keamanan::applyHeaders($request, $response);
         $response->send();
 
         if (ENVIRONMENT !== 'testing') {
