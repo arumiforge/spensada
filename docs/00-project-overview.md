@@ -4,8 +4,8 @@
 |---|---|
 | Versi | 0.11 (draft) |
 | Tanggal | 2026-10-10 |
-| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, Session 4b, Session 5, Session 6, Session 7, Session 8, Session 9, Session 10, dan keputusan pemilik proyek 2026-10-10. |
-| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [08-ui-ux-design-system.md](08-ui-ux-design-system.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [10-api-specification.md](10-api-specification.md), [11-validation-and-error-handling.md](11-validation-and-error-handling.md), [12-security.md](12-security.md), [13-reporting-import-export.md](13-reporting-import-export.md), [14-development-roadmap.md](14-development-roadmap.md) |
+| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, Session 4b, Session 5, Session 6, Session 7, Session 8, Session 9, Session 10, keputusan pemilik proyek 2026-10-10, dan Session 11. |
+| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [08-ui-ux-design-system.md](08-ui-ux-design-system.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [10-api-specification.md](10-api-specification.md), [11-validation-and-error-handling.md](11-validation-and-error-handling.md), [12-security.md](12-security.md), [13-reporting-import-export.md](13-reporting-import-export.md), [14-development-roadmap.md](14-development-roadmap.md), [15-implementation-phases.md](15-implementation-phases.md) |
 
 Dokumen ini adalah titik masuk dokumentasi proyek. Baca dokumen ini sebelum dokumen lain.
 
@@ -147,13 +147,13 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | Lokal — alamat | `https://spensada.test` (virtual host otomatis Laragon dengan SSL). HTTPS diperlukan agar webcam bisa dipakai. Panduan lokal ada di `07` §15. | RECOMMENDATION |
 | Production | Server Windows dengan Laragon, Nginx, PHP 8.3, dan MySQL 8.4, menggantikan VPS Linux dari Session 6. Document root diarahkan ke `public/`, seluruh aplikasi memakai HTTPS, dan tugas terjadwal (cron) lewat Windows Task Scheduler dipakai sejak R1. Langkahnya ada di `07` §16. Lokasi server menunggu OQ-20. | DECISION (hosting online, Session 6; server Windows, keputusan pemilik 2026-10-10) |
 
-### 7.3 Kondisi repository (CONFIRMED, dicek 2026-10-05)
+### 7.3 Kondisi repository (CONFIRMED, dicek 2026-10-10)
 
 | Item | Kondisi |
 |---|---|
 | Framework | CodeIgniter 4.7.4, dipasang tanpa Composer: folder `system/` ikut di-commit dan tidak ada `vendor/`. `composer.json` yang ada adalah milik framework, bukan aplikasi. Repository dipindah ke Composer appstarter di fase implementasi pertama (`07` ARS-07). |
-| Kode aplikasi | Belum ada. Hanya `Home::index` dan `app/Views/welcome_message.php` bawaan. |
-| Git | Berisi dokumen `docs/` dari Session 1–10, termasuk contoh visual `docs/08-contoh-tampilan.html`, serta `.gitignore` dari Session 6 (`07` ARS-09). |
+| Kode aplikasi | Belum ada, kecuali helper format `app/Helpers/format_helper.php` beserta ujinya (`tests/unit/FormatHelperTest.php`). Selain itu hanya `Home::index` dan `app/Views/welcome_message.php` bawaan. |
+| Git | Berisi dokumen `docs/` dari Session 1–11, termasuk contoh visual `docs/08-contoh-tampilan.html`, `.gitignore` dari Session 6 (`07` ARS-09), aturan kerja AI di `CLAUDE.md` dan `.claude/`, serta logo sekolah dan ikon aplikasi di `public/aset/logo/`. |
 | Konfigurasi database | `app/Config/Database.php`: MySQLi, `utf8mb4` / `utf8mb4_general_ci`, kredensial kosong. |
 | `baseURL` | Masih `http://localhost:8080/`. |
 | `appTimezone` | Masih `UTC`. Diubah ke `Asia/Jakarta` di fase implementasi pertama (`07` ARS-44). |
@@ -314,7 +314,8 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Spesifikasi fitur | Rincian satu kemampuan utuh di `04`, ber-ID `FS-<MODUL>-<NN>`, beserta acceptance criteria rinci ber-ID `AC-<MODUL>-<NN>-<NN>`. |
 | Uji coba R1 | Uji teknis di server production dengan data buatan sebelum data asli diisi, untuk membuktikan kesiapan go-live (`14` §11). Tidak ada masa paralel dengan cara lama. |
 | Go-live R1 | Hari sekolah pertama (hari H) ketika sistem menjadi satu-satunya pencatatan kehadiran. Ditentukan segera setelah uji coba R1 lulus (`14` RM-01, §12). |
-| Fase implementasi | Satu tahap pembangunan R1 berisi sekelompok fitur, ber-ID `FASE-<NN>` (`14` §6). Rinciannya di `15`. |
+| Fase implementasi | Satu tahap pembangunan R1 berisi sekelompok fitur, ber-ID `FASE-<NN>` (`14` §6), dikerjakan di satu branch dan digabung lewat satu PR (`14` RM-11). Rinciannya di `15`. |
+| Langkah implementasi | Satu bagian kerja berurutan di dalam fase, ber-ID `L<NN>-<MM>`, yang berisi satu atau beberapa commit kecil dengan uji tetap lulus (`15` §1). |
 | Session 1–11 | Tahap diskusi discovery untuk menyusun dokumentasi (lihat §10.2). Tidak sama dengan sesi masuk/pulang. |
 
 ## 10. Peta dokumen dan progres
@@ -323,22 +324,22 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 
 | Dokumen | Isi | Sesi | Status |
 |---|---|---|---|
-| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–10 | Draft 0.10 |
-| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–10 | Draft 0.10 |
+| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–11 | Draft 0.11 |
+| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–10, keputusan pemilik 2026-10-10 | Draft 0.11 |
 | `02-user-roles-and-permissions.md` | Role dan permission | Session 3–9 | Draft 0.7 |
 | `03-user-flow.md` | Alur pengguna | Session 3–10 | Draft 0.9 |
-| `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b–10 | Draft 0.7 |
+| `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b–10, keputusan pemilik 2026-10-10 | Draft 0.8 |
 | `05-business-rules.md` | Aturan bisnis | Session 4–9 | Draft 0.7 |
 | `06-database-design.md` | Desain database | Session 5–10 | Draft 0.6 |
-| `07-system-architecture.md` | Arsitektur sistem | Session 6–10 | Draft 0.5 |
-| `08-ui-ux-design-system.md` | Sistem desain UI/UX, dengan contoh visual `08-contoh-tampilan.html` | Session 7–9 | Draft 0.3 |
-| `09-page-and-route-specification.md` | Halaman, route, dan menu | Session 8–10 | Draft 0.3 |
+| `07-system-architecture.md` | Arsitektur sistem | Session 6–10, keputusan pemilik 2026-10-10 | Draft 0.6 |
+| `08-ui-ux-design-system.md` | Sistem desain UI/UX, dengan contoh visual `08-contoh-tampilan.html` | Session 7–9, keputusan pemilik 2026-10-10 | Draft 0.4 |
+| `09-page-and-route-specification.md` | Halaman, route, dan menu | Session 8–10, keputusan pemilik 2026-10-10 | Draft 0.4 |
 | `10-api-specification.md` | API, termasuk sinkron kiosk | Session 8–9 | Draft 0.2 |
 | `11-validation-and-error-handling.md` | Validasi dan penanganan error | Session 9 | Draft 0.1 |
-| `12-security.md` | Keamanan | Session 9–10 | Draft 0.2 |
+| `12-security.md` | Keamanan | Session 9–10, keputusan pemilik 2026-10-10 | Draft 0.3 |
 | `13-reporting-import-export.md` | Laporan, import, dan export | Session 5–9 | Draft 0.5 |
-| `14-development-roadmap.md` | Roadmap pengembangan | Session 10 | Draft 0.1 |
-| `15-implementation-phases.md` | Dokumen fase implementasi | Session 11 | Belum dibuat |
+| `14-development-roadmap.md` | Roadmap pengembangan | Session 10–11, keputusan pemilik 2026-10-10 | Draft 0.2 |
+| `15-implementation-phases.md` | Dokumen fase implementasi | Session 11 | Draft 0.1 |
 
 ### 10.2 Progres sesi discovery
 
@@ -354,8 +355,8 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | 7 | UI/UX & Design System (`08`) | Selesai |
 | 8 | Routes / Pages / API (`09`, `10`) | Selesai |
 | 9 | Security / Validation / Error Handling (`11`, `12`) | Selesai |
-| 10 | Development Roadmap (`14`) | Selesai, menunggu review dokumen |
-| 11 | Implementation Phase Documents (`15`) | Berikutnya |
+| 10 | Development Roadmap (`14`) | Selesai; diperbarui dengan keputusan pemilik 2026-10-10 |
+| 11 | Implementation Phase Documents (`15`) | Selesai, menunggu review dokumen. Implementasi berikutnya dimulai dari FASE-00. |
 
 ## 11. Aturan untuk AI implementer
 
@@ -387,4 +388,4 @@ Aturan ini berlaku untuk AI atau developer yang mengerjakan kode di repository i
 | 0.8 | 2026-10-05 | Keputusan Session 8 (`09` §2). `09` dan `10` dibuat. R-06 dan R-10 diperbarui. Pengantar glosarium merujuk route di `09`, dan glosarium ditambah: fragmen dan scan galat. Entri status stasiun diperbarui. Kondisi repository, peta dokumen, dan progres sesi diperbarui. Tidak ada OQ yang terjawab atau ditambahkan. |
 | 0.9 | 2026-10-05 | Keputusan Session 9 (`12` §2). `11` dan `12` dibuat. OQ-17 terjawab, dan OQ-18 (kebijakan data sekolah) ditambahkan. R-07, R-10, dan R-17 diperbarui. Glosarium ditambah: kunci login, log aktivitas, PIN petugas, dan kode laporan. Entri sesi login dan scan galat diperbarui. Kondisi repository, peta dokumen, dan progres sesi diperbarui. |
 | 0.10 | 2026-10-05 | Keputusan Session 10 (`14` §2). `14` dibuat. OQ-19 (tempat backup dan pemegang kunci privat) ditambahkan. Glosarium ditambah: uji coba R1, go-live R1, dan fase implementasi. Kondisi repository, peta dokumen, dan progres sesi diperbarui. |
-| 0.11 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10: server production Windows dengan Laragon (§7.2, R-15, OQ-09) dan Bootstrap 5 (§7.1). OQ-20 ditambahkan. |
+| 0.11 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10: server production Windows dengan Laragon (§7.2, R-15, OQ-09) dan Bootstrap 5 (§7.1). OQ-20 ditambahkan. Session 11 (`15`): kondisi repository (§7.3), glosarium (fase implementasi dan langkah implementasi), peta dokumen, dan progres sesi diperbarui. |

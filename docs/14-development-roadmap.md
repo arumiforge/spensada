@@ -6,7 +6,7 @@
 | Tanggal | 2026-10-10 |
 | Sumber | Discovery Session 10 (Development Roadmap). Diperbarui dengan keputusan pemilik proyek 2026-10-10 (§2.4) dan Session 11 (`15`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): rilis (§6.1), risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement, batasan (`C-*`), dan kriteria keberhasilan v1 (§6). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan acceptance criteria (`AC-*`). [06-database-design.md](06-database-design.md): tabel. [07-system-architecture.md](07-system-architecture.md): aturan arsitektur (`ARS-*`), panduan lokal (§15), dan langkah production (§16). [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman (`HAL-*`). [12-security.md](12-security.md): ketentuan keamanan (`SEC-*`). |
-| Dokumen terkait | [03-user-flow.md](03-user-flow.md): penyiapan awal (UF-01) dan stasiun (UF-06). [10-api-specification.md](10-api-specification.md): endpoint (`EP-*`). [11-validation-and-error-handling.md](11-validation-and-error-handling.md): pengujian validasi dan galat. [13-reporting-import-export.md](13-reporting-import-export.md): laporan dan import. `15-implementation-phases.md` (Session 11): rincian kerja setiap fase. |
+| Dokumen terkait | [03-user-flow.md](03-user-flow.md): penyiapan awal (UF-01) dan stasiun (UF-06). [10-api-specification.md](10-api-specification.md): endpoint (`EP-*`). [11-validation-and-error-handling.md](11-validation-and-error-handling.md): pengujian validasi dan galat. [13-reporting-import-export.md](13-reporting-import-export.md): laporan dan import. [15-implementation-phases.md](15-implementation-phases.md) (Session 11): rincian kerja setiap fase. |
 
 Dokumen ini menetapkan roadmap pengembangan Spensada: urutan fase implementasi R1 beserta isi dan syarat selesainya, urutan pembuatan halaman, cara kerja implementasi, pengujian, persiapan sekolah, uji coba R1, prosedur go-live, masa stabilisasi, serta arah R2 dan R3.
 
@@ -156,7 +156,7 @@ Setiap fase ditutup bila semua fitur di dalamnya memenuhi RM-05, ditambah syarat
 1. Pindah ke Composer appstarter dengan langkah `07` ARS-07, di commit pertama fase ini (C-06). `README.md` dan `LICENSE` diganti setelah lisensi diputuskan (§4).
 2. Konfigurasi dasar: `appTimezone` `Asia/Jakarta` (ARS-44), driver turunan MySQLi dan group `tests` MySQL (ARS-45), `strictOn` dan `foundRows` (ARS-40, ARS-43), `Config\Spensada` (ARS-17), `Config\Session` dan `Config\Cookie` (`12` SEC-13, SEC-33), serta konfigurasi CSRF (`12` SEC-28).
 3. Service `Jam` (ARS-44), helper kunci bernama (ARS-42), dan pola transaksi (ARS-43).
-4. Filter `sesi`, `area`, `wajib-ganti`, `hak`, `csrf`, `invalidchars`, dan `keamanan` (ARS-13), dengan peta hak akses `Config\HakAkses` untuk semua `HA-*` R1 (ARS-15).
+4. Filter `area`, `hak`, `csrf`, `invalidchars`, dan `keamanan` (ARS-13), beserta kerangka `sesi` dan `wajib-ganti` yang dilengkapi di FASE-01 bersama tabel `akun` (`15` §2.2), dengan peta hak akses `Config\HakAkses` untuk semua `HA-*` R1 (ARS-15).
 5. Penanganan galat dan halaman galat (`11` §6, GAL-13), log aplikasi (`11` §7), serta bahasa validasi `app/Language/id/Validation.php` (`11` VAL-06).
 6. Layout panel, portal, dan halaman bersama, CSS dengan token, font, dan sprite ikon (`08` §4, §6, §13).
 7. Migration tabel `pengaturan`, seeder `PengaturanAwal` dan kerangka `DataContoh` (ARS-18), serta perintah `aplikasi:cek` (ARS-57).
@@ -195,7 +195,7 @@ Setiap fase ditutup bila semua fitur di dalamnya memenuhi RM-05, ditambah syarat
 
 **Fitur:** FS-PRS-01, FS-PRS-02, FS-PRS-03, FS-PRS-10.
 
-**Isi lain:** migration kalender (`06` §7); service `Kalender` dan `AturanJam` (ARS-16); kasus uji JSON bersama dari `05` §4, §6, dan §13 (ARS-59), yang juga dipakai modul `aturan.js` di FASE-06.
+**Isi lain:** migration kalender (`06` §7), `antrean_hitung_ulang`, dan `log_presensi`; service `LogPresensi` dan penulisan antrean, yang juga disambungkan ke perubahan semester, masa aktif, dan penempatan dari FASE-02 dan FASE-03 (`15` §2.2); service `Kalender` dan `AturanJam` (ARS-16); kasus uji JSON bersama dari `05` §4, §6, dan §13 (ARS-59), yang juga dipakai modul `aturan.js` di FASE-06. Pemrosesan antrean baru dibuat di FASE-05.
 
 **Syarat selesai:** aturan jam tanggal mana pun dan hari sekolah bagi setiap siswa dapat dihitung, dengan kasus uji bersama lulus di PHPUnit.
 
@@ -203,7 +203,7 @@ Setiap fase ditutup bila semua fitur di dalamnya memenuhi RM-05, ditambah syarat
 
 **Fitur:** FS-PRS-05, FS-PRS-04, FS-PRS-06, FS-PRS-07, FS-PRS-08, FS-PRS-09, FS-PRS-11.
 
-**Isi lain:** migration `status_harian`, `antrean_hitung_ulang`, `presensi_manual`, `koreksi_status`, `mode_darurat`, dan `log_presensi`; komponen `PenentuStatus`, `HitungUlang`, dan `PembacaStatus` (ARS-34); antrean dan pemrosesannya (ARS-35 s.d. ARS-37); mode darurat berakhir otomatis (ARS-38); perintah `status:bangun`, `status:antrean`, `status:mulai`, `tugas:menit`, dan `tugas:harian` (ARS-39, ARS-56, ARS-57); `LogPresensi`; batas bawah `status_mulai` (§2.2). Migration `scan`, `scan_tinjauan`, `izin_kelompok`, `izin`, `izin_riwayat`, dan `lampiran` ditulis di fase ini, karena `PenentuStatus` membaca scan dan izin yang disetujui, dan `status_harian.izin_id` merujuk `izin` (DB-08, ARS-18). Scan dan izin uji diisi lewat `DataContoh` sampai kiosk dan fitur izin ada.
+**Isi lain:** migration `status_harian`, `presensi_manual`, `koreksi_status`, dan `mode_darurat`; komponen `PenentuStatus`, `HitungUlang`, dan `PembacaStatus` (ARS-34); pemrosesan antrean (ARS-36, ARS-37); mode darurat berakhir otomatis (ARS-38); perintah `status:bangun`, `status:antrean`, `status:mulai`, `tugas:menit`, dan `tugas:harian` (ARS-39, ARS-56, ARS-57); batas bawah `status_mulai` (§2.2). Migration `scan`, `scan_tinjauan`, `izin_kelompok`, `izin`, `izin_riwayat`, dan `lampiran` ditulis di fase ini, karena `PenentuStatus` membaca scan dan izin yang disetujui, dan `status_harian.izin_id` merujuk `izin` (DB-08, ARS-18). Scan dan izin uji diisi lewat `DataContoh` sampai kiosk dan fitur izin ada.
 
 **Syarat selesai:** kasus uji penentuan status di `tests/kasus/` lulus, termasuk kasus izin dengan data dari `DataContoh`; AC-PRS-05-* yang tidak memerlukan halaman izin atau daftar presensi lulus, dan sisanya diuji ulang di akhir FASE-07 dan FASE-08; hitung ulang berjalan untuk semua pemicu di `06` §11.4, dan `status:bangun --periksa` tidak menemukan perbedaan pada data contoh.
 
@@ -471,4 +471,4 @@ Session 10 tidak menjawab OQ dan menambah OQ-19. Keputusan pemilik proyek 2026-1
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-05 | Draft awal dari Session 10: keputusan Session 10, prinsip roadmap (`RM-01` s.d. `RM-18`), masukan sekolah, fase R1 (`FASE-00` s.d. `FASE-09`), urutan pembuatan halaman, cara kerja implementasi, pengujian dan uji beban, persiapan sekolah, uji coba R1 (`UC-01` s.d. `UC-12`), prosedur go-live (`GL-01` s.d. `GL-14`), masa stabilisasi, R2 dan R3, risiko jadwal, dan traceability. OQ-19 ditambahkan. |
-| 0.2 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10 (§2.4): satu branch dan satu PR per fase (RM-06, RM-11, RM-12, RM-13, §2.1, §15, §18). Server production Windows: §2.1 (pelaksana), §2.2, §4 (masukan dan OQ-20), §5, FASE-09, UC-01, UC-09, §15, §16.2, GL-04, dan §18 (OQ-20) diperbarui. Bootstrap 5 dicatat di §2.4. |
+| 0.2 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10 (§2.4): satu branch dan satu PR per fase (RM-06, RM-11, RM-12, RM-13, §2.1, §15, §18). Server production Windows: §2.1 (pelaksana), §2.2, §4 (masukan dan OQ-20), §5, FASE-09, UC-01, UC-09, §15, §16.2, GL-04, dan §18 (OQ-20) diperbarui. Bootstrap 5 dicatat di §2.4. Session 11 (`15` §2.2): FASE-00 butir 4 (kerangka `sesi` dan `wajib-ganti`), FASE-04 (`antrean_hitung_ulang`, `log_presensi`, `LogPresensi`, dan penulisan antrean), dan FASE-05 diperbarui. |
