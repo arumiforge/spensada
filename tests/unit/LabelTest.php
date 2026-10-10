@@ -32,7 +32,7 @@ final class LabelTest extends CIUnitTestCase
         $codes = config(Label::class)->codes;
 
         // 16 code lists of docs/08 §9.2 plus the log_aktivitas lists of docs/09 §14.
-        $this->assertCount(19, $codes);
+        $this->assertCount(22, $codes);
         $this->assertSame('Akun stasiun login di laptop lain', $codes['log_aktivitas.jenis']['login_stasiun_berpindah']);
         $this->assertSame(\App\Services\Akun\LogAktivitas::JENIS, array_keys($codes['log_aktivitas.jenis']));
         $this->assertSame('Kelas', $codes['libur.cakupan']['rombel']);

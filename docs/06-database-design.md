@@ -335,7 +335,7 @@ Daftar kunci:
 
 Nilai `kiosk_pin` adalah teks JSON berisi garam, jumlah iterasi, dan hash PBKDF2-SHA256 (`garam`, `iterasi`, `hash`), tidak pernah PIN itu sendiri. Hash ini dikirim ke kiosk di data kiosk (`10` EP-KIO-01). Kosong berarti PIN belum diatur (`12` SEC-21 butir 4). Perubahannya dicatat di `log_aktivitas` dengan jenis `pin_kiosk_diubah`, tanpa PIN maupun hashnya. (RECOMMENDATION, Session 9)
 
-Nilai `privasi_teks` adalah teks biasa tanpa HTML. Baris baru menjadi paragraf baru. Teks ini tampil di bawah formulir login dan di portal siswa (`12` SEC-68). Teks bawaannya disusun Claude atas permintaan pemilik (2026-10-10), dan sekolah boleh mengubahnya. Isiannya ditambahkan ke halaman Identitas sekolah (FS-MD-01) di FASE-02. Teks bawaan:
+Nilai `privasi_teks` adalah teks biasa tanpa HTML. Baris baru menjadi paragraf baru. Teks ini tampil di bawah formulir login dan di portal siswa (`12` SEC-68). Teks bawaannya disusun Claude atas permintaan pemilik (2026-10-10), dan sekolah boleh mengubahnya. Admin mengubahnya di halaman Identitas sekolah (`04` FS-MD-01). Teks bawaan:
 
 > Spensada dipakai sekolah untuk mencatat kehadiran siswa. Data yang disimpan adalah identitas siswa (NISN, nama, kelas, tanggal lahir, foto, dan kontak orang tua/wali), waktu scan kartu, pengajuan izin beserta lampirannya, dan catatan login.
 >

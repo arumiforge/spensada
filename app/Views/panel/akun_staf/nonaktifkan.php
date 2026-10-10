@@ -4,7 +4,6 @@
  *
  * @var array<string, mixed> $akun
  */
-// The homeroom-teacher note (FS-AKN-03 item 9) needs `rombel` (FASE-02); add it then.
 ?>
 <?= $this->extend('layout/panel') ?>
 
@@ -15,6 +14,9 @@
         <li><?= esc($akun['nama']) ?> tidak dapat login lagi, dan sesi yang sedang berjalan langsung berakhir.</li>
         <li>Nama <?= esc($akun['nama']) ?> tetap tampil di log dan riwayat perubahan.</li>
         <li>Akun dapat diaktifkan kembali kapan saja.</li>
+<?php if ($akun['kelas'] !== []): ?>
+        <li><?= esc($akun['nama']) ?> adalah wali kelas <?= esc(implode(', ', $akun['kelas'])) ?>. Penugasannya tetap. Tetapkan wali kelas pengganti di halaman Kelas.</li>
+<?php endif ?>
     </ul>
     <form method="post" action="<?= esc(url_to('panel.akun_staf.nonaktifkan', $akun['id']), 'attr') ?>" class="d-flex flex-wrap gap-2">
         <?= csrf_field() ?>

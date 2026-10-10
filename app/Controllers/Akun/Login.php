@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Filters\Sesi;
 use App\Services\Akun\Kredensial;
 use App\Services\Akun\Login as LoginService;
+use App\Services\MasterData\IdentitasSekolah;
 use App\Services\Sistem\Jam;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\Router\Attributes\Filter;
@@ -34,6 +35,7 @@ class Login extends BaseController
             'title'         => 'Login',
             'schoolName'    => $layanan->namaSekolah(),
             'privacyNotice' => $layanan->teksPrivasi(),
+            'logoUrl'       => (new IdentitasSekolah())->urlLogo(),
         ]);
     }
 

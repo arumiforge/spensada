@@ -4,6 +4,7 @@ namespace App\Controllers\Akun;
 
 use App\Controllers\BaseController;
 use App\Filters\Sesi;
+use App\Models\SiswaModel;
 use App\Services\Akun\GantiPassword;
 use App\Services\Akun\Kredensial;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -52,8 +53,9 @@ class Password extends BaseController
         }
 
         $service = new GantiPassword();
-        // shortcut: no birth-date rule (SEC-03 item 5) until the siswa table arrives in FASE-02; pass siswa.tanggal_lahir then.
-        $galat = $service->periksa($akun, $post['password_lama'] ?? null, $post['password_baru'], $post['password_ulang'], $ip, null);
+        // SEC-03 item 5: a student's password must not contain their birth date.
+        $tanggalLahir = $akun['siswa_id'] === null ? null : (new SiswaModel())->find($akun['siswa_id'])['tanggal_lahir'] ?? null;
+        $galat        = $service->periksa($akun, $post['password_lama'] ?? null, $post['password_baru'], $post['password_ulang'], $ip, $tanggalLahir);
 
         if (isset($galat['password_lama'])) {
             $salah = (int) session('salah_password_lama') + 1;

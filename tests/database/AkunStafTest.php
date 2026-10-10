@@ -11,6 +11,7 @@ use CodeIgniter\Test\FeatureTestTrait;
 use CodeIgniter\Test\TestResponse;
 use Config\Services;
 use Tests\Support\AkunTrait;
+use Tests\Support\MasterDataTrait;
 
 /**
  * Staff accounts (docs/04 FS-AKN-03, AC-AKN-03-*, docs/09 HAL-AKN-04,
@@ -23,6 +24,7 @@ final class AkunStafTest extends CIUnitTestCase
     use AkunTrait;
     use DatabaseTestTrait;
     use FeatureTestTrait;
+    use MasterDataTrait;
 
     protected $refresh   = true;
     protected $namespace = 'App';
@@ -47,6 +49,24 @@ final class AkunStafTest extends CIUnitTestCase
     {
         Time::setTestNow();
         parent::tearDown();
+    }
+
+    public function testHomeroomClassesShowOnListDetailAndDeactivation(): void
+    {
+        // FS-AKN-03 items 3 and 9: only rombel of the active school year count.
+        $rina = $this->buatAkun(['username' => 'rina', 'nama' => 'Rina'], ['guru_piket']);
+        $lama = $this->buatTahunAjaran(['nama' => '2025/2026', 'tanggal_mulai' => '2025-07-14', 'tanggal_selesai' => '2026-06-30', 'aktif' => 0]);
+        $ta   = $this->buatTahunAjaran();
+        $this->buatRombel(['tahun_ajaran_id' => $ta['id'], 'nama' => '7B', 'wali_kelas_id' => $rina['id']]);
+        $this->buatRombel(['tahun_ajaran_id' => $lama['id'], 'nama' => '9C', 'wali_kelas_id' => $rina['id']]);
+
+        $list = $this->kirim('GET', 'panel/akun-staf');
+        $list->assertSee('Kelas yang diampu');
+        $list->assertSee('7B');
+        $list->assertDontSee('9C');
+
+        $this->kirim('GET', "panel/akun-staf/{$rina['id']}")->assertSee('Wali kelas');
+        $this->kirim('GET', "panel/akun-staf/{$rina['id']}/nonaktifkan")->assertSee('Rina adalah wali kelas 7B. Penugasannya tetap.');
     }
 
     public function testNonAdminStaffGets403(): void

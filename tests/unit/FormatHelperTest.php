@@ -60,4 +60,12 @@ final class FormatHelperTest extends CIUnitTestCase
         $this->assertSame('88%', format_percent(87.5));
         $this->assertSame('87%', format_percent(87.4));
     }
+
+    public function testWaNumberShowsLocalPrefixWithHyphens(): void
+    {
+        $this->assertSame('0812-3456-7890', format_wa('6281234567890'));
+        $this->assertSame('0812-3456-78', format_wa('62812345678'));
+        $this->assertSame('0812-3456-789012', format_wa('628123456789012'));
+        $this->assertSame('', format_wa(null));
+    }
 }
