@@ -47,8 +47,10 @@ final class MenuPanelTest extends CIUnitTestCase
             $this->labels(['staf', 'admin']),
         );
 
-        foreach (['staf', 'guru_piket', 'guru_bk', 'pimpinan'] as $role) {
-            $this->assertSame(['' => ['Dashboard hari ini']], $this->labels(array_unique(['staf', $role])), $role);
+        $this->assertSame(['' => ['Dashboard hari ini']], $this->labels(['staf']));
+
+        foreach (['guru_piket', 'guru_bk', 'pimpinan'] as $role) {
+            $this->assertSame(['' => ['Dashboard hari ini'], 'Siswa' => ['Data siswa']], $this->labels(['staf', $role]), $role);
         }
     }
 
