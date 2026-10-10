@@ -265,12 +265,12 @@ Content Security Policy (SEC-36):
 
 | Jawaban | Kebijakan |
 |---|---|
-| Panel, portal, akun, publik, dan halaman galat | `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'` |
+| Panel, portal, akun, publik, dan halaman galat | `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'` |
 | Kiosk (`/kiosk`) | Sama dengan di atas, dengan `script-src 'self' 'wasm-unsafe-eval'`, `worker-src 'self'`, dan tambahan `manifest-src 'self'`. `'wasm-unsafe-eval'` diperlukan pembaca QR WebAssembly (`07` ARS-10), dan `worker-src` untuk Service Worker dan Web Worker pembaca QR. |
 | Berkas foto dan logo | `sandbox; default-src 'none'; frame-ancestors 'none'` |
 | Berkas lampiran | `sandbox; default-src 'none'; frame-ancestors 'self'`, agar PDF dapat tampil di bingkai halaman detail izin (SEC-52). |
 
-`img-src blob:` dipakai pratinjau foto sebelum diunggah. `frame-src 'self'` dipakai bingkai pratinjau lampiran PDF.
+`img-src blob:` dipakai pratinjau foto sebelum diunggah. `img-src data:` dipakai ikon SVG bawaan Bootstrap yang ditulis di CSS-nya, misalnya panah `select`, centang, tombol tutup, dan ikon menu lipat (`08` UI-73, keputusan pemilik 2026-10-10). Gambar `data:` tidak dapat menjalankan skrip. `frame-src 'self'` dipakai bingkai pratinjau lampiran PDF. Komponen JavaScript Bootstrap mengatur posisi lewat properti CSSOM, yang tidak dibatasi `style-src`, sehingga CSP tetap tanpa `'unsafe-inline'`.
 
 ## 11. Pencegahan injeksi
 

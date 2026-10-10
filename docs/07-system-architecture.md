@@ -81,7 +81,7 @@ Keputusan Session 7 yang berdampak ke arsitektur. Rinciannya ada di `08` §2.
 | Topik | Keputusan | Rujukan | Status |
 |---|---|---|---|
 | Flyer PNG | Canvas API tanpa library, canvas 1080×1350 px, dengan pratinjau dari canvas yang sama. | R-19, ARS-10, `08` UI-65 | DECISION |
-| Tampilan | CSS sendiri dengan token, tanpa library dan tanpa build. Ikon dari subset Lucide dalam satu file SVG. | ARS-10, ARS-19, `08` UI-08, UI-20 | DECISION |
+| Tampilan | CSS sendiri dengan token, tanpa library dan tanpa build. Ikon dari subset Lucide dalam satu file SVG. Diubah keputusan pemilik 2026-10-10 (§2.7): Bootstrap 5 di luar kiosk. | ARS-10, ARS-19, `08` UI-08, UI-20 | DECISION (diubah §2.7) |
 | Huruf | Plus Jakarta Sans, disalin ke server dan dipakai di aplikasi, flyer, dan PDF (mPDF). | ARS-10, ARS-22, `08` UI-13 | DECISION |
 | Foto kecil | Ukuran ketiga 120×160 px untuk daftar. | ARS-51, ARS-53 | DECISION |
 | QR kartu | chillerlan/php-qrcode 6 untuk kartu R3, yang dicetak sebagai PDF A4 berisi 10 kartu. | ARS-10, OQ-13, `08` UI-63 | DECISION |
@@ -116,6 +116,14 @@ Keputusan Session 9 yang berdampak ke arsitektur. Rinciannya ada di `12` §2 dan
 | Header keamanan | Header yang berlaku untuk semua jawaban dikirim Nginx. CSP dan `Permissions-Policy` dikirim filter aplikasi `keamanan`, per area. Filter `secureheaders` bawaan dan `CSPEnabled` tidak dipakai. | ARS-13, §16.1, `12` SEC-34 s.d. SEC-37 | RECOMMENDATION |
 | User database | User MySQL `spensada_app` hanya untuk DML. Migration memakai user `spensada_migrasi`. | §16, `12` SEC-74 | RECOMMENDATION |
 | ID permintaan | Nginx membuat ID untuk setiap permintaan, yang ditulis di log aplikasi dan tampil sebagai kode laporan di halaman 500. | ARS-04, §16.1, `12` SEC-58, `11` GAL-13 | RECOMMENDATION |
+
+### 2.7 Keputusan pemilik proyek 2026-10-10
+
+Keputusan berikut diberikan pemilik proyek setelah Session 10, dan menggantikan bagian dokumen ini yang bertentangan.
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| Tampilan | Panel, portal, akun, halaman galat, dan halaman publik memakai Bootstrap 5.3 yang disalin ke server sendiri, tanpa CDN dan tanpa build. Kiosk tetap memakai CSS sendiri. | ARS-10, ARS-19, `08` §2.6 | DECISION |
 
 ## 3. Gambaran sistem
 
@@ -330,6 +338,7 @@ $RECYCLE.BIN/
 | `zxing-wasm`, bagian reader | 3.1.4, dikunci | MIT | Membaca QR dari webcam di kiosk (R-04) | R1 | Disalin ke `public/aset/vendor/` dengan susunan folder `dist/` paket dan LICENSE-nya | DECISION |
 | `chillerlan/php-qrcode` | ^6.0 (saat ini 6.0.1) | MIT atau Apache-2.0 | QR berisi NISN di kartu PDF (FS-KRT-01, `08` UI-63) | R3 | Composer | DECISION (Session 7) |
 | Flyer PNG | — | — | Canvas API tanpa library (`08` §11) | R2 | — | DECISION (Session 7) |
+| Bootstrap | 5.3.8, dikunci | MIT | CSS dan komponen panel, portal, akun, halaman galat, dan halaman publik (`08` UI-28, UI-73). Kiosk tidak memakainya. | R1 | `bootstrap.min.css` dan `bootstrap.bundle.min.js` disalin ke `public/aset/vendor/bootstrap/5.3.8/` beserta LICENSE | DECISION (keputusan pemilik 2026-10-10); RECOMMENDATION (versi) |
 | Plus Jakarta Sans | 2.071 | SIL OFL 1.1 | Huruf aplikasi, flyer, dan PDF (`08` UI-13 s.d. UI-15). WOFF2 untuk browser, TTF statis untuk mPDF. | R1 | WOFF2 disalin ke `public/aset/vendor/plus-jakarta-sans/2.071/`, TTF ke luar `public/` | DECISION (font); RECOMMENDATION (versi dan lokasi) |
 | Lucide (ikon) | 1.52.0 | ISC | Subset ikon dalam satu sprite SVG (`08` UI-20) | R1 | Disalin ke `public/aset/ikon/` beserta LICENSE | DECISION (subset Lucide); RECOMMENDATION (versi dan lokasi) |
 | `phpunit/phpunit`, `fakerphp/faker`, `mikey179/vfsstream` | Mengikuti appstarter | BSD-3-Clause, MIT, BSD-3-Clause | Pengujian dan data contoh (`require-dev`) | R1 | Composer | RECOMMENDATION |
@@ -447,6 +456,7 @@ public/
     css/  js/            aset panel, portal, dan halaman publik
     ikon/                sprite ikon Lucide (`08` UI-20)
     kiosk/               modul JavaScript, CSS, dan manifest kiosk; bunyi dibuat Web Audio (`08` UI-45)
+    vendor/bootstrap/5.3.8/            Bootstrap CSS dan JavaScript (`08` UI-73)
     vendor/zxing-wasm/3.1.4/
     vendor/plus-jakarta-sans/2.071/   font WOFF2 (`08` UI-13)
 tests/
@@ -462,7 +472,7 @@ writable/
 | ID | Aturan | Status |
 |---|---|---|
 | ARS-18 | **Migration dan seeder.** Migration mengikuti `06`: satu file per tabel, atau per tabel induk beserta anaknya, dengan urutan sesuai foreign key. Kolom turunan (DB-10) dan `CHECK` ditulis dengan SQL langsung. Setiap migration memiliki langkah `down`, agar rilis dapat dikembalikan (ARS-08). Migration tabel R2 ditulis saat R2 (`06` §14.1). Seeder `PengaturanAwal` mengisi kunci `pengaturan` dengan default di `06` §6.1 dan dijalankan di setiap instalasi. Seeder `DataContoh` mengisi data fiktif untuk lokal dan pengujian, dan menolak berjalan di production. | RECOMMENDATION |
-| ARS-19 | **Tampilan dan JavaScript di luar kiosk.** Panel, portal, dan halaman publik memakai View Layouts CI4 per area. JavaScript ditulis sebagai modul ES kecil per halaman di `public/aset/js/`, tanpa framework dan tanpa build (C-01). Formulir tetap bekerja tanpa JavaScript, kecuali fitur yang memang membutuhkannya: pembaruan berkala (ARS-50), pratinjau unggahan, dan flyer (R2). Tampilan memakai CSS sendiri tanpa library dan tanpa build, dengan aturan di `08` (DECISION, Session 7). | DECISION (CSS sendiri, Session 7); RECOMMENDATION (rincian) |
+| ARS-19 | **Tampilan dan JavaScript di luar kiosk.** Panel, portal, dan halaman publik memakai View Layouts CI4 per area. JavaScript ditulis sebagai modul ES kecil per halaman di `public/aset/js/`, tanpa framework dan tanpa build (C-01). Formulir tetap bekerja tanpa JavaScript, kecuali fitur yang memang membutuhkannya: pembaruan berkala (ARS-50), pratinjau unggahan, dan flyer (R2). Tampilan memakai Bootstrap 5.3 tanpa build, ditambah satu file CSS aplikasi dengan token, dengan aturan di `08` §13 (keputusan pemilik 2026-10-10, menggantikan CSS sendiri dari Session 7). Kiosk tetap memakai CSS sendiri (ARS-20). | DECISION (Bootstrap, keputusan pemilik 2026-10-10); RECOMMENDATION (rincian) |
 
 ## 6. Kiosk
 
@@ -541,7 +551,7 @@ sequenceDiagram
 
 1. `public/sw-kiosk.js` didaftarkan dengan cakupan `/kiosk`, sehingga hanya halaman kiosk yang dikendalikan. Panel, portal, dan halaman publik tidak memakai Service Worker. Cakupan dicocokkan sebagai awalan alamat.
 2. Web Worker pembaca QR dikendalikan Service Worker menurut alamat skripnya, bukan menurut halaman yang membukanya. Karena itu skripnya ditaruh di `public/kiosk-pemindai.js`, yang alamatnya diawali `/kiosk`. Folder fisik `public/kiosk/` tidak dibuat, karena Nginx akan melayani folder itu, dan route CI4 `/kiosk` tidak pernah tercapai.
-3. Saat dipasang, Service Worker menyimpan kerangka halaman `/kiosk`, skrip worker, aset kiosk, file font dan sprite ikon (`08` UI-14, UI-20), dan file zxing-wasm (ARS-10) di satu cache yang namanya memuat versi aplikasi. Setiap file diambil dengan `{ cache: 'reload' }`, agar tidak berasal dari cache HTTP browser. Pemasangan gagal bila ada respons pengalihan atau respons selain 2xx, misalnya karena login sudah berakhir, lalu diulang saat kiosk dibuka berikutnya.
+3. Saat dipasang, Service Worker menyimpan kerangka halaman `/kiosk`, skrip worker, aset kiosk, file token CSS (`08` UI-73), file font dan sprite ikon (`08` UI-14, UI-20), dan file zxing-wasm (ARS-10) di satu cache yang namanya memuat versi aplikasi. Setiap file diambil dengan `{ cache: 'reload' }`, agar tidak berasal dari cache HTTP browser. Pemasangan gagal bila ada respons pengalihan atau respons selain 2xx, misalnya karena login sudah berakhir, lalu diulang saat kiosk dibuka berikutnya.
 4. Navigasi ke `/kiosk`, termasuk `/kiosk/` dan `/kiosk?…`, dijawab dengan kerangka dari cache versi yang aktif, dengan kunci tetap `/kiosk`. Kerangka dari jaringan hanya dipakai bila cache belum ada. Dengan begitu kerangka dan asetnya selalu berasal dari versi yang sama, dan kiosk tetap terbuka tanpa internet (R-08, FR-KIO-09).
 5. Aset kiosk, skrip worker, dan file zxing-wasm juga diambil dari cache versi yang aktif. Alamat aset tidak perlu memuat versi, karena setiap versi memiliki cache sendiri. Cara ini juga cocok dengan impor relatif antarmodul, yang tidak membawa query versi.
 6. API `/kiosk/api/…` selalu lewat jaringan dan tidak disimpan Service Worker. Data kiosk tersimpan di IndexedDB. Karena kerangka diambil dari cache, status login diketahui dari jawaban API (ARS-13): jawaban `login_ulang` membuka halaman login (ARS-31), dan jawaban `ditolak` membuka halaman awal area akun yang sedang login (AC-AKN-01-05). Logout dari kiosk lebih dulu mengosongkan penanda login di `meta`, sehingga kerangka dari cache tidak menampilkan data setelah logout.

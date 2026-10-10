@@ -187,6 +187,7 @@ Library yang dipakai (NFR-16). Versi, lisensi, dan alasannya ada di `07` ARS-10.
 | chillerlan/php-qrcode | QR di kartu | R3 | DECISION (Session 7) |
 | Plus Jakarta Sans (font, SIL OFL) | Huruf aplikasi, flyer, dan PDF | R1 | DECISION (Session 7) |
 | Lucide (ikon, ISC) | Subset ikon dalam satu file SVG | R1 | DECISION (Session 7) |
+| Bootstrap 5 (CSS dan JavaScript, MIT) | Tampilan panel, portal, dan halaman publik; kiosk tidak memakainya | R1 | DECISION (pemilik proyek, 2026-10-10) |
 
 ## 5. Batasan
 

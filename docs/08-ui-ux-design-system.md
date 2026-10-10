@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.3 (draft, menunggu review) |
-| Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 7 (UI/UX & Design System). Diperbarui dengan keputusan Session 8 (Routes / Pages / API, §2.4) dan Session 9 (Validation, Error Handling & Security, §2.5). |
+| Versi | 0.4 (draft, menunggu review) |
+| Tanggal | 2026-10-10 |
+| Sumber | Discovery Session 7 (UI/UX & Design System). Diperbarui dengan keputusan Session 8 (Routes / Pages / API, §2.4), Session 9 (Validation, Error Handling & Security, §2.5), dan keputusan pemilik proyek 2026-10-10 (Bootstrap 5, §2.6). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan batasan (`C-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`), area, dan halaman awal. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`), ketentuan umum (§4), dan catatan antarmuka awal. [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). [06-database-design.md](06-database-design.md): kode nilai. [07-system-architecture.md](07-system-architecture.md): library, aset, kiosk, foto, dan pembaruan halaman (`ARS-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, PDF, dan flyer. |
 | Dokumen terkait | `08-contoh-tampilan.html` (contoh visual dokumen ini, di folder yang sama). [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman, route, menu, dan label kode di halaman admin. [10-api-specification.md](10-api-specification.md): fragmen dan bantuan formulir. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): teks validasi per isian dan pesan galat. [12-security.md](12-security.md): PIN petugas, sesi, CSP, dan header berkas. |
 
@@ -29,7 +29,7 @@ Daftar halaman, route, dan menu ada di `09`, teks validasi serta pesan galat rin
 | Topik | Keputusan | Rujukan | Status |
 |---|---|---|---|
 | Label rombel | Rombel tampil sebagai "Kelas", misalnya "Kelas 7A". Tingkat tampil sebagai "Tingkat", misalnya "Tingkat 7". Dokumen dan nama teknis tetap memakai "rombel". | `00` §9, FS-MD-03, UI-51 | DECISION |
-| Cara membangun tampilan | CSS sendiri dengan token (variabel CSS), tanpa library dan tanpa build. Ikon memakai subset Lucide (lisensi ISC) yang disalin ke server sebagai satu file SVG. Kiosk juga memakai CSS sendiri. | ARS-10, ARS-11, ARS-19, NFR-16, UI-08, UI-20 | DECISION |
+| Cara membangun tampilan | CSS sendiri dengan token (variabel CSS), tanpa library dan tanpa build. Ikon memakai subset Lucide (lisensi ISC) yang disalin ke server sebagai satu file SVG. Kiosk juga memakai CSS sendiri. Diubah keputusan pemilik 2026-10-10 (§2.6): panel, portal, dan halaman publik memakai Bootstrap 5. Token, ikon Lucide, tanpa build, dan CSS sendiri untuk kiosk tetap berlaku. | ARS-10, ARS-11, ARS-19, NFR-16, UI-08, UI-20 | DECISION (diubah §2.6) |
 | Huruf | Plus Jakarta Sans (SIL OFL), disalin ke server dan dipakai di aplikasi, flyer, dan PDF. Font didaftarkan di mPDF. | UI-13 s.d. UI-15 | DECISION |
 | Warna utama | Biru dongker. Admin tidak dapat mengubah tema (FS-MD-01). | UI-09 | DECISION |
 | Palet status | Palet A: Hadir hijau, Terlambat oranye tua, Izin biru, Sakit ungu, Dispensasi toska, Alpa merah, dan Belum hadir abu-abu. Status selalu disertai ikon, huruf singkat, dan teks. | FS-PRS-05, UI-01, UI-12 | DECISION |
@@ -99,6 +99,13 @@ Keputusan Session 9 yang berdampak ke tampilan. Daftar lengkapnya ada di `12` §
 | Log aktivitas | Admin melihat log aktivitas, termasuk akses lampiran, di halaman log aktivitas (`HA-AKN-08`). Labelnya di `09` §14. | §9.2, `09` HAL-AKN-09, `12` SEC-62 | DECISION (OQ-17); RECOMMENDATION (isi halaman) |
 | Tanpa atribut `style` | CSP tidak mengizinkan gaya di dalam HTML, sehingga atribut `style` tidak dipakai sama sekali. | UI-74, `12` SEC-36 | RECOMMENDATION |
 
+### 2.6 Keputusan pemilik proyek 2026-10-10
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| Library tampilan | Panel, portal, akun, halaman galat, dan halaman publik memakai Bootstrap 5.3 dari file `.min` yang disalin ke server sendiri, tanpa CDN dan tanpa build. Satu file CSS aplikasi, `spensada.css`, berisi penimpaan variabel Bootstrap dan komponen aplikasi, dengan token `08` di file kecil `token.css`. Kiosk tidak memakai Bootstrap dan tetap memakai CSS sendiri. | UI-08, UI-28, UI-73, UI-74, `07` ARS-10, ARS-19 | DECISION |
+| Batas ukuran | Batas ukuran CSS dan JavaScript per halaman diukur setelah kompresi gzip, bukan sebelum kompresi. | UI-71 | DECISION (cara ukur); RECOMMENDATION (angka) |
+
 ## 3. Prinsip
 
 | ID | Aturan | Status |
@@ -117,7 +124,7 @@ Keputusan Session 9 yang berdampak ke tampilan. Daftar lengkapnya ada di `12` §
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-08 | **Token warna.** Semua warna ditulis sebagai variabel CSS di `:root` (§13). Komponen hanya memakai token, bukan nilai warna langsung. | DECISION (CSS sendiri dengan token); RECOMMENDATION (nama dan nilai token) |
+| UI-08 | **Token warna.** Semua warna ditulis sebagai variabel CSS di `:root` dalam `token.css` (§13). Komponen aplikasi hanya memakai token, bukan nilai warna langsung. Warna Bootstrap disamakan dengan token dengan menimpa variabel CSS Bootstrap (`--bs-*`) di `spensada.css`, termasuk variabel per komponen seperti `--bs-btn-bg` dan `--bs-btn-hover-bg` untuk `.btn-primary`, karena tanpa build warna Bootstrap tidak dapat diubah lewat Sass. File Bootstrap sendiri tidak diubah. | DECISION (token; Bootstrap, §2.6); RECOMMENDATION (nama dan nilai token, cara menimpa) |
 | UI-09 | **Warna utama.** Biru dongker dipakai untuk menu samping panel, bilah atas portal, tombol utama, tautan, dan kepala flyer serta PDF. Warna utama tidak dipakai untuk menandai status. Admin tidak dapat mengubah warna atau tema (FS-MD-01). | DECISION (biru dongker); RECOMMENDATION (pemakaian) |
 | UI-10 | **Tema terang saja.** Panel, portal, dan halaman publik hanya memakai tema terang di R1–R3. Kiosk memakai latar gelap dengan blok hasil berwarna (§7). | RECOMMENDATION |
 | UI-11 | **Kontras.** Teks memakai kontras paling kecil 4,5:1 terhadap latarnya. Garis isian formulir, ikon tanpa teks, dan cincin fokus paling kecil 3:1 (WCAG 2.2 AA). Semua pasangan warna yang dipakai di tabel di bawah memenuhi syarat itu. Di latar gelap, yaitu menu samping dan kiosk, cincin fokus memakai `--fokus-terang`, karena `--fokus` hanya 2,37:1 terhadap warna utama. | RECOMMENDATION |
@@ -250,7 +257,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 |---|---|---|
 | UI-26 | **Daftar panjang.** Daftar yang panjang dibagi per halaman, 50 baris per halaman, dengan tautan halaman sebelumnya dan berikutnya serta jumlah total. Saringan dan pencarian memakai formulir GET, sehingga alamat halaman dapat disimpan dan dibagikan. | DECISION (50 baris); RECOMMENDATION (rincian) |
 | UI-27 | **Kalender.** Kalender bulanan dimulai hari Senin. Hari yang bukan hari sekolah tampil dengan garis putus-putus tanpa status, dan hari ini diberi bingkai warna utama. | DECISION (mulai Senin); RECOMMENDATION (rincian) |
-| UI-28 | **Komponen dasar.** Komponen di tabel di bawah dipakai di semua area, dengan perilaku yang sama. Contohnya ada di `08-contoh-tampilan.html`. | RECOMMENDATION |
+| UI-28 | **Komponen dasar.** Komponen di tabel di bawah dipakai di semua area, dengan perilaku yang sama. Contohnya ada di `08-contoh-tampilan.html`. Di luar kiosk, komponen dibangun dari komponen Bootstrap 5 bila ada padanannya, misalnya tombol (`btn`), isian (`form-control`, `form-select`, `form-check`), tabel (`table`), bilah peringatan (`alert`), tab (`nav-tabs`), dan halaman (`pagination`), dengan tampilan disesuaikan lewat token (UI-08). Komponen tanpa padanan, misalnya chip status, ubin angka, foto siswa, dan pemilih tanggal, memakai kelas aplikasi (UI-74). Komponen Bootstrap yang membutuhkan JavaScript, misalnya dropdown, modal, dan offcanvas, hanya menambah kenyamanan: tanpa JavaScript, isi dan tindakannya tetap dapat dibuka (UI-04). | DECISION (Bootstrap, §2.6); RECOMMENDATION (rincian) |
 
 | Komponen | Aturan |
 |---|---|
@@ -561,7 +568,7 @@ Singkatan bulan: Jan, Feb, Mar, Apr, Mei, Jun, Jul, Agu, Sep, Okt, Nov, Des.
 |---|---|---|
 | UI-69 | **Aksesibilitas.** Target WCAG 2.2 tingkat AA. Setiap halaman memiliki `lang="id"`, tautan "Lewati ke isi", landmark `header`, `nav`, dan `main`, satu `h1`, cincin fokus yang terlihat (2 px `--fokus` atau `--fokus-terang` dengan jarak 2 px, UI-11), label untuk setiap isian, dan urutan fokus yang mengikuti urutan baca. Halaman tetap dapat dipakai saat diperbesar 200%. Animasi dimatikan bila pengguna memilih `prefers-reduced-motion`. | RECOMMENDATION |
 | UI-70 | **Browser.** Kiosk: Chrome atau Edge terbaru di Windows (A-04). Panel, portal, dan halaman publik: fitur yang sudah didukung Chrome dan Edge 100, Samsung Internet 19, Firefox 100, dan Safari 15.4 ke atas, termasuk `<dialog>`, `gap`, `aspect-ratio`, dan `:focus-visible`. CSS nesting, `:has()`, dan container query tidak dipakai untuk tata letak, karena ponsel lama siswa mungkin belum mendukungnya. | RECOMMENDATION |
-| UI-71 | **Batas ukuran.** Ukuran per halaman panel, portal, dan halaman publik, di luar foto: CSS paling besar 40 KB, JavaScript paling besar 30 KB, dan font paling besar 60 KB. Semuanya sebelum kompresi. Foto di satu halaman daftar paling besar ±250 KB, yaitu 50 foto kecil × ±5 KB. Batas ini diperiksa saat fase implementasi. | RECOMMENDATION |
+| UI-71 | **Batas ukuran.** Ukuran per halaman panel, portal, dan halaman publik, di luar foto. CSS dan JavaScript diukur setelah kompresi gzip, seperti yang dikirim Nginx (`07` ARS-04): CSS paling besar 50 KB dan JavaScript paling besar 40 KB. Bootstrap 5.3 memakai sekitar 31 KB CSS dan 24 KB JavaScript dari batas itu. Font paling besar 60 KB, diukur sebagai ukuran file WOFF2. Foto di satu halaman daftar paling besar ±250 KB, yaitu 50 foto kecil × ±5 KB. Batas ini diperiksa saat fase implementasi lewat tab Network di DevTools. Sebelum keputusan pemilik 2026-10-10, batas CSS 40 KB dan JavaScript 30 KB diukur sebelum kompresi. | DECISION (diukur setelah gzip, §2.6); RECOMMENDATION (angka) |
 | UI-72 | **Tanpa JavaScript.** Bila JavaScript mati, panel dan portal tetap dapat dibuka dan formulir tetap dapat dikirim (UI-04). Dashboard menampilkan "Muat ulang halaman untuk data terbaru." sebagai pengganti pembaruan berkala. | RECOMMENDATION |
 
 ## 13. Aset dan struktur tampilan
@@ -570,19 +577,20 @@ Bagian ini melengkapi struktur folder `07` §5.3.
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-73 | **File CSS.** CSS ditulis tanpa build, dalam file berikut, dan dimuat berurutan: `dasar.css` (token, reset, huruf), `komponen.css` (§5), `panel.css`, `portal.css`, atau `publik.css` (kerangka area), dan `cetak.css` (`media="print"`). Kiosk memakai `public/aset/kiosk/kiosk.css` yang mengimpor token yang sama. Alamat aset panel, portal, dan publik diberi parameter versi aplikasi, misalnya `?v=1.0.0`, agar cache browser diperbarui setelah rilis. Kiosk memakai versi cache Service Worker (ARS-22). | RECOMMENDATION |
-| UI-74 | **Nama kelas dan token.** Nama kelas CSS memakai bahasa Indonesia dengan huruf kecil dan tanda hubung, misalnya `.tombol-utama`, `.chip-status`, `.status-hadir`, dan `.tabel-angka`. Token memakai awalan sesuai §4, misalnya `--warna-utama` dan `--status-alpa-muda`. Tidak ada gaya di atribut `style`, karena CSP tidak mengizinkan gaya di dalam HTML (`12` SEC-36). Bilah kemajuan memakai elemen `<progress>`, atau lebarnya diatur lewat properti CSSOM dari modul JavaScript. | RECOMMENDATION |
+| UI-73 | **File CSS dan JavaScript Bootstrap.** CSS ditulis tanpa build. Panel, portal, akun, halaman galat, dan halaman publik memuat tiga file CSS berurutan: `vendor/bootstrap/5.3.8/css/bootstrap.min.css`, `css/token.css` (token warna, jarak, dan huruf di §4, beserta `@font-face`), lalu `css/spensada.css` (penimpaan variabel Bootstrap, komponen aplikasi §5, kerangka area §6, dan gaya cetak dalam `@media print`). Halaman yang memakai komponen Bootstrap berjavascript memuat `vendor/bootstrap/5.3.8/js/bootstrap.bundle.min.js`, yang sudah memuat Popper. Kiosk tidak memakai Bootstrap: halaman kiosk memuat `css/token.css` dan `kiosk/kiosk.css`, sehingga tokennya sama. Alamat aset panel, portal, dan publik diberi parameter versi aplikasi, misalnya `?v=1.0.0`, agar cache browser diperbarui setelah rilis. Kiosk memakai versi cache Service Worker (ARS-22). Halaman galat statis di `public/galat/` memakai `token.css` dan sedikit gaya sendiri, tanpa Bootstrap. | DECISION (Bootstrap dan satu file CSS aplikasi, §2.6); RECOMMENDATION (nama file dan urutan) |
+| UI-74 | **Nama kelas dan token.** Kelas Bootstrap dipakai apa adanya di view, misalnya `btn btn-primary` untuk tombol utama. Kelas aplikasi untuk komponen tanpa padanan Bootstrap memakai bahasa Indonesia dengan huruf kecil dan tanda hubung, misalnya `.chip-status`, `.status-hadir`, `.ubin-angka`, dan `.tabel-angka`. Kelas aplikasi tidak menimpa aturan kelas Bootstrap secara langsung. Warna dan ukuran Bootstrap diubah lewat variabel `--bs-*` (UI-08). Token memakai awalan sesuai §4, misalnya `--warna-utama` dan `--status-alpa-muda`. Tidak ada gaya di atribut `style`, karena CSP tidak mengizinkan gaya di dalam HTML (`12` SEC-36). Karena itu bilah kemajuan Bootstrap (`.progress-bar` dengan `style="width: …"`) tidak dipakai. Bilah kemajuan memakai elemen `<progress>`, atau lebarnya diatur lewat properti CSSOM dari modul JavaScript. | DECISION (Bootstrap, §2.6); RECOMMENDATION (rincian) |
 | UI-75 | **Label dan komponen di view.** Label kode nilai (§9.2), status (§4.2), dan istilah layar (§9.1) ditulis sekali di `app/Config/Label.php`, lalu dipakai view, file export, PDF, dan flyer. Komponen yang menerima data, misalnya chip status, foto siswa, dan pesan kilat, ditulis sebagai view komponen di `app/Views/komponen/`. Setiap area memiliki layout di `app/Views/layout/`. | RECOMMENDATION |
-| UI-76 | **JavaScript halaman.** Modul ES kecil di `public/aset/js/` (ARS-19), misalnya `polling.js` (ARS-50), `pratinjau-unggah.js`, `menu-lipat.js`, `dialog.js`, dan `flyer.js` (R2). Modul tidak bergantung satu sama lain, kecuali modul bantu format waktu (UI-55). | RECOMMENDATION |
+| UI-76 | **JavaScript halaman.** Modul ES kecil di `public/aset/js/` (ARS-19), misalnya `polling.js` (ARS-50), `pratinjau-unggah.js`, dan `flyer.js` (R2). Menu lipat dan dialog memakai komponen Bootstrap (UI-28), sehingga tidak memerlukan modul sendiri. Modul tidak bergantung satu sama lain, kecuali modul bantu format waktu (UI-55). | RECOMMENDATION |
 
 Lokasi aset:
 
 ```text
 public/aset/
-  css/          dasar.css, komponen.css, panel.css, portal.css, publik.css, cetak.css
+  css/          token.css, spensada.css (UI-73)
   js/           modul per halaman (UI-76)
   ikon/         ikon.svg (sprite Lucide) dan LICENSE
   vendor/
+    bootstrap/5.3.8/            css/bootstrap.min.css, js/bootstrap.bundle.min.js, dan LICENSE
     plus-jakarta-sans/2.071/   file WOFF2 dan OFL.txt
     zxing-wasm/3.1.4/           (ARS-10)
   kiosk/        kiosk.css dan modul kiosk (ARS-20)
@@ -595,7 +603,7 @@ File TTF untuk mPDF (UI-15) ditaruh di luar `public/`, misalnya `app/ThirdParty/
 
 | ID | Aturan | Status |
 |---|---|---|
-| UI-77 | **Contoh tampilan.** `docs/08-contoh-tampilan.html` adalah satu file HTML mandiri yang menampilkan keputusan dokumen ini: warna dan status, komponen dasar, kiosk dengan simulator bunyi dan lama tampil, dashboard panel, portal siswa, slip, dan flyer. File itu tidak memuat apa pun dari internet, karena font dan ikon disisipkan di dalamnya. Bila contoh berbeda dengan dokumen ini, dokumen ini yang berlaku. Bila desain berubah, dokumen ini diperbarui lebih dulu, lalu file contoh. | DECISION (contoh final tanpa pilihan yang tidak dipakai, tanpa CDN, dan dokumen ini sebagai sumber kebenaran); RECOMMENDATION (rincian) |
+| UI-77 | **Contoh tampilan.** `docs/08-contoh-tampilan.html` adalah satu file HTML mandiri yang menampilkan keputusan dokumen ini: warna dan status, komponen dasar, kiosk dengan simulator bunyi dan lama tampil, dashboard panel, portal siswa, slip, dan flyer. File itu tidak memuat apa pun dari internet, karena font dan ikon disisipkan di dalamnya. Bila contoh berbeda dengan dokumen ini, dokumen ini yang berlaku. Bila desain berubah, dokumen ini diperbarui lebih dulu, lalu file contoh. Contoh dibuat sebelum keputusan Bootstrap (§2.6), sehingga menjadi acuan tampilan (warna, susunan, dan ukuran), bukan acuan markup atau nama kelas. | DECISION (contoh final tanpa pilihan yang tidak dipakai, tanpa CDN, dan dokumen ini sebagai sumber kebenaran); RECOMMENDATION (rincian) |
 
 ## 14. Perubahan pada dokumen lain
 
@@ -616,6 +624,8 @@ File `docs/08-contoh-tampilan.html` juga dibuat di Session 7 (UI-77). `02` tidak
 
 Perubahan karena keputusan Session 8 dicatat di `09` §16. Perubahan karena keputusan Session 9 dicatat di `12` §20.
 
+Perubahan karena keputusan pemilik proyek 2026-10-10 (Bootstrap 5, §2.6): `07` §2.4, §2.7, ARS-10 (Bootstrap 5.3.8), ARS-19, ARS-22 butir 3, dan §5.3; `12` SEC-36 (`img-src data:` untuk ikon bawaan Bootstrap); `01` daftar library NFR-16; dan `00` §7.1.
+
 ## 15. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
 Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru. Session 8 menetapkan daftar halaman, route, dan menu (`09`). Session 9 menetapkan teks validasi, pesan galat, dan keamanan (`11`, `12`).
@@ -631,6 +641,7 @@ Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru. Session 8 menetapk
 | Ukuran huruf, resolusi kamera, dan volume bunyi di laptop sekolah | UI-39, UI-45 | Uji di laptop sekolah sebelum uji coba R1 |
 | Rincian halaman publik | UI-38 | Menjelang R3 |
 | Teks pemberitahuan privasi di halaman login dan portal | UI-38 | Setelah OQ-18 terjawab (`12` SEC-68) |
+| Ukuran CSS dan JavaScript per halaman setelah gzip | UI-71 | FASE-00 (layout), diperiksa ulang di FASE-09 |
 
 ## 16. Traceability
 
@@ -701,3 +712,4 @@ Session 7 menjawab sebagian OQ-13 dan tidak menambah OQ baru. Session 8 menetapk
 | 0.1 | 2026-10-04 | Draft awal dari Session 7: keputusan tampilan, prinsip, warna dan status, huruf, ikon, foto, komponen, tata letak panel dan portal, kiosk, gaya bahasa, label dan format, dokumen cetak, flyer, aksesibilitas, aset, dan traceability. R-19 terjawab, dan OQ-13 terjawab sebagian. |
 | 0.2 | 2026-10-05 | Keputusan Session 8 (§2.4, `09`, `10`). UI-28 (komponen pencarian siswa), UI-31 (menu final di `09` §4.1, termasuk "Kelas saya"), tanda stasiun disorot di §4.2, §9.2 (label kode di `09` §14), ikon "Kelas saya" di §4.5, UI-29 (menu lipat tanpa JavaScript), UI-38 (halaman 500), UI-44 (pita versi kiosk), kolom `libur.cakupan` di §9.2, kepala dokumen, §14, §15, dan §16.2 diperbarui. Contoh menu di `08-contoh-tampilan.html` memuat "Kelas saya". |
 | 0.3 | 2026-10-05 | Keputusan Session 9 (§2.5, `11`, `12`). UI-28 (galat formulir, teks bantuan unggah, dan pesan sesi berakhir), UI-31 (menu PIN petugas dan log aktivitas), UI-38 (pengingat logout, pemberitahuan privasi, halaman 400, 413, 429, 503, dan kode laporan di halaman 500), UI-48 (PIN petugas), UI-56 (pesan umum baru dan pesan gangguan server dengan kode laporan), UI-59 (password slip 8 karakter), UI-74 (tanpa atribut `style`), §9.2, kepala dokumen, §14, §15, dan §16.1 diperbarui. |
+| 0.4 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10 (§2.6): Bootstrap 5.3 untuk panel, portal, akun, galat, dan halaman publik. §2.1 (cara membangun tampilan), UI-08 (penimpaan variabel Bootstrap), UI-28 (komponen Bootstrap), UI-71 (batas diukur setelah gzip: CSS 50 KB, JavaScript 40 KB), UI-73 (`token.css`, `spensada.css`, dan file Bootstrap), UI-74 (kelas Bootstrap dan kelas aplikasi), UI-76, UI-77 (contoh sebagai acuan tampilan), §13 (lokasi aset), §14, dan §15 diperbarui. |
