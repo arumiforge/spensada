@@ -15,8 +15,8 @@ class PengaturanAwal extends Seeder
      * R1 keys and defaults; null means "Kosong".
      */
     private const DEFAULTS = [
-        'sekolah_nama'           => null,
-        'sekolah_alamat'         => null,
+        'sekolah_nama'           => 'SMP 1 DAWE',
+        'sekolah_alamat'         => 'Dawe, Kabupaten Kudus, Jawa Tengah',
         'sekolah_logo'           => null,
         'batas_mundur_hari'      => '7',
         'status_dibangun_sampai' => null,
