@@ -33,7 +33,7 @@ Dokumen ini menyelesaikan hal yang diserahkan dokumen lain ke Session 10: rencan
 | Waktu go-live R1 | Tanpa tanggal tetap. R1 go-live segera setelah uji coba R1 lulus, walaupun di tengah semester. | RM-01, §11.3, §12 | DECISION |
 | Bentuk go-live R1 | Sekaligus. Semua fitur R1, termasuk akun siswa, slip akun, dan portal siswa, dipakai sejak hari H. | RM-02, §12 | DECISION |
 | Bentuk uji coba | Langsung semua siswa tanpa masa paralel. Setelah uji teknis lulus, sistem langsung menggantikan kertas, Excel, dan WhatsApp untuk pencatatan kehadiran (A-05). | §11, §12 | DECISION |
-| Pelaksana | AI implementer (Claude Code) menulis kode per fase, langkah demi langkah, dari dokumen fase `15`. Satu pengembang meninjau PR, menguji di Laragon dan di laptop sekolah, dan mengelola VPS. | RM-05, §8 | DECISION |
+| Pelaksana | AI implementer (Claude Code) menulis kode per fase, langkah demi langkah, dari dokumen fase `15`. Satu pengembang meninjau PR, menguji di Laragon dan di laptop sekolah, dan mengelola server production. | RM-05, §8 | DECISION |
 | Server uji | Tidak ada server uji terpisah. Uji teknis dijalankan di server production sebelum data asli diisi, lalu database production dibangun ulang. Uji beban dijalankan di lokal, dan diulang singkat di production sebelum data asli diisi. | RM-09, UC-01 s.d. UC-12, GL-01 | DECISION |
 | CI | Tanpa CI otomatis. Pengembang menjalankan `composer test` dan `node --test` di Laragon sebelum menggabung setiap PR. | RM-07 | DECISION |
 | Ukuran PR | Satu PR per fitur (`FS-*`), atau beberapa fitur kecil yang saling terkait, dengan acceptance criteria fitur itu sebagai daftar periksa. Diganti keputusan pemilik 2026-10-10: satu branch dan satu PR per fase (§2.4). | RM-06 | DEPRECATED |
@@ -46,7 +46,7 @@ Penyusunan roadmap menemukan kebutuhan berikut. Semuanya berstatus RECOMMENDATIO
 | Temuan | Penetapan | Rujukan |
 |---|---|---|
 | Hitung ulang per siswa membuat baris `status_harian` untuk tanggal yang terdampak tanpa melihat `status_dibangun_sampai` (`06` §11.4 butir 4). Siswa yang diimport sebelum hari H, atau dengan tanggal mulai aktif di masa lalu, dapat menjadi Alpa untuk hari sebelum go-live, misalnya setelah datanya diubah atau saat gladi bersih. | Kunci baru `pengaturan.status_mulai` menyimpan tanggal pertama yang memiliki status. `HitungUlang` tidak membuat baris untuk tanggal sebelumnya, dan antrean untuk tanggal itu dilewati. Perintah baru `status:mulai` mengisi `status_mulai` dengan hari H dan `status_dibangun_sampai` dengan H−1 (GL-08). Kosong berarti tanpa batas bawah, sama dengan perilaku sebelumnya. | GL-08, `06` §6.1, §11.4, `07` ARS-37, ARS-57 |
-| Tanpa server uji, `12` SEC-75 butir 5 dan SEC-82 tidak memiliki tempat menguji pemulihan backup dan pemindaian keamanan. | Pemulihan backup diuji ke database sementara `spensada_pulih` di VPS yang sama, yang dihapus setelah pengujian. Pemindaian dasar OWASP ZAP dijalankan terhadap production sebelum data asli diisi. | UC-09, UC-10, `12` SEC-75, SEC-82 |
+| Tanpa server uji, `12` SEC-75 butir 5 dan SEC-82 tidak memiliki tempat menguji pemulihan backup dan pemindaian keamanan. | Pemulihan backup diuji ke database sementara `spensada_pulih` di server yang sama, yang dihapus setelah pengujian. Pemindaian dasar OWASP ZAP dijalankan terhadap production sebelum data asli diisi. | UC-09, UC-10, `12` SEC-75, SEC-82 |
 | Seeder `DataContoh` menolak berjalan di production (`07` ARS-18), sehingga uji teknis di production tidak dapat memakai seeder. | Data uji di production dibuat lewat fitur aplikasi: import file siswa fiktif, foto massal fiktif, dan kartu uji berisi NISN fiktif. Cara ini sekaligus menguji import dan foto massal di production. | UC-02 |
 | Tanpa masa paralel, laptop stasiun dan data siswa asli baru dipakai bersama pada hari H. | Hari sekolah terakhir sebelum H, dan hari sebelumnya, dipakai untuk memuat data asli beserta foto ke kiosk dan gladi bersih dengan beberapa rombel, tanpa membuat status (GL-10, GL-11). Tanggal sebelum `status_mulai` menampilkan keterangan dan menolak input presensi (`04` §4.10). | GL-10, GL-11 |
 | Go-live di tengah semester membuat rekap rapor semester (LP-03, R2) untuk semester itu hanya mencakup hari sejak H. | Hari sebelum H tetap berasal dari catatan lama sekolah. Hal ini disampaikan ke wali kelas saat pelatihan (§10). | §13, `13` LP-03 |
@@ -99,9 +99,9 @@ Masukan berikut berasal dari sekolah atau pemilik proyek. Kolom "Paling lambat" 
 | Lisensi proyek untuk `LICENSE` dan README | Pemilik proyek | Awal FASE-00 | `07` ARS-07 langkah 5, ARS-10 |
 | Contoh foto, contoh file data siswa, dan contoh kartu OSIS untuk menguji pembacaan QR | Sekolah | Purwarupa kiosk di FASE-01 | RM-03 |
 | Satu laptop yang akan dipakai sebagai stasiun, beserta webcam dan scanner USB bila ada | Sekolah | Purwarupa kiosk di FASE-01 | `07` ARS-25, ARS-26 |
-| VPS dan nama domain | Pemilik proyek | Awal FASE-09 | `07` ARS-01, ARS-05, §16.1 |
+| Server Windows production, nama domain, dan jawaban OQ-20 (lokasi server, klien ACME, cara menjalankan layanan) | Pemilik proyek | Awal FASE-09 | `07` ARS-01, ARS-05, §16.1, §16.4 |
 | Jumlah stasiun dan laptopnya (OQ-08) | Sekolah | Awal uji coba (§11) | NFR-02 |
-| Tempat backup di luar VPS dan dua pemegang kunci privat (OQ-19) | Sekolah dan pengelola server | Awal uji coba (§11) | `12` SEC-75 |
+| Tempat backup di luar server dan dua pemegang kunci privat (OQ-19) | Sekolah dan pengelola server | Awal uji coba (§11) | `12` SEC-75 |
 | Kebijakan data sekolah dan teks pemberitahuan privasi (OQ-18) | Sekolah | Awal uji coba (§11) | `12` SEC-66, SEC-68 |
 | Daftar akun staf beserta role-nya, dan wali kelas setiap rombel | Sekolah | GL-05 | UF-04 |
 | File data siswa asli sesuai template import, dan foto siswa dengan nama file diawali NISN | Sekolah | GL-07 | `13` IM-01, IM-03 |
@@ -139,7 +139,7 @@ flowchart LR
 | FASE-06 | Akun stasiun, kiosk offline, sinkron, status stasiun, scan bertanda | FS-AKN-04, FS-KIO-01 s.d. FS-KIO-06 | 3–4 minggu |
 | FASE-07 | Pengajuan, input, dispensasi massal, verifikasi, ubah keputusan, lampiran | FS-IZN-01 s.d. FS-IZN-06 | 2 minggu |
 | FASE-08 | Dashboard, daftar presensi rombel, rekap, riwayat | FS-LAP-01 s.d. FS-LAP-04 | 1–2 minggu |
-| FASE-09 | Uji keamanan menyeluruh, uji beban lokal, panduan pengguna, penyiapan VPS | — | 1–2 minggu |
+| FASE-09 | Uji keamanan menyeluruh, uji beban lokal, panduan pengguna, penyiapan server Windows | — | 1–2 minggu |
 | Uji coba R1 | Uji teknis di production dengan data buatan (§11) | — | 1–2 minggu |
 | Go-live R1 | Pembangunan ulang database, data asli, hari H (§12) | — | ±1 minggu sampai H |
 
@@ -236,9 +236,9 @@ Setiap fase ditutup bila semua fitur di dalamnya memenuhi RM-05, ditambah syarat
 **Isi:**
 
 1. Uji keamanan menyeluruh `12` SEC-81 terhadap semua route di `php spark routes`, dan tinjauan diff keamanan seluruh R1.
-2. Uji beban lokal (§9.2), lalu nilai `pm.max_children`, batas waktu antrean, dan batas laju API ditetapkan sementara (ARS-04, ARS-36, `12` SEC-54).
+2. Uji beban lokal (§9.2), lalu jumlah proses php-cgi, batas waktu antrean, dan batas laju API ditetapkan sementara (ARS-04, ARS-36, `12` SEC-54).
 3. Panduan pengguna singkat untuk admin, wali kelas, guru piket, petugas stasiun, dan siswa, berdasarkan alur di `03` (§10).
-4. Penyiapan VPS sesuai `07` §16.1, termasuk cron dan backup terenkripsi (ARS-06, `12` SEC-75), lalu pemasangan tag rilis kandidat `r1.0.0-rc.<n>` (RM-10).
+4. Skrip dan contoh konfigurasi production di `deploy/windows/` (`07` §16.3), lalu penyiapan server Windows sesuai `07` §16.1, termasuk tugas terjadwal dan backup terenkripsi (ARS-06, `12` SEC-75), dan pemasangan tag rilis kandidat `r1.0.0-rc.<n>` (RM-10).
 
 **Syarat selesai:** production terpasang dengan `CI_ENVIRONMENT = production`, `aplikasi:cek` lulus di server, dan belum ada data asli di dalamnya (RM-09).
 
@@ -326,7 +326,7 @@ Uji coba adalah uji teknis di server production sebelum data asli diisi (DECISIO
 
 | ID | Butir | Lulus bila | Rujukan |
 |---|---|---|---|
-| UC-01 | **Pemeriksaan server.** `aplikasi:cek`, halaman pemeriksaan sistem, waktu bcrypt di VPS, dan pengaturan PHP-FPM. | Semua butir lulus, dan bcrypt 100–300 ms. | `07` ARS-57, `12` SEC-02 |
+| UC-01 | **Pemeriksaan server.** `aplikasi:cek`, halaman pemeriksaan sistem, waktu bcrypt di server, pengaturan `php-web.ini`, dan restart server tanpa login: MySQL, Nginx, php-cgi, dan tugas terjadwal berjalan sendiri (`07` §16.3). | Semua butir lulus, dan bcrypt 100–300 ms. | `07` ARS-57, `12` SEC-02 |
 | UC-02 | **Penyiapan dengan data uji.** Admin menjalankan UF-01 langkah 1–9 dengan data uji, termasuk import dan foto massal. | Selesai tanpa bantuan pengembang di luar panduan. | UF-01 |
 | UC-03 | **Pemasangan stasiun.** Semua laptop stasiun dipasang dengan UF-06, termasuk penyimpanan permanen dan PIN petugas. | Semua stasiun melapor di status stasiun dengan penyimpanan permanen aktif. | UF-06, `07` ARS-21 |
 | UC-04 | **Kiosk di gerbang.** Uji manual kiosk `07` §15.3 di laptop sekolah, di lokasi gerbang, dengan kartu uji dan scanner USB. | AC-KIO-01-* s.d. AC-KIO-03-* lulus, dan umpan balik paling lama 1 detik (NFR-01). | FS-KIO-01 s.d. FS-KIO-03 |
@@ -334,7 +334,7 @@ Uji coba adalah uji teknis di server production sebelum data asli diisi (DECISIO
 | UC-06 | **Gangguan.** Internet gerbang diputus 30 menit selama scan, laptop di-restart saat offline, lalu tersambung lagi. | AC-01 dan AC-02 lulus, tanpa scan hilang atau ganda. | `01` §7 |
 | UC-07 | **Uji beban singkat.** Skenario §9.2 butir 1–3 dijalankan terhadap production, di luar jam sekolah. | Waktu jawab dan habis antrean dalam batas yang ditetapkan di FASE-09. | §9.2 |
 | UC-08 | **Satu hari penuh.** Satu hari dengan aturan jam asli: scan masuk, presensi manual, koreksi, izin, penutupan sesi, scan pulang, dan dashboard. | Rekap hari itu sama dengan hitungan manual pengembang. | `03` §3 |
-| UC-09 | **Pemulihan backup.** Backup terenkripsi malam sebelumnya dipulihkan ke database sementara `spensada_pulih` di VPS yang sama, dibandingkan jumlah barisnya, lalu database itu dihapus. Kunci privat tidak pernah disalin ke VPS: dump didekripsi di komputer pemegang kunci dan dialirkan lewat SSH, misalnya `age -d -i kunci.txt dump.sql.gz.age \| gunzip \| ssh <vps> mysql spensada_pulih`. Database sementara dibuat dan dihapus dengan user MySQL administrator, karena `spensada_app` dan `spensada_migrasi` tidak berhak membuat database (`12` SEC-74). Dump dibuat tanpa `--databases`, sehingga tidak memuat `CREATE DATABASE` atau `USE spensada` yang akan menulis ke database production. | Pemulihan berhasil, dan hasilnya dicatat. | `12` SEC-75 |
+| UC-09 | **Pemulihan backup.** Backup terenkripsi malam sebelumnya dipulihkan ke database sementara `spensada_pulih` di server yang sama, dibandingkan jumlah barisnya, lalu database itu dihapus. Kunci privat tidak pernah disalin ke server: dump didekripsi di komputer pemegang kunci dan dialirkan lewat SSH ke `mysql.exe` di server, misalnya `age -d -i kunci.txt dump.sql.tar.gz.age \| tar -xzO \| ssh <server> "C:\laragon\bin\mysql\<versi>\bin\mysql.exe --defaults-extra-file=<file opsi admin> spensada_pulih"`. Kredensial MySQL diambil dari file opsi, karena masukan perintah dipakai untuk dump. Database sementara dibuat dan dihapus dengan user MySQL administrator, karena `spensada_app` dan `spensada_migrasi` tidak berhak membuat database (`12` SEC-74). Dump dibuat tanpa `--databases`, sehingga tidak memuat `CREATE DATABASE` atau `USE spensada` yang akan menulis ke database production. | Pemulihan berhasil, dan hasilnya dicatat. | `12` SEC-75 |
 | UC-10 | **Daftar periksa keamanan.** Header dan sertifikat dari luar dengan `curl -I`, cookie `Secure`, `display_errors` mati, port terbuka, akses SSH, dan pemindaian dasar OWASP ZAP terhadap production. | Tidak ada temuan tingkat tinggi yang belum diperbaiki. | `12` SEC-82 |
 | UC-11 | **Mode darurat.** Gladi mode darurat dan presensi per kelas oleh guru piket. | UF-27 berjalan sesuai panduan. | FS-PRS-08, FS-PRS-09 |
 | UC-12 | **Rilis ulang.** Satu rilis perbaikan dipasang dengan `07` §16.2, termasuk "Muat versi baru" di kiosk. | Kiosk memakai versi baru tanpa kehilangan scan. | `07` ARS-22 |
@@ -352,7 +352,7 @@ Langkah dari pembangunan ulang database sampai hari H, berurutan menurut kolom "
 | GL-01 | Setelah uji coba lulus | **Pembangunan ulang.** Semua stasiun disinkronkan, lalu data lokalnya dihapus lewat menu petugas. Tag `r1.0.0` di-checkout lebih dulu (RM-10, `07` ARS-08). Database `spensada` dihapus dan dibuat ulang, `writable/uploads/`, sesi, dan cache dikosongkan, kunci enkripsi aplikasi dibuat baru, lalu `php spark migrate -g migrasi`, `db:seed PengaturanAwal`, `admin:pertama`, dan `aplikasi:cek` dijalankan. | `07` §16.1 langkah 10, `12` SEC-73, RM-09 |
 | GL-02 | Setelah GL-01 | **Tag go-live dicatat.** Tag `r1.0.0` yang terpasang di GL-01 dicatat di catatan go-live beserta hasil `aplikasi:cek`. | `07` ARS-08, RM-10 |
 | GL-03 | Setelah GL-01 | **Admin.** Admin sekolah login, mengganti password, mengisi identitas sekolah, dan mengatur PIN petugas. | FS-AKN-02, FS-MD-01, `12` SEC-21 |
-| GL-04 | Sebelum data asli diisi | **Backup.** Backup yang dipasang di FASE-09 dan diuji di UC-09 diperiksa ulang: tujuan di luar VPS (OQ-19), kunci publik `age`, dan dua pemegang kunci privat di dua tempat terpisah. `.env` dicadangkan ulang karena kunci enkripsi aplikasi baru dibuat di GL-01 (`12` SEC-75 butir 4). | `07` ARS-06, `12` SEC-75 |
+| GL-04 | Sebelum data asli diisi | **Backup.** Backup yang dipasang di FASE-09 dan diuji di UC-09 diperiksa ulang: tujuan di luar server (OQ-19), kunci publik `age`, dan dua pemegang kunci privat di dua tempat terpisah. `.env` dicadangkan ulang karena kunci enkripsi aplikasi baru dibuat di GL-01 (`12` SEC-75 butir 4). | `07` ARS-06, `12` SEC-75 |
 | GL-05 | H−7 s.d. H−3 | **Akun staf.** Akun staf dan role dibuat dari daftar sekolah, lalu password awal dibagikan langsung. | UF-04 |
 | GL-06 | H−7 s.d. H−3 | **Kalender.** Tahun ajaran dan semester berjalan, pola mingguan, jadwal khusus, libur sampai akhir semester, dan batas mundur. Pola mingguan berlaku paling lambat pada hari gladi bersih (GL-11). | UF-01 langkah 2–3, BR-KAL-07 |
 | GL-07 | H−7 s.d. H−3 | **Rombel dan siswa.** Rombel dan wali kelas dibuat, lalu siswa diimport dengan tanggal mulai aktif dan penempatan paling lambat hari GL-10, misalnya hari import. Bila tahun ajaran belum dimulai, bawaan import adalah tanggal mulai tahun ajaran (FS-MD-06), sehingga tanggal ini diisi manual. Siswa yang aktif sebelum H tidak menjadi Alpa karena `status_mulai` (GL-08). Foto diunggah lewat foto massal. | FS-MD-06, FS-MD-04, FS-MD-08 |
@@ -394,7 +394,7 @@ Go-live R2 dan R3 tidak membangun ulang database. Keduanya memakai prosedur rili
 | Pembacaan QR di laptop sekolah lambat atau sulit untuk kartu yang rusak (R-03, R-04) | Antrean pagi, NFR-01 | Purwarupa di FASE-01; scanner USB; jumlah stasiun ditambah (OQ-08). |
 | Masukan sekolah terlambat (§4) | Uji coba atau go-live tertunda | Kolom "paling lambat" di §4 dipantau di setiap laporan fase (RM-15). |
 | Go-live tanpa masa paralel | Galat hari pertama langsung menjadi data resmi | Uji coba yang ketat (§11.3), gladi bersih (GL-11), pemeriksaan harian wali kelas (GL-14), mode darurat, dan semua data dapat dibetulkan dengan jejak log. |
-| Uji teknis dan uji beban tanpa server uji terpisah | Uji beban di lokal kurang mewakili VPS; uji di production dapat mengganggu bila dilakukan setelah data asli ada | Uji beban singkat di production dijalankan sebelum GL-01 (UC-07). Setelah go-live, uji beban hanya di luar jam sekolah, dan uji pemulihan memakai database sementara (UC-09). |
+| Uji teknis dan uji beban tanpa server uji terpisah | Uji beban di lokal kurang mewakili server production; uji di production dapat mengganggu bila dilakukan setelah data asli ada | Uji beban singkat di production dijalankan sebelum GL-01 (UC-07). Setelah go-live, uji beban hanya di luar jam sekolah, dan uji pemulihan memakai database sementara (UC-09). |
 | Tanpa CI, uji lupa dijalankan | Regresi masuk ke `main` | Ringkasan uji lokal wajib di setiap PR (RM-07), dan uji penuh diulang sebelum setiap tag (RM-10). |
 | Fitur besar (FS-PRS-05, FS-KIO-02) melampaui perkiraan | Jadwal mundur | Dibagi menjadi beberapa langkah commit (RM-13), dan perkiraan ditinjau tiap akhir fase (RM-15). |
 | Go-live di tengah semester | Rekap semester sebagian | Disampaikan saat pelatihan (§2.2, §13). |
@@ -424,8 +424,8 @@ Go-live R2 dan R3 tidak membangun ulang database. Keduanya memakai prosedur rili
 |---|---|
 | Resolusi kamera, jeda antartombol scanner, dan target 1 detik (`07` ARS-25, ARS-26) | Purwarupa FASE-01, dipastikan di FASE-06 dan UC-04 |
 | Ukuran huruf, resolusi kamera, dan volume bunyi di laptop sekolah (`08` §15) | FASE-06 dan UC-04 |
-| Jumlah proses PHP-FPM, batas waktu antrean, batas laju API kiosk dan Nginx, batas ukuran badan sinkron, batas baris import (`07` §19, `10` §9, `11` §11, `12` §21, `13` §9) | FASE-09 (§9.2) dan UC-07 |
-| Waktu hash bcrypt di VPS (`12` §21) | UC-01 |
+| Jumlah proses php-cgi, batas waktu antrean, batas laju API kiosk dan Nginx, batas ukuran badan sinkron, batas baris import (`07` §19, `10` §9, `11` §11, `12` §21, `13` §9) | FASE-09 (§9.2) dan UC-07 |
+| Waktu hash bcrypt di server production (`12` §21) | UC-01 |
 | Daftar password umum final (`12` SEC-04) | FASE-01 |
 | Teks bantuan password dicoba dengan siswa (`11` §11) | GL-14 |
 | Jumlah stasiun (OQ-08) | Sebelum uji coba (§4) |
@@ -450,13 +450,14 @@ Perubahan karena keputusan Session 10:
 
 ## 18. Pertanyaan terbuka dan nilai yang dipastikan nanti
 
-Session 10 tidak menjawab OQ dan menambah OQ-19.
+Session 10 tidak menjawab OQ dan menambah OQ-19. Keputusan pemilik proyek 2026-10-10 menambah OQ-20.
 
 | OQ | Pertanyaan | Dijawab di | Status |
 |---|---|---|---|
 | OQ-08 | Jumlah stasiun scan | Sebelum uji coba R1 (§4) | Sebagian (lokasi terjawab) |
 | OQ-18 | Kebijakan data sekolah | Sebelum uji coba R1, oleh sekolah | Terbuka |
-| OQ-19 | Tempat penyimpanan backup di luar VPS dan dua pemegang kunci privat (`12` SEC-75). Usulan: object storage yang kompatibel S3 dengan kunci akses tanpa hak hapus, dan kunci privat dipegang kepala sekolah serta pengelola server. | Sebelum uji coba R1, oleh sekolah dan pengelola server | Terbuka |
+| OQ-19 | Tempat penyimpanan backup di luar server dan dua pemegang kunci privat (`12` SEC-75). Usulan: object storage yang kompatibel S3 dengan kunci akses tanpa hak hapus, dan kunci privat dipegang kepala sekolah serta pengelola server. | Sebelum uji coba R1, oleh sekolah dan pengelola server | Terbuka |
+| OQ-20 | Lokasi server production Windows, klien ACME untuk sertifikat HTTPS, dan cara menjalankan layanan (`07` §16.4). | Awal FASE-09, oleh pemilik proyek | Terbuka |
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
@@ -470,4 +471,4 @@ Session 10 tidak menjawab OQ dan menambah OQ-19.
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-05 | Draft awal dari Session 10: keputusan Session 10, prinsip roadmap (`RM-01` s.d. `RM-18`), masukan sekolah, fase R1 (`FASE-00` s.d. `FASE-09`), urutan pembuatan halaman, cara kerja implementasi, pengujian dan uji beban, persiapan sekolah, uji coba R1 (`UC-01` s.d. `UC-12`), prosedur go-live (`GL-01` s.d. `GL-14`), masa stabilisasi, R2 dan R3, risiko jadwal, dan traceability. OQ-19 ditambahkan. |
-| 0.2 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10 (§2.4): satu branch dan satu PR per fase (RM-06, RM-11, RM-12, RM-13, §2.1, §15, §18). Server production Windows dan Bootstrap 5 dicatat di §2.4. |
+| 0.2 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10 (§2.4): satu branch dan satu PR per fase (RM-06, RM-11, RM-12, RM-13, §2.1, §15, §18). Server production Windows: §2.1 (pelaksana), §2.2, §4 (masukan dan OQ-20), §5, FASE-09, UC-01, UC-09, §15, §16.2, GL-04, dan §18 (OQ-20) diperbarui. Bootstrap 5 dicatat di §2.4. |

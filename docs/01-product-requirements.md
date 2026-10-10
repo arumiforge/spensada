@@ -2,8 +2,8 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.10 (draft) |
-| Tanggal | 2026-10-05 |
+| Versi | 0.11 (draft) |
+| Tanggal | 2026-10-10 |
 | Sumber | Discovery Session 2 (Product & Feature Definition). Diperbarui dengan keputusan Session 3 (role, akun, dan stasiun scan), Session 4 (aturan bisnis, `05`), Session 4b (spesifikasi fitur, `04`), Session 5 (database, `06`; laporan, import, dan export, `13`), Session 6 (arsitektur sistem, `07`), Session 7 (UI/UX dan sistem desain, `08`), Session 8 (route, halaman, dan API, `09` dan `10`), Session 9 (validasi, penanganan galat, dan keamanan, `11` dan `12`), dan Session 10 (roadmap, `14`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), asumsi (`A-xx`), dan pertanyaan terbuka (`OQ-xx`) |
 
@@ -195,7 +195,7 @@ Library yang dipakai (NFR-16). Versi, lisensi, dan alasannya ada di `07` ARS-10.
 |---|---|---|
 | C-01 | Stack: CodeIgniter 4, MySQL (MySQLi), HTML/CSS/Vanilla JavaScript, pola server-rendered. Tanpa React, Vue, Angular, Vite, atau SPA. | CONFIRMED |
 | C-02 | Pengembangan lokal di Windows + Laragon + Nginx. Panduan teknis ditulis untuk environment ini. | CONFIRMED |
-| C-03 | Production di VPS (OQ-09, `07` ARS-01). Document root diarahkan ke `public/`, dan cron tersedia sejak R1. | DECISION (hosting online; VPS, Session 6) |
+| C-03 | Production di server Windows dengan Laragon, Nginx, PHP 8.3, dan MySQL 8.4 (`07` ARS-01, §16), menggantikan VPS Linux dari Session 6. Document root diarahkan ke `public/`, dan tugas terjadwal (cron) tersedia sejak R1 lewat Windows Task Scheduler. Lokasi server menunggu OQ-20. | DECISION (hosting online, Session 6; server Windows, keputusan pemilik 2026-10-10) |
 | C-04 | Format QR kartu tidak dapat diubah: NISN polos. | CONFIRMED |
 | C-05 | Gateway WhatsApp adalah layanan pihak ketiga tidak resmi. Risiko nomor diblokir diterima. | DECISION |
 | C-06 | Import .xlsx di R1 membutuhkan PhpSpreadsheet yang dipasang lewat Composer. Karena itu repository dipindah ke Composer appstarter di fase implementasi pertama, FASE-00 (OQ-09, `07` ARS-07, `14` §6). | DECISION (Composer appstarter, Session 6); RECOMMENDATION (waktu migrasi) |
@@ -324,3 +324,4 @@ Kolom rilis di §3 adalah tautan pertama dari requirement ke implementasi. Dokum
 | 0.8 | 2026-10-05 | Keputusan Session 8 (`09`, `10`). FR-KIO-12 memuat versi kode kiosk, penyimpanan permanen, dan scan yang ditolak server. |
 | 0.9 | 2026-10-05 | Keputusan Session 9 (`11`, `12`). NFR-06, NFR-07, dan NFR-10 merujuk `11` dan `12`. NFR-08 memuat batas percobaan login dan menjadi DECISION. FR-IZN-05 memuat jawaban OQ-17 dan format lampiran. Di §8, OQ-17 dihapus karena terjawab, dan OQ-18 ditambahkan. §9 merujuk `11` dan `12`. |
 | 0.10 | 2026-10-05 | Keputusan Session 10 (`14`). C-06 merujuk FASE-00. Kepala dokumen dan §9 merujuk `14`. |
+| 0.11 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10 (`07` §2.7). C-03 memuat server Windows dengan Laragon. Daftar library NFR-16 memuat Bootstrap 5. |

@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.5 (draft, menunggu review) |
-| Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 6 (System Architecture). Diperbarui dengan keputusan Session 7 (UI/UX & Design System, §2.4), Session 8 (Routes / Pages / API, §2.5), Session 9 (Validation, Error Handling & Security, §2.6), dan Session 10 (Development Roadmap, `14`). |
+| Versi | 0.6 (draft, menunggu review) |
+| Tanggal | 2026-10-10 |
+| Sumber | Discovery Session 6 (System Architecture). Diperbarui dengan keputusan Session 7 (UI/UX & Design System, §2.4), Session 8 (Routes / Pages / API, §2.5), Session 9 (Validation, Error Handling & Security, §2.6), Session 10 (Development Roadmap, `14`), dan keputusan pemilik proyek 2026-10-10 (§2.7). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan batasan (`C-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [03-user-flow.md](03-user-flow.md): alur pengguna (`UF-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan ketentuan umum (§4). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). [06-database-design.md](06-database-design.md): tabel dan aturan data (`DB-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export. |
 | Dokumen terkait | [08-ui-ux-design-system.md](08-ui-ux-design-system.md): tampilan, aset CSS, font, dan ikon. [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman, route, dan menu. [10-api-specification.md](10-api-specification.md): API kiosk, fragmen, dan bantuan formulir. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): validasi isian, penanganan galat, dan log aplikasi. [12-security.md](12-security.md): ketentuan keamanan (`SEC-*`). |
 
@@ -17,7 +17,7 @@ Route ditetapkan di `09` dan bentuk API di `10` (Session 8), tampilan di `08` (S
 - **ID.** Aturan arsitektur memakai ID `ARS-<NN>`. ID tidak pernah dinomori ulang. Aturan yang batal ditandai `DEPRECATED`.
 - **Status.** Label status mengikuti `00`. Keputusan dari ronde diskusi Session 6 berstatus DECISION. Rincian teknis yang tidak dibahas di ronde berstatus RECOMMENDATION, dan menjadi arah kerja Session 7–11 serta implementasi sampai dikonfirmasi atau diganti.
 - **Nama teknis.** Nama kelas, folder, filter, perintah CLI, dan penyimpanan browser di dokumen ini adalah usulan (RECOMMENDATION). Nama tabel dan kolom tetap mengikuti `06`. Route ada di `09`, dan bentuk API di `10`.
-- **Lokal dan production.** Langkah lokal (Windows, Laragon, Nginx) ada di §15, dan langkah production (VPS) ada di §16. Keduanya dipisah sesuai `00` §11 butir 11.
+- **Lokal dan production.** Langkah lokal (Windows, Laragon, Nginx) ada di §15, dan langkah production (server Windows dengan Laragon dan Nginx) ada di §16. Keduanya dipisah sesuai `00` §11 butir 11.
 - **Nilai.** Angka yang dapat diubah tanpa mengubah kode disimpan sebagai parameter (ARS-17). Nilai di dokumen ini adalah nilai awal.
 - **Contoh.** Contoh tanggal dan jam mengikuti `04` §1.
 
@@ -27,9 +27,9 @@ Route ditetapkan di `09` dan bentuk API di `10` (Session 8), tampilan di `08` (S
 
 | Topik | Keputusan | Rujukan | Status |
 |---|---|---|---|
-| Hosting production | VPS berbasis Linux dengan Nginx, PHP 8.3, dan MySQL 8.4. Web server serta versi PHP dan MySQL sama dengan lokal. | OQ-09, R-15, C-03, ARS-01, ARS-02 | DECISION |
+| Hosting production | VPS berbasis Linux dengan Nginx, PHP 8.3, dan MySQL 8.4. Web server serta versi PHP dan MySQL sama dengan lokal. Diganti keputusan pemilik 2026-10-10 (§2.7): server Windows dengan Laragon, Nginx, PHP 8.3, dan MySQL 8.4. | OQ-09, R-15, C-03, ARS-01, ARS-02 | DECISION (diubah §2.7) |
 | Instalasi framework | Composer appstarter. Framework dan library dipasang di `vendor/` lewat `composer.json` milik aplikasi. Folder `system/` dihapus dari repository, dan `vendor/` tidak di-commit. | R-18, C-06, ARS-07 | DECISION |
-| Deploy | Di server, lewat SSH: kode diambil dari GitHub dengan git, lalu `composer install --no-dev` dan `php spark migrate` dijalankan. | ARS-08 | DECISION |
+| Deploy | Di server, lewat SSH: kode diambil dari GitHub dengan git, lalu `composer install --no-dev` dan `php spark migrate` dijalankan. Di server Windows, terminal dibuka lewat OpenSSH Server bawaan Windows (§16). | ARS-08 | DECISION |
 | `.gitignore` | Dibuat di PR Session 6, sebelum commit kode pertama. | R-18, ARS-09 | DECISION |
 | Pembaca QR | zxing-wasm. File JavaScript dan WASM-nya disajikan dari server sendiri dan disimpan di cache kiosk. | R-04, NFR-16, ARS-10 | DECISION |
 | Export PDF | mPDF. | `13` IE-12, ARS-10 | DECISION |
@@ -124,6 +124,7 @@ Keputusan berikut diberikan pemilik proyek setelah Session 10, dan menggantikan 
 | Topik | Keputusan | Rujukan | Status |
 |---|---|---|---|
 | Tampilan | Panel, portal, akun, halaman galat, dan halaman publik memakai Bootstrap 5.3 yang disalin ke server sendiri, tanpa CDN dan tanpa build. Kiosk tetap memakai CSS sendiri. | ARS-10, ARS-19, `08` §2.6 | DECISION |
+| Server production | Windows dengan Laragon, Nginx, PHP 8.3, dan MySQL 8.4, menggantikan VPS Linux (§2.1). Lokal dan production memakai susunan yang sama. Lokasi server dan dua alat pendukung menunggu pemilik proyek (OQ-20, §16.4). | ARS-01 s.d. ARS-06, ARS-46, ARS-56, §16, `12` §16 | DECISION (server Windows); RECOMMENDATION (rincian) |
 
 ## 3. Gambaran sistem
 
@@ -137,12 +138,12 @@ flowchart LR
     end
     SIS["Browser siswa"]
     PUB["Pengunjung publik (R3)"]
-    subgraph vps["VPS"]
+    subgraph srv["Server Windows (Laragon)"]
         NGX["Nginx + HTTPS"]
-        APP["PHP-FPM 8.3<br/>CodeIgniter 4"]
+        APP["php-cgi 8.3<br/>CodeIgniter 4"]
         DB[("MySQL 8.4")]
         WR[("writable/<br/>uploads, session, cache, logs")]
-        CRON["cron: php spark"]
+        CRON["Task Scheduler: php spark"]
     end
     WA["Gateway WA (R2)"]
     KIO -- "muat data, sinkron" --> NGX
@@ -165,7 +166,7 @@ flowchart LR
 | Aplikasi CodeIgniter 4 | Controller, service, model, filter, view, dan perintah CLI (§5). | NFR-15 |
 | MySQL | Semua tabel di `06`. Zona waktu sesi `+07:00` (ARS-45). | `06` |
 | `writable/` | File unggahan, sesi, cache, dan log, di luar `public/`. | DB-15 |
-| Cron | Menjalankan `php spark` setiap menit dan setiap hari (§13). | ARS-56 |
+| Cron | Tugas terjadwal Windows (Task Scheduler) yang menjalankan `php spark` setiap menit dan setiap hari (§13, §16.3). | ARS-56 |
 | Gateway WA | Layanan pihak ketiga untuk R2 (OQ-10). | FR-WA-01 |
 
 ### 3.2 Alur data utama
@@ -181,25 +182,27 @@ flowchart LR
 
 | ID | Aturan | Status |
 |---|---|---|
-| ARS-01 | **VPS.** Production berjalan di VPS (OQ-09). VPS membutuhkan orang yang merawat server: pembaruan keamanan, firewall, backup, dan sertifikat HTTPS. Pengamanan server dirinci di `12` §16 (SEC-70 s.d. SEC-78). | DECISION |
+| ARS-01 | **Server Windows.** Production berjalan di server Windows dengan Laragon, Nginx, PHP 8.3, dan MySQL 8.4 (keputusan pemilik 2026-10-10, menggantikan VPS Linux dari Session 6). Server dapat dijangkau dari internet lewat HTTPS dan nama domain, karena portal siswa dan kiosk dibuka dari luar jaringan server. Lokasinya, VPS Windows atau komputer server di sekolah, menunggu pemilik proyek (OQ-20). Server membutuhkan orang yang merawatnya: pembaruan Windows dan program di Laragon, firewall, backup, dan sertifikat HTTPS. Pengamanan server dirinci di `12` §16 (SEC-70 s.d. SEC-78). | DECISION (server Windows); RECOMMENDATION (rincian) |
 | ARS-02 | **Perangkat lunak server.** Lihat tabel di bawah. Versi PHP dan MySQL sama dengan lokal (`00` §7.2), sehingga perilaku yang diuji di lokal sama dengan production. | DECISION (Nginx, PHP 8.3, MySQL 8.4); RECOMMENDATION (komponen lain) |
 | ARS-03 | **Ekstensi PHP.** Lihat tabel di bawah. Perintah `aplikasi:cek` dan halaman pemeriksaan sistem memeriksa semuanya (ARS-57). | RECOMMENDATION |
-| ARS-04 | **Pengaturan PHP, PHP-FPM, MySQL, dan Nginx.** Lihat tabel di bawah. Di production, pengaturan PHP ditulis untuk PHP-FPM (`/etc/php/8.3/fpm/`), bukan hanya untuk CLI. Batas unggah final: 100 MB per unggahan foto massal, dengan `post_max_size` dan `client_max_body_size` 110M untuk badan multipart (DECISION, Session 9, `12` SEC-49). Pengaturan keamanan PHP mengikuti `12` SEC-71. Jumlah proses dan batas waktu dipastikan lewat uji beban sebelum uji coba R1. | DECISION (batas unggah 100M, Session 9); RECOMMENDATION (nilai lain) |
-| ARS-05 | **Kapasitas.** VPS awal 2 vCPU, RAM 2–4 GB, dan SSD paling kecil 40 GB. Data di `06` §15 kurang dari 1 GB per tahun, ditambah foto dan lampiran. | RECOMMENDATION |
-| ARS-06 | **Backup.** Setiap hari, database di-dump dengan `mysqldump --single-transaction` dan `writable/uploads/` disalin ke lokasi di luar VPS. Dump juga dibuat sebelum setiap rilis (§16.2). File `.env` dicadangkan terpisah dan terenkripsi, karena kehilangan kunci enkripsi aplikasi membuat semua kiosk harus login ulang (ARS-30). Backup memuat data anak (R-17), sehingga mengikuti `12` SEC-75: dienkripsi dengan `age` memakai kunci publik sebelum meninggalkan VPS, disimpan di penyimpanan luar VPS dengan akses tulis yang tidak dapat menghapus backup lama, dirotasi dengan 30 backup harian dan 12 backup bulanan terakhir, dan pemulihannya diuji setiap semester ke database sementara di VPS yang sama, karena tidak ada server uji terpisah (`14` UC-09). | DECISION (backup tidak dihapus selain rotasi, Session 9; tanpa server uji, Session 10); RECOMMENDATION (rincian, `14` §2.2) |
+| ARS-04 | **Pengaturan PHP, MySQL, dan Nginx.** Lihat tabel di bawah. Di production, pengaturan PHP untuk web ditulis di `php-web.ini` yang dipakai proses php-cgi (§16.1 langkah 9), bukan hanya di `php.ini` yang dipakai CLI. Batas unggah final: 100 MB per unggahan foto massal, dengan `post_max_size` dan `client_max_body_size` 110M untuk badan multipart (DECISION, Session 9, `12` SEC-49). Pengaturan keamanan PHP mengikuti `12` SEC-71. Jumlah proses dan batas waktu dipastikan lewat uji beban sebelum uji coba R1. | DECISION (batas unggah 100M, Session 9); RECOMMENDATION (nilai lain) |
+| ARS-05 | **Kapasitas.** Server awal 2–4 inti CPU, RAM 8 GB (paling kecil 4 GB), dan SSD paling kecil 80 GB. Windows sendiri memakai sekitar 2 GB RAM dan 30 GB disk. Data di `06` §15 kurang dari 1 GB per tahun, ditambah foto dan lampiran. Bila server berada di sekolah, server memakai UPS dan koneksi internet dengan alamat IP publik tetap (OQ-20). | RECOMMENDATION |
+| ARS-06 | **Backup.** Setiap hari, database di-dump dengan `mysqldump --single-transaction` dan `writable/uploads/` disalin ke lokasi di luar server. Dump juga dibuat sebelum setiap rilis (§16.2). File `.env` dicadangkan terpisah dan terenkripsi, karena kehilangan kunci enkripsi aplikasi membuat semua kiosk harus login ulang (ARS-30). Backup memuat data anak (R-17), sehingga mengikuti `12` SEC-75: dienkripsi dengan `age` memakai kunci publik sebelum meninggalkan server, disimpan di penyimpanan luar server dengan akses tulis yang tidak dapat menghapus backup lama, dirotasi dengan 30 backup harian dan 12 backup bulanan terakhir, dan pemulihannya diuji setiap semester ke database sementara di server yang sama, karena tidak ada server uji terpisah (`14` UC-09). Di server Windows, backup dijalankan tugas terjadwal `Spensada Backup` (§16.3) dengan skrip `deploy/windows/backup.ps1`, yang memakai `mysqldump` dengan user `spensada_backup`, `tar.exe` bawaan Windows untuk kompresi, dan `age` untuk Windows. Dump ditulis ke folder kerja yang hanya dapat dibaca akun layanan, dienkripsi, lalu file tanpa enkripsinya dihapus. Alat pengiriman ke penyimpanan luar server dipilih bersama tempat backup (OQ-19). | DECISION (backup tidak dihapus selain rotasi, Session 9; tanpa server uji, Session 10); RECOMMENDATION (rincian, `14` §2.2) |
 
 Perangkat lunak server (ARS-02):
 
 | Komponen | Versi | Catatan |
 |---|---|---|
-| Sistem operasi | Linux server LTS, misalnya Ubuntu Server LTS | Pembaruan keamanan otomatis dengan `unattended-upgrades` (`12` SEC-70). Zona waktu sistem diset `Asia/Jakarta` (ARS-46). |
-| Web server | Nginx | Sama dengan lokal. Document root ke `public/` (R-15). |
-| PHP | 8.3, lewat PHP-FPM | Sama dengan lokal. Lokal dan production naik bersama ke PHP 8.4 sebelum dukungan keamanan PHP 8.3 berakhir pada 31 Desember 2027. |
-| Database | MySQL 8.4 LTS | Dipasang dari repository resmi MySQL bila versi bawaan sistem operasi berbeda. MariaDB tidak menjadi target, karena tidak diuji. |
-| Composer | 2.x | Untuk deploy (ARS-08). |
-| git | Bawaan sistem operasi | Mengambil kode dari GitHub (ARS-08). |
-| Sertifikat HTTPS | Let's Encrypt lewat certbot, diperpanjang otomatis | R-01, NFR-06. |
-| Sinkronisasi jam | NTP, misalnya systemd-timesyncd atau chrony | Jam server menjadi acuan jam kiosk (ARS-46). |
+| Sistem operasi | Windows Server 2022 atau lebih baru, atau Windows 10/11 Pro 64-bit | Pembaruan Windows otomatis dengan jam aktif di luar jam sekolah (`12` SEC-70). Zona waktu `SE Asia Standard Time` (UTC+07:00, ARS-46). |
+| Laragon | Sama dengan lokal | Sumber file program Nginx, PHP, MySQL, Composer, dan Git, sehingga versinya sama dengan lokal. Aplikasi Laragon tidak dipakai untuk menjalankan layanan di production (§16). Program di dalam Laragon tidak diperbarui Windows Update, sehingga pengelola memeriksa rilis keamanan Nginx, PHP, dan MySQL setiap bulan, lalu memperbaruinya bersama lokal. |
+| Web server | Nginx untuk Windows | Sama dengan lokal. Document root ke `public/` (R-15). Nginx untuk Windows memakai satu proses kerja dengan paling banyak sekitar 1.024 koneksi bersamaan. Jumlah ini cukup untuk stasiun, staf, dan siswa satu sekolah, dan diperiksa di uji beban (`14` §9.2). |
+| PHP | 8.3 NTS 64-bit, lewat proses php-cgi (FastCGI) | Sama dengan lokal. Windows tidak memiliki PHP-FPM, sehingga beberapa proses php-cgi dijalankan di port berbeda (ARS-04, §16.3). Lokal dan production naik bersama ke PHP 8.4 sebelum dukungan keamanan PHP 8.3 berakhir pada 31 Desember 2027. |
+| Database | MySQL 8.4 LTS | Dari Laragon, dipasang sebagai Windows service yang mulai otomatis (§16.1). MariaDB tidak menjadi target, karena tidak diuji. |
+| Composer | 2.x | Dari Laragon. Untuk deploy (ARS-08). |
+| git | Git for Windows dari Laragon | Mengambil kode dari GitHub (ARS-08). |
+| Sertifikat HTTPS | Let's Encrypt lewat klien ACME untuk Windows, misalnya win-acme, diperpanjang otomatis | R-01, NFR-06. Alatnya menunggu persetujuan pemilik proyek (OQ-20). Sertifikat Laragon tidak dipakai, karena hanya tepercaya di komputer yang memasangnya. |
+| Sinkronisasi jam | Layanan Windows Time (`w32time`) ke server NTP | Jam server menjadi acuan jam kiosk (ARS-46). |
+| Akses jarak jauh | OpenSSH Server bawaan Windows | Hanya untuk pengelola, dengan kunci (`12` SEC-70). |
 
 Ekstensi PHP (ARS-03):
 
@@ -216,27 +219,29 @@ Ekstensi PHP (ARS-03):
 | `dom`, `xml`, `xmlreader`, `xmlwriter`, `simplexml`, `libxml`, `iconv`, `ctype`, `filter`, `zlib` | PhpSpreadsheet. |
 | `opcache` | Kinerja di production. |
 
-Pengaturan PHP, PHP-FPM, MySQL, dan Nginx (ARS-04):
+Pengaturan PHP, MySQL, dan Nginx (ARS-04):
 
 | Pengaturan | Nilai awal | Alasan |
 |---|---|---|
 | `memory_limit` | 256M | Import XLSX, PDF, dan pemrosesan foto (ARS-53). |
-| `max_execution_time` | 60 detik untuk web; tanpa batas untuk CLI | Hitung ulang yang besar dilanjutkan cron (ARS-36). Di Linux, waktu menunggu database tidak dihitung, sehingga batas akhirnya `request_terminate_timeout`. |
-| PHP-FPM `pm.max_children` | 20, disesuaikan dengan RAM (sekitar 40–60 MB per proses) | Bawaan PHP-FPM hanya 5 proses. Permintaan yang menunggu kunci (ARS-36) dapat menahan semua proses itu saat sinkron pagi. |
-| PHP-FPM `request_terminate_timeout` | 120 detik | Menghentikan proses yang macet. Koneksinya ikut terputus, sehingga kunci bernama terlepas (ARS-42). |
-| MySQL `max_connections` | Lebih besar dari `pm.max_children` ditambah cron | Setiap proses PHP memakai satu koneksi. |
+| `max_execution_time` | 60 detik untuk web; tanpa batas untuk CLI | Hitung ulang yang besar dilanjutkan cron (ARS-36). Di Windows, batas ini dihitung dengan jam dinding, termasuk waktu menunggu database dan kunci, sehingga menjadi batas akhir permintaan web. Proses yang melewatinya berhenti, koneksinya terputus, dan kunci bernama terlepas (ARS-42). |
+| Jumlah proses php-cgi | 20, di port `127.0.0.1:9001` s.d. `9020`, disesuaikan dengan RAM (sekitar 40–60 MB per proses) | Satu proses php-cgi melayani satu permintaan pada satu waktu, sehingga jumlah proses adalah jumlah permintaan PHP bersamaan. Permintaan yang menunggu kunci (ARS-36) dapat menahan banyak proses saat sinkron pagi. Nginx membagi permintaan dengan `least_conn`, agar permintaan baru tidak antre di belakang proses yang sedang sibuk, misalnya import. |
+| `PHP_FCGI_MAX_REQUESTS` | `0` | Variabel lingkungan proses php-cgi. Bawaannya, php-cgi berhenti setelah 500 permintaan. Nilai 0 mematikan batas itu. Proses yang tetap berhenti dijalankan ulang tugas `Spensada Web` dalam satu menit (§16.3). |
+| Nginx `fastcgi_read_timeout` | 120 detik | Nginx berhenti menunggu proses yang macet dan menjawab 504. |
+| `cgi.fix_pathinfo` | `0` | Mencegah file selain `.php` dijalankan sebagai PHP lewat path tambahan (`12` SEC-71). |
+| MySQL `max_connections` | Lebih besar dari jumlah proses php-cgi ditambah tugas terjadwal | Setiap proses PHP memakai satu koneksi. |
 | `upload_max_filesize` | 100M | Foto massal (DECISION, Session 9, `12` SEC-49). Batas per jenis unggahan diperiksa aplikasi. |
 | `post_max_size` dan Nginx `client_max_body_size` | 110M | Sedikit di atas 100 MB untuk badan multipart (`12` SEC-71). |
 | `max_file_uploads` | 100 | Unggah beberapa foto sekaligus. Lebih dari itu memakai ZIP (ARS-54). |
 | `date.timezone` | `Asia/Jakarta` | Pelengkap. Aplikasi tetap mengatur zona waktunya sendiri (ARS-44). |
 | `opcache.enable` | 1 di production | Kinerja. |
 | `display_errors`, `display_startup_errors` | Off di production | `12` SEC-71, SEC-77. Galat ditulis ke log. |
-| `log_errors` | On | Galat PHP yang tidak tertangkap CI4 ditulis ke log PHP-FPM (`12` SEC-71). |
+| `log_errors`, `error_log` | On, ke `C:\spensada\log\php\` | Galat PHP yang tidak tertangkap CI4 ditulis ke log PHP (`12` SEC-71). |
 | `expose_php` | Off | Tidak mengirim `X-Powered-By` (`12` SEC-71). |
 | `allow_url_include` | Off | Bawaan PHP 8.3, ditulis eksplisit (`12` SEC-71). |
-| `disable_functions` | `exec, shell_exec, system, passthru, proc_open, popen, pcntl_exec` | Hanya untuk pool PHP-FPM, bukan CLI (`12` SEC-48, SEC-71). |
+| `disable_functions` | `exec, shell_exec, system, passthru, proc_open, popen, pcntl_exec` | Hanya untuk proses php-cgi lewat `php-web.ini`, bukan CLI (`12` SEC-48, SEC-71). |
 | `session.use_strict_mode`, `session.cookie_secure`, `session.cookie_httponly` | 1 | Pelengkap (`12` SEC-71). |
-| PHP-FPM `UMask` | `0027` di unit systemd pool | File di `writable/` tidak dapat dibaca user lain (`12` SEC-72). |
+| Hak file NTFS | Diatur dengan `icacls` (§16.1 langkah 8) | File di `writable/` tidak dapat dibaca akun lain (`12` SEC-72). |
 | Nginx `mime.types` | Memuat `application/wasm` untuk `.wasm` | Pembaca QR (ARS-10). Sudah ada sejak Nginx 1.21. Bila belum ada, baris itu ditambahkan ke `mime.types`, bukan lewat blok `types` di server block, karena blok itu menggantikan seluruh daftar tipe, termasuk `.js` dan `.css`. |
 | Nginx `gzip` dan `gzip_types` | `gzip on`, dengan `gzip_types` memuat `application/json`, `text/css`, `application/javascript`, dan `image/svg+xml` | Data kiosk, jawaban sinkron, dan aset dikompresi (`10` API-07). Bawaan Nginx hanya mengompresi `text/html`. Token CSRF diacak, sehingga kompresi tidak membocorkannya (`12` SEC-28). |
 | Nginx header keamanan dan `server_tokens` | Header di `12` SEC-34 dengan `always`, dan `server_tokens off` | Berlaku untuk semua jawaban, termasuk galat dan berkas statis. |
@@ -465,6 +470,8 @@ tests/
   unit/  database/
 writable/
   cache/  logs/  session/  uploads/
+deploy/
+  windows/               contoh php-web.ini, spensada.conf, dan skrip PowerShell production (§16)
 ```
 
 ### 5.4 Migration, seeder, dan tampilan
@@ -760,7 +767,7 @@ Batas waktu pemrosesan antrean (butir 3). Angkanya parameter teknis (ARS-17) yan
 |---|---|---|
 | ARS-44 | **Zona waktu aplikasi.** `appTimezone` di `app/Config/App.php` diubah dari `UTC` menjadi `Asia/Jakarta` (R-11, BR-JAM-12). Jam sekarang selalu diambil dari PHP lewat service `Jam`, yang memakai `Time::now()` CI4, sehingga pengujian dapat membekukan waktu dengan `Time::setTestNow()`. Query tidak memakai `NOW()`, `CURDATE()`, atau `CURRENT_TIMESTAMP`. Tanggal dan jam dikirim dari PHP sebagai parameter. | DECISION (WIB, OQ-05); RECOMMENDATION (cara) |
 | ARS-45 | **Koneksi MySQL.** Setiap koneksi menjalankan `SET time_zone = '+07:00'` dan `SET NAMES utf8mb4 COLLATE utf8mb4_general_ci` segera setelah tersambung (DB-04, DB-05). CI4 hanya memanggil `set_charset()`, sehingga tanpa perintah kedua, collation koneksi menjadi bawaan MySQL 8.4 (`utf8mb4_0900_ai_ci`). Caranya lewat driver turunan di `app/Database/MySQLi/`, dengan konfigurasi di butir di bawah tabel. Zona waktu sesi ini pengaman tambahan, karena aplikasi tidak memakai fungsi waktu MySQL (ARS-44). Perintah `aplikasi:cek` memeriksa zona waktu PHP dan MySQL, collation koneksi, dan `sql_mode`. | RECOMMENDATION |
-| ARS-46 | **Jam server.** Jam server disinkronkan dengan NTP (ARS-02), karena menjadi acuan selisih jam kiosk (BR-SCN-07) dan semua waktu di database. Zona waktu sistem operasi server diset `Asia/Jakarta`, agar jadwal cron dan log sistem memakai WIB. Aplikasi sendiri tidak bergantung pada pengaturan ini. | RECOMMENDATION |
+| ARS-46 | **Jam server.** Jam server disinkronkan dengan NTP lewat layanan Windows Time (ARS-02), karena menjadi acuan selisih jam kiosk (BR-SCN-07) dan semua waktu di database. Zona waktu Windows diset `SE Asia Standard Time` (UTC+07:00, tanpa waktu musim panas), agar jadwal tugas terjadwal dan log sistem memakai WIB. Aplikasi sendiri tidak bergantung pada pengaturan ini (ARS-44). | RECOMMENDATION |
 
 Butir ARS-45:
 
@@ -797,7 +804,7 @@ Perintah ARS-49:
 |---|---|---|
 | ARS-50 | **Polling fragmen HTML.** Bagian halaman yang diperbarui berkala, yaitu tabel dan peringatan dashboard hari ini serta daftar status stasiun, adalah view fragmen tersendiri. View yang sama dipakai saat halaman pertama dimuat. Modul JavaScript kecil meminta fragmen itu setiap 30 detik dengan `fetch`, lalu menggantinya di tempat beserta waktu "diperbarui pukul". Polling berhenti saat tab tidak terlihat, dan langsung berjalan lagi saat tab terlihat. Permintaan polling mengirim header permintaan latar belakang (ARS-13), sehingga sesi yang berakhir dijawab 401, bukan halaman login. Polling lalu berhenti, dan halaman menampilkan pesan. Tanpa JavaScript, halaman tetap dapat dimuat ulang manual. Route fragmen memakai filter dan hak yang sama dengan halamannya. | DECISION (polling fragmen setiap 30 detik); RECOMMENDATION (rincian) |
 
-Server-Sent Events dan WebSocket tidak dipakai, karena setiap koneksi terbuka menahan satu proses PHP-FPM.
+Server-Sent Events dan WebSocket tidak dipakai, karena setiap koneksi terbuka menahan satu proses php-cgi.
 
 ## 12. File unggahan
 
@@ -845,8 +852,8 @@ Pemeriksaan foto massal (ARS-54):
 
 | ID | Aturan | Status |
 |---|---|---|
-| ARS-56 | **Cron di R1.** Cron di VPS menjalankan dua perintah (tabel di bawah). Aplikasi tetap benar tanpa cron, karena langkah ARS-37 juga berjalan sebelum status dibaca. Setiap perintah memakai kunci bernamanya sendiri (ARS-42), sehingga perintah yang sama tidak berjalan ganda bila putaran sebelumnya belum selesai. Kedua perintah boleh berjalan bersamaan. Waktu terakhir cron berjalan disimpan di `pengaturan.cron_terakhir_at`, bukan di cache, agar tidak hilang saat cache dibersihkan (§16.2). Dashboard admin menampilkan peringatan bila cron tidak berjalan lebih dari 5 menit. | DECISION (cron sebagai pelengkap, setiap menit dan setiap hari); RECOMMENDATION (isi dan peringatan) |
-| ARS-57 | **Perintah aplikasi.** Perintah `spark` milik aplikasi ada di tabel kedua di bawah. Perintah bawaan CI4 yang dipakai: `migrate`, `migrate:status`, `migrate:rollback`, `db:seed`, `db:create`, `key:generate`, `cache:clear`, dan `routes`. Perintah `phpini:check` tidak dipakai, karena memeriksa `php.ini` milik CLI dan menyarankan `date.timezone = UTC`. Hasil `aplikasi:cek` juga ditampilkan di halaman pemeriksaan sistem (`/panel/sistem`), yang memakai hak `HA-AKN-07` dan hanya dimiliki admin. Halaman itu berjalan di PHP-FPM, sehingga memeriksa pengaturan yang benar-benar dipakai web, misalnya batas unggah, `memory_limit`, ekstensi, dan opcache. Halamannya dirinci di `09` HAL-AKN-07. | RECOMMENDATION; DECISION (hak `HA-AKN-07`, Session 8) |
+| ARS-56 | **Cron di R1.** Di server Windows, Task Scheduler menjalankan dua perintah (tabel di bawah, §16.3). Di dokumen ini dan dokumen lain, "cron" berarti tugas terjadwal ini. Aplikasi tetap benar tanpa cron, karena langkah ARS-37 juga berjalan sebelum status dibaca. Setiap perintah memakai kunci bernamanya sendiri (ARS-42), sehingga perintah yang sama tidak berjalan ganda bila putaran sebelumnya belum selesai. Kedua perintah boleh berjalan bersamaan. Waktu terakhir cron berjalan disimpan di `pengaturan.cron_terakhir_at`, bukan di cache, agar tidak hilang saat cache dibersihkan (§16.2). Dashboard admin menampilkan peringatan bila cron tidak berjalan lebih dari 5 menit. | DECISION (cron sebagai pelengkap, setiap menit dan setiap hari); RECOMMENDATION (isi dan peringatan) |
+| ARS-57 | **Perintah aplikasi.** Perintah `spark` milik aplikasi ada di tabel kedua di bawah. Perintah bawaan CI4 yang dipakai: `migrate`, `migrate:status`, `migrate:rollback`, `db:seed`, `db:create`, `key:generate`, `cache:clear`, dan `routes`. Perintah `phpini:check` tidak dipakai, karena memeriksa `php.ini` milik CLI dan menyarankan `date.timezone = UTC`. Hasil `aplikasi:cek` juga ditampilkan di halaman pemeriksaan sistem (`/panel/sistem`), yang memakai hak `HA-AKN-07` dan hanya dimiliki admin. Halaman itu berjalan di proses php-cgi, sehingga memeriksa pengaturan `php-web.ini` yang benar-benar dipakai web, misalnya batas unggah, `memory_limit`, `disable_functions`, ekstensi, dan opcache. Halamannya dirinci di `09` HAL-AKN-07. | RECOMMENDATION; DECISION (hak `HA-AKN-07`, Session 8) |
 
 | Jadwal | Perintah | Isi |
 |---|---|---|
@@ -918,60 +925,93 @@ Status: RECOMMENDATION. Panduan ini berlaku setelah migrasi appstarter (ARS-07),
 - `composer test` menjalankan PHPUnit. Pengujian memakai group database `tests`, yang menunjuk `spensada_test` (ARS-45).
 - `node --test "tests/js/**/*.test.js"` menjalankan uji modul kiosk. Node.js 22 tidak menerima nama folder sebagai argumen `--test`.
 
-## 16. Langkah production (VPS)
+## 16. Langkah production (Windows, Laragon, Nginx)
 
-Status: RECOMMENDATION. Pengamanan server mengikuti `12` §16 (SEC-70 s.d. SEC-78). Penyiapan pertama dikerjakan di FASE-09, uji coba R1 dijalankan di server ini sebelum data asli diisi, lalu database dibangun ulang untuk go-live (`14` §6, §11, §12).
+Status: RECOMMENDATION, kecuali server Windows dengan Laragon, Nginx, PHP 8.3, dan MySQL 8.4 (DECISION, keputusan pemilik 2026-10-10, §2.7). Pengamanan server mengikuti `12` §16 (SEC-70 s.d. SEC-78). Penyiapan pertama dikerjakan di FASE-09, uji coba R1 dijalankan di server ini sebelum data asli diisi, lalu database dibangun ulang untuk go-live (`14` §6, §11, §12). Hal yang menunggu pemilik proyek ada di §16.4 (OQ-20).
 
-Server memakai dua user sistem:
+Server memakai dua akun Windows:
 
-| User | Tugas | Hak |
+| Akun | Tugas | Hak |
 |---|---|---|
-| `deploy` | Menjalankan git dan Composer. | Pemilik semua file kode dan `.env`. File kode dapat dibaca user lain. |
-| `spensada` | User aplikasi. Menjalankan pool PHP-FPM, cron, dan semua perintah `php spark`, misalnya `sudo -u spensada php spark migrate -g migrasi`. | Pemilik `writable/`. Dapat membaca `.env` lewat grupnya, tetapi tidak dapat mengubah file kode. |
+| Pengelola, misalnya `pengelola` | Akun orang yang ditunjuk merawat server. Menjalankan git, Composer, migration, perintah `spark` manual, dan pemasangan. Akun bawaan `Administrator` dinonaktifkan. | Anggota Administrators. Pemilik folder kode, `.env`, dan `C:\spensada\rahasia\`. |
+| `spensada` | Akun layanan lokal tanpa hak admin. Menjalankan Nginx, proses php-cgi, dan tugas terjadwal aplikasi (§16.3). Tidak dipakai untuk login interaktif. | Hak "Log on as a batch job". Membaca folder kode dan `.env`, dan mengubah `writable/` serta folder log, tetapi tidak dapat mengubah file kode (`12` SEC-72). |
 
-Dengan pembagian ini, file di `writable/`, termasuk log, cache, dan sesi, selalu dibuat user yang sama, dan kode tidak dapat diubah lewat aplikasi.
+Folder di server:
+
+| Folder | Isi |
+|---|---|
+| `C:\laragon\` | Laragon: Nginx, PHP, MySQL, Composer, dan Git dengan versi yang sama dengan lokal (ARS-02). |
+| `C:\laragon\www\spensada\` | Checkout repository pada tag rilis (ARS-08), dengan path yang sama dengan lokal (§15.2). |
+| `C:\spensada\konfigurasi\` | `php-web.ini` dan server block Nginx `spensada.conf`, disalin dari contoh di `deploy/windows/` di repository lalu disesuaikan. |
+| `C:\spensada\rahasia\` | Password `spensada_migrasi` dan file opsi MySQL untuk backup. Hanya dapat dibaca pengelola, kecuali file opsi backup yang juga dapat dibaca `spensada`. |
+| `C:\spensada\log\` | Log Nginx (`nginx\`) dan log PHP (`php\`). |
+| `C:\spensada\backup\` | Folder kerja backup sebelum dikirim ke luar server (ARS-06). |
+| `C:\spensada\pemeliharaan` | File penanda pemeliharaan (`12` SEC-78). Hanya ada selama rilis yang mengubah struktur database. |
+
+Aplikasi Laragon dengan jendela dan menunya tidak dipakai untuk menjalankan layanan di production, karena aplikasi itu hanya berjalan setelah ada pengguna yang login ke Windows. Setelah Windows Update me-restart server, layanan harus kembali sendiri tanpa ada yang login. Karena itu MySQL dipasang sebagai Windows service, sedangkan Nginx dan php-cgi dijalankan tugas terjadwal Windows sebagai akun `spensada` (§16.3). Laragon tetap menjadi sumber file program, sehingga versi di production sama dengan lokal.
 
 ### 16.1 Penyiapan pertama
 
-1. Siapkan VPS sesuai ARS-02 s.d. ARS-05: sistem operasi, Nginx, PHP 8.3-FPM beserta ekstensinya, MySQL 8.4, Composer, git, certbot, dan NTP. Amankan VPS sesuai `12` SEC-70: SSH hanya dengan kunci dan tanpa login `root`, firewall `ufw` yang hanya membuka port 22, 80, dan 443, `fail2ban`, `unattended-upgrades`, dan MySQL yang hanya mendengarkan `127.0.0.1`.
-2. Set zona waktu sistem ke `Asia/Jakarta` (ARS-46).
-3. Buat user `deploy` dan `spensada`, lalu buat pool PHP-FPM yang berjalan sebagai `spensada`, dengan pengaturan ARS-04 dan `UMask=0027` di unit systemd-nya (`12` SEC-72).
-4. Buat database `spensada` (`utf8mb4`) dan dua user MySQL (`12` SEC-74): `spensada_app` untuk aplikasi, yang hanya berhak `SELECT`, `INSERT`, `UPDATE`, dan `DELETE` di database itu, dan `spensada_migrasi` untuk migration, yang juga berhak mengubah struktur. Password `spensada_migrasi` disimpan di file yang hanya dapat dibaca user `deploy`, bukan di `.env`.
-5. Sebagai `deploy`, clone repository ke `/var/www/spensada` memakai deploy key GitHub yang hanya dapat membaca, checkout tag rilis (ARS-08), lalu jalankan `composer install --no-dev`.
-6. Buat `.env` production: `CI_ENVIRONMENT = production`, `app.baseURL` dengan domain HTTPS, koneksi database termasuk `DBDriver` dari ARS-45, dan kunci enkripsi aplikasi dari `php spark key:generate --show`. Koneksi `default` memakai user `spensada_app`, dan grup koneksi `migrasi` memakai user `spensada_migrasi` tanpa password. Pengaturan cookie dan HTTPS mengikuti `12` SEC-32 dan SEC-33: `Config\Cookie::$secure = true`, `forceGlobalSecureRequests` dinyalakan, dan `app.baseURL` berawalan `https://`. Kredensial gateway WhatsApp di R2 juga ditulis di `.env` (`12` SEC-73).
-7. Atur hak file: `.env` milik `deploy` dengan grup `spensada` dan mode `640`, serta `writable/` beserta isinya milik `spensada`.
-8. Atur server block Nginx:
-   - document root `/var/www/spensada/public`;
-   - permintaan yang bukan file diteruskan ke `index.php`;
-   - file tersembunyi ditolak, kecuali `/.well-known/acme-challenge/` untuk perpanjangan sertifikat;
-   - `client_max_body_size` sesuai ARS-04, dan `mime.types` yang memuat `application/wasm` (ARS-04);
-   - HTTP dialihkan ke HTTPS dengan 301, dan hanya TLS 1.2 dan 1.3 yang diterima (`12` SEC-32);
-   - header keamanan `12` SEC-34 dengan `always`, dan `server_tokens off`;
-   - blok `server` bawaan yang menjawab nama host lain dengan `return 444` (`12` SEC-40);
-   - `limit_req` untuk `POST /login` (`12` SEC-56);
-   - `fastcgi_param REQUEST_ID $request_id`, dan `$request_id` di format log akses (`12` SEC-58);
-   - halaman galat statis di `public/galat/` untuk 413, 429, dan 503 (`11` GAL-10, GAL-11, GAL-17);
-   - halaman pemeliharaan 503 selama file penanda `/var/www/spensada-pemeliharaan` ada (`12` SEC-78).
-9. Pasang sertifikat Let's Encrypt dengan certbot.
-10. Sebagai `spensada`, jalankan `php spark migrate -g migrasi` dengan password `spensada_migrasi` yang diberikan sebagai variabel lingkungan `database_migrasi_password` (`12` SEC-74), lalu `php spark db:seed PengaturanAwal`, `php spark admin:pertama`, dan `php spark aplikasi:cek`. Setelah login sebagai admin, buka halaman pemeriksaan sistem untuk memeriksa pengaturan PHP-FPM (ARS-57).
-11. Pasang cron di crontab user `spensada` (ARS-56), dan cron backup terenkripsi (ARS-06, `12` SEC-75). Contoh, dengan zona waktu server WIB:
+Perintah ditulis untuk PowerShell yang dibuka sebagai pengelola.
 
-```text
-* * * * *  cd /var/www/spensada && php spark tugas:menit  >> /dev/null 2>&1
-30 1 * * * cd /var/www/spensada && php spark tugas:harian >> /dev/null 2>&1
-```
+1. Siapkan server Windows sesuai ARS-02 s.d. ARS-05, lalu amankan sesuai `12` SEC-70: pembaruan Windows otomatis dengan jam aktif 06.00–17.00 agar restart terjadi di luar jam sekolah, Windows Defender Firewall yang hanya membuka port 80 dan 443 untuk umum, OpenSSH Server Windows untuk pengelola dengan kunci dan tanpa login password, Remote Desktop yang tidak dibuka ke internet, dan kebijakan penguncian akun setelah login gagal berulang.
+2. Set zona waktu dengan `tzutil /s "SE Asia Standard Time"`, lalu arahkan layanan Windows Time ke server NTP, misalnya `w32tm /config /manualpeerlist:"id.pool.ntp.org time.google.com" /syncfromflags:manual /update`, dan periksa dengan `w32tm /query /status` (ARS-46).
+3. Pasang Laragon dengan versi Nginx, PHP 8.3, dan MySQL 8.4 yang sama dengan lokal. Matikan pilihan Laragon untuk berjalan saat Windows mulai dan virtual host otomatisnya. Aktifkan ekstensi ARS-03, termasuk `exif` dan `opcache`.
+4. Buat akun `pengelola` dan `spensada` sesuai tabel di atas, lalu buat folder di atas.
+5. Pasang MySQL sebagai Windows service yang mulai otomatis, misalnya `mysqld --install Spensada-MySQL --defaults-file=C:\laragon\bin\mysql\<versi>\my.ini`, dengan `bind-address = 127.0.0.1` dan `max_connections` sesuai ARS-04. Buat database `spensada` dengan `utf8mb4` dan `utf8mb4_general_ci` (DB-04), lalu tiga user MySQL: `spensada_app` dan `spensada_migrasi` (`12` SEC-74), serta `spensada_backup` yang hanya berhak `SELECT`, `SHOW VIEW`, `TRIGGER`, dan `LOCK TABLES` untuk `mysqldump`. Password `spensada_migrasi` disimpan di `C:\spensada\rahasia\`, bukan di `.env`.
+6. Clone repository ke `C:\laragon\www\spensada` memakai deploy key GitHub yang hanya dapat membaca, checkout tag rilis (ARS-08), lalu jalankan `composer install --no-dev`.
+7. Buat `.env` production: `CI_ENVIRONMENT = production`, `app.baseURL` dengan domain HTTPS, koneksi database termasuk `DBDriver` dari ARS-45, dan kunci enkripsi aplikasi dari `php spark key:generate --show`. Koneksi `default` memakai user `spensada_app`, dan grup koneksi `migrasi` memakai user `spensada_migrasi` tanpa password. Pengaturan cookie dan HTTPS mengikuti `12` SEC-32 dan SEC-33: `Config\Cookie::$secure = true`, `forceGlobalSecureRequests` dinyalakan, dan `app.baseURL` berawalan `https://`. Kredensial gateway WhatsApp di R2 juga ditulis di `.env` (`12` SEC-73).
+8. Atur hak file dengan `icacls` (`12` SEC-72): `.env` hanya dapat diubah pengelola dan dibaca `spensada`; `writable/`, `C:\spensada\log\`, `C:\spensada\backup\`, dan folder `temp` Nginx di Laragon dapat diubah `spensada`, dengan pewarisan hak ke file baru; folder kode lainnya hanya dapat dibaca `spensada`.
+9. Salin `deploy/windows/php-web.ini` ke `C:\spensada\konfigurasi\`, lalu sesuaikan path-nya. File ini berisi pengaturan ARS-04 dan `12` SEC-71 untuk web, termasuk `disable_functions` dan `cgi.fix_pathinfo = 0`, dan dipakai proses php-cgi lewat pilihan `-c`. PHP CLI tetap memakai `php.ini` Laragon, sehingga perintah `spark` dan backup tidak terkena `disable_functions`.
+10. Salin `deploy/windows/spensada.conf` ke `C:\spensada\konfigurasi\`, sesuaikan nama domain, lalu muat dari `nginx.conf` Laragon dengan `include`. Isinya:
+    - document root `C:/laragon/www/spensada/public`;
+    - `upstream` berisi port php-cgi `127.0.0.1:9001` s.d. `9020` dengan `least_conn` (ARS-04);
+    - permintaan yang bukan file diteruskan ke `index.php`;
+    - file tersembunyi ditolak, kecuali `/.well-known/acme-challenge/` untuk perpanjangan sertifikat;
+    - `client_max_body_size` dan `fastcgi_read_timeout` sesuai ARS-04, dan `mime.types` yang memuat `application/wasm` (ARS-04);
+    - HTTP dialihkan ke HTTPS dengan 301, dan hanya TLS 1.2 dan 1.3 yang diterima (`12` SEC-32);
+    - header keamanan `12` SEC-34 dengan `always`, dan `server_tokens off`;
+    - blok `server` bawaan yang menjawab nama host lain dengan `return 444` (`12` SEC-40);
+    - `limit_req` untuk `POST /login` (`12` SEC-56);
+    - `fastcgi_param REQUEST_ID $request_id`, dan `$request_id` di format log akses (`12` SEC-58);
+    - log akses dan log galat di `C:/spensada/log/nginx/`;
+    - halaman galat statis di `public/galat/` untuk 413, 429, dan 503 (`11` GAL-10, GAL-11, GAL-17);
+    - halaman pemeliharaan 503 selama file penanda `C:/spensada/pemeliharaan` ada (`12` SEC-78).
+11. Pasang sertifikat Let's Encrypt dengan klien ACME untuk Windows yang disetujui pemilik proyek, misalnya win-acme (OQ-20). Klien itu memakai `/.well-known/acme-challenge/`, membuat tugas terjadwal perpanjangannya sendiri, dan menjalankan `nginx -s reload` setelah sertifikat baru terpasang.
+12. Pasang tugas terjadwal §16.3, lalu restart server sekali untuk memastikan MySQL, Nginx, dan php-cgi berjalan sendiri tanpa ada yang login.
+13. Jalankan `php spark migrate -g migrasi` dengan password `spensada_migrasi` yang diberikan sebagai variabel lingkungan `database_migrasi_password` (`12` SEC-74), lalu `php spark db:seed PengaturanAwal`, `php spark admin:pertama`, dan `php spark aplikasi:cek`. Setelah login sebagai admin, buka halaman pemeriksaan sistem untuk memeriksa pengaturan web (ARS-57).
+14. Pasang backup terenkripsi (ARS-06, `12` SEC-75), jalankan tugas `Spensada Backup` sekali secara manual, dan pastikan file terenkripsinya sampai di penyimpanan luar server.
 
 ### 16.2 Rilis berikutnya
 
 1. Jalankan `composer audit`, dan perbarui paket yang memiliki celah keamanan (`12` SEC-76). Buat tag rilis di GitHub setelah semua uji lulus.
-2. Bila rilis memuat migration yang mengubah struktur database, buat lebih dulu file penanda `/var/www/spensada-pemeliharaan`, sehingga Nginx menjawab dengan halaman pemeliharaan 503 dan kiosk mengulang kiriman nanti (`12` SEC-78). Buat dump database dengan `mysqldump --single-transaction`. Langkah `down()` migration tidak dapat mengembalikan data yang dihapus atau diubah. Perubahan struktur di MySQL juga langsung tersimpan tanpa transaksi, sehingga migration yang gagal di tengah jalan dapat meninggalkan sebagian perubahan.
-3. Sebagai `deploy`, pastikan `git status` bersih, lalu jalankan `git fetch --tags`, `git checkout <tag>`, dan `composer install --no-dev`.
-4. Sebagai `spensada`, jalankan `php spark migrate:status -g migrasi`, `php spark migrate -g migrasi` dengan password seperti §16.1 langkah 10, dan `php spark cache:clear`. Cache dibersihkan agar data kiosk dan isi cache lain dibangun ulang dengan kode baru.
-5. Muat ulang PHP-FPM agar opcache memakai kode baru.
+2. Bila rilis memuat migration yang mengubah struktur database, buat lebih dulu file penanda dengan `New-Item C:\spensada\pemeliharaan`, sehingga Nginx menjawab dengan halaman pemeliharaan 503 dan kiosk mengulang kiriman nanti (`12` SEC-78). Buat dump database dengan `deploy\windows\backup.ps1 -SebelumRilis`. Langkah `down()` migration tidak dapat mengembalikan data yang dihapus atau diubah. Perubahan struktur di MySQL juga langsung tersimpan tanpa transaksi, sehingga migration yang gagal di tengah jalan dapat meninggalkan sebagian perubahan.
+3. Pastikan `git status` bersih, lalu jalankan `git fetch --tags`, `git checkout <tag>`, dan `composer install --no-dev`.
+4. Jalankan `php spark migrate:status -g migrasi`, `php spark migrate -g migrasi` dengan password seperti §16.1 langkah 13, dan `php spark cache:clear`. Cache dibersihkan agar data kiosk dan isi cache lain dibangun ulang dengan kode baru.
+5. Jalankan `deploy\windows\web.ps1 -MulaiUlang`, yang menjalankan ulang proses php-cgi satu per satu, agar opcache memakai kode baru tanpa menghentikan semua proses sekaligus.
 6. Hapus file penanda pemeliharaan bila dibuat di langkah 2. Jalankan `php spark aplikasi:cek` dan buka halaman pemeriksaan sistem, lalu periksa halaman login, dashboard, dan satu kiosk.
-7. Bila rilis bermasalah dan ada migration baru, jalankan `php spark migrate:rollback` sebagai `spensada` dengan grup koneksi `migrasi`, selagi kode rilis itu masih terpasang. Di CI4 4.7.4, perintah ini tidak memiliki pilihan `-g`, sehingga grupnya dipilih dengan variabel lingkungan `database_defaultGroup=migrasi`, bersama `database_migrasi_password`. Perintah ini mengembalikan batch migration terakhir, yaitu batch rilis itu, dan meminta konfirmasi di production. Bila `down()` tidak cukup, pulihkan database dari dump langkah 2. Setelah itu ulangi langkah 3 dan 4 dengan tag sebelumnya, tanpa `php spark migrate`, lalu muat ulang PHP-FPM.
+7. Bila rilis bermasalah dan ada migration baru, jalankan `php spark migrate:rollback` dengan grup koneksi `migrasi`, selagi kode rilis itu masih terpasang. Di CI4 4.7.4, perintah ini tidak memiliki pilihan `-g`, sehingga grupnya dipilih dengan variabel lingkungan `database_defaultGroup=migrasi`, bersama `database_migrasi_password`, misalnya `$env:database_defaultGroup = 'migrasi'` di PowerShell yang sama. Perintah ini mengembalikan batch migration terakhir, yaitu batch rilis itu, dan meminta konfirmasi di production. Bila `down()` tidak cukup, pulihkan database dari dump langkah 2. Setelah itu ulangi langkah 3 dan 4 dengan tag sebelumnya, tanpa `php spark migrate`, lalu ulangi langkah 5. Variabel lingkungan dihapus setelah selesai dengan `Remove-Item Env:database_defaultGroup, Env:database_migrasi_password`.
 
 Kiosk memasang versi baru di latar belakang. Versi itu aktif setelah petugas menekan "Muat versi baru", atau setelah semua jendela kiosk ditutup (ARS-22).
+
+### 16.3 Tugas terjadwal
+
+Semua tugas dibuat di Windows Task Scheduler dengan pilihan "jalankan walaupun pengguna tidak login" dan "jangan jalankan instans baru bila instans sebelumnya masih berjalan", sebagai pelengkap kunci bernama (ARS-56). Tugas yang berulang setiap menit dibuat dengan PowerShell (`New-ScheduledTaskTrigger -RepetitionInterval (New-TimeSpan -Minutes 1)`), karena pilihan di jendela Task Scheduler paling kecil 5 menit. Skrip PowerShell di `deploy/windows/` dibuat di FASE-09 dan di-commit di repository. (RECOMMENDATION)
+
+| Tugas | Jadwal | Isi | Akun |
+|---|---|---|---|
+| `Spensada Web` | Saat Windows mulai, lalu setiap menit | `deploy\windows\web.ps1`: menjalankan proses php-cgi yang belum berjalan di port 9001 s.d. 9020 dengan `-c C:\spensada\konfigurasi\php-web.ini` dan `PHP_FCGI_MAX_REQUESTS=0`, lalu Nginx bila belum berjalan. Pilihan `-MulaiUlang` menjalankan ulang proses php-cgi satu per satu (§16.2 langkah 5). | `spensada` |
+| `Spensada Tugas Menit` | Setiap menit | `php spark tugas:menit` (ARS-56) | `spensada` |
+| `Spensada Tugas Harian` | Setiap hari pukul 01.30 | `php spark tugas:harian` (ARS-56) | `spensada` |
+| `Spensada Backup` | Setiap hari pukul 02.00 | `deploy\windows\backup.ps1` (ARS-06, `12` SEC-75) | `spensada` |
+| `Spensada Log` | Setiap hari pukul 00.05 | `deploy\windows\web.ps1 -PutarLog`: mengganti nama log Nginx dan log PHP dengan tanggal, menjalankan `nginx -s reopen`, dan menghapus log yang lebih tua dari 90 hari (`12` SEC-61). Nginx untuk Windows tidak memiliki rotasi log sendiri. | `spensada` |
+| Perpanjangan sertifikat | Dibuat klien ACME | Memperbarui sertifikat dan memuat ulang Nginx (§16.1 langkah 11). | Sesuai klien ACME |
+
+### 16.4 Hal yang menunggu pemilik proyek (OQ-20)
+
+1. **Lokasi server.** VPS Windows di penyedia cloud, atau komputer server di sekolah. Server di sekolah membutuhkan alamat IP publik tetap atau cara lain agar dapat dijangkau dari internet, UPS, dan koneksi yang stabil, karena portal siswa dan kiosk membutuhkan alamat HTTPS yang dapat dibuka dari luar jaringan server.
+2. **Klien ACME.** Persetujuan alat baru untuk sertifikat Let's Encrypt, misalnya win-acme (lisensi Apache-2.0), sesuai aturan penambahan dependensi. Tanpa alat ini, sertifikat dibeli dan dipasang ulang secara manual sebelum masa berlakunya habis.
+3. **Cara menjalankan layanan.** Persetujuan bahwa MySQL berjalan sebagai Windows service, serta Nginx dan php-cgi lewat tugas terjadwal (§16.3), bukan lewat aplikasi Laragon dengan login otomatis Windows. Login otomatis menyimpan password Windows di server dan membuat layanan bergantung pada sesi desktop.
 
 ## 17. Traceability
 
@@ -979,7 +1019,7 @@ Kiosk memasang versi baru di latar belakang. Versi itu aktif setelah petugas men
 
 | Risiko | Penanganan |
 |---|---|
-| R-01 | HTTPS di lokal dan production: ARS-02, §15.2 langkah 2, dan §16.1 langkah 9. |
+| R-01 | HTTPS di lokal dan production: ARS-02, §15.2 langkah 2, dan §16.1 langkah 11. |
 | R-03 | Pembacaan QR di Web Worker, scanner USB, dan sinkron yang tidak membatasi jumlah stasiun: ARS-25, ARS-26, ARS-29. |
 | R-04 | zxing-wasm: ARS-10, ARS-25. |
 | R-05 | Jam kiosk: ARS-27, ARS-28, ARS-32. |
@@ -990,7 +1030,7 @@ Kiosk memasang versi baru di latar belakang. Versi itu aktif setelah petugas men
 | R-10 | Login stasiun, satu login aktif, CSRF, dan validasi server: ARS-13, ARS-29, ARS-30. Rinciannya di `12` SEC-18 s.d. SEC-20, SEC-24, dan SEC-54. |
 | R-11 | Zona waktu: ARS-44 s.d. ARS-46. |
 | R-13 | Antrean hitung ulang: ARS-35 s.d. ARS-37. |
-| R-15 | VPS: ARS-01, ARS-02. |
+| R-15 | Server Windows yang diatur sendiri: ARS-01, ARS-02, §16. |
 | R-16 | Cron setiap menit sudah tersedia untuk outbox WA di R2: ARS-56. |
 | R-17 | File di luar `public/` yang disajikan setelah hak diperiksa, dan pencatatan akses lampiran: ARS-51, ARS-52. Backup terenkripsi: ARS-06. Rinciannya di `12` SEC-60, SEC-63 s.d. SEC-69, dan SEC-75. |
 | R-18 | Composer appstarter dan `.gitignore`: ARS-07, ARS-09. |
@@ -1085,7 +1125,8 @@ Session 6 menjawab OQ-09, dan tidak menambah OQ baru. Hal yang dijadwalkan di Se
 | Lisensi proyek di `LICENSE` dan README, termasuk kecocokan dengan lisensi mPDF | ARS-07 langkah 5, ARS-10 | Pemilik proyek, sebelum migrasi appstarter |
 | Contoh kartu OSIS lama untuk desain kartu rinci | ARS-10, OQ-13 | Sekolah, sebelum R3 |
 | Resolusi kamera, jeda antartombol scanner, dan target 1 detik di laptop sekolah | ARS-25, ARS-26 | Uji di laptop sekolah, sebelum uji coba R1 (OQ-08) |
-| Jumlah proses PHP-FPM dan batas waktu pemrosesan antrean | ARS-04, ARS-36 | Uji beban sebelum uji coba R1 |
+| Jumlah proses php-cgi dan batas waktu pemrosesan antrean | ARS-04, ARS-36 | Uji beban sebelum uji coba R1 |
+| Lokasi server production Windows, klien ACME untuk sertifikat HTTPS, dan cara menjalankan layanan (OQ-20) | ARS-01, ARS-02, §16.4 | Pemilik proyek, sebelum FASE-09 |
 | Jumlah stasiun | NFR-02 | Sebelum uji coba R1 (OQ-08) |
 
 ## Riwayat perubahan
@@ -1097,3 +1138,4 @@ Session 6 menjawab OQ-09, dan tidak menambah OQ baru. Hal yang dijadwalkan di Se
 | 0.3 | 2026-10-05 | Keputusan Session 8 (§2.5, `09`, `10`). ARS-04 (kompresi JSON), ARS-12 (alamat area dan API v1), ARS-13 (filter `hak` dan `area` dengan beberapa nilai, filter CSRF aplikasi, header permintaan latar belakang), ARS-20, ARS-21 (laporan penyimpanan permanen dan logo), ARS-29 (isi laporan kiosk), ARS-30 (logout kiosk), ARS-31 (akun pencatat), ARS-33 (parameter yang dikirim ke kiosk), ARS-51 dan ARS-55 (file sementara konfirmasi bersyarat dan format token), ARS-57 (hak `HA-AKN-07`), kepala dokumen, §1, §17.3, §18, dan §19 diperbarui. |
 | 0.4 | 2026-10-05 | Keputusan Session 9 (§2.6, `11`, `12`). ARS-01, ARS-02, ARS-11, ARS-21 dan ARS-23 (PIN petugas di data kiosk), ARS-04 (pengaturan keamanan PHP, batas unggah final, header dan `limit_req` Nginx, ID permintaan), ARS-06 (backup terenkripsi dan rotasi), ARS-13 (filter `keamanan` dan `invalidchars`, filter `csrf` dan `sesi`, pembatasan login lewat `percobaan_login`), ARS-29 butir 5 (konfigurasi CSRF), ARS-30 (cookie `__Secure-spensada_stasiun`, PIN petugas, dan satu login aktif), ARS-31, ARS-33, ARS-42 (kunci bernama login), ARS-43, ARS-47 (masa dan konfigurasi sesi), ARS-52 (header berkas dan akses lampiran), ARS-53 (lampiran gambar dan logo), ARS-54 butir 3, ARS-56, §16 (pengamanan server, dua user MySQL, dan pemeliharaan), kepala dokumen, §2.3, §17, §18, dan §19 diperbarui. |
 | 0.5 | 2026-10-05 | Keputusan Session 10 (`14`). ARS-06 (uji pemulihan ke database sementara), ARS-37 (nilai awal dan batas bawah `status_mulai`), ARS-57 (perintah `status:mulai`), pengantar §16, kepala dokumen, dan §19 diperbarui. |
+| 0.6 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10 (§2.7). Server production Windows dengan Laragon: §1, §2.1 (hosting dan deploy), §3.1, ARS-01, ARS-02 (perangkat lunak server), ARS-04 (proses php-cgi, `PHP_FCGI_MAX_REQUESTS`, `cgi.fix_pathinfo`, `fastcgi_read_timeout`, hak file NTFS), ARS-05, ARS-06 (backup di Windows), ARS-46, ARS-50, ARS-56, ARS-57, §16 (ditulis ulang untuk Windows, dengan tugas terjadwal §16.3 dan OQ-20 di §16.4), §17.1, dan §19 diperbarui. Bootstrap 5: §2.4, ARS-10, ARS-19, ARS-22 butir 3, dan §5.3 diperbarui. OQ-20 ditambahkan. |
