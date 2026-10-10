@@ -1,0 +1,64 @@
+# Project facts
+
+## Identity
+
+| Item | Value |
+|---|---|
+| Product name | **Spensada** (write it this way in UI text; `SPENSADA` only in logos/headers styled in caps) |
+| School name | **SMP 1 DAWE** (in UI sentences: "SMP 1 Dawe") |
+| Location | Dawe, Kabupaten Kudus, Jawa Tengah |
+| Coordinates | -6.7185892, 110.8779716 |
+| Google Maps | https://www.google.com/maps/place/SMP+1+Dawe/@-6.7185892,110.8779716,17z/data=!4m6!3m5!1s0x2e70da226beac053:0x90c8d30d51a5435a!8m2!3d-6.7185892!4d110.8779716!16s%2Fg%2F1hm44gxbf?hl=id |
+| Repo owner | Arumi Studios (`arumiforge`) — the only contributor |
+
+The official school name, address, and logo are also admin settings in the
+app (`docs/01` FR-MD-08). Use the values above as seed/default data only;
+never hard-code them into views.
+
+## Brand assets
+
+All in `public/aset/logo/` unless noted. Do not edit, recolor, or crop them.
+
+| File | Use |
+|---|---|
+| `logo-sekolah.png` | School emblem (618×604, transparent). Default school logo, login page, slips. |
+| `logo-landscape.webp` | Landscape logo (1978×680). Headers, landing page. |
+| `logo-landscape.png` | Same, 900 px PNG. For mPDF and places without WebP. |
+| `ikon-192.png`, `ikon-512.png` | App / PWA icons (square, from the emblem). |
+| `favicon-32.png` | PNG favicon. |
+| `public/favicon.ico` | Favicon (16, 32, 48 px). |
+| `public/apple-touch-icon.png` | iOS home-screen icon (180 px, white background). |
+
+Head tags for every layout:
+
+```html
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/aset/logo/favicon-32.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+```
+
+## Users and devices
+
+| Users | Device focus |
+|---|---|
+| Students (siswa) | **Mobile-first.** Design for a ~360 px phone first, then scale up. Light pages, mobile data. |
+| Admin, teachers, homeroom teachers, guru piket, guru BK, leaders | **Responsive.** Desktop and phone must both work well. |
+| Scan stations (kiosk) | Windows laptop, Chrome/Edge, works offline. |
+
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Backend | CodeIgniter 4 (4.7.x), PHP **8.3 or newer** |
+| Database | MySQL 8.4 (MySQLi driver, `utf8mb4`) |
+| Frontend | Server-rendered HTML + vanilla JS, **Bootstrap 5** (see `decisions.md` D-02) |
+| Assets | Minified vendor files (`*.min.css`, `*.min.js`) served from `public/aset/vendor/<lib>/<version>/`. No CDN. |
+| Spreadsheet | `phpoffice/phpspreadsheet` (import/export XLSX) |
+| PDF | `mpdf/mpdf` |
+| Font / icons | Plus Jakarta Sans, Lucide sprite (`docs/08` §4) |
+| Local dev | Windows + Laragon + Nginx + MySQL, `https://spensada.test` |
+| Production | Windows + Laragon + Nginx + MySQL (see `decisions.md` D-01) |
+| Time zone | `Asia/Jakarta` (WIB) everywhere |
+
+Write technical instructions for Windows + Laragon + Nginx (PowerShell or
+Laragon terminal), not Linux.

@@ -1,0 +1,24 @@
+# Owner decisions outside docs/
+
+Decisions the owner gave in chat that are not (yet) in `docs/`. Format:
+ID, date, decision, conflict with `docs/`, status.
+
+Status values: **ACTIVE** (follow it), **DOCS PENDING** (follow it, but the
+listed docs still say otherwise and must be updated before the affected
+phase starts), **NEEDS CONFIRMATION** (default applied by Claude; owner
+must confirm).
+
+Until a DOCS PENDING item is synced, do not start work that depends on the
+conflicting part — ask the owner which applies.
+
+| ID | Date | Decision | Conflicts with | Status |
+|---|---|---|---|---|
+| D-01 | 2026-10-10 | Production server is **Windows + Laragon + Nginx + MySQL**, PHP 8.3+. | `docs/00` §7.2 and `docs/07` ARS-01–ARS-05, §16, `docs/12` §16 describe a Linux VPS (DECISION, Session 6). | DOCS PENDING — needed before FASE-09 |
+| D-02 | 2026-10-10 | UI uses **Bootstrap 5** (minified files, served locally). | `docs/08` UI-08 "own CSS with tokens" (DECISION), UI-71 CSS budget 40 KB, UI-73/UI-74 file list and class names; `docs/07` ARS-10 library table. | DOCS PENDING — needed before FASE-00 layout work |
+| D-03 | 2026-10-10 | Use the most capable PDF and spreadsheet libraries, minified front-end libraries. | None: mPDF and PhpSpreadsheet are already chosen in `docs/07` ARS-10. A PHP/JS minifier library is **not** approved yet (no build step per ARS-11). | ACTIVE |
+| D-04 | 2026-10-10 | **One branch per implementation phase**, small commits; `main` is the only long-lived branch. | `docs/14` RM-11 / RM-06: one branch and one PR per feature (DECISION, Session 10). | DOCS PENDING — needed before FASE-00 |
+| D-05 | 2026-10-10 | English for chat, code comments, commits, agent prompts; Indonesian for UI text and URLs. | Docs name tables, controllers, methods, and CSS classes in Indonesian (`docs/06`, `docs/09` RT-20, `docs/08` UI-74). Default applied: keep doc-defined names, English for everything else (`language.md`). | NEEDS CONFIRMATION |
+| D-06 | 2026-10-10 | No Claude attribution; the repo owner is the only commit author. | Past commits on `main` are authored by "Claude"; history is not rewritten. | ACTIVE |
+| D-07 | 2026-10-10 | School: SMP 1 DAWE. Product: Spensada. Provided emblem = logo + favicon; provided landscape image = landscape logo. | `docs/01` FR-MD-08: school name, address, logo are admin settings — the provided values are seed defaults. The landscape image reads "PRIMA SMP 1 DAWE KUDUS", not "Spensada". | ACTIVE (confirm "PRIMA" wording) |
+| D-08 | 2026-10-10 | Student area is mobile-first; staff/admin areas responsive. | None (`docs/08` UI-18). | ACTIVE |
+| D-09 | 2026-10-10 | One shared helper for dates, times, numbers, money (`format_helper.php`), mandatory everywhere. Adds `dd/mm/yyyy` and `Rp` formats. | None (`docs/08` UI-55 asks for one helper). `docs/08` §9.3 does not list `dd/mm/yyyy` or Rupiah yet. | ACTIVE |
