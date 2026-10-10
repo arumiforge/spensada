@@ -8,6 +8,7 @@ use CodeIgniter\Test\FeatureTestTrait;
 use CodeIgniter\Test\TestResponse;
 use Config\Services;
 use Tests\Support\AkunTrait;
+use Tests\Support\MasterDataTrait;
 
 /**
  * Change password (docs/04 FS-AKN-02, AC-AKN-02-*, docs/09 HAL-AKN-03,
@@ -20,6 +21,7 @@ final class GantiPasswordTest extends CIUnitTestCase
     use AkunTrait;
     use DatabaseTestTrait;
     use FeatureTestTrait;
+    use MasterDataTrait;
 
     protected $refresh   = true;
     protected $namespace = 'App';
@@ -210,6 +212,20 @@ final class GantiPasswordTest extends CIUnitTestCase
      * @param array<string, mixed> $session
      * @param array<string, string> $isian
      */
+    public function testStudentPasswordMustNotContainBirthDate(): void
+    {
+        // docs/12 SEC-03 item 5, docs/11 VAL-21
+        $siswa   = $this->buatSiswa(['nisn' => '0012345678', 'tanggal_lahir' => '2011-03-14']);
+        $akun    = $this->akun($siswa['akun_id']);
+        $session = ['tanpa_password_lama' => true] + $this->sesiAkun($akun);
+
+        $result = $this->ganti($session, ['password_baru' => 'kucingku 14032011', 'password_ulang' => 'kucingku 14032011']);
+
+        $result->assertRedirectTo('https://example.com/akun/password');
+        $this->assertSame('Password tidak boleh memuat tanggal lahir.', session('_ci_validation_errors')['password_baru'] ?? null);
+        $this->assertNull($this->akun($siswa['akun_id'])['password_hash']);
+    }
+
     private function ganti(array $session, array $isian): TestResponse
     {
         // The shared router keeps the method of the last request; the form spoofs PUT over POST.
