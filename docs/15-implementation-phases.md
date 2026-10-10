@@ -297,7 +297,7 @@ Diisi pengembang di akhir setiap fase (`14` RM-15): fitur yang selesai, perkiraa
 | Fase | Selesai | Perkiraan dan realisasi | Masalah dan catatan | Uji manual tercatat |
 |---|---|---|---|---|
 | FASE-00 | 2026-10-10, PR #17. L00-01 s.d. L00-09 selesai. | Perkiraan 1–2 minggu; selesai dalam 1 hari. | Uji di Laragon gagal karena `app.baseURL` di `.env` mengalahkan nilai uji di `phpunit.dist.xml`; diperbaiki dengan `<env force="true">`. `format_percent` kini membulatkan ke 15 digit dulu agar 57,5% menjadi 58% di semua versi PHP. | Panduan lokal (L00-09) di Laragon: PHP 8.3.28, MySQL 8.4.3, `aplikasi:cek` semua baik, `node --test` 90 lulus. |
-| FASE-01 | — | — | — | Prototipe kiosk (L01-09) |
+| FASE-01 | 2026-10-10, L01-01 s.d. L01-08 di branch fase (PR menunggu tinjauan). L01-09 belum dikerjakan. | Perkiraan 1–2 minggu; L01-01 s.d. L01-08 selesai dalam 1 hari dengan agen paralel. | Urutan aturan password di `12` SEC-03 (daftar umum sebelum username/NISN) bertentangan dengan AC-AKN-02-05 untuk password seperti `zebra0012345678`; implementasi memeriksa username/NISN lebih dulu, menunggu keputusan pemilik. Aturan tanggal lahir, kolom "kelas yang diampu", dan role wali kelas menunggu tabel FASE-02. Cookie login stasiun di L06-01. | Prototipe kiosk (L01-09) belum: menunggu laptop stasiun dan contoh kartu. |
 | FASE-02 | — | — | — | — |
 | FASE-03 | — | — | — | Uji volume (L03-06) |
 | FASE-04 | — | — | — | — |
