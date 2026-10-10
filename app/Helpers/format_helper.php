@@ -124,7 +124,7 @@ if (! function_exists('format_number')) {
             return '';
         }
 
-        return number_format((float) $value, $decimals, ',', '.');
+        return number_format(format_pre_round($value), $decimals, ',', '.');
     }
 }
 
@@ -138,10 +138,12 @@ if (! function_exists('format_rupiah')) {
             return '';
         }
 
-        $amount = (float) $value;
-        $sign   = $amount < 0 ? '-' : '';
+        $amount = format_pre_round($value);
+        $digits = number_format(abs($amount), $decimals, ',', '.');
+        // A negative amount that rounds to zero shows as "Rp 0", not "-Rp 0".
+        $sign = ($amount < 0 && preg_match('/[1-9]/', $digits)) ? '-' : '';
 
-        return $sign . 'Rp ' . number_format(abs($amount), $decimals, ',', '.');
+        return $sign . 'Rp ' . $digits;
     }
 }
 
@@ -157,7 +159,20 @@ if (! function_exists('format_percent')) {
             return '';
         }
 
-        return format_number(round((float) $value, 0, PHP_ROUND_HALF_UP)) . '%';
+        return format_number(round(format_pre_round($value), 0, PHP_ROUND_HALF_UP)) . '%';
+    }
+}
+
+if (! function_exists('format_pre_round')) {
+    /**
+     * Rounds to 15 significant digits first, so float noise does not decide
+     * a half: 23 / 40 * 100 is 57.49999999999999 and must show as 58%.
+     * Done explicitly so the result does not depend on the PHP version's
+     * round(), and matches public/aset/js/format.js (toPrecision(15)).
+     */
+    function format_pre_round(float|int|string $value): float
+    {
+        return (float) sprintf('%.15g', (float) $value);
     }
 }
 
