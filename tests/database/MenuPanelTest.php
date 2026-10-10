@@ -38,7 +38,12 @@ final class MenuPanelTest extends CIUnitTestCase
     public function testEachRoleSeesOnlyItsPages(): void
     {
         $this->assertSame(
-            ['' => ['Dashboard hari ini'], 'Akun dan stasiun' => ['Akun staf', 'Log aktivitas', 'Pemeriksaan sistem']],
+            [
+                ''                 => ['Dashboard hari ini'],
+                'Siswa'            => ['Data siswa', 'Penempatan kelas', 'Akun siswa', 'Atribut tambahan'],
+                'Sekolah'          => ['Identitas sekolah', 'Tahun ajaran', 'Kelas dan wali kelas'],
+                'Akun dan stasiun' => ['Akun staf', 'Log aktivitas', 'Pemeriksaan sistem'],
+            ],
             $this->labels(['staf', 'admin']),
         );
 
