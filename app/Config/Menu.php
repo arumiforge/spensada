@@ -58,4 +58,16 @@ final class Menu
         ['grup' => 'Akun dan stasiun', 'label' => 'Log aktivitas', 'alamat' => 'panel/log-aktivitas', 'hak' => ['HA-AKN-08'], 'ikon' => 'file-text'],
         ['grup' => 'Akun dan stasiun', 'label' => 'Pemeriksaan sistem', 'alamat' => 'panel/sistem', 'hak' => ['HA-AKN-07'], 'ikon' => 'settings'],
     ];
+
+    /**
+     * Student portal menu, R1 (docs/09 §4.2, docs/08 UI-35): bottom menu on
+     * phones and tablets, top menu from 1024 px. Same rules as $panel.
+     *
+     * @var list<array{label: string, alamat: string, hak: list<string>, ikon: string}>
+     */
+    public array $portal = [
+        ['label' => 'Riwayat', 'alamat' => 'portal', 'hak' => ['HA-LAP-04'], 'ikon' => 'calendar-days'],
+        ['label' => 'Izin', 'alamat' => 'portal/izin', 'hak' => ['HA-IZN-04'], 'ikon' => 'file-text'],
+        ['label' => 'Akun', 'alamat' => 'portal/akun', 'hak' => ['HA-MD-05'], 'ikon' => 'user'],
+    ];
 }
