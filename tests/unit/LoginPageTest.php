@@ -2,16 +2,22 @@
 
 use App\Controllers\Akun\Login;
 use CodeIgniter\Test\CIUnitTestCase;
+use App\Database\Seeds\PengaturanAwal;
 use CodeIgniter\Test\ControllerTestTrait;
+use CodeIgniter\Test\DatabaseTestTrait;
 
 /**
- * GET /login shows the page with the account layout (docs/15 L00-06, docs/09 HAL-AKN-01).
+ * GET /login shows the page with the account layout (docs/15 L00-06, L01-02, docs/09 HAL-AKN-01).
  *
  * @internal
  */
 final class LoginPageTest extends CIUnitTestCase
 {
     use ControllerTestTrait;
+    use DatabaseTestTrait;
+
+    protected $refresh   = true;
+    protected $namespace = 'App';
 
     public function testLoginPageRendersWithAccountLayout(): void
     {
@@ -29,6 +35,16 @@ final class LoginPageTest extends CIUnitTestCase
         $result->assertSee('Siswa yang lupa password menghubungi wali kelas. Staf menghubungi admin. Di komputer bersama, logout setelah selesai.');
         $result->assertSee('Login', 'button');
         $result->assertSee('Spensada', '.akun-kepala-produk');
+        $result->assertSeeElement('button[data-isian-password=password]');
+    }
+
+    public function testLoginPageShowsSchoolNameFromSettings(): void
+    {
+        $this->seed(PengaturanAwal::class);
+
+        $result = $this->controller(Login::class)->execute('index');
+
+        $result->assertSee('SMP 1 DAWE', '.akun-kepala-sekolah');
     }
 
     public function testLoginPageHeadHasFaviconsAndCssInOrder(): void
@@ -46,7 +62,9 @@ final class LoginPageTest extends CIUnitTestCase
         $this->assertTrue($bootstrap < $token && $token < $app);
         $this->assertSame(1, substr_count($html, '<h1'));
         $this->assertStringNotContainsString('kamu', strtolower($html));
-        $this->assertStringNotContainsString('<script', $html);
+        // Only the show/hide password script (docs/08 UI-38).
+        $this->assertSame(1, substr_count($html, '<script'));
+        $this->assertStringContainsString('aset/js/isian-password.js', $html);
     }
 
     public function testLoginPageAssetsExist(): void

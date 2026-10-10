@@ -5,7 +5,7 @@ namespace Tests\Support\Filters;
 use App\Filters\Hak;
 
 /**
- * `hak` filter with roles set by the test, until `sesi` loads them (L01-02).
+ * `hak` filter with roles set by the test, without a logged-in account.
  */
 final class HakWithRoles extends Hak
 {

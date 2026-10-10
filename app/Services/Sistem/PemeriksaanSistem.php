@@ -63,6 +63,42 @@ class PemeriksaanSistem
         ];
     }
 
+    /**
+     * PHP settings of the web process (docs/07 ARS-04), shown on the system
+     * check page only: the CLI reads php.ini, not the php-web.ini of php-cgi.
+     *
+     * @return list<array{butir: string, status: string, keterangan: string}>
+     */
+    public function phpWeb(): array
+    {
+        $checks = [];
+
+        foreach (['upload_max_filesize' => '100M', 'post_max_size' => '110M', 'memory_limit' => '256M'] as $key => $min) {
+            $value    = (string) ini_get($key);
+            $checks[] = $this->item($key, $value === '-1' || self::bytes($value) >= self::bytes($min), $value, "{$value}. Paling sedikit {$min}. Atur di php-web.ini.");
+        }
+
+        $opcache  = extension_loaded('Zend OPcache') && filter_var(ini_get('opcache.enable'), FILTER_VALIDATE_BOOLEAN);
+        $checks[] = $this->item('opcache.enable', $opcache, 'aktif', 'Belum aktif. Atur opcache.enable=1 di php-web.ini.');
+
+        return $checks;
+    }
+
+    /**
+     * Bytes of a php.ini size such as `100M`.
+     */
+    private static function bytes(string $size): int
+    {
+        $number = (int) $size;
+
+        return match (strtoupper(substr(trim($size), -1))) {
+            'G'     => $number * 1024 ** 3,
+            'M'     => $number * 1024 ** 2,
+            'K'     => $number * 1024,
+            default => $number,
+        };
+    }
+
     private function php(): array
     {
         return $this->item('Versi PHP', version_compare(PHP_VERSION, self::PHP_MIN, '>='), PHP_VERSION, PHP_VERSION . '. Perlu PHP 8.3 atau lebih baru.');

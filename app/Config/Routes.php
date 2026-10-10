@@ -8,3 +8,4 @@ $routes->addRedirect('/', 'login');
 
 // Login stays outside the Akun group: it has no `sesi` filter (docs/09 RT-01).
 $routes->get('login', 'Akun\Login::index', ['as' => 'akun.login.index']);
+$routes->post('login', 'Akun\Login::masuk', ['as' => 'akun.login.masuk']);

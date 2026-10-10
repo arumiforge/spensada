@@ -41,6 +41,8 @@
     <php>
         <!-- env + force: a developer .env with app.baseURL must not leak into tests -->
         <env name="app.baseURL" value="http://example.com/" force="true"/>
+        <!-- Fixed test key: login records and credential stamps derive keys from it (docs/12 SEC-09) -->
+        <env name="encryption.key" value="hex2bin:5d0f8a6c1b2e3d4f5a6b7c8d9e0f1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b" force="true"/>
         <server name="CODEIGNITER_SCREAM_DEPRECATIONS" value="0"/>
         <!-- Directory containing phpunit.xml -->
         <const name="HOMEPATH" value="./"/>
