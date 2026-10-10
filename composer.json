@@ -35,6 +35,7 @@
         "sort-packages": true
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "test:coverage": "phpunit --coverage-text --coverage-html build/logs/html"
     }
 }
