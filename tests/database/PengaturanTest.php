@@ -37,8 +37,8 @@ final class PengaturanTest extends CIUnitTestCase
 
         // docs/06 §6.1, Rilis R1; null is "Kosong".
         $expected = [
-            'sekolah_nama'           => null,
-            'sekolah_alamat'         => null,
+            'sekolah_nama'           => 'SMP 1 DAWE',
+            'sekolah_alamat'         => 'Dawe, Kabupaten Kudus, Jawa Tengah',
             'sekolah_logo'           => null,
             'batas_mundur_hari'      => '7',
             'status_dibangun_sampai' => null,

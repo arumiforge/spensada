@@ -320,9 +320,9 @@ Daftar kunci:
 
 | Kunci | Default | Diatur oleh | Rilis | Rujukan |
 |---|---|---|---|---|
-| `sekolah_nama` | Kosong | Admin | R1 | FS-MD-01 |
-| `sekolah_alamat` | Kosong | Admin | R1 | FS-MD-01 |
-| `sekolah_logo` | Kosong (path file, DB-15) | Admin | R1 | FS-MD-01 |
+| `sekolah_nama` | `SMP 1 DAWE` | Admin | R1 | FS-MD-01 |
+| `sekolah_alamat` | `Dawe, Kabupaten Kudus, Jawa Tengah` | Admin | R1 | FS-MD-01 |
+| `sekolah_logo` | Kosong (path file, DB-15). Selama kosong, aplikasi memakai lambang SMP 1 DAWE bawaan di `public/aset/logo/logo-sekolah.png`. | Admin | R1 | FS-MD-01 |
 | `sekolah_kota` | Kosong | Admin | R2 | Tempat di blok tanda tangan PDF (`08` UI-61) |
 | `batas_mundur_hari` | 7 | Admin | R1 | BR-MUN-01, FS-PRS-10 |
 | `wa_tunda_menit` | 60 | Admin | R2 | BR-WA-02 |

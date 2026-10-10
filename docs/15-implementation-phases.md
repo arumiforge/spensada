@@ -296,7 +296,7 @@ Diisi pengembang di akhir setiap fase (`14` RM-15): fitur yang selesai, perkiraa
 
 | Fase | Selesai | Perkiraan dan realisasi | Masalah dan catatan | Uji manual tercatat |
 |---|---|---|---|---|
-| FASE-00 | — | — | — | Panduan lokal (L00-09) |
+| FASE-00 | 2026-10-10, PR #17. L00-01 s.d. L00-09 selesai. | Perkiraan 1–2 minggu; selesai dalam 1 hari. | Uji di Laragon gagal karena `app.baseURL` di `.env` mengalahkan nilai uji di `phpunit.dist.xml`; diperbaiki dengan `<env force="true">`. `format_percent` kini membulatkan ke 15 digit dulu agar 57,5% menjadi 58% di semua versi PHP. | Panduan lokal (L00-09) di Laragon: PHP 8.3.28, MySQL 8.4.3, `aplikasi:cek` semua baik, `node --test` 90 lulus. |
 | FASE-01 | — | — | — | Prototipe kiosk (L01-09) |
 | FASE-02 | — | — | — | — |
 | FASE-03 | — | — | — | Uji volume (L03-06) |
