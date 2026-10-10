@@ -6,7 +6,7 @@ the log to the last 10 entries.
 
 ## Current state (2026-10-10)
 
-- FASE-01 L01-01 to L01-08 built on `claude/fase-01-akun-akses-6jkkp8` (PR open): account tables, login limits, sesi/wajib-ganti filters, login/logout, change password, admin:pertama/admin:pulihkan, staff accounts, activity log, system check, panel menu. 300 PHPUnit tests and 90 node tests pass locally (MySQL 8.0 in the cloud sandbox). L01-09 kiosk prototype not started.
+- FASE-01 L01-01 to L01-08 merged (PR #19): account tables, login limits, sesi/wajib-ganti filters, login/logout, change password, admin:pertama/admin:pulihkan, staff accounts, activity log, system check, panel menu. 300 PHPUnit tests and 90 node tests pass locally (MySQL 8.0 in the cloud sandbox). L01-09 kiosk prototype not started.
 - FASE-00 merged (PR #17). L00-09 run by the owner on Laragon (PHP 8.3.28, MySQL 8.4.3): `aplikasi:cek` all good, `node --test` 90 pass; `composer test` had 7 failures from the `.env` baseURL leaking into tests, fixed in the follow-up PR (owner to re-run `composer test`).
 - Discovery docs `docs/00`–`docs/15`: done (Sessions 1–11), merged in PR #14.
 - Project license: MIT, copyright Arumi Studios (D-10).
@@ -17,8 +17,8 @@ the log to the last 10 entries.
 
 ## Next
 
-1. Owner: review and test the FASE-01 PR on Laragon (`composer test`, `node --test`, `php spark migrate`, `php spark admin:pertama`, log in at `/login`), merge it, then tag `main` as `r1-fase-01`.
-2. L01-09 kiosk prototype on the temporary branch `prototipe-kiosk` (not merged): needs the school's station laptop, webcam, USB scanner and sample cards.
+1. Owner: tag `main` as `r1-fase-01`. Delete the 14 old remote branches fully merged into `main` (listed in the FASE-01 thread); the cloud session was not allowed to delete them.
+2. L01-09 kiosk prototype: owner chose to wait (2026-10-10) until the school equipment is ready. It runs on the temporary branch `prototipe-kiosk` (not merged) and needs the school's station laptop, webcam, USB scanner and sample cards.
 3. FASE-02 must add: `wali_kelas` role in `Services\Akun\Peran`, the birth-date password rule (`GantiPassword::galat()` argument), "Kelas yang diampu" on staff accounts, FKs `akun.siswa_id` and `log_aktivitas.rombel_id`, student login retest (L02-09).
 4. Tests: feature tests reset `routes`, `router`, `request`, `response` in `setUp()`; a PUT sent as POST + `_method` needs `router` reset per request. Log in with `Tests\Support\AkunTrait` (`buatAkun()`, `sesiAkun()`). Parallel agents use their own test DB: `env 'database.tests.database=spensada_test_x' vendor/bin/phpunit` (NamedLockTest expects `spensada_test`). `encryption.key` is fixed in `phpunit.dist.xml`.
 
