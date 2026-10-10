@@ -10,7 +10,7 @@
 $galat      = validation_errors();
 $roleLabels = config('Label')->codes['akun_role.role'];
 $labels     = ['nama' => 'Nama lengkap', 'username' => 'Username', 'role' => 'Role'];
-$nilai      = static fn (string $field) => old($field, $akun[$field] ?? '');
+$nilai      = static fn (string $field) => old($field, $akun[$field] ?? '', false);
 $roles      = (array) old('role', $akun['roles'] ?? []);
 $isian      = static fn (string $field): string => isset($galat[$field]) ? ' is-invalid" aria-invalid="true' : '';
 $aksi = $akun === null ? url_to('panel.akun_staf.simpan') : url_to('panel.akun_staf.perbarui', $akun['id']);

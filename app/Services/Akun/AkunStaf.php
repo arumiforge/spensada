@@ -208,6 +208,10 @@ class AkunStaf
         if ($galat !== []) {
             return ['galat' => $galat];
         }
+        // A malformed token cannot match a DATETIME, and strict SQL mode would refuse it outright.
+        if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $versi) !== 1) {
+            return ['konflik' => true];
+        }
 
         try {
             return $this->denganKunci(fn (): array => (new Transaction())->run(function () use ($id, $versi, $nama, $username, $roles, $pelakuId, $ip): array {
