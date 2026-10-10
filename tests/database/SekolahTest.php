@@ -112,6 +112,7 @@ final class SekolahTest extends CIUnitTestCase
         $login = $this->withSession([])->get('login');
         $login->assertSee('SMP Negeri 1 Dawe');
         $login->assertSee('Spensada');
+        $login->assertSee(url_to('publik.logo.index') . '?v=' . substr(basename($logo), 0, 8));
 
         $this->resetRouter();
         $gambar = $this->get('logo?v=' . substr(basename($logo), 0, 8));
