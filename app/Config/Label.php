@@ -124,6 +124,28 @@ class Label extends BaseConfig
             'pilihan' => 'Pilihan',
         ],
 
+        // Student pages (docs/09 §14), from FASE-02.
+        'siswa.status' => [
+            'aktif'      => 'Aktif',
+            'akan_aktif' => 'Akan aktif',
+            'nonaktif'   => 'Nonaktif',
+        ],
+        'siswa.jenis_kelamin' => [
+            'L' => 'Laki-laki',
+            'P' => 'Perempuan',
+        ],
+        'log_data_siswa.jenis' => [
+            'siswa_dibuat'       => 'Siswa ditambahkan',
+            'data_diubah'        => 'Data siswa diubah',
+            'nisn_diubah'        => 'NISN diubah',
+            'wa_diubah'          => 'Nomor WA diubah',
+            'foto_diganti'       => 'Foto diganti',
+            'dinonaktifkan'      => 'Dinonaktifkan',
+            'diaktifkan_kembali' => 'Diaktifkan kembali',
+            'penempatan_dibuat'  => 'Ditempatkan di kelas',
+            'penempatan_diubah'  => 'Penempatan diubah',
+        ],
+
         // Admin pages (docs/09 §14), from FASE-01.
         'log_aktivitas.jenis' => [
             'login_berhasil'             => 'Login berhasil',
