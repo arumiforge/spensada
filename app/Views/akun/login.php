@@ -20,9 +20,11 @@
     <button class="btn btn-primary w-100 mt-2" type="submit"><?= view('komponen/ikon', ['name' => 'log-in'], ['saveData' => false]) ?> Login</button>
 </form>
 <p class="text-body-secondary small mt-4 mb-0">Siswa yang lupa password menghubungi wali kelas. Staf menghubungi admin. Di komputer bersama, logout setelah selesai.</p>
-<?php if (! empty($privacyNotice)): ?>
-<section class="border-top mt-4 pt-3 small" aria-label="Pemberitahuan privasi">
-    <?= nl2br(esc($privacyNotice)) ?>
+<?php if (trim((string) $privacyNotice) !== ''): ?>
+<section class="border-top mt-4 pt-3 small text-body-secondary" aria-label="Pemberitahuan privasi">
+    <?php foreach (preg_split('/\R+/', trim($privacyNotice)) as $paragraf): ?>
+    <p class="mb-2"><?= esc($paragraf) ?></p>
+    <?php endforeach ?>
 </section>
 <?php endif ?>
 <?= $this->endSection() ?>

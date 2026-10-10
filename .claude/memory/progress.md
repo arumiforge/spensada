@@ -6,7 +6,7 @@ the log to the last 10 entries.
 
 ## Current state (2026-10-10)
 
-- FASE-01 L01-01 to L01-08 merged (PR #19): account tables, login limits, sesi/wajib-ganti filters, login/logout, change password, admin:pertama/admin:pulihkan, staff accounts, activity log, system check, panel menu. 300 PHPUnit tests and 90 node tests pass locally (MySQL 8.0 in the cloud sandbox). L01-09 kiosk prototype not started.
+- FASE-01 L01-01 to L01-08 merged (PRs #19, #20): account tables, login limits, sesi/wajib-ganti filters, login/logout, change password, admin:pertama/admin:pulihkan, staff accounts, activity log, system check, panel menu. 300 PHPUnit tests and 90 node tests pass locally (MySQL 8.0 in the cloud sandbox). L01-09 kiosk prototype not started.
 - FASE-00 merged (PR #17). L00-09 run by the owner on Laragon (PHP 8.3.28, MySQL 8.4.3): `aplikasi:cek` all good, `node --test` 90 pass; `composer test` had 7 failures from the `.env` baseURL leaking into tests, fixed in the follow-up PR (owner to re-run `composer test`).
 - Discovery docs `docs/00`–`docs/15`: done (Sessions 1–11), merged in PR #14.
 - Project license: MIT, copyright Arumi Studios (D-10).
@@ -17,17 +17,14 @@ the log to the last 10 entries.
 
 ## Next
 
-1. Owner: tag `main` as `r1-fase-01`. Delete the 14 old remote branches fully merged into `main` (listed in the FASE-01 thread); the cloud session was not allowed to delete them.
+1. Owner: tag `main` as `r1-fase-01`. Old branches were deleted by the owner on 2026-10-10; only `main` remains.
 2. L01-09 kiosk prototype: owner chose to wait (2026-10-10) until the school equipment is ready. It runs on the temporary branch `prototipe-kiosk` (not merged) and needs the school's station laptop, webcam, USB scanner and sample cards.
-3. FASE-02 must add: `wali_kelas` role in `Services\Akun\Peran`, the birth-date password rule (`GantiPassword::galat()` argument), "Kelas yang diampu" on staff accounts, FKs `akun.siswa_id` and `log_aktivitas.rombel_id`, student login retest (L02-09).
+3. FASE-02 must add: a `privasi_teks` field on Identitas sekolah (FS-MD-01; update `docs/04` FS-MD-01 first), the privacy notice on the student portal, `wali_kelas` role in `Services\Akun\Peran`, the birth-date password rule (`GantiPassword::galat()` argument), "Kelas yang diampu" on staff accounts, FKs `akun.siswa_id` and `log_aktivitas.rombel_id`, student login retest (L02-09).
 4. Tests: feature tests reset `routes`, `router`, `request`, `response` in `setUp()`; a PUT sent as POST + `_method` needs `router` reset per request. Log in with `Tests\Support\AkunTrait` (`buatAkun()`, `sesiAkun()`). Parallel agents use their own test DB: `env 'database.tests.database=spensada_test_x' vendor/bin/phpunit` (NamedLockTest expects `spensada_test`). `encryption.key` is fixed in `phpunit.dist.xml`.
 
 ## Open questions for the owner
 
-- FASE-01: password rule order. `docs/12` SEC-03 checks the common list before username/NISN, but AC-AKN-02-05 expects the NISN message for e.g. `zebra0012345678` (`zebra` is in the list). Code checks username/NISN first. Confirm, then update SEC-03.
-- FASE-01: message for an admin removing their own Admin role while other admins exist (not in `docs/11` §5.1): "Anda tidak dapat mencabut role Admin dari akun sendiri." Confirm.
-- FASE-01: the login page privacy notice (SEC-68) has no `pengaturan` key in R1; it stays empty until the school provides text (OQ-18).
-
+- Privacy notice: the default text in `pengaturan.privasi_teks` was drafted by Claude at the owner's request. The school should review it before the R1 trial; retention, legal basis, and data officer stay open (OQ-18).
 - OQ-20 — before FASE-09: production server location (Windows VPS or school machine), approval of an ACME client such as win-acme for Let's Encrypt, and running services via Windows service + Task Scheduler instead of the Laragon app with auto-logon (`docs/07` §16.4).
 - D-07: the landscape logo says "PRIMA" — is that intended for the Spensada app?
 - D-03: approve a minifier library, or keep "vendor `.min` files only, no build step"?
@@ -37,6 +34,7 @@ the log to the last 10 entries.
 
 | Date | Branch | Work |
 |---|---|---|
+| 2026-10-10 | `claude/fase-01-akun-akses-6jkkp8` | Owner answers: SEC-03 now checks username/NISN before the common list (VAL-21 order too); self-demotion message added to `docs/11` §5.1; new key `pengaturan.privasi_teks` with a default privacy notice shown on the login page (`docs/06` §6.1, `docs/12` SEC-68, `docs/08` UI-38). |
 | 2026-10-10 | `claude/fase-01-akun-akses-6jkkp8` | FASE-01 L01-01 to L01-08: lead built tables, services, filters, routes, labels, menu; parallel agents built login, password, admin commands + system check, staff accounts, activity log. Added eye/eye-off/copy/lock-open icons, SecLists common-password list. |
 | 2026-10-10 | `claude/tahap-1-uh4a06` | FASE-00 follow-up: tests ignore the `.env` baseURL; owner answers synced: seed school name/address (`docs/06` §6.1), focus-ring exception (`docs/08` UI-74), `belum` code (`docs/08` §4.2), MySQL < 8.4 stays a failure; `docs/15` §12 FASE-00 row filled. |
 | 2026-10-10 | `claude/tahap-1-uh4a06` | FASE-00 L00-01 to L00-08 (parallel sub-agents per step). Helper now pre-rounds to 15 digits so 57,5% → 58% on any PHP version, and prints "Rp 0" instead of "-Rp 0". |

@@ -325,6 +325,7 @@ Daftar kunci:
 | `sekolah_logo` | Kosong (path file, DB-15). Selama kosong, aplikasi memakai lambang SMP 1 DAWE bawaan di `public/aset/logo/logo-sekolah.png`. | Admin | R1 | FS-MD-01 |
 | `sekolah_kota` | Kosong | Admin | R2 | Tempat di blok tanda tangan PDF (`08` UI-61) |
 | `batas_mundur_hari` | 7 | Admin | R1 | BR-MUN-01, FS-PRS-10 |
+| `privasi_teks` | Teks pemberitahuan privasi bawaan (di bawah tabel). Kosong berarti tidak ada pemberitahuan. | Admin | R1 | `12` SEC-68, `08` UI-38 |
 | `wa_tunda_menit` | 60 | Admin | R2 | BR-WA-02 |
 | `wa_ambang_persen` | 50 | Admin | R2 | BR-WA-03 |
 | `status_dibangun_sampai` | Kosong | Sistem | R1 | §11.4 |
@@ -333,6 +334,14 @@ Daftar kunci:
 | `kiosk_pin` | Kosong | Admin | R1 | PIN petugas kiosk (`12` SEC-21) |
 
 Nilai `kiosk_pin` adalah teks JSON berisi garam, jumlah iterasi, dan hash PBKDF2-SHA256 (`garam`, `iterasi`, `hash`), tidak pernah PIN itu sendiri. Hash ini dikirim ke kiosk di data kiosk (`10` EP-KIO-01). Kosong berarti PIN belum diatur (`12` SEC-21 butir 4). Perubahannya dicatat di `log_aktivitas` dengan jenis `pin_kiosk_diubah`, tanpa PIN maupun hashnya. (RECOMMENDATION, Session 9)
+
+Nilai `privasi_teks` adalah teks biasa tanpa HTML. Baris baru menjadi paragraf baru. Teks ini tampil di bawah formulir login dan di portal siswa (`12` SEC-68). Teks bawaannya disusun Claude atas permintaan pemilik (2026-10-10), dan sekolah boleh mengubahnya. Isiannya ditambahkan ke halaman Identitas sekolah (FS-MD-01) di FASE-02. Teks bawaan:
+
+> Spensada dipakai sekolah untuk mencatat kehadiran siswa. Data yang disimpan adalah identitas siswa (NISN, nama, kelas, tanggal lahir, foto, dan kontak orang tua/wali), waktu scan kartu, pengajuan izin beserta lampirannya, dan catatan login.
+>
+> Staf sekolah hanya melihat data yang diperlukan untuk tugasnya, dan siswa hanya melihat datanya sendiri. Data dipakai untuk keperluan sekolah, tidak dijual, dan tidak dibagikan untuk keperluan lain.
+>
+> Pertanyaan atau permintaan perbaikan data dapat disampaikan kepada wali kelas atau admin sekolah.
 
 Kredensial gateway WhatsApp tidak disimpan di tabel ini, tetapi di `.env` production (`12` SEC-73).
 
