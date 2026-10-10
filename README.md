@@ -319,4 +319,4 @@ Uji: `composer test` dan `node --test "tests/js/**/*.test.js"`.
 
 ## Lisensi
 
-MIT, hak cipta Arumi Studios (`docs/07` §2.7). File `LICENSE` di akar masih milik framework sampai diganti di FASE-00 langkah L00-01.
+MIT, hak cipta Arumi Studios (`docs/07` §2.7). Teks lengkapnya ada di [`LICENSE`](LICENSE). Lisensi framework dan library tetap mengikuti paketnya masing-masing di `vendor/` dan `public/aset/vendor/`.
