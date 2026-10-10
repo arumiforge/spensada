@@ -52,12 +52,11 @@ $roleLabels = $label['akun_role.role'];
 </form>
 
 <?php
-// "Kelas yang diampu" needs `rombel` (FASE-02, FS-MD-03); add the column then.
 ob_start();
 ?>
 <table class="table align-middle">
     <thead>
-        <tr><th scope="col">Nama</th><th scope="col">Username</th><th scope="col">Role</th><th scope="col">Status</th><th scope="col">Login terakhir</th></tr>
+        <tr><th scope="col">Nama</th><th scope="col">Username</th><th scope="col">Role</th><th scope="col">Kelas yang diampu</th><th scope="col">Status</th><th scope="col">Login terakhir</th></tr>
     </thead>
     <tbody>
 <?php foreach ($rows as $row): ?>
@@ -65,6 +64,7 @@ ob_start();
             <td><a href="<?= esc(url_to('panel.akun_staf.lihat', $row['id']), 'attr') ?>"><?= esc($row['nama']) ?></a></td>
             <td><?= esc($row['username']) ?></td>
             <td><?= esc(implode(', ', ['Staf', ...array_map(static fn ($r) => $roleLabels[$r] ?? $r, $row['roles'])])) ?></td>
+            <td><?= $row['kelas'] === [] ? '–' : esc(implode(', ', $row['kelas'])) ?></td>
             <td><?= esc($label['akun.status'][$row['status']] ?? $row['status']) ?></td>
             <td><?= $row['login_terakhir_at'] === null ? 'Belum pernah' : esc(format_datetime($row['login_terakhir_at'])) ?></td>
         </tr>

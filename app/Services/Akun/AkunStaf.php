@@ -81,8 +81,11 @@ class AkunStaf
             }
         }
 
+        $kelas = $this->kelasDiampu(array_column($rows, 'id'));
+
         foreach ($rows as &$row) {
             $row['roles'] = $roles[$row['id']] ?? [];
+            $row['kelas'] = $kelas[$row['id']] ?? [];
         }
 
         return ['rows' => $rows, 'total' => $total];
@@ -99,9 +102,36 @@ class AkunStaf
 
         if ($akun !== null) {
             $akun['roles'] = model(AkunRoleModel::class)->rolesOf($id);
+            $akun['kelas'] = $this->kelasDiampu([$id])[$id] ?? [];
         }
 
         return $akun;
+    }
+
+    /**
+     * Rombel names each account leads as wali kelas in the active school year (FS-AKN-03 item 3).
+     *
+     * @param list<int|string> $akunIds
+     *
+     * @return array<int, list<string>>
+     */
+    private function kelasDiampu(array $akunIds): array
+    {
+        if ($akunIds === []) {
+            return [];
+        }
+
+        $kelas = [];
+        $rows  = db_connect()->table('rombel r')->select('r.wali_kelas_id, r.nama')
+            ->join('tahun_ajaran ta', 'ta.id = r.tahun_ajaran_id')
+            ->where('ta.aktif', 1)->whereIn('r.wali_kelas_id', $akunIds)
+            ->orderBy('r.tingkat')->orderBy('r.nama')->get()->getResultArray();
+
+        foreach ($rows as $row) {
+            $kelas[(int) $row['wali_kelas_id']][] = $row['nama'];
+        }
+
+        return $kelas;
     }
 
     /**

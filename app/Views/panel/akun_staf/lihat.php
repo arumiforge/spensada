@@ -33,6 +33,9 @@ $ikon  = static fn (string $name): string => view('komponen/ikon', ['name' => $n
     <dt class="col-sm-4">Nama lengkap</dt><dd class="col-sm-8"><?= esc($akun['nama']) ?></dd>
     <dt class="col-sm-4">Username</dt><dd class="col-sm-8"><?= esc($akun['username']) ?></dd>
     <dt class="col-sm-4">Role</dt><dd class="col-sm-8"><?= esc(implode(', ', ['Staf', ...array_map(static fn ($r) => $label['akun_role.role'][$r] ?? $r, $akun['roles'])])) ?></dd>
+<?php if ($akun['kelas'] !== []): ?>
+    <dt class="col-sm-4">Wali kelas</dt><dd class="col-sm-8"><?= esc(implode(', ', $akun['kelas'])) ?></dd>
+<?php endif ?>
     <dt class="col-sm-4">Status</dt><dd class="col-sm-8"><?= esc($label['akun.status'][$akun['status']] ?? $akun['status']) ?></dd>
     <dt class="col-sm-4">Password</dt><dd class="col-sm-8"><?= $akun['wajib_ganti_password'] ? 'Belum diganti sejak dibuat atau direset' : 'Sudah diganti pemiliknya' ?></dd>
     <dt class="col-sm-4">Login terakhir</dt><dd class="col-sm-8"><?= $akun['login_terakhir_at'] === null ? 'Belum pernah' : esc(format_datetime($akun['login_terakhir_at'])) ?></dd>
