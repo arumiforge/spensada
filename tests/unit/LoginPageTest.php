@@ -47,6 +47,22 @@ final class LoginPageTest extends CIUnitTestCase
         $result->assertSee('SMP 1 DAWE', '.akun-kepala-sekolah');
     }
 
+    public function testLoginPageShowsPrivacyNoticeFromSettings(): void
+    {
+        $this->seed(PengaturanAwal::class);
+
+        $result = $this->controller(Login::class)->execute('index');
+
+        $result->assertSee('Pemberitahuan privasi');
+        $result->assertSee('Spensada dipakai sekolah untuk mencatat kehadiran siswa.', 'p');
+        $result->assertSee('Pertanyaan atau permintaan perbaikan data dapat disampaikan kepada wali kelas atau admin sekolah.', 'p');
+
+        // The school may clear it (docs/06 §6.1).
+        $this->db->table('pengaturan')->where('kunci', 'privasi_teks')->update(['nilai' => '']);
+
+        $this->controller(Login::class)->execute('index')->assertDontSee('Pemberitahuan privasi');
+    }
+
     public function testLoginPageHeadHasFaviconsAndCssInOrder(): void
     {
         $html = $this->controller(Login::class)->execute('index')->getBody();

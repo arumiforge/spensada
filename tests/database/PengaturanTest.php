@@ -45,6 +45,7 @@ final class PengaturanTest extends CIUnitTestCase
             'status_mulai'           => null,
             'cron_terakhir_at'       => null,
             'kiosk_pin'              => null,
+            'privasi_teks'           => PengaturanAwal::PRIVASI,
         ];
         $actual = array_column($rows, 'nilai', 'kunci');
         ksort($expected);
@@ -65,7 +66,7 @@ final class PengaturanTest extends CIUnitTestCase
         $this->seed(PengaturanAwal::class);
 
         $this->seeInDatabase('pengaturan', ['kunci' => 'batas_mundur_hari', 'nilai' => '3']);
-        $this->seeNumRecords(8, 'pengaturan', []);
+        $this->seeNumRecords(9, 'pengaturan', []);
     }
 
     public function testDataContohRefusesProduction(): void

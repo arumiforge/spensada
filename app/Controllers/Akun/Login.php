@@ -28,11 +28,12 @@ class Login extends BaseController
             return redirect()->to(self::HOME[session('jenis')]);
         }
 
+        $layanan = new LoginService();
+
         return view('akun/login', [
-            'title'      => 'Login',
-            'schoolName' => (new LoginService())->namaSekolah(),
-            // R1 has no pengaturan key for the privacy notice yet (docs/08 UI-38, OQ-18).
-            'privacyNotice' => '',
+            'title'         => 'Login',
+            'schoolName'    => $layanan->namaSekolah(),
+            'privacyNotice' => $layanan->teksPrivasi(),
         ]);
     }
 

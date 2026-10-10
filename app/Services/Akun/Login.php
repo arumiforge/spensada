@@ -85,7 +85,20 @@ class Login
      */
     public function namaSekolah(): string
     {
-        return (string) ($this->db->table('pengaturan')->select('nilai')->where('kunci', 'sekolah_nama')->get()->getRow()->nilai ?? '');
+        return $this->pengaturan('sekolah_nama');
+    }
+
+    /**
+     * Privacy notice under the login form (docs/12 SEC-68); empty when the school cleared it.
+     */
+    public function teksPrivasi(): string
+    {
+        return $this->pengaturan('privasi_teks');
+    }
+
+    private function pengaturan(string $kunci): string
+    {
+        return (string) ($this->db->table('pengaturan')->select('nilai')->where('kunci', $kunci)->get()->getRow()->nilai ?? '');
     }
 
     /**

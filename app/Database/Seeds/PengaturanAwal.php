@@ -11,6 +11,9 @@ use CodeIgniter\Database\Seeder;
  */
 class PengaturanAwal extends Seeder
 {
+    /** Default privacy notice for the login page and student portal (docs/12 SEC-68); the school may change it. */
+    public const PRIVASI = "Spensada dipakai sekolah untuk mencatat kehadiran siswa. Data yang disimpan adalah identitas siswa (NISN, nama, kelas, tanggal lahir, foto, dan kontak orang tua/wali), waktu scan kartu, pengajuan izin beserta lampirannya, dan catatan login.\nStaf sekolah hanya melihat data yang diperlukan untuk tugasnya, dan siswa hanya melihat datanya sendiri. Data dipakai untuk keperluan sekolah, tidak dijual, dan tidak dibagikan untuk keperluan lain.\nPertanyaan atau permintaan perbaikan data dapat disampaikan kepada wali kelas atau admin sekolah.";
+
     /**
      * R1 keys and defaults; null means "Kosong".
      */
@@ -23,6 +26,7 @@ class PengaturanAwal extends Seeder
         'status_mulai'           => null,
         'cron_terakhir_at'       => null,
         'kiosk_pin'              => null,
+        'privasi_teks'           => self::PRIVASI,
     ];
 
     public function run(): void
