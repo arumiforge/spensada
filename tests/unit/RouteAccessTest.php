@@ -3,9 +3,11 @@
 use CodeIgniter\Commands\Utilities\Routes\SampleURIGenerator;
 use CodeIgniter\Router\DefinedRouteCollector;
 use CodeIgniter\Test\CIUnitTestCase;
+use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\FeatureTestTrait;
 use CodeIgniter\Test\TestResponse;
 use Config\Services;
+use Tests\Support\AkunTrait;
 
 /**
  * Access test over the real route list and filter stack (docs/12 SEC-81,
@@ -17,7 +19,15 @@ use Config\Services;
  */
 final class RouteAccessTest extends CIUnitTestCase
 {
+    use AkunTrait;
+    use DatabaseTestTrait;
     use FeatureTestTrait;
+
+    protected $refresh   = true;
+    protected $namespace = 'App';
+
+    /** @var array<string, array<string, mixed>> Session per account type */
+    private array $sessions = [];
 
     /** Account types allowed per area prefix (docs/09 RT-01). */
     private const AREAS = [
@@ -127,11 +137,24 @@ final class RouteAccessTest extends CIUnitTestCase
     {
         Services::resetSingle('response');
 
-        // shortcut: `sesi` only checks akun_id until L01-02; then log in with real akun rows from a seeder.
-        $session = $jenis === null ? [] : ['akun_id' => 1, 'jenis' => $jenis];
+        $session = $jenis === null ? [] : $this->sessionFor($jenis);
         $headers = ['X-CSRF-TOKEN' => service('security')->getHash()] + ($background ? self::AJAX : []);
 
         return $this->withSession($session)->withHeaders($headers)->call($method, $uri);
+    }
+
+    /**
+     * Logged-in session of an active account of this type, made once per test.
+     *
+     * @return array<string, mixed>
+     */
+    private function sessionFor(string $jenis): array
+    {
+        return $this->sessions[$jenis] ??= $this->sesiAkun($this->buatAkun([
+            'jenis'            => $jenis,
+            'username'         => "akses-{$jenis}",
+            'login_stasiun_id' => $jenis === 'stasiun' ? str_repeat('a', 32) : null,
+        ]));
     }
 
     private function assertJsonCode(TestResponse $result, int $status, string $kode, string $route): void

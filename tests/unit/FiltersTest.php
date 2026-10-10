@@ -2,10 +2,13 @@
 
 use App\Filters\Keamanan;
 use App\Services\Akun\DiLuarHak;
+use CodeIgniter\I18n\Time;
 use CodeIgniter\Test\CIUnitTestCase;
+use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\FeatureTestTrait;
 use CodeIgniter\Test\FilterTestTrait;
 use Config\Services;
+use Tests\Support\AkunTrait;
 use Tests\Support\Filters\HakWithRoles;
 
 /**
@@ -15,8 +18,13 @@ use Tests\Support\Filters\HakWithRoles;
  */
 final class FiltersTest extends CIUnitTestCase
 {
+    use AkunTrait;
+    use DatabaseTestTrait;
     use FeatureTestTrait;
     use FilterTestTrait;
+
+    protected $refresh   = true;
+    protected $namespace = 'App';
 
     private const AJAX = ['X-Requested-With' => 'XMLHttpRequest', 'Accept' => 'application/json'];
 
@@ -26,6 +34,7 @@ final class FiltersTest extends CIUnitTestCase
         Services::resetSingle('request');
         Services::resetSingle('response');
         parent::setUp();
+        Time::setTestNow('2026-10-13 06:30:00', 'Asia/Jakarta');
 
         $ok = static fn (): string => 'ok';
         $this->withRoutes([
@@ -34,6 +43,8 @@ final class FiltersTest extends CIUnitTestCase
             ['POST', 'panel/simpan', $ok],
             ['GET', 'panel/hak', $ok, ['filter' => 'hak:HA-AKN-02']],
             ['GET', 'akun/uji', $ok, ['filter' => ['sesi', 'area:staf,siswa']]],
+            ['GET', 'panel/uji/fragmen', $ok, ['filter' => ['sesi', 'area:staf']]],
+            ['GET', 'panel/hak-sesi', $ok, ['filter' => ['sesi', 'area:staf', 'hak:HA-AKN-02']]],
         ]);
     }
 
@@ -61,7 +72,7 @@ final class FiltersTest extends CIUnitTestCase
 
     public function testCsrfRejectionIgnoresForeignReferer(): void
     {
-        $result = $this->withSession(['akun_id' => 1, 'jenis' => 'siswa'])
+        $result = $this->withSession(['akun_id' => 5, 'jenis' => 'siswa'])
             ->withHeaders(['Referer' => 'https://evil.test/panel'])
             ->post('panel/simpan');
 
@@ -102,20 +113,21 @@ final class FiltersTest extends CIUnitTestCase
 
     public function testAreaMismatchAnswersDitolakOrRedirectsHome(): void
     {
-        $siswa = ['akun_id' => 5, 'jenis' => 'siswa'];
+        $siswa = $this->sesiAkun($this->buatAkun(['jenis' => 'siswa', 'username' => '0012345678', 'nama' => null]));
 
         $result = $this->withSession($siswa)->withHeaders(self::AJAX)->get('panel/uji');
         $result->assertStatus(403);
         $this->assertSame('ditolak', json_decode($result->getJSON(), true)['kode']);
 
         $this->withSession($siswa)->withHeaders([])->get('panel/uji')->assertRedirectTo('https://example.com/portal');
-        $this->withSession(['akun_id' => 9, 'jenis' => 'stasiun'])->get('akun/uji')->assertRedirectTo('https://example.com/kiosk');
+        $stasiun = $this->buatAkun(['jenis' => 'stasiun', 'username' => 'gerbang-1', 'login_stasiun_id' => str_repeat('b', 32)]);
+        $this->withSession($this->sesiAkun($stasiun))->get('akun/uji')->assertRedirectTo('https://example.com/kiosk');
     }
 
     public function testAreaMatchPasses(): void
     {
-        $this->withSession(['akun_id' => 1, 'jenis' => 'staf'])->get('panel/uji')->assertOK();
-        $this->withSession(['akun_id' => 5, 'jenis' => 'siswa'])->get('akun/uji')->assertOK();
+        $this->withSession($this->sesiAkun($this->buatAkun()))->get('panel/uji')->assertOK();
+        $this->withSession($this->sesiAkun($this->buatAkun(['jenis' => 'siswa', 'username' => '0012345678', 'nama' => null])))->get('akun/uji')->assertOK();
     }
 
     public function testHakDeniedAnswersDitolak(): void
@@ -155,7 +167,7 @@ final class FiltersTest extends CIUnitTestCase
         $this->assertSame('camera=(self), microphone=(), geolocation=(), payment=(), usb=()', $kiosk->getHeaderLine('Permissions-Policy'));
 
         Services::resetSingle('response');
-        $result = $this->withSession(['akun_id' => 1, 'jenis' => 'staf'])->get('panel/uji');
+        $result = $this->withSession($this->sesiAkun($this->buatAkun()))->get('panel/uji');
         $result->assertHeader(
             'Content-Security-Policy',
             "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
@@ -177,5 +189,86 @@ final class FiltersTest extends CIUnitTestCase
 
         $this->assertSame("sandbox; default-src 'none'; frame-ancestors 'none'", $response->getHeaderLine('Content-Security-Policy'));
         $this->assertSame('camera=(), microphone=(), geolocation=(), payment=(), usb=()', $response->getHeaderLine('Permissions-Policy'));
+    }
+    public function testSesiEndsAfterEightHoursIdleAndKeepsTujuan(): void
+    {
+        $session = $this->sesiAkun($this->buatAkun());
+        Time::setTestNow('2026-10-13 14:31:00', 'Asia/Jakarta');
+
+        $this->withSession($session)->get('panel/uji?x=1')->assertRedirectTo('https://example.com/login');
+        $this->assertSame('Sesi berakhir. Login lagi untuk melanjutkan.', session('galat'));
+        $this->assertSame('/panel/uji?x=1', session('tujuan'));
+        $this->assertNull(session('akun_id'));
+    }
+
+    public function testSesiEndsSevenDaysAfterLogin(): void
+    {
+        $session = ['login_at' => Time::now()->subDays(7)->subSeconds(1)->getTimestamp()] + $this->sesiAkun($this->buatAkun());
+
+        $this->withSession($session)->get('panel/uji')->assertRedirectTo('https://example.com/login');
+    }
+
+    public function testSesiRejectsDeactivatedAccount(): void
+    {
+        $akun    = $this->buatAkun();
+        $session = $this->sesiAkun($akun);
+        $this->db->table('akun')->where('id', $akun['id'])->update(['status' => 'nonaktif']);
+
+        $this->withSession($session)->get('panel/uji')->assertRedirectTo('https://example.com/login');
+    }
+
+    public function testSesiRejectsOldCredentialStamp(): void
+    {
+        $akun    = $this->buatAkun();
+        $session = $this->sesiAkun($akun);
+        $this->db->table('akun')->where('id', $akun['id'])->update(['password_hash' => password_hash('lain-lagi-123', PASSWORD_BCRYPT, ['cost' => 4])]);
+
+        $result = $this->withSession($session)->withHeaders(self::AJAX)->get('panel/uji');
+
+        $result->assertStatus(401);
+        $this->assertSame('login_ulang', json_decode($result->getJSON(), true)['kode']);
+    }
+
+    public function testSesiUpdatesActivityButNotForPolling(): void
+    {
+        $session = $this->sesiAkun($this->buatAkun());
+        Time::setTestNow('2026-10-13 06:35:00', 'Asia/Jakarta');
+
+        $this->withSession($session)->withHeaders(self::AJAX)->get('panel/uji/fragmen')->assertOK();
+        $this->assertSame($session['aktif_at'], session('aktif_at'));
+
+        $this->withSession($session)->get('panel/uji')->assertOK();
+        $this->assertSame(Time::now()->getTimestamp(), session('aktif_at'));
+    }
+
+    public function testStationLoggedInElsewhereAnswersLoginBerpindah(): void
+    {
+        $stasiun = $this->buatAkun(['jenis' => 'stasiun', 'username' => 'gerbang-1', 'login_stasiun_id' => str_repeat('b', 32)]);
+        $session = ['login_stasiun_id' => str_repeat('c', 32)] + $this->sesiAkun($stasiun);
+
+        $result = $this->withSession($session)->withHeaders(self::AJAX)->get('akun/uji');
+
+        $result->assertStatus(401);
+        $this->assertSame(['kode' => 'login_ulang', 'pesan' => 'Station logged in elsewhere.', 'alasan' => 'login_berpindah'], json_decode($result->getJSON(), true));
+    }
+
+    public function testWajibGantiOpensOnlyPasswordPage(): void
+    {
+        $session = $this->sesiAkun($this->buatAkun(['wajib_ganti_password' => 1]));
+
+        $this->withSession($session)->get('panel/uji')->assertRedirectTo('https://example.com/akun/password');
+        $this->withSession($session)->get('akun/uji')->assertOK();
+
+        $result = $this->withSession($session)->withHeaders(self::AJAX)->get('panel/uji');
+        $result->assertStatus(403);
+        $this->assertSame('ditolak', json_decode($result->getJSON(), true)['kode']);
+    }
+
+    public function testHakReadsRolesLoadedBySesi(): void
+    {
+        $this->withSession($this->sesiAkun($this->buatAkun([], ['admin'])))->get('panel/hak-sesi')->assertOK();
+
+        $this->expectException(DiLuarHak::class);
+        $this->withSession($this->sesiAkun($this->buatAkun([], ['guru_piket'])))->get('panel/hak-sesi');
     }
 }

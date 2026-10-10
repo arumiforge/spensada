@@ -45,13 +45,12 @@ class Hak implements FilterInterface
     }
 
     /**
-     * Roles of the logged-in account.
+     * Roles of the logged-in account, loaded by the `sesi` filter.
      *
      * @return list<string>
      */
     protected function roles(): array
     {
-        // L01-02: return the roles `sesi` loads from akun.jenis, akun_role and rombel (ARS-15); until then every right is denied.
-        return [];
+        return service('akunAktif')->roles();
     }
 }
