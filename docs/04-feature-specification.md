@@ -2,8 +2,8 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.7 (draft, menunggu review) |
-| Tanggal | 2026-10-05 |
+| Versi | 0.8 (draft, menunggu review) |
+| Tanggal | 2026-10-10 |
 | Sumber | Discovery Session 4b (Feature Specification). Diperbarui dengan keputusan Session 5 (§2.4), Session 6 (§2.5), Session 7 (§2.6), Session 8 (§2.7), dan Session 9 (§2.8). Fase implementasi setiap fitur ada di `14` (Session 10). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan acceptance criteria tingkat tinggi (AC-01 s.d. AC-05). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`) dan cakupan. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). |
 | Dokumen terkait | [06-database-design.md](06-database-design.md): tabel yang ditulis dan dibaca setiap fitur. [07-system-architecture.md](07-system-architecture.md): mekanisme teknis, termasuk kiosk dan hitung ulang. [13-reporting-import-export.md](13-reporting-import-export.md): laporan, template import, dan format file. [08-ui-ux-design-system.md](08-ui-ux-design-system.md): tampilan, teks layar, dan label. [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman dan route setiap fitur. [10-api-specification.md](10-api-specification.md): API kiosk, fragmen, dan bantuan formulir. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): aturan isian, teks pesan validasi, dan penanganan galat. [12-security.md](12-security.md): password, pembatasan login, sesi, PIN petugas, file unggahan, dan log aktivitas. |
@@ -5566,7 +5566,7 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 | OQ | Pertanyaan singkat | Fitur terdampak | Jadwal |
 |---|---|---|---|
 | OQ-08 | Jumlah stasiun scan | FS-AKN-04, FS-KIO-05 | Sebelum uji coba R1 |
-| OQ-09 | Jenis hosting dan instalasi Composer | FS-MD-06 (PhpSpreadsheet), FS-LAP-05 | Terjawab di Session 6: VPS dan Composer appstarter (`07` §2) |
+| OQ-09 | Jenis hosting dan instalasi Composer | FS-MD-06 (PhpSpreadsheet), FS-LAP-05 | Terjawab di Session 6: VPS dan Composer appstarter (`07` §2). Hosting diubah keputusan pemilik 2026-10-10 menjadi server Windows dengan Laragon (`07` ARS-01). |
 | OQ-10 | Provider gateway WhatsApp | FS-WA-01 s.d. FS-WA-03 | Sebelum R2 |
 | OQ-11 | Matriks laporan × format; isi flyer | FS-LAP-03, FS-LAP-05, FS-LAP-06 | Terjawab di Session 5 (`13` §4, LP-08) |
 | OQ-12 | Format nama file foto | FS-MD-08 | Terjawab di Session 5 (`13` IM-03) |
@@ -5614,3 +5614,4 @@ Session 4b tidak menjawab dan tidak menambah OQ. Session 5 menjawab OQ-11 dan OQ
 | 0.5 | 2026-10-05 | Keputusan Session 8 (§2.7, `09`, `10`). §1 dan pengantar §7 merujuk `09` dan `10`. FS-KIO-03 (isi laporan kiosk dan scan galat), FS-KIO-04 (akun pencatat, isi respons, dan status stasiun), FS-KIO-05 (kolom dan sorotan baru, AC-KIO-05-03), FS-PRS-06 dan FS-IZN-02 (pencarian siswa), FS-LAP-01 ("Kelas saya" dan peringatan pemeriksaan sistem), §12.3, §13, §14.1, dan §14.2 diperbarui. |
 | 0.6 | 2026-10-05 | Keputusan Session 9 (§2.8, `11`, `12`). Kepala dokumen dan §1 merujuk `11` dan `12`. §4.3 (panjang alasan), §4.4 butir 5 (log aktivitas dan akses lampiran), dan §4.9 (Paket 10 MB dan penyimpanan ulang gambar) diperbarui. FS-AKN-01 (pembatasan login, masa sesi, dan log), FS-AKN-02 (aturan password), FS-AKN-03 s.d. FS-AKN-05 (password awal, username, dan buka kunci login), FS-AKN-04 (satu login aktif per akun stasiun), FS-KIO-01 (PIN petugas), FS-KIO-03 dan FS-KIO-04 (log scan yang ditolak server dan pembatasan laju), FS-MD-01 s.d. FS-MD-03, FS-MD-05 s.d. FS-MD-09 (format dan ukuran unggahan, dan jenis log), FS-PRS-10, FS-PRS-11, FS-IZN-01 s.d. FS-IZN-04, dan FS-IZN-06 (penyajian dan catatan akses lampiran) diperbarui. Acceptance criteria baru: AC-AKN-01-07, AC-AKN-01-08, AC-AKN-02-05, AC-AKN-04-05, AC-KIO-01-07, AC-KIO-04-07, AC-MD-06-06, AC-IZN-01-08, dan AC-IZN-06-04. §12.3, §13, §14.1, dan §14.2 diperbarui. OQ-17 terjawab, dan OQ-18 ditambahkan. |
 | 0.7 | 2026-10-05 | Keputusan Session 10 (`14`). Kepala dokumen dan §1 merujuk definisi selesai (`14` RM-05) dan fase setiap fitur (`14` §16.1). §4.10 (tanggal sebelum `status_mulai`) ditambahkan. |
+| 0.8 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10. Catatan OQ-09 di §14 merujuk server Windows (`07` ARS-01). |

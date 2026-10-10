@@ -2,10 +2,10 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.10 (draft) |
-| Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, Session 4b, Session 5, Session 6, Session 7, Session 8, Session 9, dan Session 10. |
-| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [08-ui-ux-design-system.md](08-ui-ux-design-system.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [10-api-specification.md](10-api-specification.md), [11-validation-and-error-handling.md](11-validation-and-error-handling.md), [12-security.md](12-security.md), [13-reporting-import-export.md](13-reporting-import-export.md), [14-development-roadmap.md](14-development-roadmap.md) |
+| Versi | 0.11 (draft) |
+| Tanggal | 2026-10-10 |
+| Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, Session 4b, Session 5, Session 6, Session 7, Session 8, Session 9, Session 10, keputusan pemilik proyek 2026-10-10, dan Session 11. |
+| Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [08-ui-ux-design-system.md](08-ui-ux-design-system.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [10-api-specification.md](10-api-specification.md), [11-validation-and-error-handling.md](11-validation-and-error-handling.md), [12-security.md](12-security.md), [13-reporting-import-export.md](13-reporting-import-export.md), [14-development-roadmap.md](14-development-roadmap.md), [15-implementation-phases.md](15-implementation-phases.md) |
 
 Dokumen ini adalah titik masuk dokumentasi proyek. Baca dokumen ini sebelum dokumen lain.
 
@@ -134,6 +134,7 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 - Backend: CodeIgniter 4.
 - Database: MySQL dengan driver MySQLi.
 - Frontend: HTML, CSS, Vanilla JavaScript. Tanpa React, Vue, Angular, Vite, atau arsitektur SPA.
+- Tampilan: Bootstrap 5 dari file `.min` di server sendiri untuk panel, portal, dan halaman publik; kiosk memakai CSS sendiri (DECISION, keputusan pemilik 2026-10-10, `08` UI-73).
 - Pola: server-rendered, dengan API seperlunya (misalnya untuk sinkron kiosk).
 - Library tambahan hanya bila memberi manfaat nyata, dan alasannya dicatat (`07` ARS-10).
 - Repository: GitHub.
@@ -144,15 +145,15 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 |---|---|---|
 | Lokal | Windows, Laragon, Nginx, PHP 8.3.28, MySQL 8.4.3. Panduan teknis ditulis untuk environment ini, bukan Linux. | CONFIRMED |
 | Lokal — alamat | `https://spensada.test` (virtual host otomatis Laragon dengan SSL). HTTPS diperlukan agar webcam bisa dipakai. Panduan lokal ada di `07` §15. | RECOMMENDATION |
-| Production | VPS dengan Linux, Nginx, PHP 8.3, dan MySQL 8.4 (OQ-09). Document root diarahkan ke `public/`, seluruh aplikasi memakai HTTPS, dan cron dipakai sejak R1. Langkahnya ada di `07` §16. | DECISION (hosting online; VPS, Session 6) |
+| Production | Server Windows dengan Laragon, Nginx, PHP 8.3, dan MySQL 8.4, menggantikan VPS Linux dari Session 6. Document root diarahkan ke `public/`, seluruh aplikasi memakai HTTPS, dan tugas terjadwal (cron) lewat Windows Task Scheduler dipakai sejak R1. Langkahnya ada di `07` §16. Lokasi server menunggu OQ-20. | DECISION (hosting online, Session 6; server Windows, keputusan pemilik 2026-10-10) |
 
-### 7.3 Kondisi repository (CONFIRMED, dicek 2026-10-05)
+### 7.3 Kondisi repository (CONFIRMED, dicek 2026-10-10)
 
 | Item | Kondisi |
 |---|---|
 | Framework | CodeIgniter 4.7.4, dipasang tanpa Composer: folder `system/` ikut di-commit dan tidak ada `vendor/`. `composer.json` yang ada adalah milik framework, bukan aplikasi. Repository dipindah ke Composer appstarter di fase implementasi pertama (`07` ARS-07). |
-| Kode aplikasi | Belum ada. Hanya `Home::index` dan `app/Views/welcome_message.php` bawaan. |
-| Git | Berisi dokumen `docs/` dari Session 1–10, termasuk contoh visual `docs/08-contoh-tampilan.html`, serta `.gitignore` dari Session 6 (`07` ARS-09). |
+| Kode aplikasi | Belum ada, kecuali helper format `app/Helpers/format_helper.php` beserta ujinya (`tests/unit/FormatHelperTest.php`). Selain itu hanya `Home::index` dan `app/Views/welcome_message.php` bawaan. |
+| Git | Berisi dokumen `docs/` dari Session 1–11, termasuk contoh visual `docs/08-contoh-tampilan.html`, `.gitignore` dari Session 6 (`07` ARS-09), aturan kerja AI di `CLAUDE.md` dan `.claude/`, serta logo sekolah dan ikon aplikasi di `public/aset/logo/`. |
 | Konfigurasi database | `app/Config/Database.php`: MySQLi, `utf8mb4` / `utf8mb4_general_ci`, kredensial kosong. |
 | `baseURL` | Masih `http://localhost:8080/`. |
 | `appTimezone` | Masih `UTC`. Diubah ke `Asia/Jakarta` di fase implementasi pertama (`07` ARS-44). |
@@ -176,7 +177,7 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | R-12 | NISN bisa diawali nol, dan Excel sering membuang nol di depan. | NISN disimpan sebagai teks 10 digit, `id` internal menjadi primary key, dan import divalidasi per baris. Template XLSX memformat kolom NISN sebagai teks (`06` DB-03, `13` IM-01). | RECOMMENDATION | Session 5 |
 | R-13 | Status Alpa salah bila dihitung sebelum semua data masuk. | Status dapat dihitung ulang setiap kali data berubah, sehingga scan yang tersinkron belakangan mengoreksi Alpa. Hasilnya disimpan sebagai salinan yang dapat dibangun ulang (`06` §11). Hitung ulang memakai antrean yang ditulis bersama perubahan data, sehingga tidak ada yang terlewat (`07` §7). Sesi masuk ditutup otomatis. Pesan "tidak hadir" ditunda, menunggu semua stasiun tersinkron, dan ditahan bila jumlah siswa tercatat masuk di bawah ambang (`05` BR-STS-06, BR-WA-02, BR-WA-03). | DECISION (tutup otomatis, tunda, ambang: Session 4; hitung ulang dan salinan: Session 5; antrean: Session 6) | Session 4, 5, 6 |
 | R-14 | Riwayat rekap rusak saat kenaikan kelas bila siswa hanya punya satu kolom kelas. | Penempatan siswa ke rombel dicatat dengan tanggal mulai dan selesai, dan rombel pada setiap tanggal disalin ke status harian (`06` §6.7, §11; `05` BR-REK-05). | DECISION (Session 5) | Session 5 |
-| R-15 | Keterbatasan hosting terkait document root dan cron. | Production memakai VPS, sehingga document root, cron, dan HTTPS dapat diatur sendiri (`07` ARS-01, ARS-02). | DECISION (VPS, Session 6) | Session 6 (OQ-09) |
+| R-15 | Keterbatasan hosting terkait document root dan cron. | Production memakai server Windows yang diatur sendiri, sehingga document root, tugas terjadwal, dan HTTPS dapat diatur sendiri (`07` ARS-01, ARS-02, §16). | DECISION (hosting yang diatur sendiri, Session 6; server Windows, keputusan pemilik 2026-10-10) | Session 6 (OQ-09) |
 | R-16 | Volume WhatsApp tinggi. Default scan masuk berarti ±500–1.000 pesan setiap pagi. Jeda dan kuota provider membatasi kecepatan kirim, dan nomor bisa diblokir. | Pesan dikirim lewat antrean (outbox) dan proses terjadwal, lalu diuji di R2. Risiko nomor diblokir diterima pengguna. | DECISION (risiko blokir diterima); RECOMMENDATION (antrean) | Sebelum R2 (OQ-10) |
 | R-17 | Data siswa termasuk data anak, dan surat sakit termasuk data kesehatan. Keduanya data pribadi spesifik menurut UU 27/2022 tentang Pelindungan Data Pribadi. | File unggahan disimpan di luar `public/` dengan akses terbatas. Halaman publik tanpa data individu. Flyer hanya berisi angka (OQ-11, `13` LP-08). Akses lampiran oleh staf dicatat (OQ-17). Data hanya dihapus setelah sekolah menetapkan kebijakan datanya (OQ-18). Ketentuannya di `12` §15. | RECOMMENDATION; isi flyer DECISION (Session 5); pencatatan akses lampiran dan retensi DECISION (Session 9) | Session 9 |
 | R-18 | XLSX, PDF, dan QR membutuhkan library PHP via Composer, padahal framework saat ini dipasang tanpa Composer. Tanpa `.gitignore`, `.env` (password database) dan isi `writable/` bisa ikut ter-push. | Pindah ke Composer appstarter di commit pertama fase implementasi (`07` ARS-07). `.gitignore` dibuat di Session 6 (`07` ARS-09). | DECISION (appstarter dan `.gitignore`, Session 6); RECOMMENDATION (waktu migrasi) | Session 6 |
@@ -209,7 +210,7 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | OQ-06 | Penerimaan risiko QR palsu dan kartu hilang (R-02). | Session 4 | Terjawab: risiko diterima; pengamannya pengawasan petugas (`05` BR-SCN-09). |
 | OQ-07 | Cara menutup sesi masuk/pulang: manual oleh petugas atau otomatis pada jam tertentu. | Session 4 | Terjawab: otomatis pada jam tutup sesi (`05` BR-JAM-07). |
 | OQ-08 | Jumlah stasiun scan (laptop) dan lokasinya. | Session 3 (lokasi); sebelum uji coba R1 (jumlah) | Sebagian: semua stasiun di gerbang utama, untuk scan masuk dan pulang. Jumlah laptop belum diketahui. |
-| OQ-09 | Jenis hosting (shared atau VPS) dan cara instalasi framework (Composer). | Session 6 | Terjawab: VPS dengan Nginx, PHP 8.3, dan MySQL 8.4; framework dipasang lewat Composer appstarter; deploy lewat git dan Composer di server (`07` §2). |
+| OQ-09 | Jenis hosting (shared atau VPS) dan cara instalasi framework (Composer). | Session 6 | Terjawab: VPS dengan Nginx, PHP 8.3, dan MySQL 8.4; framework dipasang lewat Composer appstarter; deploy lewat git dan Composer di server (`07` §2). Hosting diubah keputusan pemilik 2026-10-10 menjadi server Windows dengan Laragon (`07` ARS-01); rinciannya OQ-20. |
 | OQ-10 | Provider gateway WhatsApp. | Sebelum R2 | Terbuka |
 | OQ-11 | Laporan apa saja dan format masing-masing (matriks laporan × format); isi flyer (angka saja atau dengan nama siswa). | Session 5 (ditulis di `13-reporting-import-export.md`) | Terjawab: tujuh laporan dengan matriks format di `13` §4; flyer berisi angka saja (`13` LP-08). |
 | OQ-12 | Format nama file foto siswa yang ada saat ini. | Session 5 (ditulis di `13-reporting-import-export.md`) | Terjawab: nama file foto saat ini belum seragam; format baku nama file diawali 10 digit NISN (`13` IM-03). |
@@ -219,7 +220,8 @@ Rincian kebutuhan dan ID requirement per rilis ada di [01-product-requirements.m
 | OQ-16 | Prosedur darurat bila semua stasiun scan tidak dapat dipakai, termasuk kemungkinan presensi manual per rombel sekaligus. | Session 4 | Terjawab: mode darurat dan presensi manual per rombel (`05` §10). |
 | OQ-17 | Apakah setiap pembukaan lampiran surat oleh staf perlu dicatat (siapa dan kapan). | Session 9 | Terjawab: setiap pembukaan dan unduhan lampiran oleh akun staf dicatat, dan admin melihatnya di halaman log aktivitas (`12` SEC-60, `HA-AKN-08`). |
 | OQ-18 | Kebijakan data sekolah: masa simpan setiap jenis data, pemberitahuan privasi bagi siswa dan orang tua/wali, dasar pemrosesan data anak termasuk persetujuan orang tua/wali, dan penanggung jawab data di sekolah (`12` SEC-66, SEC-68). | Sebelum uji coba R1, oleh sekolah | Terbuka |
-| OQ-19 | Tempat penyimpanan backup di luar VPS dan dua pemegang kunci privat backup (`12` SEC-75, `14` GL-04). | Sebelum uji coba R1, oleh sekolah dan pengelola server | Terbuka |
+| OQ-19 | Tempat penyimpanan backup di luar server dan dua pemegang kunci privat backup (`12` SEC-75, `14` GL-04). | Sebelum uji coba R1, oleh sekolah dan pengelola server | Terbuka |
+| OQ-20 | Server production Windows: lokasinya (VPS Windows atau komputer server di sekolah), persetujuan klien ACME untuk sertifikat HTTPS (misalnya win-acme), dan cara menjalankan layanan (Windows service dan tugas terjadwal, bukan aplikasi Laragon dengan login otomatis) (`07` §16.4). | Awal FASE-09, oleh pemilik proyek | Terbuka |
 
 ## 9. Glosarium
 
@@ -312,7 +314,8 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | Spesifikasi fitur | Rincian satu kemampuan utuh di `04`, ber-ID `FS-<MODUL>-<NN>`, beserta acceptance criteria rinci ber-ID `AC-<MODUL>-<NN>-<NN>`. |
 | Uji coba R1 | Uji teknis di server production dengan data buatan sebelum data asli diisi, untuk membuktikan kesiapan go-live (`14` §11). Tidak ada masa paralel dengan cara lama. |
 | Go-live R1 | Hari sekolah pertama (hari H) ketika sistem menjadi satu-satunya pencatatan kehadiran. Ditentukan segera setelah uji coba R1 lulus (`14` RM-01, §12). |
-| Fase implementasi | Satu tahap pembangunan R1 berisi sekelompok fitur, ber-ID `FASE-<NN>` (`14` §6). Rinciannya di `15`. |
+| Fase implementasi | Satu tahap pembangunan R1 berisi sekelompok fitur, ber-ID `FASE-<NN>` (`14` §6), dikerjakan di satu branch dan digabung lewat satu PR (`14` RM-11). Rinciannya di `15`. |
+| Langkah implementasi | Satu bagian kerja berurutan di dalam fase, ber-ID `L<NN>-<MM>`, yang berisi satu atau beberapa commit kecil dengan uji tetap lulus (`15` §1). |
 | Session 1–11 | Tahap diskusi discovery untuk menyusun dokumentasi (lihat §10.2). Tidak sama dengan sesi masuk/pulang. |
 
 ## 10. Peta dokumen dan progres
@@ -321,22 +324,22 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 
 | Dokumen | Isi | Sesi | Status |
 |---|---|---|---|
-| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–10 | Draft 0.10 |
-| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–10 | Draft 0.10 |
+| `00-project-overview.md` | Gambaran proyek (dokumen ini) | Session 1–11 | Draft 0.11 |
+| `01-product-requirements.md` | Kebutuhan fungsional dan non-fungsional | Session 2–10, keputusan pemilik 2026-10-10 | Draft 0.11 |
 | `02-user-roles-and-permissions.md` | Role dan permission | Session 3–9 | Draft 0.7 |
 | `03-user-flow.md` | Alur pengguna | Session 3–10 | Draft 0.9 |
-| `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b–10 | Draft 0.7 |
+| `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b–10, keputusan pemilik 2026-10-10 | Draft 0.8 |
 | `05-business-rules.md` | Aturan bisnis | Session 4–9 | Draft 0.7 |
 | `06-database-design.md` | Desain database | Session 5–10 | Draft 0.6 |
-| `07-system-architecture.md` | Arsitektur sistem | Session 6–10 | Draft 0.5 |
-| `08-ui-ux-design-system.md` | Sistem desain UI/UX, dengan contoh visual `08-contoh-tampilan.html` | Session 7–9 | Draft 0.3 |
-| `09-page-and-route-specification.md` | Halaman, route, dan menu | Session 8–10 | Draft 0.3 |
+| `07-system-architecture.md` | Arsitektur sistem | Session 6–10, keputusan pemilik 2026-10-10 | Draft 0.6 |
+| `08-ui-ux-design-system.md` | Sistem desain UI/UX, dengan contoh visual `08-contoh-tampilan.html` | Session 7–9, keputusan pemilik 2026-10-10 | Draft 0.4 |
+| `09-page-and-route-specification.md` | Halaman, route, dan menu | Session 8–10, keputusan pemilik 2026-10-10 | Draft 0.4 |
 | `10-api-specification.md` | API, termasuk sinkron kiosk | Session 8–9 | Draft 0.2 |
 | `11-validation-and-error-handling.md` | Validasi dan penanganan error | Session 9 | Draft 0.1 |
-| `12-security.md` | Keamanan | Session 9–10 | Draft 0.2 |
+| `12-security.md` | Keamanan | Session 9–10, keputusan pemilik 2026-10-10 | Draft 0.3 |
 | `13-reporting-import-export.md` | Laporan, import, dan export | Session 5–9 | Draft 0.5 |
-| `14-development-roadmap.md` | Roadmap pengembangan | Session 10 | Draft 0.1 |
-| `15-implementation-phases.md` | Dokumen fase implementasi | Session 11 | Belum dibuat |
+| `14-development-roadmap.md` | Roadmap pengembangan | Session 10–11, keputusan pemilik 2026-10-10 | Draft 0.2 |
+| `15-implementation-phases.md` | Dokumen fase implementasi | Session 11 | Draft 0.1 |
 
 ### 10.2 Progres sesi discovery
 
@@ -352,8 +355,8 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | 7 | UI/UX & Design System (`08`) | Selesai |
 | 8 | Routes / Pages / API (`09`, `10`) | Selesai |
 | 9 | Security / Validation / Error Handling (`11`, `12`) | Selesai |
-| 10 | Development Roadmap (`14`) | Selesai, menunggu review dokumen |
-| 11 | Implementation Phase Documents (`15`) | Berikutnya |
+| 10 | Development Roadmap (`14`) | Selesai; diperbarui dengan keputusan pemilik 2026-10-10 |
+| 11 | Implementation Phase Documents (`15`) | Selesai, menunggu review dokumen. Implementasi berikutnya dimulai dari FASE-00. |
 
 ## 11. Aturan untuk AI implementer
 
@@ -385,3 +388,4 @@ Aturan ini berlaku untuk AI atau developer yang mengerjakan kode di repository i
 | 0.8 | 2026-10-05 | Keputusan Session 8 (`09` §2). `09` dan `10` dibuat. R-06 dan R-10 diperbarui. Pengantar glosarium merujuk route di `09`, dan glosarium ditambah: fragmen dan scan galat. Entri status stasiun diperbarui. Kondisi repository, peta dokumen, dan progres sesi diperbarui. Tidak ada OQ yang terjawab atau ditambahkan. |
 | 0.9 | 2026-10-05 | Keputusan Session 9 (`12` §2). `11` dan `12` dibuat. OQ-17 terjawab, dan OQ-18 (kebijakan data sekolah) ditambahkan. R-07, R-10, dan R-17 diperbarui. Glosarium ditambah: kunci login, log aktivitas, PIN petugas, dan kode laporan. Entri sesi login dan scan galat diperbarui. Kondisi repository, peta dokumen, dan progres sesi diperbarui. |
 | 0.10 | 2026-10-05 | Keputusan Session 10 (`14` §2). `14` dibuat. OQ-19 (tempat backup dan pemegang kunci privat) ditambahkan. Glosarium ditambah: uji coba R1, go-live R1, dan fase implementasi. Kondisi repository, peta dokumen, dan progres sesi diperbarui. |
+| 0.11 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10: server production Windows dengan Laragon (§7.2, R-15, OQ-09) dan Bootstrap 5 (§7.1). OQ-20 ditambahkan. Session 11 (`15`): kondisi repository (§7.3), glosarium (fase implementasi dan langkah implementasi), peta dokumen, dan progres sesi diperbarui. |

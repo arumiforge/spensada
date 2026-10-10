@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.3 (draft, menunggu review) |
-| Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 8 (Routes / Pages / API). Diperbarui dengan keputusan Session 9 (Validation, Error Handling & Security, §2.3) dan Session 10 (Development Roadmap, `14`). |
+| Versi | 0.4 (draft, menunggu review) |
+| Tanggal | 2026-10-10 |
+| Sumber | Discovery Session 8 (Routes / Pages / API). Diperbarui dengan keputusan Session 9 (Validation, Error Handling & Security, §2.3) Session 10 (Development Roadmap, `14`), dan keputusan pemilik proyek 2026-10-10 (server Windows, `07` §2.7). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`), cakupan, area, dan halaman awal. [03-user-flow.md](03-user-flow.md): alur (`UF-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan ketentuan umum (§4). [06-database-design.md](06-database-design.md): tabel dan kode nilai. [07-system-architecture.md](07-system-architecture.md): area, filter, kiosk, file, sesi, dan perintah CLI (`ARS-*`). [08-ui-ux-design-system.md](08-ui-ux-design-system.md): komponen, tata letak, menu, dan label (`UI-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export. |
 | Dokumen terkait | [10-api-specification.md](10-api-specification.md): bentuk permintaan dan respons API kiosk, fragmen, dan bantuan formulir. [11-validation-and-error-handling.md](11-validation-and-error-handling.md): teks validasi, pesan galat, dan halaman galat (`VAL-*`, `GAL-*`). [12-security.md](12-security.md): login, sesi, CSRF, header berkas, dan log aktivitas (`SEC-*`). |
 
@@ -351,7 +351,7 @@ Rincian halaman:
 - **HAL-AKN-05 — Akun siswa dan slip** (FS-AKN-05). Tanpa `kelas`, halaman menampilkan pilihan kelas dalam cakupan. Dengan `kelas`, halaman menampilkan NISN, nama, status akun, waktu slip terakhir dibuat, dan login terakhir. Baris akun belum aktif memiliki kotak centang yang tercentang secara bawaan, dan tombol "Buat slip akun" membuka halaman konfirmasi untuk siswa terpilih. Konfirmasi menyebut jumlah akun yang mendapat password baru dan peringatan slip lama (FS-AKN-05 B2). Jawabannya halaman slip siap cetak (`08` UI-57 s.d. UI-59). Bila tidak ada akun belum aktif, tombol tidak tersedia dan halaman menampilkan "Semua akun di kelas ini sudah aktif." (E1).
 - **HAL-AKN-06 — Reset password siswa** (FS-AKN-05 C). Dibuka dari profil siswa (HAL-MD-06). Konfirmasi, lalu slip satu siswa dengan isi yang sama (`08` UI-59). Tombol tidak tersedia untuk akun nonaktif (E2). Selama login akun siswa dikunci, profil siswa menampilkan tombol "Buka kunci login" bagi pemegang `HA-AKN-04` (`12` SEC-11).
 - **HAL-AKN-07 — Pemeriksaan sistem** (`07` ARS-57, DECISION hak Session 8). Halaman baca saja dengan bagian:
-  - hasil pemeriksaan `aplikasi:cek` yang dijalankan di PHP-FPM: versi PHP dan MySQL, ekstensi, zona waktu PHP dan MySQL, collation dan `sql_mode`, hak tulis `writable/`, `baseURL` HTTPS, serta batas unggah, `memory_limit`, dan opcache;
+  - hasil pemeriksaan `aplikasi:cek` yang dijalankan di proses PHP web (php-cgi, `07` ARS-57): versi PHP dan MySQL, ekstensi, zona waktu PHP dan MySQL, collation dan `sql_mode`, hak tulis `writable/`, `baseURL` HTTPS, serta batas unggah, `memory_limit`, dan opcache;
   - waktu terakhir cron berjalan (`pengaturan.cron_terakhir_at`, ARS-56);
   - antrean hitung ulang yang menunggu dan yang gagal beserta galat terakhirnya (ARS-36 butir 6), serta `status_dibangun_sampai` dan `status_mulai` (ARS-37, `14` GL-08);
   - versi aplikasi dan versi kode kiosk terbaru;
@@ -937,3 +937,4 @@ Session 8 tidak menjawab dan tidak menambah OQ. Session 9 menjawab OQ-17 (§13, 
 | 0.1 | 2026-10-05 | Draft awal dari Session 8: keputusan route, halaman, dan API; konvensi alamat, metode, formulir, pengalihan, pencarian, fragmen, berkas, login, dan galat (`RT-01` s.d. `RT-22`); menu panel dan portal; route dan rincian setiap halaman R1; kerangka route R2 dan R3; berkas; label kode di halaman; dan traceability. |
 | 0.2 | 2026-10-05 | Keputusan Session 9 (§2.3, `11`, `12`). Halaman baru HAL-AKN-09 (log aktivitas) dengan menu "Log aktivitas". Route buka kunci login (HAL-AKN-04, HAL-AKN-06, HAL-KIO-02) dan PIN petugas (HAL-KIO-02). HAL-AKN-01 (pembatasan login), HAL-AKN-07 (log aplikasi dan `CI_ENVIRONMENT`), HAL-IZN-06, RT-09, RT-10, RT-18, RT-19 (halaman 400, 429, 503, dan kode laporan), §11 (kredensial gateway), §13 (header berkas, unduhan lampiran, dan catatan akses), §14 (label `log_aktivitas.jenis`), kepala dokumen, §15, §16, dan §17 diperbarui. |
 | 0.3 | 2026-10-05 | Keputusan Session 10 (`14`). HAL-AKN-07 menampilkan `status_mulai`. §17 merujuk urutan pembuatan halaman di `14` §7. Kepala dokumen diperbarui. |
+| 0.4 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10 (server Windows, `07` §2.7). HAL-AKN-07 menjalankan pemeriksaan di proses php-cgi. Kepala dokumen diperbarui. |

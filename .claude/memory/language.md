@@ -21,7 +21,7 @@
   (`docs/08` UI-74), label keys (`app/Config/Label.php`). Do not translate them.
 - New technical names that `docs/` does not define (local variables, private
   helpers, internal classes) use English.
-- Status: default applied by Claude, waiting for owner confirmation — see `decisions.md` D-05.
+- Status: confirmed by the owner on 2026-10-10 — see `decisions.md` D-05.
 
 ## Writing UI text (Indonesian)
 

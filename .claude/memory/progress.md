@@ -6,29 +6,28 @@ the log to the last 10 entries.
 
 ## Current state (2026-10-10)
 
-- Discovery docs `docs/00`–`docs/14`: done (Sessions 1–10).
-- `docs/15-implementation-phases.md` (Session 11): **not written yet**.
+- Discovery docs `docs/00`–`docs/15`: done (Sessions 1–11). `docs/15-implementation-phases.md` is draft 0.1, waiting for owner review.
+- Owner decisions D-01 (Windows + Laragon production), D-02 (Bootstrap 5), D-04 (one PR per phase), D-05 (keep doc-defined names): confirmed and synced into `docs/` (see `decisions.md`).
 - Code: CodeIgniter 4.7.4 skeleton without Composer appstarter. No app code except `format_helper.php`.
 - Claude memory folder, attribution settings, brand assets: added.
 
 ## Next
 
-1. Owner answers the open questions below (D-01, D-02, D-04, D-05, D-07 in `decisions.md`).
-2. Update `docs/` for the DOCS PENDING decisions (one `docs/` branch).
-3. Session 11: write `docs/15-implementation-phases.md`.
-4. FASE-00 (Fondasi): appstarter migration, config, filters, layouts, error pages, JS format module matching `format_helper.php`, favicon/head tags in layouts.
+1. Owner reviews `docs/15` (and the D-01/D-02/D-04 doc changes) and merges the Session 11 PR.
+2. Owner gives the project license (needed at the start of FASE-00, `docs/15` L00-01).
+3. FASE-00 (Fondasi) on branch `fase-00-fondasi`, steps L00-01 to L00-09 in `docs/15` §4.
 
 ## Open questions for the owner
 
-- D-01: Production on Windows + Laragon instead of a Linux VPS — confirm, so `docs/07` §16 and `docs/12` §16 can be rewritten.
-- D-02: Bootstrap 5 replaces the custom CSS decision — confirm, and whether the 40 KB CSS budget (UI-71) is dropped or raised.
-- D-04: One PR per phase replaces one PR per feature — confirm.
-- D-05: Keep Indonesian names that docs already define (tables, routes, methods, CSS classes), or switch all identifiers to English?
-- D-07: The landscape logo says "PRIMA" — is that intended for the Spensada app?
-- D-03: Approve a minifier library, or keep "vendor `.min` files only, no build step"?
+- License for `LICENSE` and README — before FASE-00 (`docs/14` §4).
+- OQ-20 — before FASE-09: production server location (Windows VPS or school machine), approval of an ACME client such as win-acme for Let's Encrypt, and running services via Windows service + Task Scheduler instead of the Laragon app with auto-logon (`docs/07` §16.4).
+- D-07: the landscape logo says "PRIMA" — is that intended for the Spensada app?
+- D-03: approve a minifier library, or keep "vendor `.min` files only, no build step"?
+- School inputs (not urgent yet): sample cards and one station laptop for the FASE-01 kiosk prototype; OQ-08, OQ-18, OQ-19 before the R1 trial.
 
 ## Log
 
 | Date | Branch | Work |
 |---|---|---|
+| 2026-10-10 | `sky/busy-goodall-fswgci` | Owner answered D-01, D-02, D-04, D-05; synced `docs/07`, `08`, `12`, `14`, `00`, `01`, `04`, `09`. Session 11: wrote `docs/15-implementation-phases.md`. Added OQ-20. |
 | 2026-10-10 | `sky/zen-heisenberg-d72c3e` | Added `CLAUDE.md`, `.claude/memory/`, `.claude/settings.json` (no attribution, owner git identity), `format_helper.php` + test, logo/favicon/app icons. |
