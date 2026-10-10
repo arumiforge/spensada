@@ -2,8 +2,8 @@
 
 namespace Config;
 
+use App\Libraries\AppExceptionHandler;
 use CodeIgniter\Config\BaseConfig;
-use CodeIgniter\Debug\ExceptionHandler;
 use CodeIgniter\Debug\ExceptionHandlerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
@@ -33,7 +33,7 @@ class Exceptions extends BaseConfig
      *
      * @var list<int>
      */
-    public array $ignoreCodes = [404];
+    public array $ignoreCodes = [400, 403, 404];
 
     /**
      * --------------------------------------------------------------------------
@@ -56,7 +56,7 @@ class Exceptions extends BaseConfig
      *
      * @var list<string>
      */
-    public array $sensitiveDataInTrace = [];
+    public array $sensitiveDataInTrace = ['password', 'password_lama', 'password_baru', 'password_ulang', 'pin', 'pin_ulang', '_csrf'];
 
     /**
      * --------------------------------------------------------------------------
@@ -78,7 +78,7 @@ class Exceptions extends BaseConfig
      * The related `Config\Logger::$threshold` should be adjusted, if needed,
      * to capture logging the deprecations.
      */
-    public string $deprecationLogLevel = LogLevel::WARNING;
+    public string $deprecationLogLevel = LogLevel::NOTICE;
 
     /*
      * DEFINE THE HANDLERS USED
@@ -101,6 +101,6 @@ class Exceptions extends BaseConfig
      */
     public function handler(int $statusCode, Throwable $exception): ExceptionHandlerInterface
     {
-        return new ExceptionHandler($this);
+        return new AppExceptionHandler($this); // docs/09 RT-19, docs/11 §6
     }
 }
