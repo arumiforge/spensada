@@ -250,6 +250,44 @@ h1, h2, h3 { font-weight: 700; }
   padding: var(--jarak-3);
   box-shadow: var(--bs-box-shadow);
 }
+/* Menu items (UI-31) and the account menu in the top bar (UI-29) */
+.menu-grup { margin: var(--jarak-3) 0 var(--jarak-1); font-size: var(--teks-kecil); font-weight: 700; opacity: .8; }
+.menu-daftar { margin: 0; padding: 0; list-style: none; }
+.menu-daftar a { display: flex; align-items: center; gap: var(--jarak-2); min-height: 2.75rem; padding: 0 var(--jarak-2); border-radius: 6px; text-decoration: none; }
+.menu-daftar a:hover, .menu-daftar a[aria-current="page"] { background: var(--warna-utama-gelap); }
+.menu-daftar a[aria-current="page"] { font-weight: 700; }
+.menu-akun { position: relative; }
+.menu-akun > summary { display: flex; align-items: center; gap: var(--jarak-2); min-height: 2.75rem; cursor: pointer; list-style: none; }
+.menu-akun > summary::-webkit-details-marker { display: none; }
+.menu-akun-role { color: var(--teks-redup); font-size: var(--teks-kecil); }
+.menu-akun-isi {
+  position: absolute;
+  right: 0;
+  z-index: 1000;
+  display: grid;
+  min-width: 12rem;
+  padding: var(--jarak-2);
+  background: var(--permukaan);
+  border: 1px solid var(--garis);
+  border-radius: 6px;
+  box-shadow: var(--bs-box-shadow);
+}
+.menu-akun-isi a, .menu-akun-isi button {
+  display: flex;
+  align-items: center;
+  gap: var(--jarak-2);
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 var(--jarak-2);
+  color: var(--teks);
+  text-align: left;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+}
+.menu-akun-isi a:hover, .menu-akun-isi button:hover { background: var(--latar); }
+@media (max-width: 575.98px) { .menu-akun-nama, .menu-akun-role { display: none; } }
 .merek { display: flex; align-items: center; gap: var(--jarak-2); font-weight: 700; }
 .merek img { width: 32px; height: auto; }
 .panel-isi { width: 100%; max-width: 1200px; padding: var(--jarak-4); }
