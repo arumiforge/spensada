@@ -2,7 +2,7 @@
 
 Spensada adalah aplikasi web presensi siswa untuk SMP 1 Dawe, Kudus. Siswa memindai QR code di kartu OSIS (berisi NISN) ke webcam laptop yang menjadi stasiun scan. Stasiun bekerja *local-first*: setiap scan langsung mendapat umpan balik, lalu data dikirim ke server secara otomatis. Dari data scan, sistem menentukan status kehadiran harian dan menyajikan dashboard, rekap, dan riwayat.
 
-**Status saat ini:** dokumen discovery (`docs/00`–`docs/15`) selesai. Kode aplikasi belum dibuat; tahap berikutnya adalah FASE-00 (Fondasi). Progres terbaru ada di [`.claude/memory/progress.md`](.claude/memory/progress.md).
+**Status saat ini:** dokumen discovery (`docs/00`–`docs/15`) selesai. FASE-00 (Fondasi) langkah L00-01 s.d. L00-08 sudah dikerjakan; L00-09 (uji panduan lokal di Laragon) menunggu pengembang. Progres terbaru ada di [`.claude/memory/progress.md`](.claude/memory/progress.md).
 
 ## Dokumen
 
