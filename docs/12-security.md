@@ -120,8 +120,8 @@ Butir SEC-03:
 
 1. Panjang 8 s.d. 64 karakter, dihitung per karakter Unicode, dan paling besar 72 byte UTF-8 agar seluruh password dipakai bcrypt.
 2. Semua karakter boleh, termasuk spasi, kecuali karakter kontrol. Password tidak dipotong spasinya.
-3. Password tidak boleh ada di daftar password umum (SEC-04).
-4. Password tidak boleh memuat username atau NISN akunnya, tanpa membedakan huruf besar dan kecil.
+3. Password tidak boleh memuat username atau NISN akunnya, tanpa membedakan huruf besar dan kecil. Aturan ini diperiksa sebelum daftar password umum, agar password seperti `zebra0012345678` mendapat pesan NISN, bukan pesan password umum (`04` AC-AKN-02-05).
+4. Password tidak boleh ada di daftar password umum (SEC-04).
 5. Untuk akun siswa, password tidak boleh memuat tanggal lahirnya dalam bentuk `DDMMYYYY`, `DDMMYY`, `YYYYMMDD`, atau `DD-MM-YYYY`, misalnya `14032011`.
 6. Password tidak boleh berupa satu karakter yang diulang, atau urutan huruf atau angka, misalnya `aaaaaaaa`, `12345678`, atau `abcdefgh`.
 7. Password baru harus berbeda dengan password saat ini.
@@ -408,7 +408,7 @@ Penonaktifan dan pengaktifan siswa, perubahan data siswa, foto, dan penempatan d
 | SEC-65 | **Akses dan jejak.** Akses data mengikuti hak dan cakupan di `02` (SEC-25). Akses ke data kesehatan, yaitu lampiran surat, dicatat (SEC-60). File export dicatat (`13` IE-13). Data pribadi tidak dikirim ke layanan pihak ketiga, kecuali nomor WA dan isi pesan ke gateway WhatsApp di R2 (OQ-10). Halaman tidak memuat font, skrip, atau gambar dari server lain (SEC-36). | RECOMMENDATION |
 | SEC-66 | **Retensi.** Belum ada penghapusan data presensi, scan, izin, lampiran, log, dan data siswa, termasuk siswa yang sudah lulus, sampai sekolah menetapkan kebijakan datanya (OQ-18, `06` DB-13). Kebijakan itu menetapkan masa simpan setiap jenis data dan cara penghapusannya. Penghapusannya dirancang setelah kebijakan ada, karena menyentuh relasi, log, dan backup. | DECISION |
 | SEC-67 | **Pembersihan data teknis.** Data teknis dibersihkan otomatis oleh tugas harian (`07` ARS-56). Lihat tabel di bawah. | RECOMMENDATION |
-| SEC-68 | **Kebijakan data sekolah (OQ-18).** Sekolah menetapkan, sebaiknya bersama dinas pendidikan: masa simpan data, pemberitahuan privasi bagi siswa dan orang tua/wali, dasar pemrosesan data anak termasuk persetujuan orang tua/wali bila diperlukan, dan penanggung jawab data di sekolah. Aplikasi menyiapkan tempat pemberitahuan privasi di halaman login dan portal siswa, dengan teks dari sekolah. Hal ini dipastikan sebelum uji coba R1. | RECOMMENDATION |
+| SEC-68 | **Kebijakan data sekolah (OQ-18).** Sekolah menetapkan, sebaiknya bersama dinas pendidikan: masa simpan data, pemberitahuan privasi bagi siswa dan orang tua/wali, dasar pemrosesan data anak termasuk persetujuan orang tua/wali bila diperlukan, dan penanggung jawab data di sekolah. Aplikasi menampilkan pemberitahuan privasi di halaman login dan portal siswa, dari kunci `pengaturan.privasi_teks` (`06` §6.1). Teks bawaannya sudah disiapkan (2026-10-10), dan sekolah memeriksa atau mengubahnya. Masa simpan, dasar pemrosesan, dan penanggung jawab data tetap ditetapkan sekolah sebelum uji coba R1. | RECOMMENDATION |
 | SEC-69 | **Perangkat dan kertas.** Laptop stasiun yang tidak dipakai lagi lebih dulu disinkronkan, lalu akun stasiunnya dinonaktifkan agar data lokal terhapus, dan profil browser kiosk dihapus (R-07). Slip akun dibagikan langsung ke siswa, dan slip yang tidak terbagi dimusnahkan. File export dan file import di komputer staf menjadi tanggung jawab penggunanya, dan panduan staf memintanya dihapus setelah dipakai. | RECOMMENDATION |
 
 Data pribadi yang disimpan (SEC-63):
@@ -556,7 +556,7 @@ Session 9 menjawab OQ-17 (§2.1) dan menambah OQ-18. Session 10 menambah OQ-19 (
 | Waktu hash bcrypt cost 11 di server production | SEC-02 | Penyiapan server (FASE-09) |
 | Daftar password umum final, termasuk nama sekolah | SEC-04 | Implementasi FS-AKN-02 |
 | Batas laju API kiosk dan Nginx | SEC-54, SEC-56 | Uji beban sebelum uji coba R1 |
-| Teks pemberitahuan privasi | SEC-68 | Setelah OQ-18 terjawab |
+| Teks pemberitahuan privasi | SEC-68 | Teks bawaan sudah ada (`06` §6.1). Sekolah memeriksanya sebelum uji coba R1 (OQ-18). |
 | Tempat penyimpanan backup dan pemegang kunci privat | SEC-75 | Sekolah dan pengelola server, sebelum uji coba R1 (OQ-19); dipasang di `14` GL-04 |
 | Daftar periksa keamanan production | SEC-82 | Ditetapkan di Session 10 (`14` UC-10) |
 

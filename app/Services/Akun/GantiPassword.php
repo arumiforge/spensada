@@ -76,7 +76,7 @@ class GantiPassword
             $panjang < 8                => 'Password paling sedikit 8 karakter.',
             $panjang > 64               => 'Password paling panjang 64 karakter.',
             strlen($password) > 72      => 'Password terlalu panjang. Kurangi huruf beraksen atau simbol.',
-            // Before the common list (SEC-03 has it after): "zebra" is common, and AC-AKN-02-05 wants "zebra0012345678" to name the NISN.
+            // Before the common list (SEC-03 item 3): "zebra" is common, and AC-AKN-02-05 wants "zebra0012345678" to name the NISN.
             str_contains($kecil, mb_strtolower($username)) => 'Password tidak boleh memuat NISN atau username.',
             $this->umum($kecil)         => 'Password ini terlalu umum dan mudah ditebak. Pilih password lain.',
             $tanggalLahir !== null && $this->memuatTanggal($password, $tanggalLahir) => 'Password tidak boleh memuat tanggal lahir.',
