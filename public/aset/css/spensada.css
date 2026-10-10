@@ -344,4 +344,20 @@ h1, h2, h3 { font-weight: 700; }
   body { background: none; }
   .panel { display: block; }
   tr { break-inside: avoid; }
+  .panel-isi:has(.slip-a4) { padding: 0; max-width: none; }
+}
+
+/* Account slips: 8 A7 slips per A4 page, 2 x 4, dashed cut lines (UI-58, UI-59) */
+@page slip { size: A4 portrait; margin: 0; }
+.slip-a4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 105mm), 1fr)); gap: var(--jarak-3); }
+.slip { border: 1px dashed var(--garis-isian); padding: 6mm; font-size: 9pt; line-height: 1.3; break-inside: avoid; }
+.slip-kepala { display: flex; align-items: center; gap: 2mm; margin-bottom: 2mm; }
+.slip-data { display: grid; grid-template-columns: auto 1fr; gap: 0 2mm; margin: 0 0 2mm; }
+.slip-data dd { margin: 0; }
+.slip-password { font-family: ui-monospace, Consolas, monospace; font-size: 16pt; font-weight: 700; display: flex; gap: 4mm; margin-bottom: 2mm; }
+.slip-alamat { font-weight: 700; }
+.slip ol { margin: 1mm 0; padding-left: 4mm; }
+@media print {
+  .slip-a4 { page: slip; grid-template-columns: repeat(2, 105mm); grid-auto-rows: 74mm; gap: 0; }
+  .slip { overflow: hidden; }
 }
