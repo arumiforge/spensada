@@ -49,4 +49,14 @@ final class PemeriksaanSistemTest extends CIUnitTestCase
         $this->assertSame(EXIT_ERROR, $exit);
         $this->assertStringContainsString('perlu tindakan', $this->getStreamFilterBuffer());
     }
+
+    public function testWebSettingsCompareSizes(): void
+    {
+        $checks = array_column((new PemeriksaanSistem())->phpWeb(), null, 'butir');
+
+        $this->assertSame(['upload_max_filesize', 'post_max_size', 'memory_limit', 'opcache.enable'], array_keys($checks));
+        $memory = ini_get('memory_limit');
+        $ok     = $memory === '-1' || (int) $memory * (str_ends_with(strtoupper($memory), 'G') ? 1024 : 1) >= 256;
+        $this->assertSame($ok ? PemeriksaanSistem::BAIK : PemeriksaanSistem::PERLU_TINDAKAN, $checks['memory_limit']['status']);
+    }
 }

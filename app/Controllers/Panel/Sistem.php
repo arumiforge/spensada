@@ -29,7 +29,7 @@ class Sistem extends BaseController
         ];
 
         $sections = [
-            'Server'       => (new PemeriksaanSistem())->run(),
+            'Server'       => [...(new PemeriksaanSistem())->run(), ...(new PemeriksaanSistem())->phpWeb()],
             'Aplikasi'     => $aplikasi,
             'Log aplikasi' => [
                 $this->logCheck('Log hari ini', $now->toDateString()),

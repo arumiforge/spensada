@@ -57,7 +57,7 @@ final class SistemPageTest extends CIUnitTestCase
         $result = $this->withSession($this->sesiAkun($this->buatAkun([], ['admin'])))->get('panel/sistem');
 
         $result->assertOK();
-        foreach (['Pemeriksaan sistem', 'Server', 'Versi PHP', 'Aplikasi', 'Versi aplikasi', config('Spensada')->versi, 'CI_ENVIRONMENT', 'Log aplikasi', 'Belum tersedia', 'Perlu tindakan'] as $text) {
+        foreach (['Pemeriksaan sistem', 'Server', 'Versi PHP', 'Aplikasi', 'Versi aplikasi', config('Spensada')->versi, 'CI_ENVIRONMENT', 'upload_max_filesize', 'post_max_size', 'memory_limit', 'opcache.enable', 'Log aplikasi', 'Belum tersedia', 'Perlu tindakan'] as $text) {
             $result->assertSee($text);
         }
         $result->assertSee('Log hari ini (2 Mar 2031)');
