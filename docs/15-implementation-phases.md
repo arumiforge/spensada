@@ -2,7 +2,7 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
+| Versi | 0.2 (draft, menunggu review) |
 | Tanggal | 2026-10-10 |
 | Sumber | Discovery Session 11 (Implementation Phase Documents), dengan keputusan pemilik proyek 2026-10-10 (`14` §2.4). |
 | Bergantung pada | [14-development-roadmap.md](14-development-roadmap.md): fase (`FASE-*`), urutan halaman (§7), cara kerja (`RM-*`), dan definisi selesai (RM-05). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan acceptance criteria (`AC-*`). [06-database-design.md](06-database-design.md): tabel. [07-system-architecture.md](07-system-architecture.md): aturan arsitektur (`ARS-*`), struktur folder (§5.3), panduan lokal (§15), dan langkah production (§16). [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman (`HAL-*`), route, dan controller. [10-api-specification.md](10-api-specification.md): endpoint (`EP-*`). |
@@ -31,6 +31,7 @@ Isi fase, fitur, dan urutan halaman tetap ditetapkan `14`. Dokumen ini tidak men
 | Server production | Windows dengan Laragon, Nginx, PHP 8.3, dan MySQL 8.4. | `07` ARS-01, §16, D-01 | DECISION (pemilik, 2026-10-10) |
 | Tampilan | Bootstrap 5.3.8 dari server sendiri, `token.css`, dan `spensada.css`. Kiosk memakai CSS sendiri. | `08` §2.6, UI-73, D-02 | DECISION (pemilik, 2026-10-10) |
 | Nama teknis | Nama yang sudah ditetapkan dokumen tetap dipakai apa adanya, termasuk yang berbahasa Indonesia. Nama teknis baru memakai bahasa Inggris. | `.claude/memory/language.md`, D-05 | DECISION (pemilik, 2026-10-10) |
+| Lisensi proyek | MIT, dengan pemegang hak cipta Arumi Studios. | `07` §2.7, ARS-07 langkah 5 | DECISION (pemilik menyerahkan pilihan, 2026-10-10) |
 | Format tanggal, jam, angka, dan uang | Semua yang tampil ke pengguna lewat `app/Helpers/format_helper.php`, dan di browser lewat satu modul JavaScript dengan hasil yang sama. | `08` UI-55, D-09 | DECISION (pemilik, 2026-10-10) |
 
 ### 2.2 Temuan yang ditetapkan tanpa ronde diskusi
@@ -66,11 +67,11 @@ Penyusunan langkah menemukan kebutuhan berikut. Semuanya RECOMMENDATION, dan per
 | Branch dan PR | `fase-00-fondasi`, "FASE-00 Fondasi" |
 | Fitur | — (fondasi untuk semua fitur) |
 | Perkiraan | 1–2 minggu (`14` §5) |
-| Masukan sebelum mulai | Lisensi proyek untuk `LICENSE` dan README (`14` §4). Bila belum ada, L00-01 tetap berjalan, dan penggantian `LICENSE` ditunda ke commit terpisah di fase ini. |
+| Masukan sebelum mulai | Tidak ada. Lisensi proyek sudah ditetapkan: MIT (§2.1). |
 
 | ID | Langkah | File utama | Uji |
 |---|---|---|---|
-| L00-01 | **Pindah ke Composer appstarter** dengan langkah ARS-07 butir 1–4, sebagai commit pertama fase ini (C-06). `composer.lock` di-commit. Butir 5 (README dan `LICENSE`) mengikuti masukan lisensi. | `composer.json`, `composer.lock`, `app/Config/Paths.php`, `spark`, `public/index.php`, `preload.php`, `phpunit.dist.xml`, `env`, `tests/`; hapus `system/` | `composer test` berjalan dengan uji bawaan dan `FormatHelperTest`. |
+| L00-01 | **Pindah ke Composer appstarter** dengan langkah ARS-07 butir 1–4, sebagai commit pertama fase ini (C-06). `composer.lock` di-commit. Butir 5: `LICENSE` diganti dengan teks lisensi MIT atas nama Arumi Studios, dan README proyek merujuk `docs/` (§2.1). | `composer.json`, `composer.lock`, `app/Config/Paths.php`, `spark`, `public/index.php`, `preload.php`, `phpunit.dist.xml`, `env`, `tests/`, `LICENSE`, `README.md`; hapus `system/` | `composer test` berjalan dengan uji bawaan dan `FormatHelperTest`. |
 | L00-02 | **Konfigurasi dasar**: `appTimezone` `Asia/Jakarta` (ARS-44), driver turunan MySQLi dengan group `default` dan `tests` ke MySQL (ARS-45), `strictOn` dan `foundRows` (ARS-40, ARS-43), `Config\Spensada` (ARS-17), `Config\Session` dan `Config\Cookie` (`12` SEC-13, SEC-33), konfigurasi CSRF (`12` SEC-28), dan `Config\Routing` dengan file route per area (`09` RT-01). | `app/Config/App.php`, `Database.php`, `Session.php`, `Cookie.php`, `Security.php`, `Routing.php`, `Spensada.php`, `app/Config/Routes/`, `app/Database/MySQLi/` (enam kelas, ARS-45 butir 1) | Uji database memastikan zona waktu sesi `+07:00`, collation `utf8mb4_general_ci`, dan `sql_mode` strict. |
 | L00-03 | **Service dasar**: `Jam` (ARS-44), helper kunci bernama dengan awalan nama database (ARS-42), dan pola transaksi untuk service (ARS-43). | `app/Services/Sistem/` | Uji unit `Jam` dengan `Time::setTestNow()`. Uji database kunci bernama: ambil, ambil ulang, lepas, dan nama berawalan `spensada_test:`. |
 | L00-04 | **Filter dan hak akses**: `area`, `hak`, `csrf`, `invalidchars`, dan `keamanan` (ARS-13), beserta kerangka `sesi` dan `wajib-ganti` yang dilengkapi di L01-02 (§2.2). Peta `Config\HakAkses` memuat semua `HA-*` R1 dari `02` §5 dan §6 (ARS-15), dan service `HakAkses` menjawab hak dan cakupan. Jawaban JSON untuk permintaan latar belakang (ARS-13 butir 1–4, `10` API-03). CSP per area dan `Permissions-Policy` (`12` SEC-35 s.d. SEC-37, termasuk `img-src data:`). | `app/Filters/`, `app/Config/Filters.php`, `app/Config/HakAkses.php`, `app/Services/Akun/` | Uji unit `HakAkses` untuk setiap role dan cakupan di `02` §5. Uji filter: kode JSON `ditolak` dan `csrf`, header CSP per area. |
@@ -323,7 +324,6 @@ Session 11 tidak menjawab OQ dan tidak menambah OQ. OQ-20 ditambahkan oleh keput
 
 | Hal | Rujukan | Dipastikan di |
 |---|---|---|
-| Lisensi proyek untuk `LICENSE` dan README | L00-01, `14` §4 | Pemilik proyek, awal FASE-00 |
 | Lokasi server production, klien ACME, dan cara menjalankan layanan (OQ-20) | L09-04, L09-05, `07` §16.4 | Pemilik proyek, awal FASE-09 |
 | Hasil prototipe kiosk dan alternatif bila pembacaan QR lambat | L01-09 | Akhir FASE-01 |
 | Perkiraan waktu setiap fase | `14` §5 | Laporan fase (§12) |
@@ -333,3 +333,4 @@ Session 11 tidak menjawab OQ dan tidak menambah OQ. OQ-20 ditambahkan oleh keput
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-10 | Draft awal dari Session 11: keputusan yang dipakai dan temuan (§2), aturan umum langkah (§3), langkah FASE-00 s.d. FASE-09 (`L00-01` s.d. `L09-05`), laporan fase, dan perubahan dokumen lain. |
+| 0.2 | 2026-10-10 | Lisensi proyek MIT (§2.1). FASE-00 (masukan sebelum mulai, L00-01) dan §14 diperbarui. |

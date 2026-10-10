@@ -2,7 +2,7 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.11 (draft) |
+| Versi | 0.12 (draft) |
 | Tanggal | 2026-10-10 |
 | Sumber | Discovery Session 1 (Project Discovery) dan Session 2 (Product & Feature Definition). Diperbarui dengan hasil review dan keputusan Session 3, Session 4, Session 4b, Session 5, Session 6, Session 7, Session 8, Session 9, Session 10, keputusan pemilik proyek 2026-10-10, dan Session 11. |
 | Dokumen terkait | [01-product-requirements.md](01-product-requirements.md), [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md), [03-user-flow.md](03-user-flow.md), [04-feature-specification.md](04-feature-specification.md), [05-business-rules.md](05-business-rules.md), [06-database-design.md](06-database-design.md), [07-system-architecture.md](07-system-architecture.md), [08-ui-ux-design-system.md](08-ui-ux-design-system.md), [09-page-and-route-specification.md](09-page-and-route-specification.md), [10-api-specification.md](10-api-specification.md), [11-validation-and-error-handling.md](11-validation-and-error-handling.md), [12-security.md](12-security.md), [13-reporting-import-export.md](13-reporting-import-export.md), [14-development-roadmap.md](14-development-roadmap.md), [15-implementation-phases.md](15-implementation-phases.md) |
@@ -331,15 +331,15 @@ Istilah di bawah wajib dipakai secara konsisten di seluruh dokumentasi dan antar
 | `04-feature-specification.md` | Spesifikasi fitur rinci dan acceptance criteria | Session 4b–10, keputusan pemilik 2026-10-10 | Draft 0.8 |
 | `05-business-rules.md` | Aturan bisnis | Session 4–9 | Draft 0.7 |
 | `06-database-design.md` | Desain database | Session 5–10 | Draft 0.6 |
-| `07-system-architecture.md` | Arsitektur sistem | Session 6–10, keputusan pemilik 2026-10-10 | Draft 0.6 |
+| `07-system-architecture.md` | Arsitektur sistem | Session 6–10, keputusan pemilik 2026-10-10 | Draft 0.7 |
 | `08-ui-ux-design-system.md` | Sistem desain UI/UX, dengan contoh visual `08-contoh-tampilan.html` | Session 7–9, keputusan pemilik 2026-10-10 | Draft 0.4 |
 | `09-page-and-route-specification.md` | Halaman, route, dan menu | Session 8–10, keputusan pemilik 2026-10-10 | Draft 0.4 |
 | `10-api-specification.md` | API, termasuk sinkron kiosk | Session 8–9 | Draft 0.2 |
 | `11-validation-and-error-handling.md` | Validasi dan penanganan error | Session 9 | Draft 0.1 |
 | `12-security.md` | Keamanan | Session 9–10, keputusan pemilik 2026-10-10 | Draft 0.3 |
 | `13-reporting-import-export.md` | Laporan, import, dan export | Session 5–9 | Draft 0.5 |
-| `14-development-roadmap.md` | Roadmap pengembangan | Session 10–11, keputusan pemilik 2026-10-10 | Draft 0.2 |
-| `15-implementation-phases.md` | Dokumen fase implementasi | Session 11 | Draft 0.1 |
+| `14-development-roadmap.md` | Roadmap pengembangan | Session 10–11, keputusan pemilik 2026-10-10 | Draft 0.3 |
+| `15-implementation-phases.md` | Dokumen fase implementasi | Session 11 | Draft 0.2 |
 
 ### 10.2 Progres sesi discovery
 
@@ -389,3 +389,4 @@ Aturan ini berlaku untuk AI atau developer yang mengerjakan kode di repository i
 | 0.9 | 2026-10-05 | Keputusan Session 9 (`12` §2). `11` dan `12` dibuat. OQ-17 terjawab, dan OQ-18 (kebijakan data sekolah) ditambahkan. R-07, R-10, dan R-17 diperbarui. Glosarium ditambah: kunci login, log aktivitas, PIN petugas, dan kode laporan. Entri sesi login dan scan galat diperbarui. Kondisi repository, peta dokumen, dan progres sesi diperbarui. |
 | 0.10 | 2026-10-05 | Keputusan Session 10 (`14` §2). `14` dibuat. OQ-19 (tempat backup dan pemegang kunci privat) ditambahkan. Glosarium ditambah: uji coba R1, go-live R1, dan fase implementasi. Kondisi repository, peta dokumen, dan progres sesi diperbarui. |
 | 0.11 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10: server production Windows dengan Laragon (§7.2, R-15, OQ-09) dan Bootstrap 5 (§7.1). OQ-20 ditambahkan. Session 11 (`15`): kondisi repository (§7.3), glosarium (fase implementasi dan langkah implementasi), peta dokumen, dan progres sesi diperbarui. |
+| 0.12 | 2026-10-10 | Lisensi proyek MIT (`07` §2.7). Peta dokumen memuat versi baru `07`, `14`, dan `15`. |

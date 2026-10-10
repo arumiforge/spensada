@@ -2,7 +2,7 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.6 (draft, menunggu review) |
+| Versi | 0.7 (draft, menunggu review) |
 | Tanggal | 2026-10-10 |
 | Sumber | Discovery Session 6 (System Architecture). Diperbarui dengan keputusan Session 7 (UI/UX & Design System, §2.4), Session 8 (Routes / Pages / API, §2.5), Session 9 (Validation, Error Handling & Security, §2.6), Session 10 (Development Roadmap, `14`), dan keputusan pemilik proyek 2026-10-10 (§2.7). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): label status, glosarium, risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement (`FR-*`, `NFR-*`) dan batasan (`C-*`). [02-user-roles-and-permissions.md](02-user-roles-and-permissions.md): hak akses (`HA-*`). [03-user-flow.md](03-user-flow.md): alur pengguna (`UF-*`). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan ketentuan umum (§4). [05-business-rules.md](05-business-rules.md): aturan bisnis (`BR-*`). [06-database-design.md](06-database-design.md): tabel dan aturan data (`DB-*`). [13-reporting-import-export.md](13-reporting-import-export.md): laporan, import, dan export. |
@@ -125,6 +125,7 @@ Keputusan berikut diberikan pemilik proyek setelah Session 10, dan menggantikan 
 |---|---|---|---|
 | Tampilan | Panel, portal, akun, halaman galat, dan halaman publik memakai Bootstrap 5.3 yang disalin ke server sendiri, tanpa CDN dan tanpa build. Kiosk tetap memakai CSS sendiri. | ARS-10, ARS-19, `08` §2.6 | DECISION |
 | Server production | Windows dengan Laragon, Nginx, PHP 8.3, dan MySQL 8.4, menggantikan VPS Linux (§2.1). Lokal dan production memakai susunan yang sama. Lokasi server dan dua alat pendukung menunggu pemilik proyek (OQ-20, §16.4). | ARS-01 s.d. ARS-06, ARS-46, ARS-56, §16, `12` §16 | DECISION (server Windows); RECOMMENDATION (rincian) |
+| Lisensi proyek | MIT, dengan pemegang hak cipta Arumi Studios. Pemilik proyek menyerahkan pilihan lisensi terbuka kepada implementer, yang memilih MIT karena sederhana, permisif, dan cocok dengan semua library di ARS-10. | ARS-07 langkah 5, ARS-10 | DECISION |
 
 ## 3. Gambaran sistem
 
@@ -266,7 +267,7 @@ Langkah pindah ke appstarter (ARS-07):
 2. Jalankan `composer install`, lalu commit `composer.lock`.
 3. Hapus `system/` dari repository. Ubah `systemDirectory` di `app/Config/Paths.php` ke `vendor/codeigniter4/framework/system`.
 4. Samakan `spark`, `public/index.php`, `preload.php`, `phpunit.dist.xml`, `env`, dan `tests/` dengan appstarter versi yang sama.
-5. Ganti `README.md` dan `LICENSE` di akar, yang saat ini milik framework, dengan README proyek yang merujuk `docs/` dan lisensi yang diputuskan pemilik proyek.
+5. Ganti `README.md` dan `LICENSE` di akar, yang saat ini milik framework, dengan README proyek yang merujuk `docs/` dan lisensi MIT dengan pemegang hak cipta Arumi Studios (§2.7). Lisensi framework dan library tetap ikut paketnya masing-masing di `vendor/` dan `public/aset/vendor/`.
 
 Pembaruan framework berikutnya memakai `composer update codeigniter4/framework`. Pengembang membaca panduan upgrade CodeIgniter versi itu, menyesuaikan file di `app/Config` bila perlu, menjalankan uji, lalu commit `composer.lock`.
 
@@ -352,7 +353,7 @@ $RECYCLE.BIN/
 Alasan dan alternatif (NFR-16):
 
 - **PhpSpreadsheet.** Library PHP yang membaca dan menulis XLSX lengkap dengan format sel, sehingga NISN dapat ditulis sebagai teks (`13` IE-08). OpenSpout lebih hemat memori, tetapi versi terbarunya butuh PHP 8.4. Volume import, sekitar 1.000 baris, ringan bagi PhpSpreadsheet.
-- **mPDF.** Dipilih di Session 6. Template PDF ditulis sebagai view HTML/CSS CI4, sehingga isinya mudah disamakan dengan layar. Lisensinya GPL-2.0-only. Bila aplikasi kelak didistribusikan ke pihak lain, kecocokan lisensi aplikasi dengan GPL perlu diperiksa.
+- **mPDF.** Dipilih di Session 6. Template PDF ditulis sebagai view HTML/CSS CI4, sehingga isinya mudah disamakan dengan layar. Lisensinya GPL-2.0-only. Kode aplikasi berlisensi MIT (§2.7), yang boleh digabung dengan kode GPL-2.0, sehingga aplikasi yang didistribusikan bersama mPDF dapat diedarkan dengan syarat GPL-2.0 untuk gabungannya. Lisensi GPL-3.0 dan AGPL-3.0 tidak dipilih karena tidak cocok dengan GPL-2.0-only. chillerlan/php-qrcode (R3) dipakai dengan pilihan lisensi MIT-nya, karena Apache-2.0 tidak cocok dengan GPL-2.0.
 - **zxing-wasm.** Port WebAssembly dari ZXing-C++, aktif dirawat, dan paling andal untuk kartu yang miring, buram, atau silau. Chrome dan Edge di Windows tidak memiliki `BarcodeDetector` (R-04). Secara bawaan, library ini memuat file WASM dari CDN. Kiosk wajib mengarahkannya ke file di server sendiri (ARS-11). File yang disalin: `es/reader/index.js`, `es/share.js` yang diimpornya lewat path relatif, dan `reader/zxing_reader.wasm`.
 - **chillerlan/php-qrcode.** PHP murni, menghasilkan SVG tanpa GD, dan tidak butuh PHP 8.4. Alternatif `endroid/qr-code` versi terbaru butuh PHP 8.4.
 - **Tanpa library.** Fungsi bawaan dipakai bila cukup: library Image CI4 (GD) untuk memperkecil foto, `ZipArchive` untuk ZIP, `fgetcsv` dan `fputcsv` untuk CSV, serta IndexedDB, Cache Storage, Service Worker, `crypto.randomUUID()`, dan `getUserMedia` di browser.
@@ -1122,7 +1123,7 @@ Session 6 menjawab OQ-09, dan tidak menambah OQ baru. Hal yang dijadwalkan di Se
 | Tempat penyimpanan backup dan pemegang kunci privat | ARS-06 | Prosedur dipasang di `14` GL-04; pilihan tempat dan pemegang kunci oleh sekolah sebelum uji coba R1 (OQ-19) |
 | Batas laju API kiosk dan Nginx | ARS-13, ARS-33 | Uji beban sebelum uji coba R1 (`12` SEC-54, SEC-56) |
 | Nilai awal `status_dibangun_sampai` saat go-live | ARS-37 | Ditetapkan di Session 10: H−1, lewat `status:mulai` (`14` GL-08) |
-| Lisensi proyek di `LICENSE` dan README, termasuk kecocokan dengan lisensi mPDF | ARS-07 langkah 5, ARS-10 | Pemilik proyek, sebelum migrasi appstarter |
+| Lisensi proyek di `LICENSE` dan README, termasuk kecocokan dengan lisensi mPDF | ARS-07 langkah 5, ARS-10 | Ditetapkan 2026-10-10: MIT (§2.7) |
 | Contoh kartu OSIS lama untuk desain kartu rinci | ARS-10, OQ-13 | Sekolah, sebelum R3 |
 | Resolusi kamera, jeda antartombol scanner, dan target 1 detik di laptop sekolah | ARS-25, ARS-26 | Uji di laptop sekolah, sebelum uji coba R1 (OQ-08) |
 | Jumlah proses php-cgi dan batas waktu pemrosesan antrean | ARS-04, ARS-36 | Uji beban sebelum uji coba R1 |
@@ -1139,3 +1140,4 @@ Session 6 menjawab OQ-09, dan tidak menambah OQ baru. Hal yang dijadwalkan di Se
 | 0.4 | 2026-10-05 | Keputusan Session 9 (§2.6, `11`, `12`). ARS-01, ARS-02, ARS-11, ARS-21 dan ARS-23 (PIN petugas di data kiosk), ARS-04 (pengaturan keamanan PHP, batas unggah final, header dan `limit_req` Nginx, ID permintaan), ARS-06 (backup terenkripsi dan rotasi), ARS-13 (filter `keamanan` dan `invalidchars`, filter `csrf` dan `sesi`, pembatasan login lewat `percobaan_login`), ARS-29 butir 5 (konfigurasi CSRF), ARS-30 (cookie `__Secure-spensada_stasiun`, PIN petugas, dan satu login aktif), ARS-31, ARS-33, ARS-42 (kunci bernama login), ARS-43, ARS-47 (masa dan konfigurasi sesi), ARS-52 (header berkas dan akses lampiran), ARS-53 (lampiran gambar dan logo), ARS-54 butir 3, ARS-56, §16 (pengamanan server, dua user MySQL, dan pemeliharaan), kepala dokumen, §2.3, §17, §18, dan §19 diperbarui. |
 | 0.5 | 2026-10-05 | Keputusan Session 10 (`14`). ARS-06 (uji pemulihan ke database sementara), ARS-37 (nilai awal dan batas bawah `status_mulai`), ARS-57 (perintah `status:mulai`), pengantar §16, kepala dokumen, dan §19 diperbarui. |
 | 0.6 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10 (§2.7). Server production Windows dengan Laragon: §1, §2.1 (hosting dan deploy), §3.1, ARS-01, ARS-02 (perangkat lunak server), ARS-04 (proses php-cgi, `PHP_FCGI_MAX_REQUESTS`, `cgi.fix_pathinfo`, `fastcgi_read_timeout`, hak file NTFS), ARS-05, ARS-06 (backup di Windows), ARS-46, ARS-50, ARS-56, ARS-57, §16 (ditulis ulang untuk Windows, dengan tugas terjadwal §16.3 dan OQ-20 di §16.4), §17.1, dan §19 diperbarui. Bootstrap 5: §2.4, ARS-10, ARS-19, ARS-22 butir 3, dan §5.3 diperbarui. OQ-20 ditambahkan. |
+| 0.7 | 2026-10-10 | Lisensi proyek MIT (§2.7). ARS-07 langkah 5, alasan mPDF di §4.4, dan §19 diperbarui. |
