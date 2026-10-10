@@ -11,7 +11,6 @@ $akunAktif = service('akunAktif');
 $menu      = (new \App\Libraries\MenuPanel())->untuk($akunAktif, service('request')->getUri()->getPath());
 $roleLabel = config('Label')->codes['akun_role.role'];
 $roles     = array_values(array_filter(array_map(static fn (string $role): ?string => $roleLabel[$role] ?? null, $akunAktif->roles())));
-$menuHtml  = view('layout/panel_menu', ['menu' => $menu], ['saveData' => false]);
 ?>
 <!doctype html>
 <html lang="id">
@@ -19,6 +18,8 @@ $menuHtml  = view('layout/panel_menu', ['menu' => $menu], ['saveData' => false])
 <?= $this->include('layout/head') ?>
 </head>
 <body>
+<?php // Rendered after the head: a nested view() call clears this view's data, such as $title. ?>
+<?php $menuHtml = view('layout/panel_menu', ['menu' => $menu], ['saveData' => false]); ?>
 <a class="visually-hidden-focusable lewati-isi" href="#isi">Lewati ke isi</a>
 <div class="panel">
     <nav class="panel-samping" aria-label="Menu utama">
