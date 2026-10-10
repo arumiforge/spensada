@@ -11,6 +11,7 @@ the log to the last 10 entries.
 - Owner decisions D-01 (Windows + Laragon production), D-02 (Bootstrap 5), D-04 (one PR per phase), D-05 (keep doc-defined names): confirmed and synced into `docs/` (see `decisions.md`).
 - Code: CodeIgniter 4.7.4 skeleton without Composer appstarter. No app code except `format_helper.php`.
 - Claude memory folder, attribution settings, brand assets: added.
+- `README.md`: project README with all implementation stages (replaces the framework README early; `LICENSE` is unchanged until L00-01).
 
 ## Next
 
@@ -27,6 +28,7 @@ the log to the last 10 entries.
 
 | Date | Branch | Work |
 |---|---|---|
+| 2026-10-10 | `claude/readme-implementation-stages-87jury` | Replaced framework `README.md` with a project README (Indonesian) listing every stage from discovery to R3, from `docs/14` and `docs/15`. L00-01 and L00-09 still own later README updates. |
 | 2026-10-10 | `sky/busy-goodall-fswgci` | License decision D-10 (MIT) recorded in `docs/07`, `14`, `15`, `00` and memory. |
 | 2026-10-10 | `sky/busy-goodall-fswgci` | Owner answered D-01, D-02, D-04, D-05; synced `docs/07`, `08`, `12`, `14`, `00`, `01`, `04`, `09`. Session 11: wrote `docs/15-implementation-phases.md`. Added OQ-20. |
 | 2026-10-10 | `sky/zen-heisenberg-d72c3e` | Added `CLAUDE.md`, `.claude/memory/`, `.claude/settings.json` (no attribution, owner git identity), `format_helper.php` + test, logo/favicon/app icons. |
