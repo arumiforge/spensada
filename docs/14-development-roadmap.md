@@ -2,7 +2,7 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.2 (draft, menunggu review) |
+| Versi | 0.3 (draft, menunggu review) |
 | Tanggal | 2026-10-10 |
 | Sumber | Discovery Session 10 (Development Roadmap). Diperbarui dengan keputusan pemilik proyek 2026-10-10 (§2.4) dan Session 11 (`15`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): rilis (§6.1), risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement, batasan (`C-*`), dan kriteria keberhasilan v1 (§6). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan acceptance criteria (`AC-*`). [06-database-design.md](06-database-design.md): tabel. [07-system-architecture.md](07-system-architecture.md): aturan arsitektur (`ARS-*`), panduan lokal (§15), dan langkah production (§16). [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman (`HAL-*`). [12-security.md](12-security.md): ketentuan keamanan (`SEC-*`). |
@@ -72,6 +72,7 @@ Keputusan berikut diberikan pemilik proyek pada 2026-10-10, dan menggantikan bag
 | Ukuran PR | Satu branch dan satu PR per fase implementasi, dengan commit kecil per langkah. `main` satu-satunya branch jangka panjang. Menggantikan satu PR per fitur (§2.1). | RM-06, RM-11, RM-13 | DECISION |
 | Server production | Windows dengan Laragon, Nginx, PHP 8.3, dan MySQL 8.4, menggantikan VPS Linux. Langkahnya di `07` §16. | `07` ARS-01, §16, `12` §16 | DECISION |
 | Tampilan | Bootstrap 5 yang disajikan dari server sendiri, ditambah satu file CSS aplikasi dengan token `08`. | `08` UI-08, UI-71, UI-73 | DECISION |
+| Lisensi proyek | MIT, dengan pemegang hak cipta Arumi Studios. `LICENSE` dan README diganti di langkah pertama FASE-00. | `07` §2.7, ARS-07 langkah 5 | DECISION |
 
 ## 3. Prinsip roadmap
 
@@ -96,7 +97,7 @@ Masukan berikut berasal dari sekolah atau pemilik proyek. Kolom "Paling lambat" 
 
 | Masukan | Dari | Paling lambat | Rujukan |
 |---|---|---|---|
-| Lisensi proyek untuk `LICENSE` dan README | Pemilik proyek | Awal FASE-00 | `07` ARS-07 langkah 5, ARS-10 |
+| Lisensi proyek untuk `LICENSE` dan README | Pemilik proyek | Ditetapkan 2026-10-10: MIT (§2.4) | `07` ARS-07 langkah 5, ARS-10 |
 | Contoh foto, contoh file data siswa, dan contoh kartu OSIS untuk menguji pembacaan QR | Sekolah | Purwarupa kiosk di FASE-01 | RM-03 |
 | Satu laptop yang akan dipakai sebagai stasiun, beserta webcam dan scanner USB bila ada | Sekolah | Purwarupa kiosk di FASE-01 | `07` ARS-25, ARS-26 |
 | Server Windows production, nama domain, dan jawaban OQ-20 (lokasi server, klien ACME, cara menjalankan layanan) | Pemilik proyek | Awal FASE-09 | `07` ARS-01, ARS-05, §16.1, §16.4 |
@@ -431,7 +432,7 @@ Go-live R2 dan R3 tidak membangun ulang database. Keduanya memakai prosedur rili
 | Jumlah stasiun (OQ-08) | Sebelum uji coba (§4) |
 | Kebijakan data sekolah dan teks pemberitahuan privasi (OQ-18) | Sebelum uji coba (§4) |
 | Tempat backup dan pemegang kunci privat (OQ-19) | Sebelum uji coba (§4), dipasang di GL-04 |
-| Lisensi proyek (`07` ARS-07 langkah 5) | Awal FASE-00 |
+| Lisensi proyek (`07` ARS-07 langkah 5) | Ditetapkan 2026-10-10: MIT (§2.4) |
 
 ## 17. Perubahan pada dokumen lain
 
@@ -472,3 +473,4 @@ Session 10 tidak menjawab OQ dan menambah OQ-19. Keputusan pemilik proyek 2026-1
 |---|---|---|
 | 0.1 | 2026-10-05 | Draft awal dari Session 10: keputusan Session 10, prinsip roadmap (`RM-01` s.d. `RM-18`), masukan sekolah, fase R1 (`FASE-00` s.d. `FASE-09`), urutan pembuatan halaman, cara kerja implementasi, pengujian dan uji beban, persiapan sekolah, uji coba R1 (`UC-01` s.d. `UC-12`), prosedur go-live (`GL-01` s.d. `GL-14`), masa stabilisasi, R2 dan R3, risiko jadwal, dan traceability. OQ-19 ditambahkan. |
 | 0.2 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10 (§2.4): satu branch dan satu PR per fase (RM-06, RM-11, RM-12, RM-13, §2.1, §15, §18). Server production Windows: §2.1 (pelaksana), §2.2, §4 (masukan dan OQ-20), §5, FASE-09, UC-01, UC-09, §15, §16.2, GL-04, dan §18 (OQ-20) diperbarui. Bootstrap 5 dicatat di §2.4. Session 11 (`15` §2.2): FASE-00 butir 4 (kerangka `sesi` dan `wajib-ganti`), FASE-04 (`antrean_hitung_ulang`, `log_presensi`, `LogPresensi`, dan penulisan antrean), dan FASE-05 diperbarui. |
+| 0.3 | 2026-10-10 | Lisensi proyek MIT (§2.4). §4 dan §16.2 diperbarui. |
