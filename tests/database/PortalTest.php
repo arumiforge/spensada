@@ -124,6 +124,8 @@ final class PortalTest extends CIUnitTestCase
         $this->buka('portal/foto')->assertStatus(404);
 
         $this->foto = 'foto/' . bin2hex(random_bytes(16)) . '.png';
+        // A fresh checkout has no photo folder until the first upload.
+        is_dir(WRITEPATH . 'uploads/foto') || mkdir(WRITEPATH . 'uploads/foto', 0755, true);
         // 1×1 transparent PNG.
         file_put_contents(WRITEPATH . 'uploads/' . $this->foto, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', true));
         $this->db->table('siswa')->where('id', $this->siswa['id'])->update(['foto_file' => $this->foto]);
