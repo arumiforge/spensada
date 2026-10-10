@@ -27,7 +27,7 @@ class Sesi implements FilterInterface
     use BackgroundResponse;
 
     /** Session keys owned by login; removed when a session ends. */
-    public const KEYS = ['akun_id', 'jenis', 'login_at', 'aktif_at', 'cap', 'login_stasiun_id', 'tanpa_password_lama', 'salah_password_lama'];
+    public const KEYS = ['akun_id', 'jenis', 'login_at', 'aktif_at', 'cap', 'login_stasiun_id', 'tanpa_password_lama', 'salah_password_lama', 'token_sekali'];
 
     private const IDLE_LIMIT  = 8 * 3600;
     private const LOGIN_LIMIT = 7 * 86400;

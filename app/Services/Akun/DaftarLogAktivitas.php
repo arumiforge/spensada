@@ -45,6 +45,7 @@ class DaftarLogAktivitas
     private const KEY_CODES = [
         'alasan'   => 'log_aktivitas.alasan_login_gagal',
         'role'     => 'akun_role.role',
+        'roles'    => 'akun_role.role',
         'ditambah' => 'akun_role.role',
         'dicabut'  => 'akun_role.role',
         'status'   => 'akun.status',
