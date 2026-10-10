@@ -3,7 +3,7 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseConfig;
-use CodeIgniter\Log\Handlers\FileHandler;
+use App\Libraries\RequestLogHandler;
 use CodeIgniter\Log\Handlers\HandlerInterface;
 
 class Logger extends BaseConfig
@@ -39,7 +39,7 @@ class Logger extends BaseConfig
      *
      * @var int|list<int>
      */
-    public $threshold = (ENVIRONMENT === 'production') ? 4 : 9;
+    public $threshold = (ENVIRONMENT === 'production') ? 5 : 9; // warning and up in production (docs/11 GAL-18)
 
     /**
      * --------------------------------------------------------------------------
@@ -82,7 +82,8 @@ class Logger extends BaseConfig
          * File Handler
          * --------------------------------------------------------------------
          */
-        FileHandler::class => [
+        // Adds the request ID, method, and path to every line (docs/11 GAL-19).
+        RequestLogHandler::class => [
             // The log levels that this handler will handle.
             'handles' => [
                 'critical',

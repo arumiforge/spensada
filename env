@@ -20,33 +20,31 @@
 # APP
 #--------------------------------------------------------------------
 
-# app.baseURL = ''
+# Always HTTPS, also in Laragon (docs/12 SEC-32).
+# app.baseURL = 'https://spensada.test/'
 # If you have trouble with `.`, you could also use `_`.
 # app_baseURL = ''
-# app.forceGlobalSecureRequests = false
+# app.forceGlobalSecureRequests = true
 # app.CSPEnabled = false
 
 #--------------------------------------------------------------------
 # DATABASE
 #--------------------------------------------------------------------
 
+# Write DBDriver without quotes (docs/07 ARS-45 item 5).
 # database.default.hostname = localhost
-# database.default.database = ci4
+# database.default.database = spensada
 # database.default.username = root
-# database.default.password = root
-# database.default.DBDriver = MySQLi
-# database.default.DBPrefix =
+# database.default.password =
+# database.default.DBDriver = App\Database\MySQLi
 # database.default.port = 3306
 
-# If you use MySQLi as tests, first update the values of Config\Database::$tests.
-# database.tests.hostname = localhost
-# database.tests.database = ci4_test
+# Tests use MySQL database spensada_test, without a table prefix (ARS-45).
+# database.tests.hostname = 127.0.0.1
+# database.tests.database = spensada_test
 # database.tests.username = root
-# database.tests.password = root
-# database.tests.DBDriver = MySQLi
-# database.tests.DBPrefix =
-# database.tests.charset = utf8mb4
-# database.tests.DBCollat = utf8mb4_general_ci
+# database.tests.password =
+# database.tests.DBDriver = App\Database\MySQLi
 # database.tests.port = 3306
 
 #--------------------------------------------------------------------
@@ -67,3 +65,9 @@
 #--------------------------------------------------------------------
 
 # logger.threshold = 4
+
+#--------------------------------------------------------------------
+# SPENSADA (technical parameters, app/Config/Spensada.php, ARS-17)
+#--------------------------------------------------------------------
+
+# spensada.versi = 0.1.0

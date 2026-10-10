@@ -30,6 +30,10 @@ class Routing extends BaseRouting
      */
     public array $routeFiles = [
         APPPATH . 'Config/Routes.php',
+        APPPATH . 'Config/Routes/Akun.php',
+        APPPATH . 'Config/Routes/Panel.php',
+        APPPATH . 'Config/Routes/Portal.php',
+        APPPATH . 'Config/Routes/Kiosk.php',
     ];
 
     /**
@@ -84,7 +88,7 @@ class Routing extends BaseRouting
      * Example:
      *  public $override404 = 'App\Errors::show404';
      */
-    public ?string $override404 = null;
+    public ?string $override404 = 'App\Controllers\Galat::tidakDitemukan';
 
     /**
      * If TRUE, the system will attempt to match the URI against
