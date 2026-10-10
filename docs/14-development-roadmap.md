@@ -2,9 +2,9 @@
 
 | Item | Nilai |
 |---|---|
-| Versi | 0.1 (draft, menunggu review) |
-| Tanggal | 2026-10-05 |
-| Sumber | Discovery Session 10 (Development Roadmap) |
+| Versi | 0.2 (draft, menunggu review) |
+| Tanggal | 2026-10-10 |
+| Sumber | Discovery Session 10 (Development Roadmap). Diperbarui dengan keputusan pemilik proyek 2026-10-10 (§2.4) dan Session 11 (`15`). |
 | Bergantung pada | [00-project-overview.md](00-project-overview.md): rilis (§6.1), risiko (`R-xx`), dan pertanyaan terbuka (`OQ-xx`). [01-product-requirements.md](01-product-requirements.md): requirement, batasan (`C-*`), dan kriteria keberhasilan v1 (§6). [04-feature-specification.md](04-feature-specification.md): fitur (`FS-*`) dan acceptance criteria (`AC-*`). [06-database-design.md](06-database-design.md): tabel. [07-system-architecture.md](07-system-architecture.md): aturan arsitektur (`ARS-*`), panduan lokal (§15), dan langkah production (§16). [09-page-and-route-specification.md](09-page-and-route-specification.md): halaman (`HAL-*`). [12-security.md](12-security.md): ketentuan keamanan (`SEC-*`). |
 | Dokumen terkait | [03-user-flow.md](03-user-flow.md): penyiapan awal (UF-01) dan stasiun (UF-06). [10-api-specification.md](10-api-specification.md): endpoint (`EP-*`). [11-validation-and-error-handling.md](11-validation-and-error-handling.md): pengujian validasi dan galat. [13-reporting-import-export.md](13-reporting-import-export.md): laporan dan import. `15-implementation-phases.md` (Session 11): rincian kerja setiap fase. |
 
@@ -33,10 +33,10 @@ Dokumen ini menyelesaikan hal yang diserahkan dokumen lain ke Session 10: rencan
 | Waktu go-live R1 | Tanpa tanggal tetap. R1 go-live segera setelah uji coba R1 lulus, walaupun di tengah semester. | RM-01, §11.3, §12 | DECISION |
 | Bentuk go-live R1 | Sekaligus. Semua fitur R1, termasuk akun siswa, slip akun, dan portal siswa, dipakai sejak hari H. | RM-02, §12 | DECISION |
 | Bentuk uji coba | Langsung semua siswa tanpa masa paralel. Setelah uji teknis lulus, sistem langsung menggantikan kertas, Excel, dan WhatsApp untuk pencatatan kehadiran (A-05). | §11, §12 | DECISION |
-| Pelaksana | AI implementer (Claude Code) menulis kode per fitur dari dokumen fase `15`. Satu pengembang meninjau PR, menguji di Laragon dan di laptop sekolah, dan mengelola VPS. | RM-05, §8 | DECISION |
+| Pelaksana | AI implementer (Claude Code) menulis kode per fase, langkah demi langkah, dari dokumen fase `15`. Satu pengembang meninjau PR, menguji di Laragon dan di laptop sekolah, dan mengelola VPS. | RM-05, §8 | DECISION |
 | Server uji | Tidak ada server uji terpisah. Uji teknis dijalankan di server production sebelum data asli diisi, lalu database production dibangun ulang. Uji beban dijalankan di lokal, dan diulang singkat di production sebelum data asli diisi. | RM-09, UC-01 s.d. UC-12, GL-01 | DECISION |
 | CI | Tanpa CI otomatis. Pengembang menjalankan `composer test` dan `node --test` di Laragon sebelum menggabung setiap PR. | RM-07 | DECISION |
-| Ukuran PR | Satu PR per fitur (`FS-*`), atau beberapa fitur kecil yang saling terkait, dengan acceptance criteria fitur itu sebagai daftar periksa. | RM-06 | DECISION |
+| Ukuran PR | Satu PR per fitur (`FS-*`), atau beberapa fitur kecil yang saling terkait, dengan acceptance criteria fitur itu sebagai daftar periksa. Diganti keputusan pemilik 2026-10-10: satu branch dan satu PR per fase (§2.4). | RM-06 | DEPRECATED |
 | Cadangan dua minggu pertama | Pemeriksaan harian: setiap wali kelas memeriksa daftar presensi kelasnya setiap hari sekolah selama 2 minggu pertama setelah go-live, lalu membetulkan yang salah lewat koreksi, presensi manual, atau izin. | GL-14, §13 | DECISION |
 
 ### 2.2 Temuan yang ditetapkan tanpa ronde diskusi
@@ -63,6 +63,16 @@ Penyusunan roadmap menemukan kebutuhan berikut. Semuanya berstatus RECOMMENDATIO
 | Urutan pembuatan halaman dalam fase implementasi | `09` §17 | §7 |
 | Waktu migrasi ke Composer appstarter | `01` C-06, `07` ARS-07 | FASE-00 |
 
+### 2.4 Keputusan pemilik proyek setelah Session 10
+
+Keputusan berikut diberikan pemilik proyek pada 2026-10-10, dan menggantikan bagian dokumen yang bertentangan.
+
+| Topik | Keputusan | Rujukan | Status |
+|---|---|---|---|
+| Ukuran PR | Satu branch dan satu PR per fase implementasi, dengan commit kecil per langkah. `main` satu-satunya branch jangka panjang. Menggantikan satu PR per fitur (§2.1). | RM-06, RM-11, RM-13 | DECISION |
+| Server production | Windows dengan Laragon, Nginx, PHP 8.3, dan MySQL 8.4, menggantikan VPS Linux. Langkahnya di `07` §16. | `07` ARS-01, §16, `12` §16 | DECISION |
+| Tampilan | Bootstrap 5 yang disajikan dari server sendiri, ditambah satu file CSS aplikasi dengan token `08`. | `08` UI-08, UI-71, UI-73 | DECISION |
+
 ## 3. Prinsip roadmap
 
 | ID | Ketentuan | Status |
@@ -72,7 +82,7 @@ Penyusunan roadmap menemukan kebutuhan berikut. Semuanya berstatus RECOMMENDATIO
 | RM-03 | **Fondasi dan logika inti lebih dulu.** Urutan fase mengikuti ketergantungan data (§5): akun, master data, kalender, mesin status, kiosk, izin, lalu laporan. Bagian yang paling berisiko, yaitu pembacaan QR di laptop sekolah, dicoba sejak awal lewat purwarupa (FASE-01 butir terakhir), sebelum kiosk dibangun penuh di FASE-06. | RECOMMENDATION |
 | RM-04 | **Dokumentasi sebagai sumber.** Setiap fitur dibangun dari `04`, `06`, `07`, `08`, `09`, `10`, `11`, dan `12` sesuai `00` §11. Bila implementasi menemukan celah atau pertentangan, dokumen diperbarui lebih dulu dalam PR yang sama atau PR dokumen tersendiri (`00` §11 butir 9 dan 10). | RECOMMENDATION |
 | RM-05 | **Definisi selesai.** Satu fitur selesai bila: (1) semua acceptance criteria-nya di `04` lulus, sebagai uji otomatis bila dapat diotomatiskan dan sebagai uji manual tercatat bila tidak; (2) uji akses route barunya ada (`12` SEC-81); (3) teks layar dan pesan mengikuti `08` dan `11`; (4) `composer test` dan `node --test` lulus di Laragon; (5) PR ditinjau dan digabung oleh pengembang. | RECOMMENDATION |
-| RM-06 | **Satu PR per fitur.** Lihat §8. | DECISION |
+| RM-06 | **Satu PR per fase.** Lihat §8. Sebelumnya satu PR per fitur (Session 10), diganti keputusan pemilik 2026-10-10 (§2.4). | DECISION |
 | RM-07 | **Uji lokal sebelum digabung.** Tanpa CI, setiap PR memuat ringkasan hasil `composer test` dan `node --test "tests/js/**/*.test.js"` dari laptop pengembang. PR tidak digabung bila ada uji yang gagal. | DECISION (tanpa CI); RECOMMENDATION (ringkasan di PR) |
 | RM-08 | **Tidak ada fitur di luar fase.** Fitur R2 dan R3 tidak dibangun sebelum R1 go-live, kecuali struktur yang memang disiapkan R1 untuk R2 (`04` §11). | RECOMMENDATION |
 | RM-09 | **Data asli hanya di production.** Laptop pengembang dan production sebelum GL-01 hanya berisi data buatan (`12` SEC-79). Data asli siswa baru masuk ke production setelah pembangunan ulang database (GL-01). | RECOMMENDATION |
@@ -137,7 +147,7 @@ Jumlahnya sekitar 17–27 minggu sejak FASE-00 dimulai sampai hari H. Perkiraan 
 
 ## 6. Fase R1
 
-Setiap fase ditutup bila semua fitur di dalamnya memenuhi RM-05, ditambah syarat selesai fase di bawah. Rincian tugas, file, dan urutan PR setiap fase ditulis di `15`. (RECOMMENDATION)
+Setiap fase ditutup bila semua fitur di dalamnya memenuhi RM-05, ditambah syarat selesai fase di bawah. Rincian tugas, file, dan urutan langkah setiap fase ditulis di `15`. (RECOMMENDATION)
 
 ### FASE-00 — Fondasi
 
@@ -254,9 +264,9 @@ Daftar presensi rombel (HAL-LAP-04) dan riwayat siswa (HAL-LAP-06) berada di FAS
 
 | ID | Ketentuan | Status |
 |---|---|---|
-| RM-11 | **Branch dan PR.** Setiap fitur dikerjakan di branch sendiri dari `main`, lalu digabung lewat PR. Judul PR memuat ID fitur, misalnya "FS-PRS-06 Presensi manual". Isi PR memuat daftar acceptance criteria fitur itu beserta cara ujinya (otomatis atau manual), ringkasan hasil uji lokal (RM-07), dan dokumen yang ikut diubah. | DECISION (satu PR per fitur); RECOMMENDATION (isi PR) |
-| RM-12 | **Peninjauan.** Pengembang membaca diff, menjalankan uji di Laragon, mencoba fitur di browser, dan memeriksa bahwa tidak ada logika presensi di luar tempatnya (`07` ARS-16). PR yang mengubah migration yang sudah dipasang di production ditolak. Perubahan struktur memakai migration baru. | RECOMMENDATION |
-| RM-13 | **Fitur yang besar.** Fitur yang terlalu besar untuk satu PR, misalnya FS-PRS-05 dan FS-KIO-02, dibagi menjadi beberapa PR berurutan di dokumen fase `15`. Setiap PR tetap meninggalkan `main` dalam keadaan uji lulus. | RECOMMENDATION |
+| RM-11 | **Branch dan PR.** `main` adalah satu-satunya branch jangka panjang. Setiap fase dikerjakan di satu branch dari `main` terbaru, bernama `fase-<NN>-<slug>`, misalnya `fase-02-sekolah-siswa`, lalu digabung lewat satu PR dan branch-nya dihapus. Di dalam branch, pekerjaan dibagi menjadi commit kecil berurutan sesuai langkah di `15`, satu perubahan logis per commit, dan setiap commit meninggalkan uji lulus. Judul PR memuat ID fase, misalnya "FASE-05 Mesin status dan presensi staf". Isi PR memuat fitur dan acceptance criteria fase itu beserta cara ujinya (otomatis atau manual), ringkasan hasil uji lokal (RM-07), dan dokumen yang ikut diubah. Perubahan yang hanya menyentuh dokumen memakai branch `docs/<slug>`. | DECISION (satu branch dan satu PR per fase, keputusan pemilik 2026-10-10); RECOMMENDATION (nama branch dan isi PR) |
+| RM-12 | **Peninjauan.** Karena satu PR memuat satu fase, pengembang meninjau per kelompok commit fitur, sesuai urutan langkah di `15`. Pengembang membaca diff, menjalankan uji di Laragon, mencoba fitur di browser, dan memeriksa bahwa tidak ada logika presensi di luar tempatnya (`07` ARS-16). PR yang mengubah migration yang sudah dipasang di production ditolak. Perubahan struktur memakai migration baru. | RECOMMENDATION |
+| RM-13 | **Fitur yang besar.** Fitur yang besar, misalnya FS-PRS-05 dan FS-KIO-02, dibagi menjadi beberapa langkah berurutan di dokumen fase `15`, masing-masing berisi satu atau beberapa commit kecil. Setiap commit tetap meninggalkan uji lulus, sehingga branch fase dapat ditinjau dan diuji di tengah jalan. | RECOMMENDATION |
 | RM-14 | **Dokumentasi.** Perubahan perilaku yang berbeda dari dokumen ditulis dulu di dokumen terkait, dengan riwayat perubahan dan label status (RM-04). | RECOMMENDATION |
 | RM-15 | **Laporan fase.** Di akhir setiap fase, pengembang mencatat di `15`: fitur yang selesai, perkiraan yang meleset, dan masalah yang ditemukan. Perkiraan fase berikutnya disesuaikan. | RECOMMENDATION |
 
@@ -386,7 +396,7 @@ Go-live R2 dan R3 tidak membangun ulang database. Keduanya memakai prosedur rili
 | Go-live tanpa masa paralel | Galat hari pertama langsung menjadi data resmi | Uji coba yang ketat (§11.3), gladi bersih (GL-11), pemeriksaan harian wali kelas (GL-14), mode darurat, dan semua data dapat dibetulkan dengan jejak log. |
 | Uji teknis dan uji beban tanpa server uji terpisah | Uji beban di lokal kurang mewakili VPS; uji di production dapat mengganggu bila dilakukan setelah data asli ada | Uji beban singkat di production dijalankan sebelum GL-01 (UC-07). Setelah go-live, uji beban hanya di luar jam sekolah, dan uji pemulihan memakai database sementara (UC-09). |
 | Tanpa CI, uji lupa dijalankan | Regresi masuk ke `main` | Ringkasan uji lokal wajib di setiap PR (RM-07), dan uji penuh diulang sebelum setiap tag (RM-10). |
-| Fitur besar (FS-PRS-05, FS-KIO-02) melampaui perkiraan | Jadwal mundur | Dibagi menjadi beberapa PR (RM-13), dan perkiraan ditinjau tiap akhir fase (RM-15). |
+| Fitur besar (FS-PRS-05, FS-KIO-02) melampaui perkiraan | Jadwal mundur | Dibagi menjadi beberapa langkah commit (RM-13), dan perkiraan ditinjau tiap akhir fase (RM-15). |
 | Go-live di tengah semester | Rekap semester sebagian | Disampaikan saat pelatihan (§2.2, §13). |
 
 ## 16. Traceability
@@ -453,10 +463,11 @@ Session 10 tidak menjawab OQ dan menambah OQ-19.
 | Perkiraan waktu setiap fase | §5 | Ditinjau di akhir setiap fase (RM-15) |
 | Hari H | RM-01 | Setelah uji coba lulus (§11.3) |
 | Nilai hasil uji beban | §9.2 | FASE-09 dan UC-07 |
-| Rincian tugas dan urutan PR setiap fase | §6, RM-13 | Session 11 (`15`) |
+| Rincian tugas dan urutan langkah setiap fase | §6, RM-13 | Ditetapkan di Session 11 (`15`) |
 
 ## Riwayat perubahan
 
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 0.1 | 2026-10-05 | Draft awal dari Session 10: keputusan Session 10, prinsip roadmap (`RM-01` s.d. `RM-18`), masukan sekolah, fase R1 (`FASE-00` s.d. `FASE-09`), urutan pembuatan halaman, cara kerja implementasi, pengujian dan uji beban, persiapan sekolah, uji coba R1 (`UC-01` s.d. `UC-12`), prosedur go-live (`GL-01` s.d. `GL-14`), masa stabilisasi, R2 dan R3, risiko jadwal, dan traceability. OQ-19 ditambahkan. |
+| 0.2 | 2026-10-10 | Keputusan pemilik proyek 2026-10-10 (§2.4): satu branch dan satu PR per fase (RM-06, RM-11, RM-12, RM-13, §2.1, §15, §18). Server production Windows dan Bootstrap 5 dicatat di §2.4. |
