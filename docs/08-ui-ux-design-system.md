@@ -234,6 +234,7 @@ Ikon yang dipakai (selain ikon status di §4.2):
 | Kamera | `camera`, `camera-off` | Bunyi | `volume-2` |
 | Sudah tercatat (kiosk) | `badge-check` | Kartu, QR | `id-card`, `qr-code` |
 | Sebelumnya, berikutnya | `chevron-left`, `chevron-right` | Tutup, centang | `x`, `check` |
+| Tampilkan, sembunyikan password | `eye`, `eye-off` | Buka kunci login, salin | `lock-open`, `copy` |
 
 ### 4.6 Foto siswa
 
